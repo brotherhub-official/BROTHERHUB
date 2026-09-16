@@ -287,11 +287,16 @@ if selectedGame then
     
     local function fetchCode(url)
         if not url or url == "" then return nil end
+        local targetUrl = url
+        if string.find(url, "raw.githubusercontent.com") then
+            local sep = string.find(url, "%?") and "&" or "?"
+            targetUrl = url .. sep .. "t=" .. tostring(os.time())
+        end
         local s, res = pcall(function()
             if game.HttpGet then
-                return game:HttpGet(url, true)
+                return game:HttpGet(targetUrl, true)
             elseif httpReq then
-                local r = httpReq({ Url = url, Method = "GET" })
+                local r = httpReq({ Url = targetUrl, Method = "GET" })
                 return r and (r.Body or r.body)
             end
         end)
