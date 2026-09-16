@@ -210,7 +210,7 @@ local HUB_ROUTER = {
             if rs:FindFirstChild("MW") and rs.MW:FindFirstChild("Remotes") then return true end
             return false
         end,
-        CdnUrl = "https://files.catbox.moe/vg5h5z.lua",
+        CdnUrl = "https://files.catbox.moe/ux1o2s.lua",
         GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/IdleMafia_BROTHERHUB.lua",
     },
     {
