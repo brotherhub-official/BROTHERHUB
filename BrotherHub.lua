@@ -291,6 +291,17 @@ local HUB_ROUTER = {
         end,
         GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/HeavyweightFishing_BROTHERHUB.lua",
     },
+    {
+        Name = "Shogun's Reign",
+        Match = function(pid, gid, gname)
+            if pid == 106568491289620 then return true end
+            if string.find(gname, "shogun's reign") or string.find(gname, "shoguns reign") or string.find(gname, "shogun") then return true end
+            local rs = game:GetService("ReplicatedStorage")
+            if rs:FindFirstChild("Events") and rs.Events:FindFirstChild("Combat") and rs.Events.Combat:FindFirstChild("CombatRemote") then return true end
+            return false
+        end,
+        GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/ShogunsReign_BROTHERHUB.lua",
+    },
 }
 
 local selectedGame = nil
