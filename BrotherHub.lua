@@ -269,6 +269,17 @@ local HUB_ROUTER = {
         end,
         GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/CatchDragons_BROTHERHUB.lua",
     },
+    {
+        Name = "Pop Bubbles",
+        Match = function(pid, gid, gname)
+            if pid == 72390882197205 then return true end
+            if string.find(gname, "pop bubbles") or string.find(gname, "bubble") then return true end
+            local rs = game:GetService("ReplicatedStorage")
+            if rs:FindFirstChild("Remotes") and rs.Remotes:FindFirstChild("BubblePopRequest") then return true end
+            return false
+        end,
+        GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/PopBubbles_BROTHERHUB.lua",
+    },
 }
 
 local selectedGame = nil
