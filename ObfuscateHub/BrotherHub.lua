@@ -1,6 +1,6 @@
 -- ====================================================================
 -- 👑 BROTHER HUB - UNIVERSAL MASTER LOADER
--- Official Discord: discord.gg/brotherhub
+-- Official Discord: discord.gg/szYbZCqHKS
 -- Founder: prawiraxliv
 -- ====================================================================
 
@@ -127,7 +127,6 @@ local HUB_ROUTER = {
             if string.find(gname, "dig into secrets") or string.find(gname, "dig into") then return true end
             return false
         end,
-        CdnUrl = "https://files.catbox.moe/ap5f66.lua",
         GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/DigIntoSecrets_BROTHERHUB.lua",
     },
     {
@@ -137,7 +136,6 @@ local HUB_ROUTER = {
             if string.find(gname, "flower shop") then return true end
             return false
         end,
-        CdnUrl = "https://files.catbox.moe/nvyh0o.lua",
         GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/FlowerShop_BROTHERHUB.lua",
     },
     {
@@ -147,7 +145,6 @@ local HUB_ROUTER = {
             if string.find(gname, "fish an anime") or string.find(gname, "fish anime") then return true end
             return false
         end,
-        CdnUrl = "https://files.catbox.moe/41z6ty.lua",
         GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/FishanAnime_BROTHERHUB.lua",
     },
     {
@@ -157,7 +154,6 @@ local HUB_ROUTER = {
             if string.find(gname, "sellores") or string.find(gname, "sell ores") then return true end
             return false
         end,
-        CdnUrl = "https://files.catbox.moe/hromq6.lua",
         GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/Sellores_BROTHERHUB.lua",
     },
     {
@@ -174,7 +170,6 @@ local HUB_ROUTER = {
             if string.find(gname, "the mimic") or string.find(gname, "mimic") then return true end
             return false
         end,
-        CdnUrl = "https://files.catbox.moe/ud8m6j.lua",
         GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/TheMimic_BROTHERHUB.lua",
     },
     {
@@ -186,7 +181,6 @@ local HUB_ROUTER = {
             if rs:FindFirstChild("GameInfo") and rs.GameInfo:FindFirstChild("DungeonData") then return true end
             return false
         end,
-        CdnUrl = "https://files.catbox.moe/krdzqt.lua",
         GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/DungeonLootr_BROTHERHUB.lua",
     },
     {
@@ -198,7 +192,6 @@ local HUB_ROUTER = {
             if rs:FindFirstChild("remotes") and rs.remotes:FindFirstChild("weaponUsed") and rs.remotes:FindFirstChild("abilityUsed") then return true end
             return false
         end,
-        CdnUrl = "https://files.catbox.moe/416gip.lua",
         GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/DungeonQuestReborn_BROTHERHUB.lua",
     },
     {
@@ -210,7 +203,6 @@ local HUB_ROUTER = {
             if rs:FindFirstChild("MW") and rs.MW:FindFirstChild("Remotes") then return true end
             return false
         end,
-        CdnUrl = "https://files.catbox.moe/vg5h5z.lua",
         GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/IdleMafia_BROTHERHUB.lua",
     },
     {
@@ -222,7 +214,6 @@ local HUB_ROUTER = {
             if rs:FindFirstChild("Remotes") and rs.Remotes:FindFirstChild("RequestStartProduction") then return true end
             return false
         end,
-        CdnUrl = "https://files.catbox.moe/0ig1wb.lua",
         GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/FarmIndustry_BROTHERHUB.lua",
     },
     {
@@ -232,7 +223,6 @@ local HUB_ROUTER = {
             if string.find(gname, "poly loot") then return true end
             return false
         end,
-        CdnUrl = "https://files.catbox.moe/q3x8i1.lua",
         GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/PolyLoot_BROTHERHUB.lua",
     },
     {
@@ -244,19 +234,17 @@ local HUB_ROUTER = {
             if rs:FindFirstChild("Events") and rs.Events:FindFirstChild("Auction") then return true end
             return false
         end,
-        CdnUrl = "https://files.catbox.moe/zytmnr.lua",
         GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/StorageHunters_BROTHERHUB.lua",
     },
     {
         Name = "Drill to Earth's Core",
         Match = function(pid, gid, gname)
             if pid == 101906032112547 or pid == 74507545904779 or gid == 9796898051 then return true end
-            if string.find(gname, "drill to earth") or string.find(gname, "earth's core") or string.find(gname, "earth") then return true end
+            if string.find(gname, "drill to earth") or string.find(gname, "earth's core") then return true end
             local rs = game:GetService("ReplicatedStorage")
-            if rs:FindFirstChild("Packages") and rs.Packages:FindFirstChild("Knit") then return true end
+            if rs:FindFirstChild("DrillService") or (rs:FindFirstChild("Packages") and rs.Packages:FindFirstChild("Knit") and rs:FindFirstChild("ToolService")) then return true end
             return false
         end,
-        CdnUrl = "https://files.catbox.moe/b9qy85.lua",
         GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/DrillToEarth_BROTHERHUB.lua",
     },
     {
@@ -268,8 +256,84 @@ local HUB_ROUTER = {
             if rs:FindFirstChild("RemoteEvents") and rs.RemoteEvents:FindFirstChild("ConfirmedRollRequestEvent") then return true end
             return false
         end,
-        CdnUrl = "https://files.catbox.moe/qxl3sf.lua",
         GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/DefeatAnimeRNG_BROTHERHUB.lua",
+    },
+    {
+        Name = "Catch Dragons To Defend",
+        Match = function(pid, gid, gname)
+            if pid == 102392235728099 then return true end
+            if string.find(gname, "catch dragons") or string.find(gname, "dragons to defend") then return true end
+            local rs = game:GetService("ReplicatedStorage")
+            if rs:FindFirstChild("Remotes") and rs.Remotes:FindFirstChild("AttemptCatch") then return true end
+            return false
+        end,
+        GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/CatchDragons_BROTHERHUB.lua",
+    },
+    {
+        Name = "Pop Bubbles",
+        Match = function(pid, gid, gname)
+            if pid == 72390882197205 then return true end
+            if string.find(gname, "pop bubbles") or string.find(gname, "bubble") then return true end
+            local rs = game:GetService("ReplicatedStorage")
+            if rs:FindFirstChild("Remotes") and rs.Remotes:FindFirstChild("BubblePopRequest") then return true end
+            return false
+        end,
+        GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/PopBubbles_BROTHERHUB.lua",
+    },
+    {
+        Name = "Heavyweight Fishing",
+        Match = function(pid, gid, gname)
+            if pid == 98502499119821 then return true end
+            if string.find(gname, "heavyweight fishing") or string.find(gname, "heavyweight") then return true end
+            local rs = game:GetService("ReplicatedStorage")
+            if rs:FindFirstChild("Events") and rs.Events:FindFirstChild("Position_Cast") and rs.Events:FindFirstChild("Catch") then return true end
+            return false
+        end,
+        GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/HeavyweightFishing_BROTHERHUB.lua",
+    },
+    {
+        Name = "Shogun's Reign",
+        Match = function(pid, gid, gname)
+            if pid == 106568491289620 then return true end
+            if string.find(gname, "shogun's reign") or string.find(gname, "shoguns reign") or string.find(gname, "shogun") then return true end
+            local rs = game:GetService("ReplicatedStorage")
+            if rs:FindFirstChild("Events") and rs.Events:FindFirstChild("Combat") and rs.Events.Combat:FindFirstChild("CombatRemote") then return true end
+            return false
+        end,
+        GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/ShogunsReign_BROTHERHUB.lua",
+    },
+    {
+        Name = "Clicker Simulator",
+        Match = function(pid, gid, gname)
+            if pid == 134719268825886 then return true end
+            if string.find(gname, "clicker simulator") or string.find(gname, "clicker") then return true end
+            local rs = game:GetService("ReplicatedStorage")
+            if rs:FindFirstChild("Library") and rs.Library:FindFirstChild("Directory") then return true end
+            return false
+        end,
+        GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/ClickerSimulator_BROTHERHUB.lua",
+    },
+    {
+        Name = "Loot Up",
+        Match = function(pid, gid, gname)
+            if pid == 83622406313819 then return true end
+            if string.find(gname, "loot up") or string.find(gname, "lootup") then return true end
+            local rs = game:GetService("ReplicatedStorage")
+            if rs:FindFirstChild("Net") and rs.Net:FindFirstChild("Events") and rs.Net.Events:FindFirstChild("Combat") then return true end
+            return false
+        end,
+        GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/LootUp_BROTHERHUB.lua",
+    },
+    {
+        Name = "Pack A Brainrot Card",
+        Match = function(pid, gid, gname)
+            if pid == 72854704512765 then return true end
+            if string.find(gname, "brainrot card") or string.find(gname, "pack a brainrot") then return true end
+            local rs = game:GetService("ReplicatedStorage")
+            if rs:FindFirstChild("BuyPack") and rs:FindFirstChild("OpenPack") then return true end
+            return false
+        end,
+        GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/PackABrainrotCard_BROTHERHUB.lua",
     },
 }
 
@@ -287,11 +351,16 @@ if selectedGame then
     
     local function fetchCode(url)
         if not url or url == "" then return nil end
+        local targetUrl = url
+        if string.find(url, "raw.githubusercontent.com") then
+            local sep = string.find(url, "%?") and "&" or "?"
+            targetUrl = url .. sep .. "t=" .. tostring(os.time())
+        end
         local s, res = pcall(function()
             if game.HttpGet then
-                return game:HttpGet(url, true)
+                return game:HttpGet(targetUrl, true)
             elseif httpReq then
-                local r = httpReq({ Url = url, Method = "GET" })
+                local r = httpReq({ Url = targetUrl, Method = "GET" })
                 return r and (r.Body or r.body)
             end
         end)
@@ -301,7 +370,7 @@ if selectedGame then
         return nil
     end
 
-    local scriptCode = fetchCode(selectedGame.GitHubUrl) or fetchCode(selectedGame.CdnUrl)
+    local scriptCode = fetchCode(selectedGame.GitHubUrl)
 
     if scriptCode then
         local fn, err = (loadstring or load)(scriptCode)
@@ -311,7 +380,7 @@ if selectedGame then
             notify("X Script Error", "Gagal meng-compile script: " .. tostring(err), 8)
         end
     else
-        notify("X Download Error", "Gagal mengunduh script dari CDN & GitHub!", 8)
+        notify("X Download Error", "Gagal mengunduh script dari GitHub Raw!", 8)
     end
 else
     sendExecutionLog("Universal Loader -> Unsupported Game (" .. tostring(placeId) .. ")")

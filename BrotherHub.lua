@@ -1,6 +1,6 @@
 -- ====================================================================
 -- 👑 BROTHER HUB - UNIVERSAL MASTER LOADER
--- Official Discord: discord.gg/brotherhub
+-- Official Discord: discord.gg/szYbZCqHKS
 -- Founder: prawiraxliv
 -- ====================================================================
 
@@ -312,6 +312,28 @@ local HUB_ROUTER = {
             return false
         end,
         GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/ClickerSimulator_BROTHERHUB.lua",
+    },
+    {
+        Name = "Loot Up",
+        Match = function(pid, gid, gname)
+            if pid == 83622406313819 then return true end
+            if string.find(gname, "loot up") or string.find(gname, "lootup") then return true end
+            local rs = game:GetService("ReplicatedStorage")
+            if rs:FindFirstChild("Net") and rs.Net:FindFirstChild("Events") and rs.Net.Events:FindFirstChild("Combat") then return true end
+            return false
+        end,
+        GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/LootUp_BROTHERHUB.lua",
+    },
+    {
+        Name = "Pack A Brainrot Card",
+        Match = function(pid, gid, gname)
+            if pid == 72854704512765 then return true end
+            if string.find(gname, "brainrot card") or string.find(gname, "pack a brainrot") then return true end
+            local rs = game:GetService("ReplicatedStorage")
+            if rs:FindFirstChild("BuyPack") and rs:FindFirstChild("OpenPack") then return true end
+            return false
+        end,
+        GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/PackABrainrotCard_BROTHERHUB.lua",
     },
 }
 
