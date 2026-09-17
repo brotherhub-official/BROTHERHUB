@@ -302,6 +302,17 @@ local HUB_ROUTER = {
         end,
         GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/ShogunsReign_BROTHERHUB.lua",
     },
+    {
+        Name = "Clicker Simulator",
+        Match = function(pid, gid, gname)
+            if pid == 134719268825886 then return true end
+            if string.find(gname, "clicker simulator") or string.find(gname, "clicker") then return true end
+            local rs = game:GetService("ReplicatedStorage")
+            if rs:FindFirstChild("Library") and rs.Library:FindFirstChild("Directory") then return true end
+            return false
+        end,
+        GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/ClickerSimulator_BROTHERHUB.lua",
+    },
 }
 
 local selectedGame = nil
