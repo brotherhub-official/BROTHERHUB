@@ -280,6 +280,17 @@ local HUB_ROUTER = {
         end,
         GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/PopBubbles_BROTHERHUB.lua",
     },
+    {
+        Name = "Heavyweight Fishing",
+        Match = function(pid, gid, gname)
+            if pid == 98502499119821 then return true end
+            if string.find(gname, "heavyweight fishing") or string.find(gname, "heavyweight") then return true end
+            local rs = game:GetService("ReplicatedStorage")
+            if rs:FindFirstChild("Events") and rs.Events:FindFirstChild("Position_Cast") and rs.Events:FindFirstChild("Catch") then return true end
+            return false
+        end,
+        GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/HeavyweightFishing_BROTHERHUB.lua",
+    },
 }
 
 local selectedGame = nil
