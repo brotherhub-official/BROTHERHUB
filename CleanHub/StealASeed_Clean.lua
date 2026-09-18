@@ -766,6 +766,44 @@ local function isAnySeedAvailable(selectedSeed, selectedStage)
     return false, nil, nil
 end
 
+-- Helper: Baca sisa waktu reset bibit arena (ServerInfo / Level Reset Timer)
+local function getArenaResetCountdown()
+    local rem = nil
+    pcall(function()
+        local sInfo = workspace:FindFirstChild("ServerInfo", true)
+        if sInfo then
+            local gpTime = sInfo:FindFirstChild("Gp_Time")
+            if gpTime and gpTime:IsA("IntValue") and gpTime.Value > 0 then
+                rem = gpTime.Value
+            end
+        end
+    end)
+    if rem then return rem end
+    
+    -- Fallback: Scan TextLabel di PlayerGui yang menampilkan countdown reset
+    pcall(function()
+        local pGui = LocalPlayer:FindFirstChildOfClass("PlayerGui")
+        if pGui then
+            for _, lbl in ipairs(pGui:GetDescendants()) do
+                if lbl:IsA("TextLabel") and lbl.Visible and lbl.Text ~= "" then
+                    local txt = lbl.Text:lower()
+                    if string.find(txt, "reset") or string.find(txt, "time") or string.find(txt, ":") then
+                        local m, s = string.match(lbl.Text, "(%d+):(%d+)")
+                        if m and s then
+                            local sec = (tonumber(m) * 60) + tonumber(s)
+                            if sec > 0 and sec < 900 then
+                                rem = sec
+                                return
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end)
+    return rem
+end
+
 -- Helper: Kembali ke Markas dan Lakukan Gerakan Mikro (Wakes up touch/zone detection & plot register)
 local function returnToBaseWithMicroMove(customPos)
     local hrp = getHrp()
@@ -819,13 +857,12 @@ local function returnToBaseWithMicroMove(customPos)
     task.wait(0.08)
 end
 
--- Flash Steal Routine (Maju di Langit Y+65 ➔ Tembus Jeruji Noclip Langsung Masuk KE DALAM KANDANG ➔ Tahan 1.15s Sesuai Server ➔ Balik Markas)
+-- Flash Steal Routine (Langsung Teleport ke Daratan / Dalam Kandang Tanpa Terbang di Atas & Tanpa Delay Turun ➔ Tahan 1.15s Sesuai Server ➔ Balik Markas)
 local function executeFlashSteal(targetPos, targetPrompt)
     local hrp = getHrp()
     if not hrp then return false end
     local char = LocalPlayer.Character
     local markas = getBasePosition()
-    local skyY = targetPos.Y + (config.skyFlightHeight or 65)
     
     -- 1. Lumpuhkan AI penjaga tanaman sebelum mendekat
     if config.antiGuardChase then
@@ -841,13 +878,7 @@ local function executeFlashSteal(targetPos, targetPrompt)
         end
     end
     
-    -- 3. Meluncur di stratosfer langit (Y + 65, jauh di atas pandangan guard)
-    hrp.AssemblyLinearVelocity = Vector3.zero
-    hrp.AssemblyAngularVelocity = Vector3.zero
-    hrp.CFrame = CFrame.new(targetPos.X, skyY, targetPos.Z)
-    task.wait(0.08)
-    
-    -- 4. Tentukan posisi persis di dalam kandang (Inside Cage)
+    -- 3. Tentukan posisi persis di daratan dalam kandang / bibit (Ground Level)
     local promptToFire = targetPrompt
     local insideCagePos = targetPos
     
@@ -876,15 +907,15 @@ local function executeFlashSteal(targetPos, targetPrompt)
         end
     end
     
-    -- 5. TELEPORT LANGSUNG KE DALAM KANDANG (INSIDE CAGE)
-    -- Catatan Penting: DILARANG membuat SafeLandingPad di sini karena part tebal menabrak jeruji kandang
-    -- dan mendorong karakter keluar ke depan kandang! Karakter masuk langsung ke pusat bibit di dalam kandang.
+    -- 4. TELEPORT LANGSUNG KE DARATAN DALAM KANDANG (ZERO DELAY, TANPA MELAYANG DI ATAS)
+    -- Karakter mendarat langsung setinggi tanah (Y + 0.2) tanpa ada fase melayang/turun di udara
+    -- sehingga penjaga tanaman tidak sempat mendeteksi atau menabrak karakter!
     local cageDropPos = insideCagePos + Vector3.new(0, 0.2, 0)
-    hrp.CFrame = CFrame.new(cageDropPos)
     hrp.AssemblyLinearVelocity = Vector3.zero
     hrp.AssemblyAngularVelocity = Vector3.zero
+    hrp.CFrame = CFrame.new(cageDropPos)
     
-    -- Jika prompt belum terdeteksi saat di atas (misal karena streaming), scan ulang dari dalam kandang
+    -- Jika prompt belum terdeteksi saat scan awal, scan ulang langsung dari posisi daratan
     if not promptToFire then
         for _, p in ipairs(workspace:GetDescendants()) do
             if p:IsA("ProximityPrompt") and p.Enabled and p.ActionText == "Steal" then
@@ -900,7 +931,7 @@ local function executeFlashSteal(targetPos, targetPrompt)
         end
     end
     
-    -- 6. Trigger ProximityPrompt Steal di dalam kandang (Line of Sight 100% Bebas Rintangan)
+    -- 5. Trigger ProximityPrompt Steal di daratan dalam kandang (Line of Sight 100% Bebas Rintangan)
     local stolen = false
     if promptToFire then
         pcall(function() promptToFire.HoldDuration = 0 end)
@@ -911,7 +942,10 @@ local function executeFlashSteal(targetPos, targetPrompt)
         
         local holdStart = tick()
         while (tick() - holdStart) < 1.15 do
-            -- Pertahankan karakter tetap di dalam kandang dengan noclip aktif dan posisi terkunci
+            -- Pertahankan karakter tetap di daratan dalam kandang dengan noclip aktif & lumpuhkan penjaga
+            if config.antiGuardChase then
+                pacifyPlantGuards()
+            end
             if char then
                 for _, p in ipairs(char:GetDescendants()) do
                     if p:IsA("BasePart") then
@@ -931,7 +965,7 @@ local function executeFlashSteal(targetPos, targetPrompt)
         pcall(function() promptToFire:InputHoldEnd() end)
         stolen = true
     else
-        task.wait(0.3)
+        task.wait(0.2)
     end
     
     -- 7. INSTANT WARP LANGSUNG KEMBALI KE MARKAS / TAMAN + GERAK DIKIT (MICRO-MOVEMENT)
@@ -970,6 +1004,8 @@ local function executeFlashSteal(targetPos, targetPrompt)
 end
 
 -- [5] 🌱 AUTONOMOUS FLASH STEAL & FULL AFK SUITE (KOLEKSI TAMAN / TANGAN - TANPA JUAL)
+local emptyStageWaitUntil = 0
+
 registerThread(function()
     local cycleIndex = 1
     local cycleOrder = {"10", "09", "08", "07", "06", "05", "04", "03", "02", "01"}
@@ -979,78 +1015,68 @@ registerThread(function()
             pcall(function()
                 local hrp = getHrp()
                 if hrp then
+                    local markas = getBasePosition()
+                    
+                    -- Smart Wait: Hanya tahan di markas jika bibit di kandang baru saja dicek dan terbukti kosong/cooldown
+                    if config.smartWaitSeed and tick() < emptyStageWaitUntil then
+                        if (hrp.Position - markas).Magnitude > 35 then
+                            returnToBaseWithMicroMove()
+                        end
+                        return
+                    end
+                    
                     local targetPos, targetPrompt = nil, nil
                     local sel = config.selectedStage or "Auto Furthest (Stage 10 - Paling Depan / Tersulit)"
                     
-                    if config.smartWaitSeed then
-                        if sel == "Cycle All Stages (10 ke 01 Bergantian)" then
-                            local anyAvail, anyPos, anyPrompt = isAnySeedAvailable("All / Furthest Rare Seed (Auto Paling Langka)", "Auto Furthest (Stage 10 - Paling Depan / Tersulit)")
-                            if not anyAvail then
-                                -- Seluruh arena kosong: Stay aman di markas
-                                local markas = getBasePosition()
-                                if (hrp.Position - markas).Magnitude > 35 then
-                                    returnToBaseWithMicroMove()
-                                end
-                                return
+                    if sel == "Cycle All Stages (10 ke 01 Bergantian)" then
+                        local stKey = cycleOrder[cycleIndex]
+                        cycleIndex = (cycleIndex % #cycleOrder) + 1
+                        for _, v in pairs(STAGE_TARGETS) do
+                            if v.stage == stKey and v.pos then
+                                targetPos = v.pos
+                                break
                             end
-                            local stKey = cycleOrder[cycleIndex]
-                            cycleIndex = (cycleIndex % #cycleOrder) + 1
-                            for _, v in pairs(STAGE_TARGETS) do
-                                if v.stage == stKey and v.pos then
-                                    targetPos = v.pos
-                                    break
-                                end
-                            end
-                            if targetPos then
-                                for _, p in ipairs(workspace:GetDescendants()) do
-                                    if p:IsA("ProximityPrompt") and p.Enabled and p.ActionText == "Steal" then
-                                        local parent = p.Parent
-                                        local pos = parent:IsA("BasePart") and parent.Position or (parent:IsA("Model") and parent:GetPivot().Position)
-                                        if pos and ((pos - targetPos).Magnitude <= 220 or math.abs(pos.Z - targetPos.Z) <= 120) then
-                                            targetPos = pos
-                                            targetPrompt = p
-                                            break
-                                        end
+                        end
+                        if targetPos then
+                            for _, p in ipairs(workspace:GetDescendants()) do
+                                if p:IsA("ProximityPrompt") and p.Enabled and p.ActionText == "Steal" then
+                                    local parent = p.Parent
+                                    local pos = parent:IsA("BasePart") and parent.Position or (parent:IsA("Model") and parent:GetPivot().Position)
+                                    if pos and ((pos - targetPos).Magnitude <= 220 or math.abs(pos.Z - targetPos.Z) <= 120) then
+                                        targetPos = pos
+                                        targetPrompt = p
+                                        break
                                     end
                                 end
                             end
-                            if not targetPrompt then
-                                targetPos = anyPos
-                                targetPrompt = anyPrompt
-                            end
-                        else
-                            local avail, pos, p = isAnySeedAvailable(config.targetSeedName, sel)
-                            if not avail then
-                                -- Bibit belum spawn di zona target: Stay aman di markas
-                                local markas = getBasePosition()
-                                if (hrp.Position - markas).Magnitude > 35 then
-                                    returnToBaseWithMicroMove()
-                                end
-                                return
-                            end
-                            targetPos = pos
-                            targetPrompt = p
                         end
                     else
-                        if sel == "Cycle All Stages (10 ke 01 Bergantian)" then
-                            local stKey = cycleOrder[cycleIndex]
-                            cycleIndex = (cycleIndex % #cycleOrder) + 1
-                            for _, v in pairs(STAGE_TARGETS) do
-                                if v.stage == stKey and v.pos then
-                                    targetPos = v.pos
-                                    break
-                                end
-                            end
-                        else
-                            targetPos, targetPrompt = findTargetSeedPrompt(config.targetSeedName, sel)
-                        end
+                        targetPos, targetPrompt = findTargetSeedPrompt(config.targetSeedName, sel)
                     end
                     
                     if not targetPos then
-                        targetPos = Vector3.new(-77.2, 3.5, -6080.9)
+                        local stData = STAGE_TARGETS[sel]
+                        targetPos = (stData and stData.pos) or Vector3.new(-77.2, 3.5, -6080.9)
                     end
                     
-                    executeFlashSteal(targetPos, targetPrompt)
+                    -- Eksekusi steal langsung ke daratan
+                    local stolen = executeFlashSteal(targetPos, targetPrompt)
+                    
+                    -- Jika opsi Smart Wait aktif:
+                    if config.smartWaitSeed then
+                        if not stolen then
+                            -- Bibit kosong / belum spawn / cooldown: baca sisa waktu reset atau tahan sebentar di markas
+                            local remSec = getArenaResetCountdown()
+                            if remSec and remSec > 1 then
+                                emptyStageWaitUntil = tick() + remSec
+                            else
+                                emptyStageWaitUntil = tick() + 3.0
+                            end
+                        else
+                            -- Sukses curi bibit: beri jeda singkat sebelum steal berikutnya
+                            emptyStageWaitUntil = tick() + 1.5
+                        end
+                    end
                 end
             end)
         end
