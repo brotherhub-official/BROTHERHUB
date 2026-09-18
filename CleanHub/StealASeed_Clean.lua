@@ -1889,6 +1889,7 @@ TabBar.CanvasSize = UDim2.new(0, 0, 0, 0)
 
 local TabListLayout = Instance.new("UIListLayout", TabBar)
 TabListLayout.FillDirection = Enum.FillDirection.Horizontal
+TabListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 TabListLayout.Padding = UDim.new(0, 8)
 TabListLayout.VerticalAlignment = Enum.VerticalAlignment.Center
 
@@ -2133,9 +2134,12 @@ ModalBtnYes.MouseButton1Click:Connect(sterilizeAndDestroy)
 local tabs = {}
 local currentTab = nil
 
+local tabOrderCounter = 0
 local function createTab(tabId, titleText)
+    tabOrderCounter = tabOrderCounter + 1
     local btn = Instance.new("TextButton", TabBar)
     btn.Name = "TabBtn_" .. tabId
+    btn.LayoutOrder = tabOrderCounter
     btn.Size = UDim2.new(0, 115, 0, 32)
     btn.BackgroundColor3 = THEME.Card
     btn.Text = titleText
@@ -2575,10 +2579,12 @@ local function createDropdown(parent, labelText, options, arg4, arg5)
 end
 local makeDropdown = createDropdown
 
-local function createButton(parent, labelText, color, callback)
+local function createButton(parent, labelText, arg3, arg4)
+    local color = (typeof(arg3) == "Color3" and arg3) or THEME.Card
+    local callback = (type(arg3) == "function" and arg3) or (type(arg4) == "function" and arg4) or function() end
     local btn = Instance.new("TextButton", parent)
     btn.Size = UDim2.new(1, 0, 0, 36)
-    btn.BackgroundColor3 = color or THEME.Card
+    btn.BackgroundColor3 = color
     btn.Text = labelText
     btn.TextColor3 = THEME.Text
     btn.Font = THEME.Font
@@ -2587,7 +2593,7 @@ local function createButton(parent, labelText, color, callback)
     local bStroke = Instance.new("UIStroke", btn)
     bStroke.Color = THEME.Border
     btn.MouseButton1Click:Connect(function()
-        callback()
+        pcall(callback)
     end)
     return btn
 end
@@ -2661,7 +2667,7 @@ createToggle(secBuckets, "Auto Buy Ember Air (Cash Game)", config.autoBuyBuckets
     config.autoBuyBuckets = v
     saveConfig()
 end)
-createButton(secBuckets, "Buka / Tutup Toko Ember (Toggle Shop Frame)", function()
+createButton(secBuckets, "Buka / Tutup Toko Ember (Toggle Shop Frame)", THEME.Panel, function()
     pcall(function()
         local pg = LocalPlayer:FindFirstChildOfClass("PlayerGui")
         if pg then
