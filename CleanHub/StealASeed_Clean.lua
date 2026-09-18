@@ -189,6 +189,8 @@ local config = {
     -- Auto Farm & Garden (Koleksi Kebun Sendiri)
     autoPlant             = true,
     autoPickupReady       = true,     -- Ambil tanaman matang (Pickup / Pick Up)
+    autoForceClaim        = true,     -- Force Claim / Ambil Paksa Tanaman (Bypass Bug Game Claim prompt missing)
+    autoWaterCrops        = false,    -- Auto Siram Tanaman yang sedang tumbuh menggunakan Ember Air
     autoHarvest           = false,
     autoCollectCash       = true,
     harvestInterval       = 1.0,
@@ -731,38 +733,274 @@ local function plantHeldSeedAtGarden()
     end)
 end
 
--- Helper: Ambil tanaman matang / siap panen di kebun (Pickup / Pick Up Crops Engine)
-local function pickupReadyCrops(maxDistance)
+-- Helper: Force Claim / Ambil Paksa Tanaman Matang (Bypass Bug Game - Mesh Occlusion, Missing 'E' Button, Disabled Prompts)
+local function forceClaimGardenCrops(maxDistance)
     local hrp = getHrp()
     if not hrp then return 0 end
     local markas = getBasePosition()
-    local limit = maxDistance or 100
-    local count = 0
-    
+    local limit = maxDistance or 120
+    local claimed = 0
+
     pcall(function()
-        for _, prompt in ipairs(workspace:GetDescendants()) do
-            if prompt:IsA("ProximityPrompt") and prompt.Enabled then
-                local act = prompt.ActionText:lower()
-                -- Deteksi ActionText Pickup, Pick Up, Harvest, Collect, Take
-                if string.find(act, "pickup") or string.find(act, "pick up") or string.find(act, "harvest") or string.find(act, "collect") or string.find(act, "take") then
-                    local pParent = prompt.Parent
-                    local pPos = pParent:IsA("BasePart") and pParent.Position or (pParent:IsA("Model") and pParent:GetPivot().Position)
-                    if pPos and ((hrp.Position - pPos).Magnitude <= limit or (markas - pPos).Magnitude <= limit) then
-                        pcall(function() prompt.HoldDuration = 0 end)
+        -- 1. Scan semua model '拾取_Touch' / 'æ‹¾å –_Touch' (Pick Up Tile) di workspace
+        for _, obj in ipairs(workspace:GetDescendants()) do
+            local isPickupTouch = false
+            if obj:IsA("Model") and (obj.Name == "\230\139\190\229\141\143_Touch" or obj.Name == "拾取_Touch" or string.find(obj.Name:lower(), "pickup") or string.find(obj.Name:lower(), "pick up")) then
+                isPickupTouch = true
+            end
+
+            if isPickupTouch then
+                local collider = obj:FindFirstChild("collider") or obj:FindFirstChildWhichIsA("BasePart")
+                local prompt = obj:FindFirstChildOfClass("ProximityPrompt", true)
+                local pos = collider and collider.Position or (obj:IsA("Model") and obj:GetPivot().Position)
+
+                if pos and ((hrp.Position - pos).Magnitude <= limit or (markas - pos).Magnitude <= limit) then
+                    -- Bypass semua halangan client Roblox (Mesh occluding camera, LOS raycast block, 0 hold)
+                    if prompt then
+                        prompt.RequiresLineOfSight = false
+                        prompt.MaxActivationDistance = 250
+                        prompt.HoldDuration = 0
+                        prompt.Enabled = true
+
                         if fireproximityprompt then
                             fireproximityprompt(prompt, 0)
                         else
                             pcall(function() prompt:InputHoldBegin() end)
-                            task.wait(0.04)
+                            task.wait(0.02)
                             pcall(function() prompt:InputHoldEnd() end)
                         end
-                        count = count + 1
+                        claimed = claimed + 1
+                    end
+
+                    -- Touch interest collider jika game memeriksa trigger collision
+                    if collider and firetouchinterest then
+                        firetouchinterest(hrp, collider, 0)
+                        task.wait(0.01)
+                        firetouchinterest(hrp, collider, 1)
+                    end
+                end
+            end
+        end
+
+        -- 2. Scan semua BillboardGui / SurfaceGui yang bertuliskan 'Claim', 'Claim!', 'Ready', '100%'
+        for _, gui in ipairs(workspace:GetDescendants()) do
+            if (gui:IsA("BillboardGui") or gui:IsA("SurfaceGui")) and gui.Enabled ~= false then
+                local isClaim = false
+                for _, lbl in ipairs(gui:GetDescendants()) do
+                    if lbl:IsA("TextLabel") and lbl.Visible and lbl.Text ~= "" then
+                        local t = lbl.Text:lower()
+                        if string.find(t, "claim") or string.find(t, "ready") or string.find(t, "panen") or string.find(t, "100%") then
+                            isClaim = true
+                            break
+                        end
+                    end
+                end
+
+                if isClaim then
+                    local targetPart = gui.Adornee or gui.Parent
+                    if targetPart then
+                        local gPos = targetPart:IsA("BasePart") and targetPart.Position or (targetPart:IsA("Model") and targetPart:GetPivot().Position)
+                        if gPos and ((hrp.Position - gPos).Magnitude <= limit or (markas - gPos).Magnitude <= limit) then
+                            local container = targetPart.Parent or targetPart
+                            for _, p in ipairs(container:GetDescendants()) do
+                                if p:IsA("ProximityPrompt") then
+                                    p.RequiresLineOfSight = false
+                                    p.MaxActivationDistance = 250
+                                    p.HoldDuration = 0
+                                    p.Enabled = true
+                                    if fireproximityprompt then
+                                        fireproximityprompt(p, 0)
+                                    else
+                                        pcall(function() p:InputHoldBegin() end)
+                                        task.wait(0.02)
+                                        pcall(function() p:InputHoldEnd() end)
+                                    end
+                                    claimed = claimed + 1
+                                end
+                            end
+
+                            if targetPart:IsA("BasePart") and firetouchinterest then
+                                firetouchinterest(hrp, targetPart, 0)
+                                task.wait(0.01)
+                                firetouchinterest(hrp, targetPart, 1)
+                            end
+                        end
+                    end
+                end
+            end
+        end
+
+        -- 3. Trigger ProximityPrompt standar yang bertuliskan Pick Up / Harvest / Claim / Take
+        for _, prompt in ipairs(workspace:GetDescendants()) do
+            if prompt:IsA("ProximityPrompt") then
+                local act = prompt.ActionText:lower()
+                if string.find(act, "pick") or string.find(act, "harvest") or string.find(act, "claim") or string.find(act, "take") then
+                    local pParent = prompt.Parent
+                    local pPos = pParent:IsA("BasePart") and pParent.Position or (pParent:IsA("Model") and pParent:GetPivot().Position)
+                    if pPos and ((hrp.Position - pPos).Magnitude <= limit or (markas - pPos).Magnitude <= limit) then
+                        prompt.RequiresLineOfSight = false
+                        prompt.MaxActivationDistance = 250
+                        prompt.HoldDuration = 0
+                        prompt.Enabled = true
+                        if fireproximityprompt then
+                            fireproximityprompt(prompt, 0)
+                        else
+                            pcall(function() prompt:InputHoldBegin() end)
+                            task.wait(0.02)
+                            pcall(function() prompt:InputHoldEnd() end)
+                        end
+                        claimed = claimed + 1
+                    end
+                end
+            end
+        end
+
+        -- 4. Server Remote Event Call Fallback
+        pcall(function()
+            fireRemote("ServerRemoteEvent", "PickUpCrop")
+            fireRemote("ServerRemoteEvent", "Harvest")
+            fireRemote("ServerRemoteEvent", "PickUp")
+            fireRemote("ServerRemoteEvent", "Claim")
+        end)
+    end)
+
+    return claimed
+end
+
+local pickupReadyCrops = forceClaimGardenCrops
+
+-- Helper: Temukan ember air terbaik yang dimiliki pemain (Purple > Orange > Yellow > Regular)
+local function getBestWaterBucket()
+    local char = LocalPlayer.Character
+    local bp = LocalPlayer:FindFirstChildOfClass("Backpack")
+    local tiers = {
+        "Purple Water Bucket",
+        "Orange Water Bucket",
+        "Yellow Water Bucket",
+        "Water Bucket"
+    }
+
+    if char then
+        for _, tierName in ipairs(tiers) do
+            local t = char:FindFirstChild(tierName)
+            if t and t:IsA("Tool") then
+                return t
+            end
+        end
+    end
+
+    if bp then
+        for _, tierName in ipairs(tiers) do
+            local t = bp:FindFirstChild(tierName)
+            if t and t:IsA("Tool") then
+                return t
+            end
+        end
+        for _, t in ipairs(bp:GetChildren()) do
+            if t:IsA("Tool") and (string.find(t.Name:lower(), "bucket") or string.find(t.Name:lower(), "water")) then
+                return t
+            end
+        end
+    end
+
+    return nil
+end
+
+-- Helper: Siram tanaman kebun yang sedang tumbuh menggunakan ember air
+local function waterGardenCrops(maxDistance)
+    local hrp = getHrp()
+    if not hrp then return 0 end
+    local markas = getBasePosition()
+    local limit = maxDistance or 90
+    local wateredCount = 0
+
+    local bucket = getBestWaterBucket()
+    if not bucket then
+        return 0
+    end
+
+    -- Pastikan ember dipegang di tangan (Equip)
+    local char = LocalPlayer.Character
+    local hum = char and char:FindFirstChildOfClass("Humanoid")
+    if bucket.Parent ~= char and hum then
+        hum:EquipTool(bucket)
+        task.wait(0.08)
+    end
+
+    pcall(function()
+        -- Cari semua plot kebun yang memiliki tanaman sedang tumbuh (ada percentage / Time / bukan Claim)
+        for _, gui in ipairs(workspace:GetDescendants()) do
+            if (gui:IsA("BillboardGui") or gui:IsA("SurfaceGui")) and gui.Enabled ~= false then
+                local isGrowing = false
+                for _, lbl in ipairs(gui:GetDescendants()) do
+                    if lbl:IsA("TextLabel") and lbl.Visible and lbl.Text ~= "" then
+                        local txt = lbl.Text:lower()
+                        if (string.find(txt, "%") or string.find(txt, "time:") or string.find(txt, "time")) and not string.find(txt, "claim") then
+                            isGrowing = true
+                            break
+                        end
+                    end
+                end
+
+                if isGrowing then
+                    local targetPart = gui.Adornee or gui.Parent
+                    if targetPart then
+                        local gPos = targetPart:IsA("BasePart") and targetPart.Position or (targetPart:IsA("Model") and targetPart:GetPivot().Position)
+                        if gPos and ((hrp.Position - gPos).Magnitude <= limit or (markas - gPos).Magnitude <= limit) then
+                            pcall(function()
+                                bucket:Activate()
+                            end)
+                            if VirtualUser then
+                                pcall(function()
+                                    VirtualUser:Button1Down(Vector2.zero, workspace.CurrentCamera.CFrame)
+                                    task.wait(0.03)
+                                    VirtualUser:Button1Up(Vector2.zero, workspace.CurrentCamera.CFrame)
+                                end)
+                            end
+
+                            local handle = bucket:FindFirstChild("Handle") or bucket:FindFirstChildWhichIsA("BasePart")
+                            if handle and targetPart:IsA("BasePart") and firetouchinterest then
+                                firetouchinterest(handle, targetPart, 0)
+                                task.wait(0.01)
+                                firetouchinterest(handle, targetPart, 1)
+                            end
+
+                            pcall(function()
+                                fireRemote("ServerRemoteEvent", "Water", targetPart)
+                                fireRemote("ServerRemoteEvent", "UseItem", bucket.Name, targetPart)
+                            end)
+
+                            wateredCount = wateredCount + 1
+                            task.wait(0.1)
+                        end
+                    end
+                end
+            end
+        end
+
+        -- Jika tidak menemukan BillboardGui, siram petak kebun terdekat (放置_Touch)
+        if wateredCount == 0 then
+            for _, obj in ipairs(workspace:GetDescendants()) do
+                if obj:IsA("Model") and (obj.Name == "\230\148\190\231\189\174_Touch" or obj.Name == "放置_Touch") then
+                    local col = obj:FindFirstChild("collider") or obj:FindFirstChildWhichIsA("BasePart")
+                    if col and ((hrp.Position - col.Position).Magnitude <= limit or (markas - col.Position).Magnitude <= limit) then
+                        pcall(function() bucket:Activate() end)
+                        if VirtualUser then
+                            pcall(function()
+                                VirtualUser:Button1Down(Vector2.zero, workspace.CurrentCamera.CFrame)
+                                task.wait(0.03)
+                                VirtualUser:Button1Up(Vector2.zero, workspace.CurrentCamera.CFrame)
+                            end)
+                        end
+                        wateredCount = wateredCount + 1
+                        task.wait(0.08)
                     end
                 end
             end
         end
     end)
-    return count
+
+    return wateredCount
 end
 
 -- Helper: Baca sisa waktu reset bibit arena (ServerInfo / Level Reset Timer)
@@ -899,6 +1137,32 @@ local function triggerGuiClick(btn)
     return triggered
 end
 
+-- Helper: Hitung jumlah ember tertentu yang sudah dimiliki pemain (Max Capacity 3 per tier)
+local function countPlayerBuckets(bucketName)
+    local count = 0
+    local char = LocalPlayer.Character
+    local bp = LocalPlayer:FindFirstChildOfClass("Backpack")
+    local bLower = bucketName:lower()
+
+    if char then
+        for _, item in ipairs(char:GetChildren()) do
+            if item:IsA("Tool") and string.find(item.Name:lower(), bLower) then
+                count = count + 1
+            end
+        end
+    end
+    if bp then
+        for _, item in ipairs(bp:GetChildren()) do
+            if item:IsA("Tool") and string.find(item.Name:lower(), bLower) then
+                count = count + 1
+            end
+        end
+    end
+    return count
+end
+
+local lastBucketNotifyTime = 0
+
 -- Helper: Auto Beli Ember Air di Toko Peralatan (UseItemStore / 道具商店) menggunakan Cash in-game (BUKAN Robux!)
 local function buyBucketWithCash(targetBucket)
     local pg = LocalPlayer:FindFirstChildOfClass("PlayerGui")
@@ -1008,24 +1272,30 @@ local function buyBucketWithCash(targetBucket)
 
                     -- Eksekusi pembelian jika merupakan ember air dan stok tersedia
                     if isBucket and not isOut then
+                        -- Cek apakah inventori pemain sudah memiliki 3 buah ember ini (Batas maksimal game: 3)
+                        local ownedCount = countPlayerBuckets(itemName)
+                        local isAlreadyMax = (ownedCount >= 3)
+
                         local matchesTarget = false
-                        if not targetBucket or targetBucket == "All In-Stock" then
-                            matchesTarget = true
-                        else
-                            local tbLower = targetBucket:lower()
-                            local inLower = itemName:lower()
-                            if string.find(inLower, tbLower) or string.find(tbLower, inLower) then
+                        if not isAlreadyMax then
+                            if not targetBucket or targetBucket == "All In-Stock" then
                                 matchesTarget = true
-                            elseif string.find(tbLower, "yellow") and string.find(inLower, "yellow") then
-                                matchesTarget = true
-                            elseif string.find(tbLower, "orange") and string.find(inLower, "orange") then
-                                matchesTarget = true
-                            elseif string.find(tbLower, "purple") and string.find(inLower, "purple") then
-                                matchesTarget = true
-                            elseif string.find(tbLower, "epic") and (string.find(inLower, "yellow") or string.find(inLower, "epic")) then
-                                matchesTarget = true
-                            elseif string.find(tbLower, "legendary") and (string.find(inLower, "orange") or string.find(inLower, "legendary")) then
-                                matchesTarget = true
+                            else
+                                local tbLower = targetBucket:lower()
+                                local inLower = itemName:lower()
+                                if string.find(inLower, tbLower) or string.find(tbLower, inLower) then
+                                    matchesTarget = true
+                                elseif string.find(tbLower, "yellow") and string.find(inLower, "yellow") then
+                                    matchesTarget = true
+                                elseif string.find(tbLower, "orange") and string.find(inLower, "orange") then
+                                    matchesTarget = true
+                                elseif string.find(tbLower, "purple") and string.find(inLower, "purple") then
+                                    matchesTarget = true
+                                elseif string.find(tbLower, "epic") and (string.find(inLower, "yellow") or string.find(inLower, "epic")) then
+                                    matchesTarget = true
+                                elseif string.find(tbLower, "legendary") and (string.find(inLower, "orange") or string.find(inLower, "legendary")) then
+                                    matchesTarget = true
+                                end
                             end
                         end
 
@@ -1050,7 +1320,10 @@ local function buyBucketWithCash(targetBucket)
                                 end
                             end
 
-                            notify("🛒 Auto Buy Bucket", "Membeli " .. itemName .. " (" .. priceText .. ")!", 3)
+                            if tick() - lastBucketNotifyTime > 8 then
+                                lastBucketNotifyTime = tick()
+                                notify("🛒 Auto Buy Bucket", "Membeli " .. itemName .. " (" .. priceText .. ")!", 3)
+                            end
                             print("[BrotherHub] Auto Buy Bucket Success: " .. itemName .. " (" .. priceText .. ")")
                             boughtAny = true
                             task.wait(0.35)
@@ -1484,11 +1757,16 @@ end)
 -- [6] 🌾 GARDEN CULTIVATION & PASSIVE CASH ENGINE
 registerThread(function()
     while true do
-        if config.autoPlant or config.autoPickupReady or config.autoHarvest or config.autoCollectCash then
+        if config.autoPlant or config.autoPickupReady or config.autoForceClaim or config.autoWaterCrops or config.autoHarvest or config.autoCollectCash then
             pcall(function()
-                -- Auto Pick Up / Ambil tanaman matang di kebun pemain
-                if config.autoPickupReady or config.autoHarvest then
-                    pickupReadyCrops(120)
+                -- Auto Force Claim / Ambil tanaman matang di kebun pemain (Bypass Bug Game)
+                if config.autoPickupReady or config.autoForceClaim or config.autoHarvest then
+                    forceClaimGardenCrops(120)
+                end
+
+                -- Auto Water tanaman yang sedang tumbuh menggunakan Ember Air
+                if config.autoWaterCrops then
+                    waterGardenCrops(80)
                 end
 
                 -- Auto Plant ke petak kebun pemain
@@ -2856,15 +3134,31 @@ createSlider(secManualSteal, tr("StealDistance"), 10, 150, config.stealDistance,
 -- TAB 2: 🌾 FARM & HARVEST
 local pageFarm = createTab("Farm", tr("TabFarm"))
 local secFarm = createSection(pageFarm, tr("FarmTitle"), tr("FarmDesc"))
-createToggle(secFarm, tr("AutoPickupReady"), config.autoPickupReady, function(v) config.autoPickupReady = v end)
-createToggle(secFarm, tr("AutoPlant"), config.autoPlant, function(v) config.autoPlant = v end)
-createToggle(secFarm, tr("AutoHarvest"), config.autoHarvest, function(v) config.autoHarvest = v end)
-createToggle(secFarm, tr("AutoCollectCash"), config.autoCollectCash, function(v) config.autoCollectCash = v end)
+createToggle(secFarm, "⚡ Auto Force Claim (Bypass Bug Game)", config.autoForceClaim, function(v)
+    config.autoForceClaim = v
+    saveConfig()
+end)
+createButton(secFarm, "⚡ AMBIL PAKSA / FORCE CLAIM SEKARANG", THEME.Gold, function()
+    local c = forceClaimGardenCrops(250)
+    showNotification("⚡ FORCE CLAIM", "Berhasil mengambil paksa " .. tostring(c) .. " tanaman matang!", 3)
+end)
+createToggle(secFarm, "💧 Auto Water Crops (Siram Otomatis Ember)", config.autoWaterCrops, function(v)
+    config.autoWaterCrops = v
+    saveConfig()
+end)
+createButton(secFarm, "💧 SIRAM SEMUA TANAMAN SEKARANG (Water All)", THEME.Accent, function()
+    local w = waterGardenCrops(120)
+    showNotification("💧 AUTO WATER", "Menyiram " .. tostring(w) .. " petak tanaman di kebun!", 3)
+end)
+createToggle(secFarm, tr("AutoPickupReady"), config.autoPickupReady, function(v) config.autoPickupReady = v saveConfig() end)
+createToggle(secFarm, tr("AutoPlant"), config.autoPlant, function(v) config.autoPlant = v saveConfig() end)
+createToggle(secFarm, tr("AutoHarvest"), config.autoHarvest, function(v) config.autoHarvest = v saveConfig() end)
+createToggle(secFarm, tr("AutoCollectCash"), config.autoCollectCash, function(v) config.autoCollectCash = v saveConfig() end)
 createButton(secFarm, tr("BtnPickupAll"), THEME.Green, function()
-    local c = pickupReadyCrops(250)
+    local c = forceClaimGardenCrops(250)
     showNotification("🧺 PANEN TANAMAN", "Berhasil mengambil " .. tostring(c) .. " tanaman matang!", 3)
 end)
-createSlider(secFarm, "Harvest Interval (s)", 0.2, 5.0, config.harvestInterval, function(v) config.harvestInterval = v end)
+createSlider(secFarm, "Harvest Interval (s)", 0.2, 5.0, config.harvestInterval, function(v) config.harvestInterval = v saveConfig() end)
 
 -- TAB 3: 💰 AUTO SELL
 local pageSell = createTab("Sell", tr("TabSell"))
