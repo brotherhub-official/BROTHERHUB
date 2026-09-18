@@ -2049,6 +2049,7 @@ Instance.new("UICorner", CloseBtn).CornerRadius = UDim.new(0, 6)
 local dragging, dragInput, dragStart, startPos
 TopBar.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        closeOtherDropdowns(nil)
         dragging = true
         dragStart = input.Position
         startPos = MainFrame.Position
@@ -2840,8 +2841,9 @@ local function makeMultiDropdown(parent, label, getItems, store, emptyTxt, mapVa
     
     local list
     local function getList()
-        if list then return list end
+        if list and list.Parent then return list end
         local l = Instance.new("ScrollingFrame")
+        l.Name = "BH_MultiDropdownList"
         l.Size = UDim2.fromOffset(0, 0)
         l.BackgroundColor3 = THEME.Panel
         l.BorderSizePixel = 0
@@ -2853,7 +2855,7 @@ local function makeMultiDropdown(parent, label, getItems, store, emptyTxt, mapVa
         Instance.new("UICorner", l).CornerRadius = UDim.new(0, 8)
         local lStroke = Instance.new("UIStroke", l)
         lStroke.Color = THEME.Title
-        lStroke.Thickness = 1
+        lStroke.Thickness = 1.5
         
         local ll = Instance.new("UIListLayout", l)
         ll.SortOrder = Enum.SortOrder.LayoutOrder
@@ -2863,15 +2865,19 @@ local function makeMultiDropdown(parent, label, getItems, store, emptyTxt, mapVa
         lp.PaddingLeft = UDim.new(0, 4)
         lp.PaddingRight = UDim.new(0, 4)
         lp.PaddingBottom = UDim.new(0, 4)
-        l.Parent = screenGui
+        l.Parent = ScreenGui
         list = l
         return l
     end
     
     local function listGeom()
-        local s = math.max(MainScale.Scale, 0.01)
+        local s = (ScreenGui:FindFirstChildOfClass("UIScale") and ScreenGui:FindFirstChildOfClass("UIScale").Scale) or 1
         local ap, as = con.AbsolutePosition, con.AbsoluteSize
-        return as.X / s, ap.X / s, (ap.Y + as.Y + 4) / s
+        local w = math.max(as.X / s, 280)
+        local x = ap.X / s
+        local y = (ap.Y + as.Y + 4) / s
+        if x < 12 then x = 12 end
+        return w, x, y
     end
     
     local function refreshDisplay()
@@ -3049,12 +3055,22 @@ local function makeMultiDropdown(parent, label, getItems, store, emptyTxt, mapVa
         rebuild()
         isOpen = true
         local w, x, y = listGeom()
+        local items = type(getItems) == "function" and getItems() or getItems
+        local h = math.min((#items + 1) * 30 + 38, 230)
+        
+        pcall(function()
+            local cam = workspace.CurrentCamera
+            local vpY = (cam and cam.ViewportSize.Y) or 720
+            local s = (ScreenGui:FindFirstChildOfClass("UIScale") and ScreenGui:FindFirstChildOfClass("UIScale").Scale) or 1
+            if (y + h) * s > vpY - 10 then
+                y = math.max(10, (con.AbsolutePosition.Y - 4) / s - h)
+            end
+        end)
+        
         lst.Position = UDim2.fromOffset(x, y)
         lst.Size = UDim2.fromOffset(w, 0)
         lst.Visible = true
         dropdownBlocker().Visible = true
-        local items = type(getItems) == "function" and getItems() or getItems
-        local h = math.min((#items + 1) * 30 + 38, 230)
         TweenService:Create(lst, TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = UDim2.fromOffset(w, h) }):Play()
         arr.Text = "▲"
     end)
