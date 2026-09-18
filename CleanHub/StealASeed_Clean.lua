@@ -1145,9 +1145,11 @@ local THEME = {
     Background  = Color3.fromRGB(15, 16, 26),
     Panel       = Color3.fromRGB(22, 24, 38),
     Card        = Color3.fromRGB(30, 32, 50),
+    Slot        = Color3.fromRGB(25, 27, 40),
     Border      = Color3.fromRGB(45, 48, 75),
     Accent      = Color3.fromRGB(0, 229, 255),
     Title       = Color3.fromRGB(255, 215, 0),
+    Gold        = Color3.fromRGB(255, 215, 0),
     Text        = Color3.fromRGB(240, 240, 250),
     SubText     = Color3.fromRGB(160, 165, 195),
     Green       = Color3.fromRGB(46, 204, 113),
@@ -1788,7 +1790,7 @@ local function createDropdown(parent, labelText, options, currentSelection, call
 
     local ddRow = Instance.new("Frame")
     ddRow.Size = UDim2.new(1, 0, 0, 38)
-    ddRow.BackgroundColor3 = THEME.Slot
+    ddRow.BackgroundColor3 = (THEME and THEME.Slot) or Color3.fromRGB(25, 27, 40)
     ddRow.BorderSizePixel = 0
     ddRow.Parent = parent
 
@@ -1813,7 +1815,7 @@ local function createDropdown(parent, labelText, options, currentSelection, call
     ddBtn.BackgroundColor3 = THEME.Panel
     ddBtn.Font = THEME.Font
     ddBtn.TextSize = 11
-    ddBtn.TextColor3 = THEME.Gold
+    ddBtn.TextColor3 = (THEME and THEME.Gold) or (THEME and THEME.Title) or Color3.fromRGB(255, 215, 0)
     ddBtn.Text = safeSel .. " ▼"
     ddBtn.BorderSizePixel = 0
     ddBtn.Parent = ddRow
