@@ -453,16 +453,40 @@ registerConnection(MarketplaceService.PromptGamePassPurchaseRequested:Connect(fu
     if config.blockRobuxPopups and player == LocalPlayer then end
 end))
 
--- Instant ProximityPrompt Bypass Engine
-registerConnection(RunService.Stepped:Connect(function()
+-- [4.3] ⚡ ZERO-LAG INSTANT PROXIMITY PROMPT ENGINE (100% NATIVE EVENT-DRIVEN)
+local ProximityPromptService = game:GetService("ProximityPromptService")
+
+local function makePromptInstant(prompt)
+    if prompt and prompt:IsA("ProximityPrompt") then
+        pcall(function() prompt.HoldDuration = 0 end)
+    end
+end
+
+local function applyInstantPrompts()
     if config.instantPrompt then
         for _, prompt in ipairs(workspace:GetDescendants()) do
             if prompt:IsA("ProximityPrompt") then
-                prompt.HoldDuration = 0
+                pcall(function() prompt.HoldDuration = 0 end)
             end
         end
     end
+end
+
+-- Event-driven: 0% CPU cost, 0 FPS drop, instant prompt aktif seketika tanpa per-frame scan!
+registerConnection(ProximityPromptService.PromptShown:Connect(function(prompt)
+    if config.instantPrompt then
+        makePromptInstant(prompt)
+    end
 end))
+
+registerConnection(workspace.DescendantAdded:Connect(function(child)
+    if config.instantPrompt and child:IsA("ProximityPrompt") then
+        makePromptInstant(child)
+    end
+end))
+
+-- Satu kali apply di awal
+applyInstantPrompts()
 
 -- [4.5] 🏠 BASE / MARKAS RESOLVER & ANTI-FLING SHIELD
 -- Helper: Raycast untuk menentukan posisi persis di atas permukaan tanah (Anti-Slow Motion & Zero Air Height)
@@ -514,37 +538,41 @@ local function getBasePosition()
 end
 
 -- [4.5] 🛡️ GUARD PACIFIER & ANTI-CHASE NEUTRALIZER (100% BEBAS DIKEJAR PENJAGA TANAMAN)
+local guardCache = {}
+local lastGuardScan = 0
+
 local function pacifyPlantGuards()
     pcall(function()
-        for _, obj in ipairs(workspace:GetDescendants()) do
-            local isGuard = false
-            if obj:IsA("Model") then
-                local pName = obj.Parent and obj.Parent.Name or ""
-                if obj.Name == "敌人" or pName == "敌人" or string.find(obj.Name:lower(), "guard") or string.find(obj.Name:lower(), "plant") then
-                    isGuard = true
-                elseif obj:FindFirstChild("atk") or obj:FindFirstChild("Stem_Lower") or obj:FindFirstChild("Wing.L") or obj:FindFirstChild("Wing.R") then
-                    isGuard = true
+        local now = tick()
+        if now - lastGuardScan > 3.0 or #guardCache == 0 then
+            lastGuardScan = now
+            guardCache = {}
+            for _, obj in ipairs(workspace:GetDescendants()) do
+                if obj:IsA("Model") then
+                    local pName = obj.Parent and obj.Parent.Name or ""
+                    if obj.Name == "敌人" or pName == "敌人" or string.find(obj.Name:lower(), "guard") or string.find(obj.Name:lower(), "plant") then
+                        table.insert(guardCache, obj)
+                    elseif obj:FindFirstChild("atk") or obj:FindFirstChild("Stem_Lower") or obj:FindFirstChild("Wing.L") or obj:FindFirstChild("Wing.R") then
+                        table.insert(guardCache, obj)
+                    end
                 end
             end
-            
-            if isGuard then
-                -- 1. Matikan kecepatan jalan dan buat PlatformStand (lumpuhkan AI chase)
+        end
+
+        for _, obj in ipairs(guardCache) do
+            if obj and obj.Parent then
                 local hum = obj:FindFirstChildOfClass("Humanoid")
                 if hum then
                     hum.WalkSpeed = 0
                     hum.PlatformStand = true
                 end
-                
-                -- 2. Kunci RootPart fisik agar tidak bergerak mengejar ke mana pun
                 local root = obj:FindFirstChild("RootPart") or obj:FindFirstChild("HumanoidRootPart") or obj.PrimaryPart
                 if root and root:IsA("BasePart") then
                     root.Anchored = true
                     root.AssemblyLinearVelocity = Vector3.zero
                     root.AssemblyAngularVelocity = Vector3.zero
                 end
-                
-                -- 3. Matikan hitbox sentuhan & collision (CanTouch = false & CanCollide = false)
-                for _, part in ipairs(obj:GetDescendants()) do
+                for _, part in ipairs(obj:GetChildren()) do
                     if part:IsA("BasePart") then
                         part.CanCollide = false
                         part.CanTouch = false
@@ -572,13 +600,18 @@ local function equipStolenSeed()
     end)
 end
 
--- Active Guard Pacifier & Anti-Fling Neutralizer (Bebas Pental 100% & Bebas Dikejar — TANPA Slow Motion Floating!)
-registerConnection(RunService.Heartbeat:Connect(function()
-    if config.antiGuardChase or config.autoSteal or config.fullAfkLoop then
-        pacifyPlantGuards()
+-- Thread Background Terpisah untuk Penjaga (Interval 2.0s - TIDAK MENGGANGGU FPS SAMA SEKALI)
+registerThread(function()
+    while true do
+        if config.antiGuardChase or config.autoSteal or config.fullAfkLoop then
+            pacifyPlantGuards()
+        end
+        task.wait(2.0)
     end
+end)
 
-    -- Anti-Fling: Hanya netralkan jika karakter terpental ekstrem (velocity > 120), jangan ganggu gravitasi dan berjalan normal!
+-- Anti-Fling Neutralizer Murni (Bebas Lag 100% — Tanpa Loop GetDescendants di Heartbeat!)
+registerConnection(RunService.Heartbeat:Connect(function()
     if config.antiFlingShield then
         local hrp = getHrp()
         if hrp then
@@ -1117,12 +1150,12 @@ local function executeFlashSteal(targetPos, targetPrompt)
     local char = LocalPlayer.Character
     local markas = getBasePosition()
     
-    -- 1. Lumpuhkan AI penjaga tanaman sebelum mendekat
+    -- 1. Lumpuhkan AI penjaga tanaman sebelum lompat
     if config.antiGuardChase then
         pacifyPlantGuards()
     end
     
-    -- 2. Aktifkan Noclip pada seluruh part karakter agar menembus jeruji/kandang bebas
+    -- 2. Aktifkan Noclip sementara pada karakter agar tidak tertahan rintangan jeruji
     if char then
         for _, part in ipairs(char:GetDescendants()) do
             if part:IsA("BasePart") then
@@ -1160,38 +1193,29 @@ local function executeFlashSteal(targetPos, targetPrompt)
         end
     end
     
-    -- 4. TELEPORT LANGSUNG KE DARATAN DALAM KANDANG (ZERO DELAY, TANPA MELAYANG DI ATAS)
+    -- 4. TELEPORT KE PALING DEPAN (Daratan Kandang, Zero Delay, Langsung Mendarat di Tanah)
     local cageDropPos = insideCagePos + Vector3.new(0, 0.2, 0)
     hrp.AssemblyLinearVelocity = Vector3.zero
     hrp.AssemblyAngularVelocity = Vector3.zero
     hrp.CFrame = CFrame.new(cageDropPos)
     
-    -- Scan ulang langsung dari posisi daratan dalam kandang untuk mencari bibit yang BELUM dicuri (Borong 5 bibit 1 per 1)
-    local foundUnstolenPrompt = nil
-    local foundPos = nil
-    local bestD = 75
+    -- Scan bibit belum dicuri di dalam kandang jika ada lebih dari 1 bibit
     for _, p in ipairs(workspace:GetDescendants()) do
         if p:IsA("ProximityPrompt") and p.Enabled and p.ActionText == "Steal" and not isPromptAlreadyStolen(p) then
             local pParent = p.Parent
             local pPos = pParent:IsA("BasePart") and pParent.Position or (pParent:IsA("Model") and pParent:GetPivot().Position)
             if pPos and not isPromptAlreadyStolen(p, pPos) then
-                local d = (hrp.Position - pPos).Magnitude
-                if d < bestD then
-                    bestD = d
-                    foundUnstolenPrompt = p
-                    foundPos = pPos
+                if (hrp.Position - pPos).Magnitude < 70 then
+                    promptToFire = p
+                    cageDropPos = pPos + Vector3.new(0, 0.2, 0)
+                    hrp.CFrame = CFrame.new(cageDropPos)
+                    break
                 end
             end
         end
     end
 
-    if foundUnstolenPrompt and foundPos then
-        promptToFire = foundUnstolenPrompt
-        cageDropPos = foundPos + Vector3.new(0, 0.2, 0)
-        hrp.CFrame = CFrame.new(cageDropPos)
-    end
-    
-    -- 5. Trigger ProximityPrompt Steal: "ke ambil langsung tele sekenceng mungkin balik"
+    -- 5. INSTANT PROMPT TRIGGER: Seketika 0.04 detik (Tanpa Nunggu 1.15s)
     local stolen = false
     if promptToFire then
         pcall(function() promptToFire.HoldDuration = 0 end)
@@ -1199,76 +1223,33 @@ local function executeFlashSteal(targetPos, targetPrompt)
             fireproximityprompt(promptToFire, 0)
         end
         pcall(function() promptToFire:InputHoldBegin() end)
-        
-        -- Hitung item awal untuk mendeteksi seketika bibit masuk ke tas/tangan
-        local initialToolCount = 0
-        local bp = LocalPlayer:FindFirstChildOfClass("Backpack")
-        if char then for _, c in ipairs(char:GetChildren()) do if c:IsA("Tool") then initialToolCount = initialToolCount + 1 end end end
-        if bp then for _, c in ipairs(bp:GetChildren()) do if c:IsA("Tool") then initialToolCount = initialToolCount + 1 end end end
-
-        local holdStart = tick()
-        while (tick() - holdStart) < 1.15 do
-            -- Cek apakah bibit SUDAH KE-AMBIL (Tools bertambah atau prompt hilang/disabled)
-            local curToolCount = 0
-            if char then for _, c in ipairs(char:GetChildren()) do if c:IsA("Tool") then curToolCount = curToolCount + 1 end end end
-            if bp then for _, c in ipairs(bp:GetChildren()) do if c:IsA("Tool") then curToolCount = curToolCount + 1 end end end
-            
-            if curToolCount > initialToolCount then
-                stolen = true
-                break -- SEKETIKA BIBIT KE-AMBIL, LANGSUNG SELESAI TANPA NUNGGU LAGI!
-            end
-
-            if not promptToFire.Parent or not promptToFire.Enabled then
-                stolen = true
-                break
-            end
-
-            -- Pertahankan karakter tetap di daratan dalam kandang dengan noclip aktif & lumpuhkan penjaga
-            if config.antiGuardChase then
-                pacifyPlantGuards()
-            end
-            if char then
-                for _, p in ipairs(char:GetDescendants()) do
-                    if p:IsA("BasePart") then
-                        p.CanCollide = false
-                    end
-                end
-            end
-            hrp.CFrame = CFrame.new(cageDropPos)
-            hrp.AssemblyLinearVelocity = Vector3.zero
-            hrp.AssemblyAngularVelocity = Vector3.zero
-            if fireproximityprompt then
-                fireproximityprompt(promptToFire, 0)
-            end
-            task.wait(0.04)
-        end
-        
+        task.wait(0.04)
         pcall(function() promptToFire:InputHoldEnd() end)
         markPromptAsStolen(promptToFire, cageDropPos)
         stolen = true
     else
-        task.wait(0.1)
+        task.wait(0.05)
     end
     
-    -- 7. INSTANT TELEPORT SEKENCENG MUNGKIN KEMBALI KE MARKAS + LARI DIKIT KIRI KANAN
+    -- 6. LANGSUNG TELEPORT SEKENCENG MUNGKIN BALIK KE MARKAS (Zero Delay)
     returnToBaseWithMicroMove(markas)
     
-    -- 8. Pastikan bibit di tangan tetap ter-equip jika opsi aktif
+    -- 7. Pastikan bibit di tangan tetap ter-equip jika opsi aktif
     if config.holdSeedInHand then
         equipStolenSeed()
     end
     
-    -- 9. Ambil tanaman kebun yang sudah matang jika Auto Pickup aktif
+    -- 8. Ambil tanaman kebun yang sudah matang jika Auto Pickup aktif
     if config.autoPickupReady or config.autoHarvest then
         pickupReadyCrops(80)
     end
 
-    -- 10. Tanam bibit ke petak kebun jika Auto Plant aktif
+    -- 9. Tanam bibit ke petak kebun jika Auto Plant aktif
     if config.autoPlant then
         plantHeldSeedAtGarden()
     end
     
-    -- 11. Sedot cash pasif kebun di markas jika aktif
+    -- 10. Sedot cash pasif kebun di markas jika aktif
     if config.autoCollectCash then
         for _, plot in ipairs(workspace:GetDescendants()) do
             if plot:IsA("BasePart") and (plot.Name == "DF_BaseGlow" or string.find(plot.Name:lower(), "cash") or string.find(plot.Name:lower(), "coin")) then
