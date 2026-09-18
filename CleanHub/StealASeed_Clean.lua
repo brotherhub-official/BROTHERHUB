@@ -132,18 +132,18 @@ local STAGE_KEYS = {
     "Cycle All Stages (10 ke 01 Bergantian)",
 }
 
--- [1.6] 🌿 SEED NAME TARGETS & SPECIFIC PATTERNS
+-- [1.6] 🌿 SEED NAME TARGETS & SPECIFIC PATTERNS (5 BIBIT TERDEPAN DI POSISI TERATAS)
 local ALL_STEALABLE_SEEDS = {
-    { key = "Lucifer Rose",      id = "75-LuciferRose",      pattern = "lucifer",    tier = "Divine",    pos = Vector3.new(-41.4, 4.0, -6068.0), displayName = "🌹 Lucifer Rose (Divine - Z: -6068)" },
-    { key = "Infernal Lily",     id = "76-InfernalLily",     pattern = "infernal",   tier = "Divine",    pos = Vector3.new(-77.2, 3.5, -6080.9), displayName = "🌸 Infernal Lily (Divine - Z: -6080)" },
-    { key = "Bloodthorn",        id = "73-Bloodthorn",        pattern = "bloodthorn", tier = "Mythic",    pos = Vector3.new(-4.1,  3.5, -3221.3), displayName = "🩸 Bloodthorn (Mythic - Z: -3221)" },
-    { key = "Abyss Orchid",      id = "72-AbyssOrchid",      pattern = "abyss",      tier = "Legendary", pos = Vector3.new(-82.3, 3.5, -2351.6), displayName = "🌌 Abyss Orchid (Legendary - Z: -2351)" },
-    { key = "Underworld Flower", id = "74-UnderWorldFlower", pattern = "underworld", tier = "Mythic",    pos = Vector3.new(112.6, 3.5, -4614.2), displayName = "🌺 Underworld Flower (Mythic - Z: -4614)" },
-    { key = "Eclypsion",         id = "71-Eclypsion",         pattern = "eclypsion",  tier = "Legendary", pos = Vector3.new(64.0,  3.5, -1754.5), displayName = "🌑 Eclypsion (Legendary - Z: -1754)" },
-    { key = "Bloodmoon Orchid",  id = "70-BloodmoonOrchid",  pattern = "bloodmoon",  tier = "Master",    pos = Vector3.new(-94.7, 3.5, -1156.4), displayName = "🌙 Bloodmoon Orchid (Master - Z: -1150)" },
-    { key = "Astralith Tree",    id = "69-AstralithTree",    pattern = "astralith",  tier = "Master",    pos = Vector3.new(92.4,  3.5, -728.3),  displayName = "🌳 Astralith Tree (Master - Z: -728)" },
-    { key = "Nyxroot",           id = "68-Nyxroot",          pattern = "nyxroot",    tier = "Epic",      pos = Vector3.new(-117.4, 4.0, -437.4), displayName = "🌱 Nyxroot (Epic - Z: -437)" },
-    { key = "Solara Maw",        id = "67-SolaraMaw",        pattern = "solara",     tier = "Epic",      pos = Vector3.new(127.8, 3.5, -200.3),  displayName = "☀️ Solara Maw (Epic - Z: -200)" },
+    { key = "Lucifer Rose",      id = "75-LuciferRose",      pattern = "lucifer",    tier = "Divine",    pos = Vector3.new(-41.4, 4.0, -6068.0), displayName = "🌹 Lucifer Rose (Divine)" },
+    { key = "Infernal Lily",     id = "76-InfernalLily",     pattern = "infernal",   tier = "Divine",    pos = Vector3.new(-77.2, 3.5, -6080.9), displayName = "🌸 Infernal Lily (Divine)" },
+    { key = "Bloodthorn",        id = "73-Bloodthorn",        pattern = "bloodthorn", tier = "Mythic",    pos = Vector3.new(-4.1,  3.5, -3221.3), displayName = "🩸 Bloodthorn (Mythic)" },
+    { key = "Abyss Orchid",      id = "72-AbyssOrchid",      pattern = "abyss",      tier = "Legendary", pos = Vector3.new(-82.3, 3.5, -2351.6), displayName = "🌌 Abyss Orchid (Legendary)" },
+    { key = "Underworld Flower", id = "74-UnderWorldFlower", pattern = "underworld", tier = "Mythic",    pos = Vector3.new(112.6, 3.5, -4614.2), displayName = "🌺 Underworld Flower (Mythic)" },
+    { key = "Eclypsion",         id = "71-Eclypsion",         pattern = "eclypsion",  tier = "Legendary", pos = Vector3.new(64.0,  3.5, -1754.5), displayName = "🌑 Eclypsion (Legendary)" },
+    { key = "Bloodmoon Orchid",  id = "70-BloodmoonOrchid",  pattern = "bloodmoon",  tier = "Master",    pos = Vector3.new(-94.7, 3.5, -1156.4), displayName = "🌙 Bloodmoon Orchid (Master)" },
+    { key = "Astralith Tree",    id = "69-AstralithTree",    pattern = "astralith",  tier = "Master",    pos = Vector3.new(92.4,  3.5, -728.3),  displayName = "🌳 Astralith Tree (Master)" },
+    { key = "Nyxroot",           id = "68-Nyxroot",          pattern = "nyxroot",    tier = "Epic",      pos = Vector3.new(-117.4, 4.0, -437.4), displayName = "🌱 Nyxroot (Epic)" },
+    { key = "Solara Maw",        id = "67-SolaraMaw",        pattern = "solara",     tier = "Epic",      pos = Vector3.new(127.8, 3.5, -200.3),  displayName = "☀️ Solara Maw (Epic)" },
     { key = "Crysalith Vine",    id = "66-CrysalithVine",    pattern = "crysalith",  tier = "Rare",      pos = Vector3.new(64.0,  3.5, -1754.5), displayName = "🍇 Crysalith Vine (Rare)" },
     { key = "Virelia Bloom",     id = "65-VireliaBloom",     pattern = "virelia",    tier = "Advanced",  pos = Vector3.new(-94.7, 3.5, -1156.4), displayName = "🌼 Virelia Bloom (Advanced)" },
 }
@@ -617,14 +617,17 @@ local function pacifyPlantGuards()
         local now = tick()
         if now - lastGuardScan > 3.0 or #guardCache == 0 then
             lastGuardScan = now
-            guardCache = {}
-            for _, obj in ipairs(workspace:GetDescendants()) do
-                if obj:IsA("Model") then
-                    local pName = obj.Parent and obj.Parent.Name or ""
-                    if obj.Name == "敌人" or pName == "敌人" or string.find(obj.Name:lower(), "guard") or string.find(obj.Name:lower(), "plant") then
-                        table.insert(guardCache, obj)
-                    elseif obj:FindFirstChild("atk") or obj:FindFirstChild("Stem_Lower") or obj:FindFirstChild("Wing.L") or obj:FindFirstChild("Wing.R") then
-                        table.insert(guardCache, obj)
+            local chuangjian = workspace:FindFirstChild("创建")
+            local scanRoots = chuangjian and { chuangjian } or { workspace }
+            for _, r in ipairs(scanRoots) do
+                for _, obj in ipairs(r:GetDescendants()) do
+                    if obj:IsA("Model") then
+                        local pName = obj.Parent and obj.Parent.Name or ""
+                        if obj.Name == "敌人" or pName == "敌人" or string.find(obj.Name:lower(), "guard") or string.find(obj.Name:lower(), "plant") then
+                            table.insert(guardCache, obj)
+                        elseif obj:FindFirstChild("atk") or obj:FindFirstChild("Stem_Lower") or obj:FindFirstChild("Wing.L") or obj:FindFirstChild("Wing.R") then
+                            table.insert(guardCache, obj)
+                        end
                     end
                 end
             end
@@ -787,18 +790,59 @@ local function getArenaResetCountdown()
     end)
     if rem then return rem end
     
-    -- Fallback: Scan TextLabel di PlayerGui yang menampilkan countdown reset
+    local cachedResetLabel = nil
+    local lastLabelScan = 0
     pcall(function()
-        local pGui = LocalPlayer:FindFirstChildOfClass("PlayerGui")
-        if pGui then
-            for _, lbl in ipairs(pGui:GetDescendants()) do
-                if lbl:IsA("TextLabel") and lbl.Visible and lbl.Text ~= "" then
+        if cachedResetLabel and cachedResetLabel.Parent and cachedResetLabel:IsA("TextLabel") and cachedResetLabel.Visible then
+            local m, s = string.match(cachedResetLabel.Text, "(%d+):(%d+)")
+            if m and s then
+                local sec = (tonumber(m) * 60) + tonumber(s)
+                if sec >= 0 and sec < 1800 then
+                    rem = sec
+                    return
+                end
+            end
+        end
+        
+        local now = tick()
+        if now - lastLabelScan > 2.0 then
+            lastLabelScan = now
+            local pGui = LocalPlayer:FindFirstChildOfClass("PlayerGui")
+            if pGui then
+                -- Check direct containers first
+                local candidateLabels = {}
+                local main01 = pGui:FindFirstChild("Main01")
+                local promptGui = pGui:FindFirstChild("提示")
+                if main01 then
+                    for _, d in ipairs(main01:GetDescendants()) do
+                        if d:IsA("TextLabel") and d.Visible and string.find(d.Text, ":") then
+                            table.insert(candidateLabels, d)
+                        end
+                    end
+                end
+                if promptGui then
+                    for _, d in ipairs(promptGui:GetDescendants()) do
+                        if d:IsA("TextLabel") and d.Visible and string.find(d.Text, ":") then
+                            table.insert(candidateLabels, d)
+                        end
+                    end
+                end
+                if #candidateLabels == 0 then
+                    for _, d in ipairs(pGui:GetDescendants()) do
+                        if d:IsA("TextLabel") and d.Visible and string.find(d.Text, ":") then
+                            table.insert(candidateLabels, d)
+                        end
+                    end
+                end
+                
+                for _, lbl in ipairs(candidateLabels) do
                     local txt = lbl.Text:lower()
-                    if string.find(txt, "reset") or string.find(txt, "time") or string.find(txt, ":") then
+                    if string.find(txt, "reset") or string.find(txt, "time") or string.find(txt, "重置") then
                         local m, s = string.match(lbl.Text, "(%d+):(%d+)")
                         if m and s then
                             local sec = (tonumber(m) * 60) + tonumber(s)
-                            if sec > 0 and sec < 900 then
+                            if sec >= 0 and sec < 1800 then
+                                cachedResetLabel = lbl
                                 rem = sec
                                 return
                             end
@@ -965,21 +1009,23 @@ end
 -- Helper: Buka Toko Peralatan & Pengurangan Waktu Tumbuh (道具商店 / UseItemStore) secara resmi
 local function openToolShop()
     pcall(function()
-        for _, p in ipairs(workspace:GetDescendants()) do
-            if p:IsA("ProximityPrompt") and p.Name == "e_touch" then
-                local parent = p.Parent
-                if parent and (parent.Name == "打开" or (parent.Parent and string.find(parent.Parent.Name, "道具商店"))) then
-                    p.HoldDuration = 0
-                    p.MaxActivationDistance = 99999
-                    if fireproximityprompt then
-                        fireproximityprompt(p, 0)
-                    end
-                    p:InputHoldBegin()
-                    task.wait(0.05)
-                    p:InputHoldEnd()
-                    break
-                end
+        local sys = workspace:FindFirstChild("系统")
+        local itemShop = sys and sys:FindFirstChild("道具商店_手雷")
+        local openPart = itemShop and itemShop:FindFirstChild("打开")
+        local p = openPart and openPart:FindFirstChild("e_touch")
+        if not p then
+            local shopModel = workspace:FindFirstChild("道具商店_手雷", true)
+            p = shopModel and shopModel:FindFirstChild("e_touch", true)
+        end
+        if p and p:IsA("ProximityPrompt") then
+            p.HoldDuration = 0
+            p.MaxActivationDistance = 10 -- Jarak normal 10 studs, TIDAK PERNAH 99999!
+            if fireproximityprompt then
+                fireproximityprompt(p, 0)
             end
+            p:InputHoldBegin()
+            task.wait(0.04)
+            p:InputHoldEnd()
         end
     end)
     pcall(function()
@@ -1092,7 +1138,7 @@ local function buyGrowthTimeWithCash(targetBucket, buyAll)
             isTarget = true
         end
         
-        if isTarget and not isOutOfStock and stockNum > 0 then
+        if isTarget and not isOutOfStock then
             local buyBtn = nil
             if cashContainer then
                 for _, child in ipairs(cashContainer:GetChildren()) do
@@ -1116,7 +1162,7 @@ local function buyGrowthTimeWithCash(targetBucket, buyAll)
                 end
                 
                 local purchases = 0
-                local maxBuy = buyAll and math.min(stockNum, 5) or 1
+                local maxBuy = buyAll and (stockNum > 0 and math.min(stockNum, 5) or 5) or 1
                 for iter = 1, maxBuy do
                     triggerGuiClick(buyBtn)
                     if buyBtn.Parent and buyBtn.Parent:IsA("GuiObject") then
@@ -1128,7 +1174,7 @@ local function buyGrowthTimeWithCash(targetBucket, buyAll)
                     purchases = purchases + 1
                     boughtAny = true
                     lastBoughtName = itemName
-                    task.wait(0.25)
+                    task.wait(0.2)
                     
                     if cashContainer then
                         local dis = cashContainer:FindFirstChild("关闭")
@@ -1147,6 +1193,44 @@ local function buyGrowthTimeWithCash(targetBucket, buyAll)
 end
 local buyBucketWithCash = buyGrowthTimeWithCash
 
+-- ⚡ ZERO-LAG STEAL PROMPT ENGINE (Scoped to 创建 folder & Cached 1.0s)
+local cachedStealPrompts = {}
+local lastStealPromptScanTime = 0
+
+local function getLiveStealPrompts()
+    local now = tick()
+    if (now - lastStealPromptScanTime) < 1.0 and #cachedStealPrompts > 0 then
+        return cachedStealPrompts
+    end
+    lastStealPromptScanTime = now
+    local prompts = {}
+    
+    -- Prioritas Utama: Folder 创建 (Semua bibit spawn game Steal A Seed ditaruh di sini)
+    local chuangjian = workspace:FindFirstChild("创建")
+    if chuangjian then
+        for _, p in ipairs(chuangjian:GetDescendants()) do
+            if p:IsA("ProximityPrompt") and p.Enabled and (p.ActionText == "Steal" or p.Name == "e_touch") then
+                table.insert(prompts, p)
+            end
+        end
+    end
+    
+    -- Fallback Cepat: Area 偷蛋区域
+    if #prompts == 0 then
+        local changjing = workspace:FindFirstChild("场景")
+        local toudan = changjing and changjing:FindFirstChild("偷蛋区域")
+        if toudan then
+            for _, p in ipairs(toudan:GetDescendants()) do
+                if p:IsA("ProximityPrompt") and p.Enabled and (p.ActionText == "Steal" or p.Name == "e_touch") then
+                    table.insert(prompts, p)
+                end
+            end
+        end
+    end
+    
+    cachedStealPrompts = prompts
+    return prompts
+end
 
 local function findSeedPrompt(sInfo)
     if not sInfo then return nil, nil end
@@ -1154,8 +1238,9 @@ local function findSeedPrompt(sInfo)
     local unitId = sInfo.id and sInfo.id:lower() or ""
     local knownPos = sInfo.pos
 
-    for _, p in ipairs(workspace:GetDescendants()) do
-        if p:IsA("ProximityPrompt") and p.Enabled and p.ActionText == "Steal" and not isPromptAlreadyStolen(p) then
+    local livePrompts = getLiveStealPrompts()
+    for _, p in ipairs(livePrompts) do
+        if p.Enabled and (p.ActionText == "Steal" or p.Name == "e_touch") and not isPromptAlreadyStolen(p) then
             local parent = p.Parent
             local pPos = nil
             if parent:IsA("BasePart") then
@@ -1393,6 +1478,11 @@ registerThread(function()
                     -- Jika tidak ada bibit di arena, script TETAP AMAN DI MARKAS (0% Blind Teleport)
                     if targetPos and targetPrompt then
                         executeFlashStealDirect(targetPos, targetPrompt)
+                    elseif config.smartWaitSeed then
+                        local markas = toVector3(config.customBasePos) or getBasePosition()
+                        if markas and (hrp.Position - markas).Magnitude > 20 then
+                            returnToBaseWithMicroMove(markas)
+                        end
                     end
                 end
             end)
@@ -1759,22 +1849,64 @@ registerConnection(UserInputService.InputBegan:Connect(function(input, gpe)
 end))
 
 -- [12] 💎 GUI ARCHITECTURE: 1:1 MY FLOWER SHOP EXACT STANDARD
+-- [12] 💎 GUI ARCHITECTURE: 1:1 MY FLOWER SHOP EXACT STANDARD
 local THEME = {
-    Background  = Color3.fromRGB(15, 16, 26),
-    Panel       = Color3.fromRGB(22, 24, 38),
+    Bg          = Color3.fromRGB(18, 18, 26),
+    BgTrans     = 0.04,
+    Background  = Color3.fromRGB(18, 18, 26),
+    Panel       = Color3.fromRGB(28, 28, 40),
     Card        = Color3.fromRGB(30, 32, 50),
-    Slot        = Color3.fromRGB(25, 27, 40),
+    Slot        = Color3.fromRGB(38, 38, 54),
     Border      = Color3.fromRGB(45, 48, 75),
+    Stroke      = Color3.fromRGB(70, 70, 95),
+    Title       = Color3.fromRGB(0, 255, 200),
     Accent      = Color3.fromRGB(0, 229, 255),
-    Title       = Color3.fromRGB(255, 215, 0),
     Gold        = Color3.fromRGB(255, 215, 0),
-    Text        = Color3.fromRGB(240, 240, 250),
-    SubText     = Color3.fromRGB(160, 165, 195),
-    Green       = Color3.fromRGB(46, 204, 113),
-    Red         = Color3.fromRGB(231, 76, 60),
+    Text        = Color3.fromRGB(240, 240, 245),
+    SubText     = Color3.fromRGB(160, 160, 180),
+    Green       = Color3.fromRGB(98, 220, 110),
+    Red         = Color3.fromRGB(255, 75, 75),
+    Blue        = Color3.fromRGB(40, 130, 230),
+    Purple      = Color3.fromRGB(150, 90, 230),
+    Yellow      = Color3.fromRGB(255, 215, 60),
     Font        = Enum.Font.GothamBold,
-    FontReg     = Enum.Font.Gotham
+    FontReg     = Enum.Font.GothamMedium,
 }
+local tweenBounce = TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+local tweenFast   = TweenInfo.new(0.20, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+
+local function corner(inst, r)
+    local c = Instance.new("UICorner", inst); c.CornerRadius = UDim.new(0, r or 8); return c
+end
+local function stroke(inst, col, th)
+    local s = Instance.new("UIStroke", inst)
+    s.Color = col or THEME.Stroke; s.Thickness = th or 1.5
+    s.ApplyStrokeMode = Enum.ApplyStrokeMode.Border; return s
+end
+local function gradient(inst, c1, c2, rot)
+    local g = Instance.new("UIGradient", inst)
+    g.Color = ColorSequence.new(c1, c2); g.Rotation = rot or 90; return g
+end
+local function neonStroke(inst, thickness)
+    local s = Instance.new("UIStroke", inst)
+    s.Thickness = thickness or 2
+    s.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    s.Transparency = 0
+    s.Color = Color3.new(1, 1, 1)
+    local g = Instance.new("UIGradient", s)
+    g.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 40, 255)),    -- biru tua neon
+        ColorSequenceKeypoint.new(0.33, Color3.fromRGB(255, 25, 45)),   -- merah neon
+        ColorSequenceKeypoint.new(0.66, Color3.fromRGB(20, 255, 80)),   -- hijau neon
+        ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 40, 255)),    -- balik ke biru (mulus)
+    })
+    g.Rotation = 0
+    local tw = TweenService:Create(g,
+        TweenInfo.new(3.5, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut, -1),
+        {Rotation = 360})
+    tw:Play()
+    return s, tw
+end
 
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "BrotherHub_StealASeed"
@@ -1792,6 +1924,15 @@ pcall(function()
     end
 end)
 if not ScreenGui.Parent then ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui") end
+
+-- Global cleanup agar tidak ada proximity prompt yang melayang akibat 99999
+pcall(function()
+    for _, p in ipairs(workspace:GetDescendants()) do
+        if p:IsA("ProximityPrompt") and p.MaxActivationDistance > 100 then
+            p.MaxActivationDistance = 10
+        end
+    end
+end)
 
 -- [12.1] 💎 POPUP DROPDOWN MANAGER (1:1 MY FLOWER SHOP EXACT STANDARD)
 local DD = { closers = {}, blocker = nil }
@@ -1819,12 +1960,13 @@ local function dropdownBlocker()
     return b
 end
 
--- Main Frame (660 x 440)
+-- Main Frame (660 x 440) - 1:1 My Flower Shop Theme & Rotating Neon RGB Stroke
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Size = UDim2.fromOffset(660, 440)
 MainFrame.Position = UDim2.new(0.5, -330, 0.5, -220)
-MainFrame.BackgroundColor3 = THEME.Background
+MainFrame.BackgroundColor3 = THEME.Bg
+MainFrame.BackgroundTransparency = THEME.BgTrans
 MainFrame.BorderSizePixel = 0
 MainFrame.ClipsDescendants = false
 MainFrame.Parent = ScreenGui
@@ -1833,27 +1975,8 @@ MainFrame.Parent = ScreenGui
 local MainScale = Instance.new("UIScale", MainFrame)
 MainScale.Scale = config.guiScale or 1.0
 
-local CornerMain = Instance.new("UICorner", MainFrame)
-CornerMain.CornerRadius = UDim.new(0, 14)
-
--- Rotating 360° Neon RGB Stroke
-local MainStroke = Instance.new("UIStroke", MainFrame)
-MainStroke.Thickness = 2
-MainStroke.Color = THEME.Accent
-MainStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-
-local StrokeGradient = Instance.new("UIGradient", MainStroke)
-StrokeGradient.Color = ColorSequence.new({
-    ColorSequenceKeypoint.new(0.00, Color3.fromRGB(0, 255, 128)),
-    ColorSequenceKeypoint.new(0.25, Color3.fromRGB(0, 229, 255)),
-    ColorSequenceKeypoint.new(0.50, Color3.fromRGB(255, 215, 0)),
-    ColorSequenceKeypoint.new(0.75, Color3.fromRGB(255, 0, 128)),
-    ColorSequenceKeypoint.new(1.00, Color3.fromRGB(0, 255, 128))
-})
-
-registerConnection(RunService.RenderStepped:Connect(function()
-    StrokeGradient.Rotation = (tick() * 90) % 360
-end))
+corner(MainFrame, 14)
+local MainStroke, mainStrokeTw = neonStroke(MainFrame, 2)
 
 -- Top Bar Header
 local TopBar = Instance.new("Frame", MainFrame)
@@ -2019,94 +2142,105 @@ do
     end))
 end
 
--- Floating 80x80 MinCircle
-local MinCircle = Instance.new("TextButton", ScreenGui)
-MinCircle.Name = "MinCircle"
-MinCircle.Size = UDim2.fromOffset(80, 80)
-MinCircle.AnchorPoint = Vector2.new(0.5, 0.5)
-MinCircle.Position = UDim2.new(0.1, 0, 0.5, 0)
-MinCircle.BackgroundColor3 = THEME.Background
-MinCircle.Visible = false
-MinCircle.AutoButtonColor = false
-Instance.new("UICorner", MinCircle).CornerRadius = UDim.new(1, 0)
+-- Floating 80x80 MinCircle (1:1 My Flower Shop Exact Standard)
+local Circle = Instance.new("TextButton", ScreenGui)
+Circle.Name = "MinCircle"
+Circle.Size = UDim2.fromOffset(80, 80)
+Circle.AnchorPoint = Vector2.new(0.5, 0.5)
+Circle.Position = UDim2.new(0.1, 0, 0.5, 0)
+Circle.BackgroundColor3 = THEME.Panel
+Circle.Text = "BH"
+local CrownLabel = Instance.new("TextLabel", Circle)
+CrownLabel.Name = "CrownLabel"
+CrownLabel.Size = UDim2.new(1, 0, 0, 16)
+CrownLabel.Position = UDim2.new(0, 0, 0, 8)
+CrownLabel.BackgroundTransparency = 1
+CrownLabel.Text = "👑"
+CrownLabel.Font = Enum.Font.GothamBold
+CrownLabel.TextSize = 14
+CrownLabel.TextColor3 = Color3.fromRGB(255, 215, 0)
+CrownLabel.ZIndex = 2
+Circle.Font = Enum.Font.GothamBlack
+Circle.TextSize = 30
+Circle.TextColor3 = THEME.Title
+Circle.AutoButtonColor = false
+Circle.Active = true
+Circle.Visible = false
+corner(Circle, 40)
+neonStroke(Circle, 3)
+gradient(Circle, THEME.Purple, THEME.Blue, 45)
+local CircleScale = Instance.new("UIScale", Circle)
+CircleScale.Scale = 0
 
-local CircleStroke = Instance.new("UIStroke", MinCircle)
-CircleStroke.Thickness = 3
-CircleStroke.Color = THEME.Accent
-local CircleGradient = Instance.new("UIGradient", CircleStroke)
-CircleGradient.Color = StrokeGradient.Color
-
-registerConnection(RunService.RenderStepped:Connect(function()
-    CircleGradient.Rotation = (tick() * 90) % 360
-end))
-
-local CircleIcon = Instance.new("TextLabel", MinCircle)
-CircleIcon.Size = UDim2.new(1, 0, 0.45, 0)
-CircleIcon.Position = UDim2.new(0, 0, 0.12, 0)
-CircleIcon.BackgroundTransparency = 1
-CircleIcon.Text = "👑"
-CircleIcon.TextSize = 22
-CircleIcon.Font = THEME.Font
-
-local CircleText = Instance.new("TextLabel", MinCircle)
-CircleText.Size = UDim2.new(1, 0, 0.35, 0)
-CircleText.Position = UDim2.new(0, 0, 0.52, 0)
-CircleText.BackgroundTransparency = 1
-CircleText.Text = "BH"
-CircleText.TextColor3 = THEME.Title
-CircleText.TextSize = 16
-CircleText.Font = THEME.Font
-
--- Minimize / Restore Animation
-local isMinimized = false
-local function doMinimize()
-    if isMinimized then return end
-    closeOtherDropdowns(nil)
-    isMinimized = true
-    TweenService:Create(MainScale, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Scale = 0}):Play()
-    task.wait(0.25)
-    MainFrame.Visible = false
-    MinCircle.Visible = true
-    MinCircle.Size = UDim2.fromOffset(10, 10)
-    TweenService:Create(MinCircle, TweenInfo.new(0.3, Enum.EasingStyle.Bounce, Enum.EasingDirection.Out), {Size = UDim2.fromOffset(80, 80)}):Play()
-end
-
-local function doRestore()
-    if not isMinimized then return end
-    isMinimized = false
-    TweenService:Create(MinCircle, TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Size = UDim2.fromOffset(10, 10)}):Play()
-    task.wait(0.2)
-    MinCircle.Visible = false
-    MainFrame.Visible = true
-    TweenService:Create(MainScale, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Scale = config.guiScale or 1.0}):Play()
+local doMinimize, doRestore
+do
+    local isAnimating = false
+    doMinimize = function()
+        if isAnimating then return end
+        isAnimating = true
+        closeOtherDropdowns(nil)
+        local t = TweenService:Create(MainScale, tweenFast, {Scale = 0})
+        t:Play()
+        t.Completed:Connect(function()
+            MainFrame.Visible = false
+            Circle.Visible = true
+            CircleScale.Scale = 0
+            local t2 = TweenService:Create(CircleScale, tweenBounce, {Scale = 1})
+            t2:Play()
+            t2.Completed:Connect(function() isAnimating = false end)
+        end)
+    end
+    doRestore = function()
+        if isAnimating then return end
+        isAnimating = true
+        local t = TweenService:Create(CircleScale, tweenFast, {Scale = 0})
+        t:Play()
+        t.Completed:Connect(function()
+            Circle.Visible = false
+            MainFrame.Visible = true
+            MainScale.Scale = 0
+            local t2 = TweenService:Create(MainScale, tweenBounce, {Scale = config.guiScale or 1.0})
+            t2:Play()
+            t2.Completed:Connect(function() isAnimating = false end)
+        end)
+    end
 end
 
 MinBtn.MouseButton1Click:Connect(doMinimize)
-MinCircle.MouseButton1Click:Connect(doRestore)
 
--- Draggable MinCircle
-local cDragging, cDragInput, cStart, cPos
-MinCircle.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-        cDragging = true
-        cStart = input.Position
-        cPos = MinCircle.Position
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then cDragging = false end
-        end)
+-- Draggable MinCircle (1:1 My Flower Shop Smooth Dragging)
+do
+    local DRAG_THRESHOLD = 8
+    local active, moved, startPx, guiStart = false, false, nil, nil
+    Circle.InputBegan:Connect(function(i)
+        if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then
+            active = true
+            moved = false
+            startPx = i.Position
+            guiStart = Circle.Position
+        end
+    end)
+    registerConnection(UserInputService.InputChanged:Connect(function(i)
+        if not active then return end
+        if i.UserInputType == Enum.UserInputType.MouseMovement or i.UserInputType == Enum.UserInputType.Touch then
+            local d = (i.Position - startPx) / 1
+            if d.Magnitude > DRAG_THRESHOLD then moved = true end
+            Circle.Position = UDim2.new(
+                guiStart.X.Scale, guiStart.X.Offset + d.X,
+                guiStart.Y.Scale, guiStart.Y.Offset + d.Y
+            )
+        end
+    end))
+    local function release(i)
+        if not active then return end
+        if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then
+            active = false
+            if not moved then doRestore() end
+        end
     end
-end)
-MinCircle.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-        cDragInput = input
-    end
-end)
-registerConnection(UserInputService.InputChanged:Connect(function(input)
-    if input == cDragInput and cDragging then
-        local delta = input.Position - cStart
-        MinCircle.Position = UDim2.new(cPos.X.Scale, cPos.X.Offset + delta.X, cPos.Y.Scale, cPos.Y.Offset + delta.Y)
-    end
-end))
+    Circle.InputEnded:Connect(release)
+    registerConnection(UserInputService.InputEnded:Connect(release))
+end
 
 -- Modal Confirmation Dialog for 'X' Close
 local ModalOverlay = Instance.new("Frame", ScreenGui)
@@ -3065,47 +3199,6 @@ createButton(secSteal, "⚡ Teleport / Return ke Paling Depan Sekarang", THEME.G
     notify("⚡ PALING DEPAN", string.format("Teleport ke Paling Depan: (%.1f, %.1f, %.1f)!", dest.X, dest.Y, dest.Z), 3)
 end)
 
-local secMultiSeeds = createSection(pageSteal, "🌟 MULTI-SELECT 5 BIBIT PALING DEPAN (STAGE 10)", "Pilih bibit mana saja yang ingin diambil di kandang paling depan. Script akan otomatis memprioritaskan dan mengambil bibit yang diceklis!")
-createToggle(secMultiSeeds, "✨ Aktifkan Filter Multi-Select", config.useMultiSeedFilter, function(v)
-    config.useMultiSeedFilter = v
-    saveConfig()
-end)
-
-local seedToggleSetters = {}
-for _, s in ipairs(TOP5_SEEDS) do
-    local isChecked = (config.multiTargetSeeds and config.multiTargetSeeds[s.key] == true)
-    createToggle(secMultiSeeds, s.displayName, isChecked, function(v)
-        if not config.multiTargetSeeds then config.multiTargetSeeds = {} end
-        config.multiTargetSeeds[s.key] = v
-        saveConfig()
-    end, function(setter)
-        seedToggleSetters[s.key] = setter
-    end)
-end
-
-createButton(secMultiSeeds, "✅ Pilih Semua 5 Bibit (Select All)", THEME.Green, function()
-    if not config.multiTargetSeeds then config.multiTargetSeeds = {} end
-    for _, s in ipairs(TOP5_SEEDS) do
-        config.multiTargetSeeds[s.key] = true
-        if seedToggleSetters[s.key] then
-            seedToggleSetters[s.key](true)
-        end
-    end
-    saveConfig()
-    notify("🌟 MULTI-SELECT", "Semua 5 Bibit Paling Depan dipilih!", 3)
-end)
-
-createButton(secMultiSeeds, "❌ Batalkan Semua Pilihan (Deselect All)", THEME.Card, function()
-    if not config.multiTargetSeeds then config.multiTargetSeeds = {} end
-    for _, s in ipairs(TOP5_SEEDS) do
-        config.multiTargetSeeds[s.key] = false
-        if seedToggleSetters[s.key] then
-            seedToggleSetters[s.key](false)
-        end
-    end
-    saveConfig()
-    notify("🌟 MULTI-SELECT", "Semua pilihan bibit dibatalkan!", 3)
-end)
 
 local secManualSteal = createSection(pageSteal, "PENGATURAN STEAL PROXIMITY", "Bypass interaksi tombol dan radius scan bibit manual")
 createToggle(secManualSteal, tr("InstantPrompt"), config.instantPrompt, function(v) config.instantPrompt = v end)
