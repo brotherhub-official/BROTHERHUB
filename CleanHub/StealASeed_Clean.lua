@@ -925,9 +925,7 @@ local function buyBucketWithCash(targetBucket)
 
     if not shopFrame then return false end
 
-    -- Buka frame toko agar AbsolutePosition valid untuk VirtualInputManager & simulasi klik
-    pcall(function() shopFrame.Visible = true end)
-
+    -- 100% Silent Background Operation: Berjalan hening di latar belakang tanpa membuka GUI toko ke layar
     local scroller = shopFrame:FindFirstChildWhichIsA("ScrollingFrame", true)
     local boughtAny = false
 
