@@ -229,9 +229,9 @@ local HUB_ROUTER = {
         Name = "Storage Hunters: Open World",
         Match = function(pid, gid, gname)
             if pid == 98800969324557 or gid == 10261267004 then return true end
-            if string.find(gname, "storage hunters") then return true end
+            if string.find(gname, "storage hunter") or string.find(gname, "storage hunters") then return true end
             local rs = game:GetService("ReplicatedStorage")
-            if rs:FindFirstChild("Events") and rs.Events:FindFirstChild("Auction") then return true end
+            if (rs:FindFirstChild("Auction") and rs.Auction:FindFirstChild("Bid")) or (rs:FindFirstChild("Events") and rs.Events:FindFirstChild("Auction")) then return true end
             return false
         end,
         GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/StorageHunters_BROTHERHUB.lua",
