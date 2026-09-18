@@ -112,6 +112,39 @@ local STAGE_KEYS = {
     "Cycle All Stages (10 ke 01 Bergantian)",
 }
 
+-- [1.6] 🌿 SEED NAME TARGETS & SPECIFIC PATTERNS
+local SEED_TARGETS = {
+    ["All / Furthest Rare Seed (Auto Paling Langka)"] = { pos = Vector3.new(-77.2, 3.5, -6080.9), pattern = "" },
+    ["Infernal Lily (Divine - Z: -6080)"]             = { pos = Vector3.new(-77.2, 3.5, -6080.9), pattern = "infernallily" },
+    ["Lucifer Rose (Divine - Z: -6068)"]              = { pos = Vector3.new(-41.4, 4.0, -6068.0), pattern = "luciferrose" },
+    ["Underworld Flower (Mythic - Z: -4614)"]         = { pos = Vector3.new(112.6, 3.5, -4614.2), pattern = "underworldflower" },
+    ["Bloodthorn (Mythic - Z: -3221)"]                = { pos = Vector3.new(-4.1,  3.5, -3221.3), pattern = "bloodthorn" },
+    ["Abyss Orchid (Legendary - Z: -2351)"]           = { pos = Vector3.new(-82.3, 3.5, -2351.6), pattern = "abyssorchid" },
+    ["Eclypsion (Legendary - Z: -1754)"]              = { pos = Vector3.new(64.0,  3.5, -1754.5), pattern = "eclypsion" },
+    ["Bloodmoon Orchid (Master - Z: -1150)"]          = { pos = Vector3.new(-94.7, 3.5, -1156.4), pattern = "bloodmoonorchid" },
+    ["Astralith Tree (Master - Z: -728)"]             = { pos = Vector3.new(92.4,  3.5, -728.3),  pattern = "astralithtree" },
+    ["Nyxroot (Epic - Z: -437)"]                      = { pos = Vector3.new(-117.4, 4.0, -437.4), pattern = "nyxroot" },
+    ["Solara Maw (Epic - Z: -200)"]                   = { pos = Vector3.new(127.8, 3.5, -200.3),  pattern = "solaramaw" },
+    ["Crysalith Vine (Rare)"]                         = { pos = Vector3.new(64.0,  3.5, -1754.5), pattern = "crysalithvine" },
+    ["Virelia Bloom (Advanced)"]                      = { pos = Vector3.new(-94.7, 3.5, -1156.4), pattern = "vireliabloom" },
+}
+
+local SEED_NAME_KEYS = {
+    "All / Furthest Rare Seed (Auto Paling Langka)",
+    "Infernal Lily (Divine - Z: -6080)",
+    "Lucifer Rose (Divine - Z: -6068)",
+    "Underworld Flower (Mythic - Z: -4614)",
+    "Bloodthorn (Mythic - Z: -3221)",
+    "Abyss Orchid (Legendary - Z: -2351)",
+    "Eclypsion (Legendary - Z: -1754)",
+    "Bloodmoon Orchid (Master - Z: -1150)",
+    "Astralith Tree (Master - Z: -728)",
+    "Nyxroot (Epic - Z: -437)",
+    "Solara Maw (Epic - Z: -200)",
+    "Crysalith Vine (Rare)",
+    "Virelia Bloom (Advanced)",
+}
+
 -- [2] CONFIGURATION & PERSISTENCE
 local CONFIG_FILE = "BrotherHub_StealASeed_Config.json"
 
@@ -119,6 +152,7 @@ local config = {
     -- Auto Steal & Safe Collection Engine
     autoSteal             = false,
     autoFlashSteal        = true,
+    targetSeedName        = "All / Furthest Rare Seed (Auto Paling Langka)",
     selectedStage         = "Auto Furthest (Stage 10 - Paling Depan / Tersulit)",
     antiGuardChase        = true,
     antiFlingShield       = true,
@@ -210,19 +244,28 @@ local function loadConfig()
     pcall(function()
         if isfile and readfile and isfile(CONFIG_FILE) then
             local data = HttpService:JSONDecode(readfile(CONFIG_FILE))
-            for k, v in pairs(data) do
-                if config[k] ~= nil then
-                    if type(v) == "table" and type(config[k]) == "table" then
-                        for subK, subV in pairs(v) do
-                            config[k][subK] = subV
+            if type(data) == "table" then
+                for k, v in pairs(data) do
+                    if config[k] ~= nil and v ~= nil then
+                        if type(v) == "table" and type(config[k]) == "table" then
+                            for subK, subV in pairs(v) do
+                                config[k][subK] = subV
+                            end
+                        else
+                            config[k] = v
                         end
-                    else
-                        config[k] = v
                     end
                 end
             end
         end
     end)
+    -- Defensive sanitization of critical strings
+    if not config.selectedStage or config.selectedStage == "" or type(config.selectedStage) ~= "string" then
+        config.selectedStage = STAGE_KEYS[1]
+    end
+    if not config.targetSeedName or config.targetSeedName == "" or type(config.targetSeedName) ~= "string" then
+        config.targetSeedName = SEED_NAME_KEYS[1]
+    end
 end
 loadConfig()
 
@@ -281,6 +324,7 @@ local TRANSLATIONS = {
     ["HoldSeed"]              = {ID = "🤲 Pegang Bibit di Tangan (Equip Stolen Seed)", EN = "🤲 Hold Stolen Seed in Hand (Equip Seed)"},
     ["AntiFling"]             = {ID = "🛡️ Anti-Pental & Anti-Knockback (Bebas Pental / Kebal)", EN = "🛡️ Anti-Fling & Knockback Immunity"},
     ["FullAfk"]               = {ID = "🌙 Full AFK Loop (Curi ➔ Koleksi di Taman / Pegang)", EN = "🌙 Full AFK Loop (Steal ➔ Garden Collect / Hold)"},
+    ["TargetSeed"]            = {ID = "🎯 Pilih Nama Bibit (Target Seed)", EN = "🎯 Target Seed Name"},
     ["TargetStage"]           = {ID = "🎯 Target Seed Stage", EN = "🎯 Target Seed Stage"},
     ["StealDelay"]            = {ID = "⏱️ Jeda Siklus Steal (Detik)", EN = "⏱️ Steal Cycle Interval (s)"},
     ["SkyHeight"]             = {ID = "🚀 Ketinggian Jalur Langit (Studs)", EN = "🚀 Sky Travel Altitude (Studs)"},
@@ -500,8 +544,110 @@ registerConnection(RunService.Heartbeat:Connect(function()
     end
 end))
 
--- Flash Steal Routine (Maju di Langit Y+65 ➔ Sky-Drop Curi ➔ Instan Balik Markas)
-local function executeFlashSteal(targetPos)
+-- Helper: Tanam bibit yang dipegang ke petak kebun pemain (Auto Plant ke Garden Plot)
+local function plantHeldSeedAtGarden()
+    pcall(function()
+        local hrp = getHrp()
+        if not hrp then return end
+        
+        -- Equip seed dari backpack jika belum dipegang
+        local char = LocalPlayer.Character
+        local bp = LocalPlayer:FindFirstChildOfClass("Backpack")
+        local hasTool = false
+        if char then
+            for _, item in ipairs(char:GetChildren()) do
+                if item:IsA("Tool") then
+                    hasTool = true
+                    break
+                end
+            end
+        end
+        if not hasTool and bp then
+            for _, item in ipairs(bp:GetChildren()) do
+                if item:IsA("Tool") then
+                    local hum = char and char:FindFirstChildOfClass("Humanoid")
+                    if hum then hum:EquipTool(item) end
+                    hasTool = true
+                    task.wait(0.1)
+                    break
+                end
+            end
+        end
+        
+        -- Trigger prompt Place / Plant di petak kebun dekat markas
+        for _, prompt in ipairs(workspace:GetDescendants()) do
+            if prompt:IsA("ProximityPrompt") and prompt.Enabled and (prompt.ActionText == "Place" or prompt.ActionText == "Plant") then
+                local pp = prompt.Parent:IsA("BasePart") and prompt.Parent.Position or (prompt.Parent:IsA("Model") and prompt.Parent:GetPivot().Position)
+                if pp and (hrp.Position - pp).Magnitude <= 45 then
+                    pcall(function() prompt.HoldDuration = 0 end)
+                    if fireproximityprompt then
+                        fireproximityprompt(prompt, 0)
+                    else
+                        pcall(function() prompt:InputHoldBegin() end)
+                        task.wait(0.05)
+                        pcall(function() prompt:InputHoldEnd() end)
+                    end
+                end
+            end
+        end
+    end)
+end
+
+-- Helper: Cari posisi bibit dan ProximityPrompt berdasarkan nama bibit atau stage terpilih
+local function findTargetSeedPrompt(selectedSeed, selectedStage)
+    local seedData = SEED_TARGETS[selectedSeed]
+    local pattern = seedData and seedData.pattern or ""
+    
+    -- Step A: Jika pemain memilih nama bibit tertentu, cari model/part dengan pola nama tersebut
+    if pattern ~= "" then
+        for _, p in ipairs(workspace:GetDescendants()) do
+            if p:IsA("ProximityPrompt") and p.Enabled and p.ActionText == "Steal" then
+                local parent = p.Parent
+                local pName = parent and parent.Name:lower() or ""
+                local mName = (parent and parent.Parent) and parent.Parent.Name:lower() or ""
+                if string.find(pName, pattern) or string.find(mName, pattern) then
+                    local pos = parent:IsA("BasePart") and parent.Position or (parent:IsA("Model") and parent:GetPivot().Position)
+                    if pos then return pos, p end
+                end
+            end
+        end
+    end
+    
+    -- Step B: Scan semua prompt Steal di workspace untuk mencari yang terjauh (Z paling negatif)
+    local bestPrompt = nil
+    local bestPos = nil
+    local minZ = 0
+    for _, p in ipairs(workspace:GetDescendants()) do
+        if p:IsA("ProximityPrompt") and p.Enabled and p.ActionText == "Steal" then
+            local parent = p.Parent
+            local pos = parent:IsA("BasePart") and parent.Position or (parent:IsA("Model") and parent:GetPivot().Position)
+            if pos then
+                if pos.Z < minZ then
+                    minZ = pos.Z
+                    bestPos = pos
+                    bestPrompt = p
+                end
+            end
+        end
+    end
+    if bestPos and bestPrompt then
+        return bestPos, bestPrompt
+    end
+    
+    -- Step C: Fallback ke koordinat tabel bibit atau stage
+    if seedData and seedData.pos then
+        return seedData.pos, nil
+    end
+    local stData = STAGE_TARGETS[selectedStage]
+    if stData and stData.pos then
+        return stData.pos, nil
+    end
+    
+    return Vector3.new(-77.2, 3.5, -6080.9), nil
+end
+
+-- Flash Steal Routine (Maju di Langit Y+65 ➔ Sky-Drop Curi ➔ Tahan 1.1s Sesuai Hold Server ➔ Balik Markas)
+local function executeFlashSteal(targetPos, targetPrompt)
     local hrp = getHrp()
     if not hrp then return false end
     
@@ -519,41 +665,102 @@ local function executeFlashSteal(targetPos)
     hrp.CFrame = CFrame.new(targetPos.X, skyY, targetPos.Z)
     task.wait(0.08)
     
-    -- Step 2: Sky-Drop sekejap langsung di atas bibit sasaran
-    createSafePad(targetPos, 2.0)
-    hrp.CFrame = CFrame.new(targetPos + Vector3.new(0, 3.0, 0))
+    -- Step 2: Sky-Drop sekejap langsung di samping bibit sasaran
+    local dropPos = targetPos + Vector3.new(0, 1.5, 0)
+    createSafePad(dropPos, 2.5)
+    hrp.CFrame = CFrame.new(dropPos)
     hrp.AssemblyLinearVelocity = Vector3.zero
-    task.wait(0.04)
+    hrp.AssemblyAngularVelocity = Vector3.zero
     
-    -- Step 3: Trigger ProximityPrompt instan 0 detik
+    -- Step 3: Trigger ProximityPrompt Steal dengan penahanan posisi stabil 1.1s
+    -- (Server Roblox memverifikasi HoldDuration 1.0s dan jarak <= 12 studs!)
     local stolen = false
-    for _, prompt in ipairs(workspace:GetDescendants()) do
-        if prompt:IsA("ProximityPrompt") and prompt.Enabled then
-            local pParent = prompt.Parent
-            local pPos = pParent:IsA("BasePart") and pParent.Position or (pParent:IsA("Model") and pParent:GetPivot().Position)
-            if pPos and (hrp.Position - pPos).Magnitude <= 30 then
-                prompt.HoldDuration = 0
-                if fireproximityprompt then
-                    fireproximityprompt(prompt, 0)
-                else
-                    prompt:InputHoldBegin()
-                    task.wait(0.02)
-                    prompt:InputHoldEnd()
+    local promptToFire = targetPrompt
+    if not promptToFire then
+        for _, prompt in ipairs(workspace:GetDescendants()) do
+            if prompt:IsA("ProximityPrompt") and prompt.Enabled and prompt.ActionText == "Steal" then
+                local pParent = prompt.Parent
+                local pPos = pParent:IsA("BasePart") and pParent.Position or (pParent:IsA("Model") and pParent:GetPivot().Position)
+                if pPos and (hrp.Position - pPos).Magnitude <= 15 then
+                    promptToFire = prompt
+                    break
                 end
-                stolen = true
             end
         end
     end
     
-    -- Step 4: INSTANT WARP LANGSUNG KEMBALI KE MARKAS / TAMAN (Waktu di darat < 0.05 detik)
+    if promptToFire then
+        pcall(function() promptToFire.HoldDuration = 0 end)
+        if fireproximityprompt then
+            fireproximityprompt(promptToFire, 0)
+        end
+        pcall(function() promptToFire:InputHoldBegin() end)
+        
+        -- Kunci posisi karakter di samping bibit selama durasi hold server (1.1s)
+        local holdStart = tick()
+        while (tick() - holdStart) < 1.15 do
+            hrp.CFrame = CFrame.new(dropPos)
+            hrp.AssemblyLinearVelocity = Vector3.zero
+            if fireproximityprompt then
+                fireproximityprompt(promptToFire, 0)
+            end
+            task.wait(0.1)
+        end
+        
+        pcall(function() promptToFire:InputHoldEnd() end)
+        stolen = true
+    else
+        -- Fallback: Cari prompt apa saja di radius 15 studs
+        for _, prompt in ipairs(workspace:GetDescendants()) do
+            if prompt:IsA("ProximityPrompt") and prompt.Enabled then
+                local pParent = prompt.Parent
+                local pPos = pParent:IsA("BasePart") and pParent.Position or (pParent:IsA("Model") and pParent:GetPivot().Position)
+                if pPos and (hrp.Position - pPos).Magnitude <= 15 then
+                    pcall(function() prompt.HoldDuration = 0 end)
+                    if fireproximityprompt then fireproximityprompt(prompt, 0) end
+                    pcall(function() prompt:InputHoldBegin() end)
+                    local hStart = tick()
+                    while (tick() - hStart) < 1.15 do
+                        hrp.CFrame = CFrame.new(dropPos)
+                        hrp.AssemblyLinearVelocity = Vector3.zero
+                        task.wait(0.1)
+                    end
+                    pcall(function() prompt:InputHoldEnd() end)
+                    stolen = true
+                    break
+                end
+            end
+        end
+    end
+    
+    -- Step 4: INSTANT WARP LANGSUNG KEMBALI KE MARKAS / TAMAN
     hrp.AssemblyLinearVelocity = Vector3.zero
     hrp.AssemblyAngularVelocity = Vector3.zero
     hrp.CFrame = CFrame.new(markas)
+    task.wait(0.2)
     
     -- Step 5: Pegang bibit di tangan jika opsi aktif
     if config.holdSeedInHand then
-        task.wait(0.1)
         equipStolenSeed()
+    end
+    
+    -- Step 6: Tanam bibit ke petak kebun jika Auto Plant aktif
+    if config.autoPlant then
+        plantHeldSeedAtGarden()
+    end
+    
+    -- Step 7: Sedot cash pasif kebun di markas jika aktif
+    if config.autoCollectCash then
+        for _, plot in ipairs(workspace:GetDescendants()) do
+            if plot:IsA("BasePart") and (plot.Name == "DF_BaseGlow" or string.find(plot.Name:lower(), "cash") or string.find(plot.Name:lower(), "coin")) then
+                if (hrp.Position - plot.Position).Magnitude <= 60 then
+                    if firetouchinterest then
+                        firetouchinterest(hrp, plot, 0)
+                        firetouchinterest(hrp, plot, 1)
+                    end
+                end
+            end
+        end
     end
     
     return stolen
@@ -569,9 +776,8 @@ registerThread(function()
             pcall(function()
                 local hrp = getHrp()
                 if hrp then
+                    local targetPos, targetPrompt = nil, nil
                     local sel = config.selectedStage or "Auto Furthest (Stage 10 - Paling Depan / Tersulit)"
-                    local targetData = STAGE_TARGETS[sel]
-                    local targetPos = nil
                     
                     if sel == "Cycle All Stages (10 ke 01 Bergantian)" then
                         local stKey = cycleOrder[cycleIndex]
@@ -582,69 +788,15 @@ registerThread(function()
                                 break
                             end
                         end
-                    elseif targetData and targetData.pos then
-                        targetPos = targetData.pos
+                    else
+                        targetPos, targetPrompt = findTargetSeedPrompt(config.targetSeedName, sel)
                     end
                     
-                    -- Dynamic check: cari bibit terjauh di Z negatif jika auto furthest
-                    if string.find(sel:lower(), "furthest") or not targetPos then
-                        local minZ = 0
-                        for _, prompt in ipairs(workspace:GetDescendants()) do
-                            if prompt:IsA("ProximityPrompt") and prompt.Enabled then
-                                local pParent = prompt.Parent
-                                local p = pParent:IsA("BasePart") and pParent.Position or (pParent:IsA("Model") and pParent:GetPivot().Position)
-                                if p and p.Z < minZ then
-                                    minZ = p.Z
-                                    targetPos = p
-                                end
-                            end
-                        end
-                        if not targetPos then
-                            targetPos = Vector3.new(-77.2, 3.5, -6080.9) -- Default Stage 10
-                        end
+                    if not targetPos then
+                        targetPos = Vector3.new(-77.2, 3.5, -6080.9)
                     end
                     
-                    if targetPos then
-                        executeFlashSteal(targetPos)
-                        
-                        -- Aksi Aman Setelah Tiba di Markas / Taman
-                        if config.fullAfkLoop then
-                            task.wait(0.2)
-                            -- 1. Pegang bibit di tangan
-                            if config.holdSeedInHand then
-                                equipStolenSeed()
-                            end
-
-                            -- 2. Tanam bibit ke spot kebun/taman pemain (Koleksi Kebun Sendiri)
-                            if config.autoPlant then
-                                for _, prompt in ipairs(workspace:GetDescendants()) do
-                                    if prompt:IsA("ProximityPrompt") and (prompt.ActionText == "Place" or prompt.ActionText == "Plant") then
-                                        local pp = prompt.Parent:IsA("BasePart") and prompt.Parent.Position or (prompt.Parent:IsA("Model") and prompt.Parent:GetPivot().Position)
-                                        if pp and (hrp.Position - pp).Magnitude <= 35 then
-                                            prompt.HoldDuration = 0
-                                            if fireproximityprompt then fireproximityprompt(prompt, 0) end
-                                        end
-                                    end
-                                end
-                            end
-                            
-                            -- 3. Sedot Cash Pasif Kebun
-                            if config.autoCollectCash then
-                                for _, plot in ipairs(workspace:GetDescendants()) do
-                                    if plot:IsA("BasePart") and (plot.Name == "DF_BaseGlow" or string.find(plot.Name:lower(), "cash") or string.find(plot.Name:lower(), "coin")) then
-                                        if (hrp.Position - plot.Position).Magnitude <= 60 then
-                                            if firetouchinterest then
-                                                firetouchinterest(hrp, plot, 0)
-                                                firetouchinterest(hrp, plot, 1)
-                                            end
-                                        end
-                                    end
-                                end
-                            end
-                            
-                            -- HUKUM PERMINTAAN FOUNDER: TIDAK ADA AUTO JUAL! BIBIT 100% DIKOLEKSI!
-                        end
-                    end
+                    executeFlashSteal(targetPos, targetPrompt)
                 end
             end)
         end
@@ -657,6 +809,11 @@ registerThread(function()
     while true do
         if config.autoPlant or config.autoHarvest or config.autoCollectCash then
             pcall(function()
+                -- Auto Plant ke petak kebun pemain
+                if config.autoPlant then
+                    plantHeldSeedAtGarden()
+                end
+
                 -- Collect cash from garden plots
                 if config.autoCollectCash then
                     for _, plot in ipairs(workspace:GetDescendants()) do
@@ -1626,6 +1783,9 @@ local function createSlider(parent, labelText, minVal, maxVal, defaultVal, callb
 end
 
 local function createDropdown(parent, labelText, options, currentSelection, callback)
+    options = options or {}
+    local safeSel = tostring(currentSelection or (options and options[1]) or "Auto")
+
     local ddRow = Instance.new("Frame")
     ddRow.Size = UDim2.new(1, 0, 0, 38)
     ddRow.BackgroundColor3 = THEME.Slot
@@ -1644,7 +1804,7 @@ local function createDropdown(parent, labelText, options, currentSelection, call
     ddLabel.TextSize = 12
     ddLabel.TextColor3 = THEME.Text
     ddLabel.TextXAlignment = Enum.TextXAlignment.Left
-    ddLabel.Text = labelText
+    ddLabel.Text = labelText or "Dropdown"
     ddLabel.Parent = ddRow
 
     local ddBtn = Instance.new("TextButton")
@@ -1654,24 +1814,27 @@ local function createDropdown(parent, labelText, options, currentSelection, call
     ddBtn.Font = THEME.Font
     ddBtn.TextSize = 11
     ddBtn.TextColor3 = THEME.Gold
-    ddBtn.Text = currentSelection .. " ▼"
+    ddBtn.Text = safeSel .. " ▼"
     ddBtn.BorderSizePixel = 0
     ddBtn.Parent = ddRow
     Instance.new("UICorner", ddBtn).CornerRadius = UDim.new(0, 4)
 
     local currentIndex = 1
     for i, opt in ipairs(options) do
-        if opt == currentSelection then
+        if tostring(opt) == safeSel then
             currentIndex = i
             break
         end
     end
 
     ddBtn.MouseButton1Click:Connect(function()
+        if not options or #options == 0 then return end
         currentIndex = (currentIndex % #options) + 1
         local newSel = options[currentIndex]
-        ddBtn.Text = newSel .. " ▼"
-        callback(newSel)
+        ddBtn.Text = tostring(newSel or "") .. " ▼"
+        if callback then
+            callback(newSel)
+        end
         saveConfig()
     end)
 
@@ -1703,10 +1866,11 @@ end
 local pageSteal = createTab("Steal", tr("TabSteal"))
 local secSteal = createSection(pageSteal, "FLASH AUTO STEAL & SAFE HARVEST SUITE", "Curi bibit instan di stratosfer langit Y+65, bawa pulang ke markas/taman (100% Bebas Dikejar Penjaga & Tidak Dijual)")
 createToggle(secSteal, tr("FlashSteal"), config.autoSteal, function(v) config.autoSteal = v end)
+createDropdown(secSteal, tr("TargetSeed"), SEED_NAME_KEYS, config.targetSeedName, function(v) config.targetSeedName = v end)
 createDropdown(secSteal, tr("TargetStage"), STAGE_KEYS, config.selectedStage, function(v) config.selectedStage = v end)
-createToggle(secSteal, tr("AntiGuard"), config.antiGuardChase, function(v) config.antiGuardChase = v end)
-createToggle(secSteal, tr("HoldSeed"), config.holdSeedInHand, function(v) config.holdSeedInHand = v end)
 createToggle(secSteal, tr("AutoPlant"), config.autoPlant, function(v) config.autoPlant = v end)
+createToggle(secSteal, tr("HoldSeed"), config.holdSeedInHand, function(v) config.holdSeedInHand = v end)
+createToggle(secSteal, tr("AntiGuard"), config.antiGuardChase, function(v) config.antiGuardChase = v end)
 createToggle(secSteal, tr("AntiFling"), config.antiFlingShield, function(v) config.antiFlingShield = v end)
 createToggle(secSteal, tr("FullAfk"), config.fullAfkLoop, function(v) config.fullAfkLoop = v end)
 createSlider(secSteal, tr("StealDelay"), 0.2, 5.0, config.stealDelay, function(v) config.stealDelay = v end)
