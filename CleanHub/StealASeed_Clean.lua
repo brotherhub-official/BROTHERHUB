@@ -97,6 +97,14 @@ local STAGE_TARGETS = {
     ["Cycle All Stages (10 ke 01 Bergantian)"]            = { pos = nil, stage = "ALL" },
 }
 
+local BUCKET_OPTIONS = {
+    "All In-Stock",
+    "Yellow Water Bucket",
+    "Orange Water Bucket",
+    "Purple Water Bucket",
+    "Water Bucket"
+}
+
 local STAGE_KEYS = {
     "Auto Furthest (Stage 10 - Paling Depan / Tersulit)",
     "Stage 10 (Z: -6080 - Divine / Lucifer Tier)",
@@ -181,6 +189,8 @@ local config = {
     -- Shop & Seeds
     blockRobuxPopups      = true,
     autoBuySeeds          = false,
+    autoBuyBuckets        = false,    -- Auto Beli Ember Air (Water Bucket Shop - 100% Cash)
+    targetBucket          = "All In-Stock", -- Pilihan ember di droplist
     targetSeeds           = {
         ["Tomato"]        = false,
         ["Potato"]        = false,
@@ -632,6 +642,233 @@ local function pickupReadyCrops(maxDistance)
     return count
 end
 
+-- Helper: Baca sisa waktu reset bibit arena (ServerInfo / Level Reset Timer)
+local function getArenaResetCountdown()
+    local rem = nil
+    pcall(function()
+        local sInfo = workspace:FindFirstChild("ServerInfo", true)
+        if sInfo then
+            local gpTime = sInfo:FindFirstChild("Gp_Time")
+            if gpTime and gpTime:IsA("IntValue") and gpTime.Value > 0 then
+                rem = gpTime.Value
+            end
+        end
+    end)
+    if rem then return rem end
+    
+    -- Fallback: Scan TextLabel di PlayerGui yang menampilkan countdown reset
+    pcall(function()
+        local pGui = LocalPlayer:FindFirstChildOfClass("PlayerGui")
+        if pGui then
+            for _, lbl in ipairs(pGui:GetDescendants()) do
+                if lbl:IsA("TextLabel") and lbl.Visible and lbl.Text ~= "" then
+                    local txt = lbl.Text:lower()
+                    if string.find(txt, "reset") or string.find(txt, "time") or string.find(txt, ":") then
+                        local m, s = string.match(lbl.Text, "(%d+):(%d+)")
+                        if m and s then
+                            local sec = (tonumber(m) * 60) + tonumber(s)
+                            if sec > 0 and sec < 900 then
+                                rem = sec
+                                return
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end)
+    return rem
+end
+
+-- Riwayat bibit yang telah dicuri dalam 1 babak (Mendukung borong semua 5 bibit di Stage 10 satu per satu)
+local stolenSeedsHistory = {}
+local lastResetCountdown = -1
+
+local function checkAndClearResetHistory()
+    local curCountdown = getArenaResetCountdown()
+    if curCountdown then
+        if lastResetCountdown ~= -1 and curCountdown > (lastResetCountdown + 4) then
+            -- Babak baru saja reset / bibit baru respawn, bersihkan riwayat agar bisa diborong lagi
+            stolenSeedsHistory = {}
+        end
+        lastResetCountdown = curCountdown
+    end
+end
+
+local function isPromptAlreadyStolen(p, pos)
+    checkAndClearResetHistory()
+    if p and stolenSeedsHistory[p] and (tick() - stolenSeedsHistory[p]) < 50 then
+        return true
+    end
+    if pos then
+        local posKey = tostring(math.floor(pos.X / 2.5)) .. "_" .. tostring(math.floor(pos.Z / 2.5))
+        if stolenSeedsHistory[posKey] and (tick() - stolenSeedsHistory[posKey]) < 50 then
+            return true
+        end
+    end
+    return false
+end
+
+local function markPromptAsStolen(p, pos)
+    if p then
+        stolenSeedsHistory[p] = tick()
+    end
+    if pos then
+        local posKey = tostring(math.floor(pos.X / 2.5)) .. "_" .. tostring(math.floor(pos.Z / 2.5))
+        stolenSeedsHistory[posKey] = tick()
+    end
+end
+
+
+-- Helper: Auto Beli Ember Air di Toko Peralatan (UseItemStore / 道具商店) menggunakan Cash in-game (BUKAN Robux!)
+local function buyBucketWithCash(targetBucket)
+    local pg = LocalPlayer:FindFirstChildOfClass("PlayerGui")
+    if not pg then return false end
+    local main02 = pg:FindFirstChild("Main02")
+    if not main02 then return false end
+
+    -- Cari frame toko alat/ember (道具商店)
+    local shopFrame = main02:FindFirstChild("\233\129\147\229\133\183\229\149\134\229\186\151")
+    if not shopFrame then
+        for _, desc in ipairs(main02:GetDescendants()) do
+            if desc:IsA("TextLabel") and (string.find(desc.Text, "Restock in") or string.find(desc.Text, "Water Bucket")) then
+                local p = desc
+                while p and p.Parent ~= main02 do
+                    p = p.Parent
+                end
+                if p and p:IsA("Frame") then
+                    shopFrame = p
+                    break
+                end
+            end
+        end
+    end
+
+    if not shopFrame then return false end
+
+    -- Cari container list barang (ScrollingFrame atau Frame yang memuat item-item)
+    local itemContainer = nil
+    for _, desc in ipairs(shopFrame:GetDescendants()) do
+        if desc:IsA("ScrollingFrame") or desc.Name == "\232\174\190\231\189\174" then
+            itemContainer = desc:FindFirstChild("Frame") or desc
+            break
+        end
+    end
+
+    if not itemContainer then
+        itemContainer = shopFrame:FindFirstChild("\228\184\187\230\161\134\230\158\182", true)
+    end
+    if not itemContainer then return false end
+
+    local boughtAny = false
+
+    -- Scan setiap baris item (root frames)
+    for _, row in ipairs(itemContainer:GetChildren()) do
+        if row:IsA("Frame") and row.Visible then
+            -- 1. Cari Nama Item
+            local itemName = nil
+            for _, lbl in ipairs(row:GetDescendants()) do
+                if lbl:IsA("TextLabel") and lbl.Visible and string.find(lbl.Text, "Bucket") then
+                    itemName = lbl.Text
+                    break
+                end
+            end
+
+            if itemName then
+                -- Cek kecocokan target droplist
+                local match = false
+                if not targetBucket or targetBucket == "All In-Stock" then
+                    match = true
+                elseif string.find(itemName:lower(), targetBucket:lower()) or string.find(targetBucket:lower(), itemName:lower()) then
+                    match = true
+                end
+
+                if match then
+                    -- 2. Cek Stock (Apakah ada stock?)
+                    local inStock = false
+                    for _, lbl in ipairs(row:GetDescendants()) do
+                        if lbl:IsA("TextLabel") and lbl.Visible then
+                            local s = string.match(lbl.Text, "x(%d+)%s*Stock")
+                            if s then
+                                if tonumber(s) and tonumber(s) > 0 then
+                                    inStock = true
+                                end
+                                break
+                            end
+                        end
+                    end
+
+                    -- 3. Cari Tombol Beli Cash (Green Button dengan nominal Cash K)
+                    -- HUKUM MUTLAK: DILARANG MENEKAN TOMBOL ROBUX!
+                    local cashBuyBtn = nil
+                    local priceText = ""
+                    for _, btn in ipairs(row:GetDescendants()) do
+                        if (btn:IsA("ImageButton") or btn:IsA("TextButton")) and btn.Visible and btn.Active then
+                            -- Pastikan BUKAN tombol Robux (parent Robux bernama 罗宝购买 / \231\189\151\229\174\157)
+                            local isRobux = false
+                            local p = btn
+                            while p and p ~= row do
+                                local pName = p.Name:lower()
+                                if string.find(p.Name, "\231\189\151\229\174\157") or string.find(pName, "robux") then
+                                    isRobux = true
+                                    break
+                                end
+                                p = p.Parent
+                            end
+
+                            if not isRobux then
+                                -- Pastikan BUKAN tombol No Stock (关闭 / No Stock)
+                                local hasNoStock = false
+                                for _, l in ipairs(btn:GetDescendants()) do
+                                    if l:IsA("TextLabel") and string.find(l.Text:lower(), "no stock") then
+                                        hasNoStock = true
+                                        break
+                                    end
+                                end
+
+                                if not hasNoStock then
+                                    -- Tombol cash yang aktif memiliki TextLabel harga (misal "50K", "500K")
+                                    for _, l in ipairs(btn:GetDescendants()) do
+                                        if l:IsA("TextLabel") and (string.find(l.Text, "K") or string.match(l.Text, "%d+")) then
+                                            priceText = l.Text
+                                            cashBuyBtn = btn
+                                            break
+                                        end
+                                    end
+                                    if not cashBuyBtn and (btn.Name == "\230\137\147\229\188\128" or string.find(btn.Parent.Name, "\232\180\167\229\184\129")) then
+                                        cashBuyBtn = btn
+                                    end
+                                end
+                            end
+                        end
+                    end
+
+                    -- 4. Eksekusi Pembelian Cash Jika Tombol Valid & Stock Tersedia
+                    if cashBuyBtn and (inStock or priceText ~= "") then
+                        if firesignal then
+                            pcall(function() firesignal(cashBuyBtn.MouseButton1Click) end)
+                            pcall(function() firesignal(cashBuyBtn.Activated) end)
+                        end
+                        pcall(function()
+                            local vim = game:GetService("VirtualInputManager")
+                            local absPos = cashBuyBtn.AbsolutePosition + cashBuyBtn.AbsoluteSize / 2
+                            vim:SendMouseButtonEvent(absPos.X, absPos.Y, 0, true, game, 0)
+                            task.wait(0.04)
+                            vim:SendMouseButtonEvent(absPos.X, absPos.Y, 0, false, game, 0)
+                        end)
+
+                        notify("🛒 Auto Buy", "Membeli " .. itemName .. " (" .. (priceText ~= "" and priceText or "Cash") .. ")!", 3)
+                        boughtAny = true
+                        task.wait(0.6)
+                    end
+                end
+            end
+        end
+    end
+
+    return boughtAny
+end
+
 -- Helper: Cari posisi bibit dan ProximityPrompt berdasarkan nama bibit atau stage terpilih
 local function findTargetSeedPrompt(selectedSeed, selectedStage)
     local seedData = SEED_TARGETS[selectedSeed]
@@ -640,13 +877,15 @@ local function findTargetSeedPrompt(selectedSeed, selectedStage)
     -- Step A: Jika pemain memilih nama bibit tertentu (bukan All/Furthest), cari model/part dengan pola nama tersebut
     if pattern ~= "" then
         for _, p in ipairs(workspace:GetDescendants()) do
-            if p:IsA("ProximityPrompt") and p.Enabled and p.ActionText == "Steal" then
+            if p:IsA("ProximityPrompt") and p.Enabled and p.ActionText == "Steal" and not isPromptAlreadyStolen(p) then
                 local parent = p.Parent
                 local pName = parent and parent.Name:lower() or ""
                 local mName = (parent and parent.Parent) and parent.Parent.Name:lower() or ""
                 if string.find(pName, pattern) or string.find(mName, pattern) then
                     local pos = parent:IsA("BasePart") and parent.Position or (parent:IsA("Model") and parent:GetPivot().Position)
-                    if pos then return pos, p end
+                    if pos and not isPromptAlreadyStolen(p, pos) then
+                        return pos, p
+                    end
                 end
             end
         end
@@ -658,13 +897,13 @@ local function findTargetSeedPrompt(selectedSeed, selectedStage)
     -- Step B: Jika pemain memilih stage tertentu (bukan Auto Furthest dan bukan Cycle All)
     local stData = STAGE_TARGETS[selectedStage]
     if stData and stData.pos and selectedStage ~= "Auto Furthest (Stage 10 - Paling Depan / Tersulit)" and selectedStage ~= "Cycle All Stages (10 ke 01 Bergantian)" then
-        -- Cari prompt Steal yang berada di radius 180 studs dari koordinat stage tersebut
-        local closestPrompt, closestPos, closestDist = nil, nil, 180
+        -- Cari prompt Steal yang berada di radius 220 studs dari koordinat stage tersebut yang belum dicuri
+        local closestPrompt, closestPos, closestDist = nil, nil, 220
         for _, p in ipairs(workspace:GetDescendants()) do
-            if p:IsA("ProximityPrompt") and p.Enabled and p.ActionText == "Steal" then
+            if p:IsA("ProximityPrompt") and p.Enabled and p.ActionText == "Steal" and not isPromptAlreadyStolen(p) then
                 local parent = p.Parent
                 local pos = parent:IsA("BasePart") and parent.Position or (parent:IsA("Model") and parent:GetPivot().Position)
-                if pos then
+                if pos and not isPromptAlreadyStolen(p, pos) then
                     local d = (pos - stData.pos).Magnitude
                     if d < closestDist then
                         closestDist = d
@@ -680,15 +919,15 @@ local function findTargetSeedPrompt(selectedSeed, selectedStage)
         return stData.pos, nil
     end
     
-    -- Step C: Auto Furthest - Cari prompt Steal dengan koordinat Z paling negatif (stage terjauh)
+    -- Step C: Auto Furthest - Cari prompt Steal dengan koordinat Z paling depan yang BELUM dicuri
     local bestPrompt = nil
     local bestPos = nil
     local minZ = 0
     for _, p in ipairs(workspace:GetDescendants()) do
-        if p:IsA("ProximityPrompt") and p.Enabled and p.ActionText == "Steal" then
+        if p:IsA("ProximityPrompt") and p.Enabled and p.ActionText == "Steal" and not isPromptAlreadyStolen(p) then
             local parent = p.Parent
             local pos = parent:IsA("BasePart") and parent.Position or (parent:IsA("Model") and parent:GetPivot().Position)
-            if pos then
+            if pos and not isPromptAlreadyStolen(p, pos) then
                 if pos.Z < minZ then
                     minZ = pos.Z
                     bestPos = pos
@@ -915,20 +1154,29 @@ local function executeFlashSteal(targetPos, targetPrompt)
     hrp.AssemblyAngularVelocity = Vector3.zero
     hrp.CFrame = CFrame.new(cageDropPos)
     
-    -- Jika prompt belum terdeteksi saat scan awal, scan ulang langsung dari posisi daratan
-    if not promptToFire then
-        for _, p in ipairs(workspace:GetDescendants()) do
-            if p:IsA("ProximityPrompt") and p.Enabled and p.ActionText == "Steal" then
-                local pParent = p.Parent
-                local pPos = pParent:IsA("BasePart") and pParent.Position or (pParent:IsA("Model") and pParent:GetPivot().Position)
-                if pPos and (hrp.Position - pPos).Magnitude <= 35 then
-                    promptToFire = p
-                    cageDropPos = pPos + Vector3.new(0, 0.2, 0)
-                    hrp.CFrame = CFrame.new(cageDropPos)
-                    break
+    -- Scan ulang langsung dari posisi daratan dalam kandang untuk mencari bibit yang BELUM dicuri (Borong 5 bibit 1 per 1)
+    local foundUnstolenPrompt = nil
+    local foundPos = nil
+    local bestD = 75
+    for _, p in ipairs(workspace:GetDescendants()) do
+        if p:IsA("ProximityPrompt") and p.Enabled and p.ActionText == "Steal" and not isPromptAlreadyStolen(p) then
+            local pParent = p.Parent
+            local pPos = pParent:IsA("BasePart") and pParent.Position or (pParent:IsA("Model") and pParent:GetPivot().Position)
+            if pPos and not isPromptAlreadyStolen(p, pPos) then
+                local d = (hrp.Position - pPos).Magnitude
+                if d < bestD then
+                    bestD = d
+                    foundUnstolenPrompt = p
+                    foundPos = pPos
                 end
             end
         end
+    end
+
+    if foundUnstolenPrompt and foundPos then
+        promptToFire = foundUnstolenPrompt
+        cageDropPos = foundPos + Vector3.new(0, 0.2, 0)
+        hrp.CFrame = CFrame.new(cageDropPos)
     end
     
     -- 5. Trigger ProximityPrompt Steal di daratan dalam kandang (Line of Sight 100% Bebas Rintangan)
@@ -963,6 +1211,7 @@ local function executeFlashSteal(targetPos, targetPrompt)
         end
         
         pcall(function() promptToFire:InputHoldEnd() end)
+        markPromptAsStolen(promptToFire, cageDropPos)
         stolen = true
     else
         task.wait(0.2)
@@ -1073,8 +1322,8 @@ registerThread(function()
                                 emptyStageWaitUntil = tick() + 3.0
                             end
                         else
-                            -- Sukses curi bibit: beri jeda singkat sebelum steal berikutnya
-                            emptyStageWaitUntil = tick() + 1.5
+                            -- Sukses curi 1 bibit dari kandang: langsung berangkat ambil bibit berikutnya (borong 5 bibit 1 per 1)
+                            emptyStageWaitUntil = 0
                         end
                     end
                 end
@@ -1162,7 +1411,20 @@ registerThread(function()
     end
 end)
 
--- [8] 🛒 FREE SEED SHOP & PACK OPENER
+-- [8A] 🪣 AUTO BUY WATER BUCKETS (TOKO EMBER AIR - CASH GAME ONLY)
+registerThread(function()
+    while true do
+        if config.autoBuyBuckets then
+            pcall(function()
+                local target = config.targetBucket or "All In-Stock"
+                buyBucketWithCash(target)
+            end)
+        end
+        task.wait(1.5)
+    end
+end)
+
+-- [8B] 🛒 FREE SEED SHOP & PACK OPENER
 registerThread(function()
     while true do
         if config.autoBuySeeds then
@@ -2388,6 +2650,32 @@ end)
 
 -- TAB 4: 🛒 SEED SHOP & PACKS
 local pageShop = createTab("Shop", tr("TabShop"))
+
+-- 🪣 TOKO EMBER AIR (WATER BUCKET SHOP — CASH IN-GAME)
+local secBuckets = createSection(pageShop, "Toko Ember Air (Water Bucket Shop — Cash)", "Beli ember penyiram tanaman secara otomatis dengan Cash in-game (100% Bebas Robux)")
+createDropdown(secBuckets, "Pilih Ember (Select Bucket)", BUCKET_OPTIONS, config.targetBucket or "All In-Stock", function(v)
+    config.targetBucket = v
+    saveConfig()
+end)
+createToggle(secBuckets, "Auto Buy Ember Air (Cash Game)", config.autoBuyBuckets, function(v)
+    config.autoBuyBuckets = v
+    saveConfig()
+end)
+createButton(secBuckets, "Buka / Tutup Toko Ember (Toggle Shop Frame)", function()
+    pcall(function()
+        local pg = LocalPlayer:FindFirstChildOfClass("PlayerGui")
+        if pg then
+            local main02 = pg:FindFirstChild("Main02")
+            if main02 then
+                local f = main02:FindFirstChild("\233\129\147\229\133\183\229\149\134\229\186\151")
+                if f then
+                    f.Visible = not f.Visible
+                end
+            end
+        end
+    end)
+end)
+
 local secShop = createSection(pageShop, tr("ShopTitle"), tr("ShopDesc"))
 createToggle(secShop, tr("BlockRobux"), config.blockRobuxPopups, function(v) config.blockRobuxPopups = v end)
 createToggle(secShop, tr("AutoBuySeeds"), config.autoBuySeeds, function(v) config.autoBuySeeds = v end)
