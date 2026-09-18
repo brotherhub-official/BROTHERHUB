@@ -400,12 +400,12 @@ local TRANSLATIONS = {
     ["MovementDesc"]          = {ID = "Pengatur kecepatan, daya lompat, noclip, dan mode terbang", EN = "Customize walkspeed, jump power, noclip, and flight mode"},
 
     -- Toggles & Sliders
-    ["FlashSteal"]            = {ID = "⚡ Flash Auto Steal (Maju ➔ Curi ➔ Bawa Pulang)", EN = "⚡ Flash Auto Steal (Advance ➔ Steal ➔ Return Base)"},
+    ["FlashSteal"]            = {ID = "⚡ Flash Auto Steal (Maju -> Curi -> Bawa Pulang)", EN = "⚡ Flash Auto Steal (Advance -> Steal -> Return Base)"},
     ["SmartWait"]             = {ID = "⏳ Tunggu Bibit Spawn (Stay di Markas jika Kosong)", EN = "⏳ Smart Stay at Base (Wait for Seed Spawn)"},
     ["AntiGuard"]             = {ID = "🛡️ Anti-Kejar Penjaga Tanaman (Lumpuhkan Guard 100%)", EN = "🛡️ Anti-Guard Chase (Pacify & Paralyze Guards)"},
     ["HoldSeed"]              = {ID = "🤲 Pegang Bibit di Tangan (Equip Stolen Seed)", EN = "🤲 Hold Stolen Seed in Hand (Equip Seed)"},
     ["AntiFling"]             = {ID = "🛡️ Anti-Pental & Anti-Knockback (Bebas Pental / Kebal)", EN = "🛡️ Anti-Fling & Knockback Immunity"},
-    ["FullAfk"]               = {ID = "🌙 Full AFK Loop (Curi ➔ Koleksi di Taman / Pegang)", EN = "🌙 Full AFK Loop (Steal ➔ Garden Collect / Hold)"},
+    ["FullAfk"]               = {ID = "🌙 Full AFK Loop (Curi -> Koleksi di Taman / Pegang)", EN = "🌙 Full AFK Loop (Steal -> Garden Collect / Hold)"},
     ["TargetSeed"]            = {ID = "🎯 Pilih Nama Bibit (Target Seed)", EN = "🎯 Target Seed Name"},
     ["TargetStage"]           = {ID = "🎯 Target Seed Stage", EN = "🎯 Target Seed Stage"},
     ["StealDelay"]            = {ID = "⏱️ Jeda Siklus Steal (Detik)", EN = "⏱️ Steal Cycle Interval (s)"},
@@ -2496,7 +2496,7 @@ local function createSection(parent, titleText, descText)
 end
 
 -- Full-Row Clickable Toggle
-local function createToggle(parent, labelText, defaultVal, callback)
+local function createToggle(parent, labelText, defaultVal, callback, registerSetter)
     local container = Instance.new("TextButton", parent)
     container.Size = UDim2.new(1, 0, 0, 36)
     container.BackgroundColor3 = THEME.Card
@@ -2540,8 +2540,9 @@ local function createToggle(parent, labelText, defaultVal, callback)
     container.MouseButton1Click:Connect(function()
         update(not state)
     end)
-    container.Set = update
-    container.Get = function() return state end
+    if registerSetter and type(registerSetter) == "function" then
+        registerSetter(update)
+    end
     return container
 end
 
@@ -2966,23 +2967,24 @@ createToggle(secMultiSeeds, "✨ Aktifkan Filter Multi-Select", config.useMultiS
     saveConfig()
 end)
 
-local seedToggles = {}
+local seedToggleSetters = {}
 for _, s in ipairs(TOP5_SEEDS) do
     local isChecked = (config.multiTargetSeeds and config.multiTargetSeeds[s.key] == true)
-    local t = createToggle(secMultiSeeds, s.displayName, isChecked, function(v)
+    createToggle(secMultiSeeds, s.displayName, isChecked, function(v)
         if not config.multiTargetSeeds then config.multiTargetSeeds = {} end
         config.multiTargetSeeds[s.key] = v
         saveConfig()
+    end, function(setter)
+        seedToggleSetters[s.key] = setter
     end)
-    seedToggles[s.key] = t
 end
 
 createButton(secMultiSeeds, "✅ Pilih Semua 5 Bibit (Select All)", THEME.Green, function()
     if not config.multiTargetSeeds then config.multiTargetSeeds = {} end
     for _, s in ipairs(TOP5_SEEDS) do
         config.multiTargetSeeds[s.key] = true
-        if seedToggles[s.key] and seedToggles[s.key].Set then
-            seedToggles[s.key].Set(true)
+        if seedToggleSetters[s.key] then
+            seedToggleSetters[s.key](true)
         end
     end
     saveConfig()
@@ -2993,8 +2995,8 @@ createButton(secMultiSeeds, "❌ Batalkan Semua Pilihan (Deselect All)", THEME.C
     if not config.multiTargetSeeds then config.multiTargetSeeds = {} end
     for _, s in ipairs(TOP5_SEEDS) do
         config.multiTargetSeeds[s.key] = false
-        if seedToggles[s.key] and seedToggles[s.key].Set then
-            seedToggles[s.key].Set(false)
+        if seedToggleSetters[s.key] then
+            seedToggleSetters[s.key](false)
         end
     end
     saveConfig()
