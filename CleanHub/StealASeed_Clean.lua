@@ -27,18 +27,7 @@ end
 pcall(function()
     local CoreGui = game:GetService("CoreGui")
     local Players = game:GetService("Players")
-    local function notify(title, text, duration)
-    pcall(function()
-        StarterGui:SetCore("SendNotification", {
-            Title = title or "👑 BROTHER HUB",
-            Text = text or "",
-            Duration = duration or 4,
-        })
-    end)
-end
-local showNotification = notify
-
-local LocalPlayer = Players.LocalPlayer
+    local LocalPlayer = Players.LocalPlayer
     local targets = {}
     if CoreGui then table.insert(targets, CoreGui) end
     if typeof(gethui) == "function" then
@@ -73,9 +62,21 @@ local VirtualUser         = game:GetService("VirtualUser")
 local MarketplaceService  = game:GetService("MarketplaceService")
 local CoreGui             = game:GetService("CoreGui")
 local LocalizationService = game:GetService("LocalizationService")
+local StarterGui          = game:GetService("StarterGui")
 
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
+
+local function notify(title, text, duration)
+    pcall(function()
+        StarterGui:SetCore("SendNotification", {
+            Title = title or "👑 BROTHER HUB",
+            Text = text or "",
+            Duration = duration or 4,
+        })
+    end)
+end
+local showNotification = notify
 
 local activeConnections = {}
 local activeThreads     = {}
@@ -798,6 +799,62 @@ local function markPromptAsStolen(p, pos)
 end
 
 
+-- Helper: Trigger click on a GuiButton using all executor APIs (getconnections, firesignal, VIM, VU)
+local function triggerGuiClick(btn)
+    if not btn then return false end
+    local triggered = false
+
+    -- 1. getconnections (Standard Exploit API - Direct closure execution)
+    if getconnections then
+        for _, ev in ipairs({"MouseButton1Click", "Activated", "MouseButton1Down"}) do
+            local sig = pcall(function() return btn[ev] end) and btn[ev]
+            if sig then
+                pcall(function()
+                    for _, conn in ipairs(getconnections(sig)) do
+                        pcall(function() conn:Fire() end)
+                        pcall(function() if conn.Function then conn.Function() end end)
+                        triggered = true
+                    end
+                end)
+            end
+        end
+    end
+
+    -- 2. firesignal (Synthetic Engine Signals)
+    if firesignal then
+        pcall(function() firesignal(btn.MouseButton1Click) triggered = true end)
+        pcall(function() firesignal(btn.Activated) triggered = true end)
+        pcall(function() firesignal(btn.MouseButton1Down, 0, 0) triggered = true end)
+        pcall(function() firesignal(btn.MouseButton1Up, 0, 0) triggered = true end)
+    end
+
+    -- 3. VirtualInputManager (Operating-System style Mouse Simulation)
+    pcall(function()
+        local vim = game:GetService("VirtualInputManager")
+        local pos = btn.AbsolutePosition + (btn.AbsoluteSize / 2)
+        if pos.X > 5 and pos.Y > 5 then
+            vim:SendMouseButtonEvent(pos.X, pos.Y, 0, true, game, 1)
+            task.wait(0.03)
+            vim:SendMouseButtonEvent(pos.X, pos.Y, 0, false, game, 1)
+            triggered = true
+        end
+    end)
+
+    -- 4. VirtualUser
+    pcall(function()
+        local vu = game:GetService("VirtualUser")
+        local pos = btn.AbsolutePosition + (btn.AbsoluteSize / 2)
+        if pos.X > 5 and pos.Y > 5 then
+            vu:Button1Down(pos, workspace.CurrentCamera.CFrame)
+            task.wait(0.03)
+            vu:Button1Up(pos, workspace.CurrentCamera.CFrame)
+            triggered = true
+        end
+    end)
+
+    return triggered
+end
+
 -- Helper: Auto Beli Ember Air di Toko Peralatan (UseItemStore / 道具商店) menggunakan Cash in-game (BUKAN Robux!)
 local function buyBucketWithCash(targetBucket)
     local pg = LocalPlayer:FindFirstChildOfClass("PlayerGui")
@@ -824,106 +881,170 @@ local function buyBucketWithCash(targetBucket)
 
     if not shopFrame then return false end
 
+    -- Cari ScrollingFrame yang menampung kartu item (设置 / ScrollingFrame)
+    local scroller = shopFrame:FindFirstChildWhichIsA("ScrollingFrame", true)
+
+    -- Kumpulkan seluruh kartu item (Frame 'root' atau Frame yang memiliki Frame '按钮')
+    local itemCards = {}
+    for _, obj in ipairs(shopFrame:GetDescendants()) do
+        if obj:IsA("Frame") and (obj.Name == "root" or obj:FindFirstChild("\230\140\137\233\146\174")) then
+            local hasBtnContainer = obj:FindFirstChild("\230\140\137\233\146\174") or obj:FindFirstChild("按钮")
+            if hasBtnContainer and not table.find(itemCards, obj) then
+                table.insert(itemCards, obj)
+            end
+        end
+    end
+
+    -- Fallback jika tidak ditemukan kartu via root
+    if #itemCards == 0 then
+        for _, obj in ipairs(shopFrame:GetDescendants()) do
+            if obj:IsA("Frame") and (obj.Name == "\232\180\167\229\184\129\232\180\173\228\185\176" or obj.Name == "货币购买") then
+                local card = obj.Parent
+                if card and card.Parent and card.Parent:IsA("Frame") then
+                    card = card.Parent
+                end
+                if card and not table.find(itemCards, card) then
+                    table.insert(itemCards, card)
+                end
+            end
+        end
+    end
+
     local boughtAny = false
 
-    -- Scan seluruh tombol di dalam toko ember
-    for _, btn in ipairs(shopFrame:GetDescendants()) do
-        if (btn:IsA("ImageButton") or btn:IsA("TextButton")) and btn.Visible then
-            -- 1. Pastikan BUKAN tombol Robux (parent bernama 罗宝购买 / \231\189\151\229\174\157)
-            local isRobux = false
-            local p = btn
-            while p and p ~= shopFrame do
-                if string.find(p.Name, "\231\189\151\229\174\157") or string.find(p.Name:lower(), "robux") then
-                    isRobux = true
-                    break
+    for _, card in ipairs(itemCards) do
+        -- 1. Periksa apakah kartu ini adalah Ember Air (Water Bucket)
+        local isBucket = false
+        local cardItemName = "Water Bucket"
+        local rarityText = ""
+        local stockText = ""
+        local isOutOfStock = false
+
+        for _, tl in ipairs(card:GetDescendants()) do
+            if tl:IsA("TextLabel") then
+                local txt = tl.Text or ""
+                local txtLower = txt:lower()
+
+                -- Deteksi nama ember
+                if string.find(txtLower, "bucket") or string.find(txtLower, "water") then
+                    isBucket = true
+                    cardItemName = txt
                 end
-                p = p.Parent
+
+                -- Deteksi rarity
+                if string.find(txtLower, "epic") or string.find(txtLower, "legendary") or string.find(txtLower, "mythic") then
+                    rarityText = txt
+                end
+
+                -- Deteksi stok
+                if string.find(txtLower, "stock") then
+                    stockText = txt
+                    if string.find(txtLower, "x0") or string.find(txtLower, "no stock") then
+                        isOutOfStock = true
+                    end
+                end
+                if string.find(txtLower, "no stock") then
+                    isOutOfStock = true
+                end
+            end
+        end
+
+        -- Jika kartu mengandung rarity Epic/Legendary/Mythic atau ada ember
+        if not isBucket and (rarityText ~= "" or string.find(cardItemName:lower(), "bucket")) then
+            isBucket = true
+            if rarityText ~= "" then
+                cardItemName = rarityText .. " Water Bucket"
+            end
+        end
+
+        -- Cek tombol Disabled '关闭'
+        local closeBtn = card:FindFirstChild("\229\133\179\233\151\173", true) or card:FindFirstChild("关闭", true)
+        if closeBtn and closeBtn:IsA("GuiObject") and closeBtn.Visible then
+            isOutOfStock = true
+        end
+
+        -- 2. Jika merupakan ember air dan TIDAK habis stok
+        if isBucket and not isOutOfStock then
+            -- 3. Cek kesesuaian dengan target dropdown
+            local matchesTarget = false
+            if not targetBucket or targetBucket == "All In-Stock" then
+                matchesTarget = true
+            else
+                local targetLower = targetBucket:lower()
+                local nameLower = cardItemName:lower()
+                local rareLower = rarityText:lower()
+                if string.find(nameLower, targetLower) or string.find(targetLower, nameLower) then
+                    matchesTarget = true
+                elseif rareLower ~= "" and string.find(targetLower, rareLower) then
+                    matchesTarget = true
+                end
             end
 
-            if not isRobux then
-                -- 2. Pastikan BUKAN tombol No Stock (nama 关闭 / \229\133\183\233\151\173 atau text 'No Stock')
-                local isNoStock = false
-                if btn.Name == "\229\133\183\233\151\173" or btn.Name == "关闭" then
-                    isNoStock = true
-                end
-                for _, t in ipairs(btn:GetDescendants()) do
-                    if t:IsA("TextLabel") and string.find(t.Text:lower(), "no stock") then
-                        isNoStock = true
-                        break
-                    end
-                end
+            if matchesTarget then
+                -- 4. Cari tombol Cash Buy (货币购买) di dalam kartu ini
+                local cashBtn = nil
+                local priceText = "Cash"
 
-                if not isNoStock then
-                    -- 3. Cari TextLabel harga Cash (mengandung 'K' seperti 50K, 150K atau angka)
-                    local priceText = nil
-                    for _, t in ipairs(btn:GetDescendants()) do
-                        if t:IsA("TextLabel") and (string.find(t.Text, "K") or string.match(t.Text, "%d+")) then
-                            priceText = t.Text
-                            break
+                for _, desc in ipairs(card:GetDescendants()) do
+                    if (desc:IsA("ImageButton") or desc:IsA("TextButton")) then
+                        -- Pastikan BUKAN tombol Robux (parent 罗宝购买 / nama 打开 berharga robux)
+                        local isRobux = false
+                        local p = desc
+                        while p and p ~= card do
+                            if string.find(p.Name, "\231\189\151\229\174\157") or string.find(p.Name:lower(), "robux") then
+                                isRobux = true
+                                break
+                            end
+                            p = p.Parent
                         end
-                    end
 
-                    -- Cek juga apakah tombol ini adalah wadah 货币购买
-                    local isCurrencyBtn = (btn.Name == "\232\180\167\229\184\129\232\180\173\228\185\176" or btn.Name == "货币购买")
-                    if not isCurrencyBtn and btn.Parent then
-                        isCurrencyBtn = (btn.Parent.Name == "\232\180\167\229\184\129\232\180\173\228\185\176" or btn.Parent.Name == "货币购买")
-                    end
+                        if not isRobux and desc.Name ~= "\229\133\179\233\151\173" and desc.Name ~= "关闭" then
+                            local isCurrency = (desc.Name == "\232\180\167\229\184\129\232\180\173\228\185\176" or desc.Name == "货币购买")
+                            if not isCurrency and desc.Parent then
+                                isCurrency = (desc.Parent.Name == "\232\180\167\229\184\129\232\180\173\228\185\176" or desc.Parent.Name == "货币购买")
+                            end
 
-                    if (priceText or isCurrencyBtn) and not isNoStock then
-                        -- Cari nama item di baris ini
-                        local row = btn
-                        local itemName = "Ember Air"
-                        local depth = 0
-                        while row and row ~= shopFrame and depth < 8 do
-                            for _, l in ipairs(row:GetDescendants()) do
-                                if l:IsA("TextLabel") and (string.find(l.Text, "Bucket") or string.find(l.Text, "Epic") or string.find(l.Text, "Legendary") or string.find(l.Text, "Mythic")) then
-                                    itemName = l.Text
+                            for _, t in ipairs(desc:GetDescendants()) do
+                                if t:IsA("TextLabel") and (string.find(t.Text, "K") or string.match(t.Text, "%d+")) then
+                                    priceText = t.Text
+                                    isCurrency = true
                                     break
                                 end
                             end
-                            if itemName ~= "Ember Air" then break end
-                            row = row.Parent
-                            depth = depth + 1
-                        end
 
-                        -- Filter sesuai pilihan dropdown (All In-Stock atau nama ember)
-                        local match = false
-                        if not targetBucket or targetBucket == "All In-Stock" then
-                            match = true
-                        elseif string.find(itemName:lower(), targetBucket:lower()) or string.find(targetBucket:lower(), itemName:lower()) then
-                            match = true
-                        end
-
-                        if match then
-                            -- Klik tombol cash dengan multi-method
-                            if firesignal then
-                                pcall(function() firesignal(btn.MouseButton1Click) end)
-                                pcall(function() firesignal(btn.Activated) end)
-                                pcall(function() firesignal(btn.MouseButton1Down) end)
-                                pcall(function() firesignal(btn.MouseButton1Up) end)
+                            if isCurrency then
+                                cashBtn = desc
+                                break
                             end
-
-                            pcall(function()
-                                local vim = game:GetService("VirtualInputManager")
-                                local absPos = btn.AbsolutePosition + (btn.AbsoluteSize / 2)
-                                vim:SendMouseButtonEvent(absPos.X, absPos.Y, 0, true, game, 0)
-                                task.wait(0.04)
-                                vim:SendMouseButtonEvent(absPos.X, absPos.Y, 0, false, game, 0)
-                            end)
-
-                            pcall(function()
-                                local vu = game:GetService("VirtualUser")
-                                local absPos = btn.AbsolutePosition + (btn.AbsoluteSize / 2)
-                                vu:Button1Down(Vector2.new(absPos.X, absPos.Y), workspace.CurrentCamera.CFrame)
-                                task.wait(0.04)
-                                vu:Button1Up(Vector2.new(absPos.X, absPos.Y), workspace.CurrentCamera.CFrame)
-                            end)
-
-                            notify("🛒 Auto Buy Bucket", "Membeli " .. itemName .. " (" .. (priceText or "Cash") .. ")!", 3)
-                            boughtAny = true
-                            task.wait(0.3)
                         end
                     end
+                end
+
+                if cashBtn then
+                    -- 5. Auto-Scroll kartu ke area pandang jika ada ScrollingFrame
+                    if scroller and scroller:IsA("ScrollingFrame") then
+                        pcall(function()
+                            local cardY = card.AbsolutePosition.Y - scroller.AbsolutePosition.Y + scroller.CanvasPosition.Y
+                            scroller.CanvasPosition = Vector2.new(0, math.max(0, cardY - 10))
+                        end)
+                        task.wait(0.04)
+                    end
+
+                    -- 6. Eksekusi klik multi-layer pada tombol & container
+                    triggerGuiClick(cashBtn)
+                    if cashBtn.Parent and cashBtn.Parent:IsA("GuiObject") then
+                        triggerGuiClick(cashBtn.Parent)
+                    end
+                    for _, child in ipairs(cashBtn:GetChildren()) do
+                        if child:IsA("GuiObject") then
+                            triggerGuiClick(child)
+                        end
+                    end
+
+                    notify("🛒 Auto Buy Bucket", "Membeli " .. cardItemName .. " (" .. priceText .. ")!", 3)
+                    print("[BrotherHub] Auto Buy Bucket: " .. cardItemName .. " (" .. priceText .. ")")
+                    boughtAny = true
+                    task.wait(0.35)
                 end
             end
         end
@@ -1440,12 +1561,15 @@ end)
 registerThread(function()
     while true do
         if config.autoBuyBuckets then
-            pcall(function()
+            local s, err = pcall(function()
                 local target = config.targetBucket or "All In-Stock"
                 buyBucketWithCash(target)
             end)
+            if not s and err then
+                warn("[BrotherHub] buyBucketWithCash error: " .. tostring(err))
+            end
         end
-        task.wait(0.5)
+        task.wait(0.6)
     end
 end)
 
