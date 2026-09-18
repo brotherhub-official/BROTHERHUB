@@ -18,10 +18,38 @@
     ========================================================================
 ]]
 
--- [0] MULTI-INSTANCE CLEANUP GUARD
+-- [0] MULTI-INSTANCE CLEANUP GUARD (TRIPLE-LAYER ZERO STACKING)
 if _G.BH_FISHON_CLEANUP then
     pcall(_G.BH_FISHON_CLEANUP)
+    _G.BH_FISHON_CLEANUP = nil
 end
+
+pcall(function()
+    local CoreGui = game:GetService("CoreGui")
+    local Players = game:GetService("Players")
+    local LocalPlayer = Players.LocalPlayer
+    local targets = {}
+    if CoreGui then table.insert(targets, CoreGui) end
+    if typeof(gethui) == "function" then
+        local h = gethui()
+        if h then table.insert(targets, h) end
+    end
+    if LocalPlayer and LocalPlayer:FindFirstChild("PlayerGui") then
+        table.insert(targets, LocalPlayer.PlayerGui)
+    end
+    for _, container in ipairs(targets) do
+        for _, child in ipairs(container:GetChildren()) do
+            if child.Name == "BrotherHub_FishOn" then
+                pcall(function() child:Destroy() end)
+            end
+        end
+    end
+    for _, obj in ipairs(workspace:GetChildren()) do
+        if obj.Name == "BH_SafeLandingPad" or obj.Name == "BH_WaterWalkPlatform" then
+            pcall(function() obj:Destroy() end)
+        end
+    end
+end)
 
 -- [1] SERVICES & ENGINE SETUP
 local Players             = game:GetService("Players")
@@ -120,6 +148,7 @@ local config = {
     autoDailyReward       = false,
     autoClaimQuests       = false,
     autoSpinGacha         = false,
+    autoBoostLuck         = false,
     antiAfk               = true,
 
     -- Zero Robux Blocker
@@ -260,6 +289,7 @@ local TRANSLATIONS = {
     ["AutoDailyReward"]       = {ID = "Klaim Hadiah Harian Otomatis", EN = "Auto Claim Daily Reward"},
     ["AutoClaimQuests"]       = {ID = "Klaim Selesai Misi Otomatis", EN = "Auto Claim Finished Quests"},
     ["AutoSpinGacha"]         = {ID = "Putar Roda Gacha Otomatis", EN = "Auto Spin Gacha Wheel"},
+    ["AutoBoostLuck"]         = {ID = "Tingkatkan Keberuntungan (Boost Luck)", EN = "Auto Boost Luck"},
     ["AntiAfk"]               = {ID = "Anti-AFK (Cegah Disconnect 20 Mnt)", EN = "Anti-AFK (Prevent 20m Kick)"},
 
     ["PlayerEsp"]             = {ID = "ESP Pemain Lain (Radar Nama & Jarak)", EN = "Player ESP (Names & Distance)"},
@@ -688,6 +718,13 @@ registerThread(function()
         if config.autoSpinGacha then
             pcall(function()
                 fireRemote("GachaEvents/SpinEvents", 1)
+            end)
+        end
+
+        -- Boost Luck
+        if config.autoBoostLuck then
+            pcall(function()
+                fireRemote("BoostLuckServer")
             end)
         end
 
@@ -1587,6 +1624,7 @@ local secRew = createSection(pageRew, tr("RewardsTitle"), tr("RewardsDesc"))
 createToggle(secRew, tr("AutoDailyReward"), config.autoDailyReward, function(v) config.autoDailyReward = v end)
 createToggle(secRew, tr("AutoClaimQuests"), config.autoClaimQuests, function(v) config.autoClaimQuests = v end)
 createToggle(secRew, tr("AutoSpinGacha"), config.autoSpinGacha, function(v) config.autoSpinGacha = v end)
+createToggle(secRew, tr("AutoBoostLuck"), config.autoBoostLuck, function(v) config.autoBoostLuck = v end)
 createToggle(secRew, tr("AntiAfk"), config.antiAfk, function(v) config.antiAfk = v end)
 
 -- TAB 6: 🌌 TELEPORT HUB
