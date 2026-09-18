@@ -28,6 +28,7 @@ ACTION_BUTTONS_CONFIG = [
 
 # 2. Supported Games Config (Row 1: Dropdown Select Menu up to 25 games)
 GAMES_CONFIG = [
+    {"id_key": "steal_a_seed", "name": "🌱 Steal A Seed", "color": 0x2ECC71, "emoji": "🌱", "desc": "Auto steal 0s bypass, plant & harvest, sell, seed & pack shop, pet hatch"},
     {"id_key": "fish_on", "name": "🎣 Fish On", "color": 0x00BFFF, "emoji": "🎣", "desc": "Auto cast & reel, instant catch, sell, rod & bait shop, boats & islands"},
     {"id_key": "flower_shop", "name": "🌸 My Flower Shop", "color": 0xFFB6C1, "emoji": "🌸", "desc": "Auto craft, sell bouquets, planter & garden"},
     {"id_key": "dig_secrets", "name": "⛏️ Dig Into Secrets", "color": 0xE67E22, "emoji": "⛏️", "desc": "God speed clicker, auto training & layer nuker"},
@@ -212,15 +213,15 @@ def create_roles_embed() -> discord.Embed:
             "• `⚡ Script Update Ping` : Notifikasi instan saat ada update script Roblox.\n"
             "• `🎁 Giveaway Ping` : Peringatan saat ada event giveaway berhadiah.\n"
             "• `💻 PC Player` | `📱 Mobile Player` : Tipe perangkat bermain Anda.\n\n"
-            "🎮 **22 SUPPORTED GAMES LIST (PILIH LEWAT DROPDOWN DI BAWAH)**\n"
-            "• `🎣 Fish On` • `🌸 My Flower Shop` • `⛏️ Dig Into Secrets`\n"
-            "• `💎 Sell Ores` • `🎣 Fish an Anime` • `👹 The Mimic`\n"
-            "• `🌾 Farm Industry` • `⚔️ Poly Loot` • `⚔️ Dungeon Lootr`\n"
-            "• `🏰 Dungeon Quest Reborn` • `🕵️ Idle Mafia` • `📦 Storage Hunters`\n"
-            "• `🌍 Drill to Earth` • `💥 Defeat Anime RNG` • `🐉 Catch Dragons`\n"
-            "• `🫧 Pop Bubbles` • `🎣 Heavyweight Fishing` • `⚔️ Shogun's Reign`\n"
-            "• `🖱️ Clicker Simulator` • `💎 Loot Up` • `🃏 Pack A Brainrot Card`\n"
-            "• `⛏️ Mine It`\n\n"
+            "🎮 **23 SUPPORTED GAMES LIST (PILIH LEWAT DROPDOWN DI BAWAH)**\n"
+            "• `🌱 Steal A Seed` • `🎣 Fish On` • `🌸 My Flower Shop`\n"
+            "• `⛏️ Dig Into Secrets` • `💎 Sell Ores` • `🎣 Fish an Anime`\n"
+            "• `👹 The Mimic` • `🌾 Farm Industry` • `⚔️ Poly Loot`\n"
+            "• `⚔️ Dungeon Lootr` • `🏰 Dungeon Quest Reborn` • `🕵️ Idle Mafia`\n"
+            "• `📦 Storage Hunters` • `🌍 Drill to Earth` • `💥 Defeat Anime RNG`\n"
+            "• `🐉 Catch Dragons` • `🫧 Pop Bubbles` • `🎣 Heavyweight Fishing`\n"
+            "• `⚔️ Shogun's Reign` • `🖱️ Clicker Simulator` • `💎 Loot Up`\n"
+            "• `🃏 Pack A Brainrot Card` • `⛏️ Mine It`\n\n"
             "────────────────────────────────────────\n"
             "💡 **CARA PENGGUNAAN:**\n"
             "1. Klik tombol **Pings / Device** di atas untuk toggle instan.\n"
