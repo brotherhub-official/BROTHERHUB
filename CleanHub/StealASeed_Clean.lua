@@ -598,7 +598,7 @@ local function findTargetSeedPrompt(selectedSeed, selectedStage)
     local seedData = SEED_TARGETS[selectedSeed]
     local pattern = seedData and seedData.pattern or ""
     
-    -- Step A: Jika pemain memilih nama bibit tertentu, cari model/part dengan pola nama tersebut
+    -- Step A: Jika pemain memilih nama bibit tertentu (bukan All/Furthest), cari model/part dengan pola nama tersebut
     if pattern ~= "" then
         for _, p in ipairs(workspace:GetDescendants()) do
             if p:IsA("ProximityPrompt") and p.Enabled and p.ActionText == "Steal" then
@@ -611,9 +611,37 @@ local function findTargetSeedPrompt(selectedSeed, selectedStage)
                 end
             end
         end
+        if seedData and seedData.pos then
+            return seedData.pos, nil
+        end
     end
     
-    -- Step B: Scan semua prompt Steal di workspace untuk mencari yang terjauh (Z paling negatif)
+    -- Step B: Jika pemain memilih stage tertentu (bukan Auto Furthest dan bukan Cycle All)
+    local stData = STAGE_TARGETS[selectedStage]
+    if stData and stData.pos and selectedStage ~= "Auto Furthest (Stage 10 - Paling Depan / Tersulit)" and selectedStage ~= "Cycle All Stages (10 ke 01 Bergantian)" then
+        -- Cari prompt Steal yang berada di radius 180 studs dari koordinat stage tersebut
+        local closestPrompt, closestPos, closestDist = nil, nil, 180
+        for _, p in ipairs(workspace:GetDescendants()) do
+            if p:IsA("ProximityPrompt") and p.Enabled and p.ActionText == "Steal" then
+                local parent = p.Parent
+                local pos = parent:IsA("BasePart") and parent.Position or (parent:IsA("Model") and parent:GetPivot().Position)
+                if pos then
+                    local d = (pos - stData.pos).Magnitude
+                    if d < closestDist then
+                        closestDist = d
+                        closestPos = pos
+                        closestPrompt = p
+                    end
+                end
+            end
+        end
+        if closestPos and closestPrompt then
+            return closestPos, closestPrompt
+        end
+        return stData.pos, nil
+    end
+    
+    -- Step C: Auto Furthest - Cari prompt Steal dengan koordinat Z paling negatif (stage terjauh)
     local bestPrompt = nil
     local bestPos = nil
     local minZ = 0
@@ -634,61 +662,93 @@ local function findTargetSeedPrompt(selectedSeed, selectedStage)
         return bestPos, bestPrompt
     end
     
-    -- Step C: Fallback ke koordinat tabel bibit atau stage
-    if seedData and seedData.pos then
-        return seedData.pos, nil
-    end
-    local stData = STAGE_TARGETS[selectedStage]
-    if stData and stData.pos then
-        return stData.pos, nil
-    end
-    
+    -- Fallback ke stage 10
     return Vector3.new(-77.2, 3.5, -6080.9), nil
 end
 
--- Flash Steal Routine (Maju di Langit Y+65 ➔ Sky-Drop Curi ➔ Tahan 1.1s Sesuai Hold Server ➔ Balik Markas)
+-- Flash Steal Routine (Maju di Langit Y+65 ➔ Tembus Jeruji Noclip Langsung Masuk KE DALAM KANDANG ➔ Tahan 1.15s Sesuai Server ➔ Balik Markas)
 local function executeFlashSteal(targetPos, targetPrompt)
     local hrp = getHrp()
     if not hrp then return false end
-    
+    local char = LocalPlayer.Character
     local markas = getBasePosition()
     local skyY = targetPos.Y + (config.skyFlightHeight or 65)
     
-    -- Lumpuhkan penjaga sebelum mendekat
+    -- 1. Lumpuhkan AI penjaga tanaman sebelum mendekat
     if config.antiGuardChase then
         pacifyPlantGuards()
     end
     
-    -- Step 1: Meluncur di stratosfer langit (Y + 65, jauh di atas radius pandang & deteksi guard)
+    -- 2. Aktifkan Noclip pada seluruh part karakter agar menembus jeruji/kandang bebas
+    if char then
+        for _, part in ipairs(char:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = false
+            end
+        end
+    end
+    
+    -- 3. Meluncur di stratosfer langit (Y + 65, jauh di atas pandangan guard)
     hrp.AssemblyLinearVelocity = Vector3.zero
     hrp.AssemblyAngularVelocity = Vector3.zero
     hrp.CFrame = CFrame.new(targetPos.X, skyY, targetPos.Z)
     task.wait(0.08)
     
-    -- Step 2: Sky-Drop sekejap langsung di samping bibit sasaran
-    local dropPos = targetPos + Vector3.new(0, 1.5, 0)
-    createSafePad(dropPos, 2.5)
-    hrp.CFrame = CFrame.new(dropPos)
+    -- 4. Tentukan posisi persis di dalam kandang (Inside Cage)
+    local promptToFire = targetPrompt
+    local insideCagePos = targetPos
+    
+    if promptToFire and promptToFire.Parent then
+        local pParent = promptToFire.Parent
+        insideCagePos = pParent:IsA("BasePart") and pParent.Position or (pParent:IsA("Model") and pParent:GetPivot().Position)
+    else
+        -- Scan prompt Steal di radius 150 studs dari targetPos
+        local nearP, nearDist = nil, 150
+        for _, p in ipairs(workspace:GetDescendants()) do
+            if p:IsA("ProximityPrompt") and p.Enabled and p.ActionText == "Steal" then
+                local pParent = p.Parent
+                local pPos = pParent:IsA("BasePart") and pParent.Position or (pParent:IsA("Model") and pParent:GetPivot().Position)
+                if pPos then
+                    local d = (pPos - targetPos).Magnitude
+                    if d < nearDist then
+                        nearDist = d
+                        nearP = p
+                        insideCagePos = pPos
+                    end
+                end
+            end
+        end
+        if nearP then
+            promptToFire = nearP
+        end
+    end
+    
+    -- 5. TELEPORT LANGSUNG KE DALAM KANDANG (INSIDE CAGE)
+    -- Catatan Penting: DILARANG membuat SafeLandingPad di sini karena part tebal menabrak jeruji kandang
+    -- dan mendorong karakter keluar ke depan kandang! Karakter masuk langsung ke pusat bibit di dalam kandang.
+    local cageDropPos = insideCagePos + Vector3.new(0, 0.2, 0)
+    hrp.CFrame = CFrame.new(cageDropPos)
     hrp.AssemblyLinearVelocity = Vector3.zero
     hrp.AssemblyAngularVelocity = Vector3.zero
     
-    -- Step 3: Trigger ProximityPrompt Steal dengan penahanan posisi stabil 1.1s
-    -- (Server Roblox memverifikasi HoldDuration 1.0s dan jarak <= 12 studs!)
-    local stolen = false
-    local promptToFire = targetPrompt
+    -- Jika prompt belum terdeteksi saat di atas (misal karena streaming), scan ulang dari dalam kandang
     if not promptToFire then
-        for _, prompt in ipairs(workspace:GetDescendants()) do
-            if prompt:IsA("ProximityPrompt") and prompt.Enabled and prompt.ActionText == "Steal" then
-                local pParent = prompt.Parent
+        for _, p in ipairs(workspace:GetDescendants()) do
+            if p:IsA("ProximityPrompt") and p.Enabled and p.ActionText == "Steal" then
+                local pParent = p.Parent
                 local pPos = pParent:IsA("BasePart") and pParent.Position or (pParent:IsA("Model") and pParent:GetPivot().Position)
-                if pPos and (hrp.Position - pPos).Magnitude <= 15 then
-                    promptToFire = prompt
+                if pPos and (hrp.Position - pPos).Magnitude <= 35 then
+                    promptToFire = p
+                    cageDropPos = pPos + Vector3.new(0, 0.2, 0)
+                    hrp.CFrame = CFrame.new(cageDropPos)
                     break
                 end
             end
         end
     end
     
+    -- 6. Trigger ProximityPrompt Steal di dalam kandang (Line of Sight 100% Bebas Rintangan)
+    local stolen = false
     if promptToFire then
         pcall(function() promptToFire.HoldDuration = 0 end)
         if fireproximityprompt then
@@ -696,60 +756,48 @@ local function executeFlashSteal(targetPos, targetPrompt)
         end
         pcall(function() promptToFire:InputHoldBegin() end)
         
-        -- Kunci posisi karakter di samping bibit selama durasi hold server (1.1s)
         local holdStart = tick()
         while (tick() - holdStart) < 1.15 do
-            hrp.CFrame = CFrame.new(dropPos)
+            -- Pertahankan karakter tetap di dalam kandang dengan noclip aktif dan posisi terkunci
+            if char then
+                for _, p in ipairs(char:GetDescendants()) do
+                    if p:IsA("BasePart") then
+                        p.CanCollide = false
+                    end
+                end
+            end
+            hrp.CFrame = CFrame.new(cageDropPos)
             hrp.AssemblyLinearVelocity = Vector3.zero
+            hrp.AssemblyAngularVelocity = Vector3.zero
             if fireproximityprompt then
                 fireproximityprompt(promptToFire, 0)
             end
-            task.wait(0.1)
+            task.wait(0.08)
         end
         
         pcall(function() promptToFire:InputHoldEnd() end)
         stolen = true
     else
-        -- Fallback: Cari prompt apa saja di radius 15 studs
-        for _, prompt in ipairs(workspace:GetDescendants()) do
-            if prompt:IsA("ProximityPrompt") and prompt.Enabled then
-                local pParent = prompt.Parent
-                local pPos = pParent:IsA("BasePart") and pParent.Position or (pParent:IsA("Model") and pParent:GetPivot().Position)
-                if pPos and (hrp.Position - pPos).Magnitude <= 15 then
-                    pcall(function() prompt.HoldDuration = 0 end)
-                    if fireproximityprompt then fireproximityprompt(prompt, 0) end
-                    pcall(function() prompt:InputHoldBegin() end)
-                    local hStart = tick()
-                    while (tick() - hStart) < 1.15 do
-                        hrp.CFrame = CFrame.new(dropPos)
-                        hrp.AssemblyLinearVelocity = Vector3.zero
-                        task.wait(0.1)
-                    end
-                    pcall(function() prompt:InputHoldEnd() end)
-                    stolen = true
-                    break
-                end
-            end
-        end
+        task.wait(0.3)
     end
     
-    -- Step 4: INSTANT WARP LANGSUNG KEMBALI KE MARKAS / TAMAN
+    -- 7. INSTANT WARP LANGSUNG KEMBALI KE MARKAS / TAMAN
     hrp.AssemblyLinearVelocity = Vector3.zero
     hrp.AssemblyAngularVelocity = Vector3.zero
     hrp.CFrame = CFrame.new(markas)
     task.wait(0.2)
     
-    -- Step 5: Pegang bibit di tangan jika opsi aktif
+    -- 8. Pegang bibit di tangan jika opsi aktif
     if config.holdSeedInHand then
         equipStolenSeed()
     end
     
-    -- Step 6: Tanam bibit ke petak kebun jika Auto Plant aktif
+    -- 9. Tanam bibit ke petak kebun jika Auto Plant aktif
     if config.autoPlant then
         plantHeldSeedAtGarden()
     end
     
-    -- Step 7: Sedot cash pasif kebun di markas jika aktif
+    -- 10. Sedot cash pasif kebun di markas jika aktif
     if config.autoCollectCash then
         for _, plot in ipairs(workspace:GetDescendants()) do
             if plot:IsA("BasePart") and (plot.Name == "DF_BaseGlow" or string.find(plot.Name:lower(), "cash") or string.find(plot.Name:lower(), "coin")) then
@@ -1175,6 +1223,32 @@ pcall(function()
 end)
 if not ScreenGui.Parent then ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui") end
 
+-- [12.1] 💎 POPUP DROPDOWN MANAGER (1:1 MY FLOWER SHOP EXACT STANDARD)
+local DD = { closers = {}, blocker = nil }
+local function closeOtherDropdowns(exceptId)
+    for id, fn in pairs(DD.closers) do
+        if id ~= exceptId then pcall(fn) end
+    end
+end
+
+local function dropdownBlocker()
+    if DD.blocker and DD.blocker.Parent then return DD.blocker end
+    local b = Instance.new("TextButton")
+    b.Name = "BH_DropdownBlocker"
+    b.Size = UDim2.new(1, 0, 1, 0)
+    b.BackgroundTransparency = 1
+    b.Text = ""
+    b.AutoButtonColor = false
+    b.Visible = false
+    b.ZIndex = 499
+    b.Parent = ScreenGui
+    b.MouseButton1Click:Connect(function()
+        closeOtherDropdowns(nil)
+    end)
+    DD.blocker = b
+    return b
+end
+
 -- Main Frame (660 x 440)
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
@@ -1416,6 +1490,7 @@ CircleText.Font = THEME.Font
 local isMinimized = false
 local function doMinimize()
     if isMinimized then return end
+    closeOtherDropdowns(nil)
     isMinimized = true
     TweenService:Create(MainScale, TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.In), {Scale = 0}):Play()
     task.wait(0.25)
@@ -1520,6 +1595,7 @@ ModalBtnCancel.TextSize = 13
 Instance.new("UICorner", ModalBtnCancel).CornerRadius = UDim.new(0, 8)
 
 CloseBtn.MouseButton1Click:Connect(function()
+    closeOtherDropdowns(nil)
     ModalOverlay.Visible = true
 end)
 ModalBtnCancel.MouseButton1Click:Connect(function()
@@ -1595,6 +1671,7 @@ local function createTab(tabId, titleText)
     tabs[tabId] = tabData
 
     btn.MouseButton1Click:Connect(function()
+        closeOtherDropdowns(nil)
         for _, t in pairs(tabs) do
             t.Page.Visible = false
             t.Button.BackgroundColor3 = THEME.Card
@@ -1784,21 +1861,32 @@ local function createSlider(parent, labelText, minVal, maxVal, defaultVal, callb
     return container
 end
 
-local function createDropdown(parent, labelText, options, currentSelection, callback)
-    options = options or {}
-    local safeSel = tostring(currentSelection or (options and options[1]) or "Auto")
-
+-- [12.5] 💎 POPUP DROPDOWN MENU ENGINE (1:1 MY FLOWER SHOP EXACT STANDARD)
+local function createDropdown(parent, labelText, options, arg4, arg5)
+    local defaultVal = type(arg4) == "string" and arg4 or (type(arg5) == "string" and arg5 or nil)
+    local callback   = type(arg5) == "function" and arg5 or (type(arg4) == "function" and arg4 or nil)
+    
+    local safeSel = tostring(defaultVal or (type(options) == "table" and options[1]) or "Auto")
+    local selectedValue = safeSel
+    local isOpen = false
+    local myId = {}
+    
+    -- Main Row Container
     local ddRow = Instance.new("Frame")
     ddRow.Size = UDim2.new(1, 0, 0, 38)
     ddRow.BackgroundColor3 = (THEME and THEME.Slot) or Color3.fromRGB(25, 27, 40)
     ddRow.BorderSizePixel = 0
     ddRow.Parent = parent
-
-    local ddCorner = Instance.new("UICorner")
-    ddCorner.CornerRadius = UDim.new(0, 6)
-    ddCorner.Parent = ddRow
-
-    local ddLabel = Instance.new("TextLabel")
+    ddRow.ZIndex = 5
+    
+    local ddCorner = Instance.new("UICorner", ddRow)
+    ddCorner.CornerRadius = UDim.new(0, 8)
+    local ddStroke = Instance.new("UIStroke", ddRow)
+    ddStroke.Color = THEME.Border
+    ddStroke.Thickness = 1
+    
+    -- Left Label
+    local ddLabel = Instance.new("TextLabel", ddRow)
     ddLabel.Size = UDim2.new(0.42, 0, 1, 0)
     ddLabel.Position = UDim2.new(0, 12, 0, 0)
     ddLabel.BackgroundTransparency = 1
@@ -1806,42 +1894,187 @@ local function createDropdown(parent, labelText, options, currentSelection, call
     ddLabel.TextSize = 12
     ddLabel.TextColor3 = THEME.Text
     ddLabel.TextXAlignment = Enum.TextXAlignment.Left
+    ddLabel.TextTruncate = Enum.TextTruncate.AtEnd
     ddLabel.Text = labelText or "Dropdown"
-    ddLabel.Parent = ddRow
-
-    local ddBtn = Instance.new("TextButton")
-    ddBtn.Size = UDim2.new(0.55, -12, 0, 26)
-    ddBtn.Position = UDim2.new(0.45, 0, 0.5, -13)
+    ddLabel.ZIndex = 6
+    
+    -- Right Value Button / Trigger
+    local ddBtn = Instance.new("TextButton", ddRow)
+    ddBtn.Size = UDim2.new(0.55, -12, 0, 28)
+    ddBtn.Position = UDim2.new(0.45, 0, 0.5, -14)
     ddBtn.BackgroundColor3 = THEME.Panel
-    ddBtn.Font = THEME.Font
-    ddBtn.TextSize = 11
-    ddBtn.TextColor3 = (THEME and THEME.Gold) or (THEME and THEME.Title) or Color3.fromRGB(255, 215, 0)
-    ddBtn.Text = safeSel .. " ▼"
+    ddBtn.AutoButtonColor = false
+    ddBtn.Text = ""
     ddBtn.BorderSizePixel = 0
-    ddBtn.Parent = ddRow
-    Instance.new("UICorner", ddBtn).CornerRadius = UDim.new(0, 4)
-
-    local currentIndex = 1
-    for i, opt in ipairs(options) do
-        if tostring(opt) == safeSel then
-            currentIndex = i
-            break
-        end
+    ddBtn.ZIndex = 6
+    Instance.new("UICorner", ddBtn).CornerRadius = UDim.new(0, 6)
+    local btnStroke = Instance.new("UIStroke", ddBtn)
+    btnStroke.Color = THEME.Border
+    btnStroke.Thickness = 1
+    
+    local ddValLabel = Instance.new("TextLabel", ddBtn)
+    ddValLabel.Size = UDim2.new(1, -24, 1, 0)
+    ddValLabel.Position = UDim2.new(0, 8, 0, 0)
+    ddValLabel.BackgroundTransparency = 1
+    ddValLabel.Font = THEME.Font
+    ddValLabel.TextSize = 11
+    ddValLabel.TextColor3 = (THEME and THEME.Title) or (THEME and THEME.Gold) or Color3.fromRGB(255, 215, 0)
+    ddValLabel.TextXAlignment = Enum.TextXAlignment.Left
+    ddValLabel.TextTruncate = Enum.TextTruncate.AtEnd
+    ddValLabel.Text = safeSel
+    ddValLabel.ZIndex = 7
+    
+    local ddArrow = Instance.new("TextLabel", ddBtn)
+    ddArrow.Size = UDim2.new(0, 18, 1, 0)
+    ddArrow.Position = UDim2.new(1, -20, 0, 0)
+    ddArrow.BackgroundTransparency = 1
+    ddArrow.Font = THEME.Font
+    ddArrow.TextSize = 11
+    ddArrow.TextColor3 = (THEME and THEME.Title) or (THEME and THEME.Gold) or Color3.fromRGB(255, 215, 0)
+    ddArrow.Text = "▼"
+    ddArrow.ZIndex = 7
+    
+    -- Floating ScrollingFrame List attached to ScreenGui (ZIndex 500)
+    local listFrame = nil
+    local function getList()
+        if listFrame and listFrame.Parent then return listFrame end
+        local l = Instance.new("ScrollingFrame")
+        l.Name = "BH_DropdownList"
+        l.Size = UDim2.fromOffset(0, 0)
+        l.BackgroundColor3 = THEME.Panel
+        l.BorderSizePixel = 0
+        l.ScrollBarThickness = 4
+        l.ScrollBarImageColor3 = (THEME and THEME.Title) or Color3.fromRGB(255, 215, 0)
+        l.Visible = false
+        l.ZIndex = 500
+        l.ClipsDescendants = true
+        Instance.new("UICorner", l).CornerRadius = UDim.new(0, 8)
+        local lStroke = Instance.new("UIStroke", l)
+        lStroke.Color = (THEME and THEME.Title) or Color3.fromRGB(255, 215, 0)
+        lStroke.Thickness = 1.5
+        
+        local ll = Instance.new("UIListLayout", l)
+        ll.SortOrder = Enum.SortOrder.LayoutOrder
+        ll.Padding = UDim.new(0, 3)
+        
+        local lp = Instance.new("UIPadding", l)
+        lp.PaddingTop = UDim.new(0, 4)
+        lp.PaddingBottom = UDim.new(0, 4)
+        lp.PaddingLeft = UDim.new(0, 4)
+        lp.PaddingRight = UDim.new(0, 4)
+        
+        l.Parent = ScreenGui
+        listFrame = l
+        return l
     end
-
-    ddBtn.MouseButton1Click:Connect(function()
-        if not options or #options == 0 then return end
-        currentIndex = (currentIndex % #options) + 1
-        local newSel = options[currentIndex]
-        ddBtn.Text = tostring(newSel or "") .. " ▼"
-        if callback then
-            callback(newSel)
+    
+    local function listGeom()
+        local s = (ScreenGui:FindFirstChildOfClass("UIScale") and ScreenGui:FindFirstChildOfClass("UIScale").Scale) or 1
+        local ap, as = ddBtn.AbsolutePosition, ddBtn.AbsoluteSize
+        local w = math.max(as.X / s, 280)
+        local x = (ap.X + as.X) / s - w
+        local y = (ap.Y + as.Y + 4) / s
+        if x < 12 then x = 12 end
+        return w, x, y
+    end
+    
+    local function closeList()
+        if not isOpen then return end
+        isOpen = false
+        ddArrow.Text = "▼"
+        if DD.blocker then DD.blocker.Visible = false end
+        if not listFrame then return end
+        local w = select(1, listGeom())
+        TweenService:Create(listFrame, TweenInfo.new(0.14, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = UDim2.fromOffset(w, 0) }):Play()
+        task.delay(0.15, function()
+            if not isOpen and listFrame then listFrame.Visible = false end
+        end)
+    end
+    
+    DD.closers[myId] = closeList
+    
+    local function rebuild()
+        local lst = getList()
+        for _, child in ipairs(lst:GetChildren()) do
+            if child:IsA("TextButton") then
+                child:Destroy()
+            end
         end
-        saveConfig()
+        
+        local items = type(options) == "function" and options() or options
+        items = items or {}
+        
+        -- Cancel Button (Red) at Top
+        local cancelBtn = Instance.new("TextButton", lst)
+        cancelBtn.Size = UDim2.new(1, -6, 0, 26)
+        cancelBtn.BackgroundColor3 = Color3.fromRGB(180, 40, 40)
+        cancelBtn.Text = "✖ TUTUP (batal, tidak memilih)"
+        cancelBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+        cancelBtn.Font = THEME.Font
+        cancelBtn.TextSize = 11
+        cancelBtn.LayoutOrder = -1
+        cancelBtn.ZIndex = 501
+        Instance.new("UICorner", cancelBtn).CornerRadius = UDim.new(0, 6)
+        cancelBtn.MouseButton1Click:Connect(function()
+            closeList()
+        end)
+        
+        -- Item Buttons
+        for i, item in ipairs(items) do
+            local optBtn = Instance.new("TextButton", lst)
+            optBtn.Size = UDim2.new(1, -6, 0, 26)
+            local isSelected = (tostring(item) == tostring(selectedValue))
+            optBtn.BackgroundColor3 = isSelected and Color3.fromRGB(38, 44, 68) or ((THEME and THEME.Slot) or Color3.fromRGB(25, 27, 40))
+            optBtn.Text = "  " .. tostring(item)
+            optBtn.TextColor3 = isSelected and ((THEME and THEME.Title) or Color3.fromRGB(255, 215, 0)) or THEME.Text
+            optBtn.Font = THEME.FontReg
+            optBtn.TextSize = 11
+            optBtn.TextXAlignment = Enum.TextXAlignment.Left
+            optBtn.TextTruncate = Enum.TextTruncate.AtEnd
+            optBtn.LayoutOrder = i
+            optBtn.ZIndex = 501
+            Instance.new("UICorner", optBtn).CornerRadius = UDim.new(0, 6)
+            
+            optBtn.MouseButton1Click:Connect(function()
+                selectedValue = item
+                ddValLabel.Text = tostring(item)
+                closeList()
+                if callback then
+                    callback(item)
+                end
+                saveConfig()
+            end)
+        end
+        
+        lst.CanvasSize = UDim2.new(0, 0, 0, (#items + 1) * 29 + 10)
+    end
+    
+    ddBtn.MouseButton1Click:Connect(function()
+        if isOpen then
+            closeList()
+            return
+        end
+        closeOtherDropdowns(myId)
+        local lst = getList()
+        rebuild()
+        isOpen = true
+        local w, x, y = listGeom()
+        local items = type(options) == "function" and options() or options
+        items = items or {}
+        local targetH = math.min((#items + 1) * 29 + 10, 180)
+        
+        lst.Position = UDim2.fromOffset(x, y)
+        lst.Size = UDim2.fromOffset(w, 0)
+        lst.Visible = true
+        dropdownBlocker().Visible = true
+        
+        TweenService:Create(lst, TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = UDim2.fromOffset(w, targetH) }):Play()
+        ddArrow.Text = "▲"
     end)
-
+    
     return ddRow
 end
+local makeDropdown = createDropdown
 
 local function createButton(parent, labelText, color, callback)
     local btn = Instance.new("TextButton", parent)
