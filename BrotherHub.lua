@@ -338,7 +338,7 @@ local HUB_ROUTER = {
     {
         Name = "Mine It",
         Match = function(pid, gid, gname)
-            if pid == 92345193036001 then return true end
+            if pid == 92345193036001 or pid == 91350414343161 then return true end
             if string.find(gname, "mine it") then return true end
             local ws = game:GetService("Workspace")
             if ws:FindFirstChild("spawned_stones") then return true end
