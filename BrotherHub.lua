@@ -120,6 +120,17 @@ end)
 
 local HUB_ROUTER = {
     {
+        Name = "Fish On",
+        Match = function(pid, gid, gname)
+            if pid == 111189697641017 then return true end
+            if string.find(gname, "fish on") then return true end
+            local rs = game:GetService("ReplicatedStorage")
+            if rs:FindFirstChild("RemoteEvents") and (rs.RemoteEvents:FindFirstChild("Fishing") or rs.RemoteEvents:FindFirstChild("SellFish")) then return true end
+            return false
+        end,
+        GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/FishOn_BROTHERHUB.lua",
+    },
+    {
         Name = "Dig Into Secrets",
         Match = function(pid, gid, gname)
             if pid == 119409763193569 or pid == 86641960184547 then return true end
