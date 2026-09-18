@@ -1005,9 +1005,30 @@ local function countTotalPlayerBuckets()
 end
 
 -- Helper: Auto Beli Ember Air di Toko Peralatan (UseItemStore / 道具商店) menggunakan Cash in-game (BUKAN Robux!)
--- Dengan verifikasi inventori sebelum & sesudah: HANYA notifikasi jika ember benar-benar bertambah!
--- Helper: Buka Toko Peralatan & Pengurangan Waktu Tumbuh (道具商店 / UseItemStore) secara resmi
-local function openToolShop()
+-- 1:1 STANDAR MY FLOWER SHOP (100% SILENT BACKGROUND PURCHASE - TIDAK MENGGANGGU LAYAR PEMAIN)
+local userManuallyOpenedShop = false
+
+local function getToolShopFrame()
+    local pg = LocalPlayer:FindFirstChildOfClass("PlayerGui")
+    if not pg then return nil end
+    local main02 = pg:FindFirstChild("Main02")
+    if not main02 then return nil end
+    
+    local sf = main02:FindFirstChild("道具商店", true)
+    if not sf then
+        for _, desc in ipairs(main02:GetDescendants()) do
+            if desc:IsA("TextLabel") and (string.find(desc.Text, "Restock in") or string.find(desc.Text, "Water Bucket")) then
+                local p = desc
+                while p and p.Parent and p.Parent ~= main02 do p = p.Parent end
+                if p and p:IsA("Frame") then sf = p break end
+            end
+        end
+    end
+    return sf
+end
+
+-- Helper: Buka Toko Peralatan & Pengurangan Waktu Tumbuh (道具商店 / UseItemStore)
+local function openToolShop(forceVisible)
     pcall(function()
         local sys = workspace:FindFirstChild("系统")
         local itemShop = sys and sys:FindFirstChild("道具商店_手雷")
@@ -1019,7 +1040,7 @@ local function openToolShop()
         end
         if p and p:IsA("ProximityPrompt") then
             p.HoldDuration = 0
-            p.MaxActivationDistance = 10 -- Jarak normal 10 studs, TIDAK PERNAH 99999!
+            p.MaxActivationDistance = 10
             if fireproximityprompt then
                 fireproximityprompt(p, 0)
             end
@@ -1028,38 +1049,72 @@ local function openToolShop()
             p:InputHoldEnd()
         end
     end)
-    pcall(function()
-        local pg = LocalPlayer:FindFirstChildOfClass("PlayerGui")
-        if pg and pg:FindFirstChild("Main02") then
-            local sf = pg.Main02:FindFirstChild("道具商店", true)
-            if sf then sf.Visible = true end
+    
+    local sf = getToolShopFrame()
+    if sf then
+        if forceVisible then
+            userManuallyOpenedShop = true
+            sf.Position = UDim2.new(0.5, 0, 0.5, 0)
+            sf.Visible = true
+        else
+            -- 100% SILENT: Jangan pernah munculkan di layar pengguna!
+            if not userManuallyOpenedShop then
+                sf.Visible = false
+            end
         end
-    end)
+    end
 end
 
+-- Guard: Auto-Suppress Shop GUI Popups (1:1 My Flower Shop Silent Background Buy)
+task.spawn(function()
+    local closeHooked = false
+    while true do
+        pcall(function()
+            local sf = getToolShopFrame()
+            if sf then
+                if not closeHooked then
+                    for _, c in ipairs(sf:GetDescendants()) do
+                        if (c:IsA("ImageButton") or c:IsA("TextButton")) and (c.Name == "关闭按钮" or c.Name == "Close" or string.find(c.Name, "关闭")) then
+                            c.MouseButton1Click:Connect(function()
+                                userManuallyOpenedShop = false
+                                sf.Visible = false
+                            end)
+                            closeHooked = true
+                        end
+                    end
+                end
+                if config.autoBuyBuckets and not userManuallyOpenedShop and sf.Visible then
+                    sf.Visible = false
+                    sf.Position = UDim2.new(0.5, 0, 0.5, 0)
+                end
+            end
+        end)
+        task.wait(0.5)
+    end
+end)
+
 -- Helper: Auto Beli Pengurangan Waktu Tumbuh (Growth Time / Water Bucket) di 道具商店 dengan Cash Game (100% Bebas Robux)
--- Mendukung opsi 'Borong Semua' (Buy All In-Stock) sampai seluruh stok habis!
+-- Berjalan 100% di background (Senyap) tanpa membuka jendela GUI di layar!
 local function buyGrowthTimeWithCash(targetBucket, buyAll)
-    openToolShop()
-    task.wait(0.15)
-    
     local pg = LocalPlayer:FindFirstChildOfClass("PlayerGui")
     if not pg then return false, nil end
     local main02 = pg:FindFirstChild("Main02")
     if not main02 then return false, nil end
     
-    local shopFrame = main02:FindFirstChild("道具商店", true)
+    local shopFrame = getToolShopFrame()
     if not shopFrame then
-        for _, desc in ipairs(main02:GetDescendants()) do
-            if desc:IsA("TextLabel") and (string.find(desc.Text, "Restock in") or string.find(desc.Text, "Water Bucket")) then
-                local p = desc
-                while p and p.Parent and p.Parent ~= main02 do p = p.Parent end
-                if p and p:IsA("Frame") then shopFrame = p break end
-            end
-        end
+        openToolShop(false)
+        task.wait(0.15)
+        shopFrame = getToolShopFrame()
     end
     if not shopFrame then return false, nil end
-    shopFrame.Visible = true
+    
+    local origPos = shopFrame.Position
+    -- 100% SILENT BACKGROUND: Sembunyikan Frame dari pandangan pemain
+    if not userManuallyOpenedShop then
+        shopFrame.Position = UDim2.new(50, 0, 50, 0)
+        shopFrame.Visible = false
+    end
     
     local scroller = shopFrame:FindFirstChildWhichIsA("ScrollingFrame", true)
     local boughtAny = false
@@ -1187,6 +1242,12 @@ local function buyGrowthTimeWithCash(targetBucket, buyAll)
                 end
             end
         end
+    end
+    
+    -- Pastikan GUI toko tetap tertutup 100% dan posisi normal
+    if not userManuallyOpenedShop and shopFrame then
+        shopFrame.Visible = false
+        shopFrame.Position = origPos or UDim2.new(0.5, 0, 0.5, 0)
     end
     
     return boughtAny, lastBoughtName
@@ -1569,7 +1630,7 @@ registerThread(function()
     end
 end)
 
--- [8A] 🪣 AUTO BUY WATER BUCKETS (TOKO EMBER AIR - CASH GAME ONLY)
+-- [8A] 🪣 AUTO BUY WATER BUCKETS (TOKO EMBER AIR - CASH GAME ONLY - 100% SILENT BACKGROUND)
 registerThread(function()
     while true do
         if config.autoBuyBuckets then
@@ -1581,7 +1642,7 @@ registerThread(function()
                 warn("[BrotherHub] buyGrowthTimeWithCash error: " .. tostring(err))
             end
         end
-        task.wait(1.5)
+        task.wait(3.0)
     end
 end)
 
@@ -3263,14 +3324,16 @@ createButton(secBuckets, "🛒 Borong Semua Sekarang (Buy All In-Stock Now)", TH
     end
 end)
 createButton(secBuckets, "Buka / Tutup Toko (Toggle Frame 道具商店)", THEME.Panel, function()
-    openToolShop()
-    pcall(function()
-        local pg = LocalPlayer:FindFirstChildOfClass("PlayerGui")
-        if pg and pg:FindFirstChild("Main02") then
-            local f = pg.Main02:FindFirstChild("\233\129\147\229\133\183\229\149\134\229\186\151") or pg.Main02:FindFirstChild("道具商店")
-            if f then f.Visible = not f.Visible end
-        end
-    end)
+    local sf = getToolShopFrame()
+    if not sf then
+        openToolShop(true)
+        sf = getToolShopFrame()
+    end
+    if sf then
+        userManuallyOpenedShop = not userManuallyOpenedShop
+        sf.Position = UDim2.new(0.5, 0, 0.5, 0)
+        sf.Visible = userManuallyOpenedShop
+    end
 end)
 
 local secShop = createSection(pageShop, tr("ShopTitle"), tr("ShopDesc"))
