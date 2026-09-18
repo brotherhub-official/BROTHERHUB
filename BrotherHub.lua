@@ -120,6 +120,17 @@ end)
 
 local HUB_ROUTER = {
     {
+        Name = "Steal A Seed",
+        Match = function(pid, gid, gname)
+            if pid == 122216176958450 then return true end
+            if string.find(gname, "steal a seed") then return true end
+            local rs = game:GetService("ReplicatedStorage")
+            if rs:FindFirstChild("ServerRemoteEvent") and rs:FindFirstChild("RemovePlantHand") then return true end
+            return false
+        end,
+        GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/StealASeed_BROTHERHUB.lua",
+    },
+    {
         Name = "Fish On",
         Match = function(pid, gid, gname)
             if pid == 111189697641017 then return true end
