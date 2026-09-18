@@ -820,12 +820,12 @@ end
 
 local function isPromptAlreadyStolen(p, pos)
     checkAndClearResetHistory()
-    if p and stolenSeedsHistory[p] and (tick() - stolenSeedsHistory[p]) < 50 then
+    if p and stolenSeedsHistory[p] and (tick() - stolenSeedsHistory[p]) < 25 then
         return true
     end
     if pos then
-        local posKey = tostring(math.floor(pos.X / 2.5)) .. "_" .. tostring(math.floor(pos.Z / 2.5))
-        if stolenSeedsHistory[posKey] and (tick() - stolenSeedsHistory[posKey]) < 50 then
+        local posKey = tostring(math.floor(pos.X / 3.0)) .. "_" .. tostring(math.floor(pos.Z / 3.0))
+        if stolenSeedsHistory[posKey] and (tick() - stolenSeedsHistory[posKey]) < 4 then
             return true
         end
     end
@@ -1441,9 +1441,7 @@ registerThread(function()
                     local targetPos, targetPrompt = nil, nil
                     local sel = config.selectedStage or "Auto Furthest (Stage 10 - Paling Depan / Tersulit)"
                     
-                    if config.customPalingDepanPos and (sel == "Auto Furthest (Stage 10 - Paling Depan / Tersulit)" or not sel) then
-                        targetPos = config.customPalingDepanPos
-                    elseif sel == "Cycle All Stages (10 ke 01 Bergantian)" then
+                    if sel == "Cycle All Stages (10 ke 01 Bergantian)" then
                         local stKey = cycleOrder[cycleIndex]
                         cycleIndex = (cycleIndex % #cycleOrder) + 1
                         for _, v in pairs(STAGE_TARGETS) do
@@ -1454,10 +1452,10 @@ registerThread(function()
                         end
                         if targetPos then
                             for _, p in ipairs(workspace:GetDescendants()) do
-                                if p:IsA("ProximityPrompt") and p.Enabled and p.ActionText == "Steal" then
+                                if p:IsA("ProximityPrompt") and p.Enabled and p.ActionText == "Steal" and not isPromptAlreadyStolen(p) then
                                     local parent = p.Parent
                                     local pos = parent:IsA("BasePart") and parent.Position or (parent:IsA("Model") and parent:GetPivot().Position)
-                                    if pos and ((pos - targetPos).Magnitude <= 220 or math.abs(pos.Z - targetPos.Z) <= 120) then
+                                    if pos and not isPromptAlreadyStolen(p, pos) and ((pos - targetPos).Magnitude <= 220 or math.abs(pos.Z - targetPos.Z) <= 120) then
                                         targetPos = pos
                                         targetPrompt = p
                                         break
@@ -1469,28 +1467,12 @@ registerThread(function()
                         targetPos, targetPrompt = findTargetSeedPrompt(config.targetSeedName, sel)
                     end
                     
-                    if not targetPos then
-                        local stData = STAGE_TARGETS[sel]
-                        targetPos = (stData and stData.pos) or Vector3.new(-77.2, 3.5, -6080.9)
-                    end
-                    
-                    -- Eksekusi steal langsung ke daratan
-                    local stolen = executeFlashSteal(targetPos, targetPrompt)
-                    
-                    -- Jika opsi Smart Wait aktif:
-                    if config.smartWaitSeed then
-                        if not stolen then
-                            -- Bibit kosong / belum spawn / cooldown: baca sisa waktu reset atau tahan sebentar di markas
-                            local remSec = getArenaResetCountdown()
-                            if remSec and remSec > 1 then
-                                emptyStageWaitUntil = tick() + remSec
-                            else
-                                emptyStageWaitUntil = tick() + 3.0
-                            end
-                        else
-                            -- Sukses curi 1 bibit dari kandang: langsung berangkat ambil bibit berikutnya (borong 5 bibit 1 per 1)
-                            emptyStageWaitUntil = 0
-                        end
+                    -- HANYA jika prompt bibit ditemukan, eksekusi flash steal (teleport ke seed -> tekan E -> balik ke markas)
+                    if targetPrompt and targetPos then
+                        executeFlashSteal(targetPos, targetPrompt)
+                    else
+                        -- Jika tidak ada bibit aktif saat ini (cooldown/belum spawn), tetap diam aman di markas
+                        task.wait(0.3)
                     end
                 end
             end)
