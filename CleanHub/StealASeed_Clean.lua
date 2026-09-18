@@ -110,11 +110,11 @@ local STAGE_TARGETS = {
 }
 
 local BUCKET_OPTIONS = {
-    "All In-Stock",
-    "Yellow Water Bucket",
-    "Orange Water Bucket",
-    "Purple Water Bucket",
-    "Water Bucket"
+    "Borong Semua Stok Tersedia (All In-Stock)",
+    "Purple Water Bucket (-80% Growth Time - Mythic)",
+    "Orange Water Bucket (-60% Growth Time - Legendary)",
+    "Yellow Water Bucket (-40% Growth Time - Epic)",
+    "Water Bucket (-20% Growth Time - Common)"
 }
 
 local STAGE_KEYS = {
@@ -217,7 +217,7 @@ local config = {
     blockRobuxPopups      = true,
     autoBuySeeds          = false,
     autoBuyBuckets        = false,    -- Auto Beli Ember Air (Water Bucket Shop - 100% Cash)
-    targetBucket          = "All In-Stock", -- Pilihan ember di droplist
+    targetBucket          = "Borong Semua Stok Tersedia (All In-Stock)", -- Pilihan ember di droplist
     targetSeeds           = {
         ["Tomato"]        = false,
         ["Potato"]        = false,
@@ -962,211 +962,192 @@ end
 
 -- Helper: Auto Beli Ember Air di Toko Peralatan (UseItemStore / 道具商店) menggunakan Cash in-game (BUKAN Robux!)
 -- Dengan verifikasi inventori sebelum & sesudah: HANYA notifikasi jika ember benar-benar bertambah!
-local function buyBucketWithCash(targetBucket)
+-- Helper: Buka Toko Peralatan & Pengurangan Waktu Tumbuh (道具商店 / UseItemStore) secara resmi
+local function openToolShop()
+    pcall(function()
+        for _, p in ipairs(workspace:GetDescendants()) do
+            if p:IsA("ProximityPrompt") and p.Name == "e_touch" then
+                local parent = p.Parent
+                if parent and (parent.Name == "打开" or (parent.Parent and string.find(parent.Parent.Name, "道具商店"))) then
+                    p.HoldDuration = 0
+                    p.MaxActivationDistance = 99999
+                    if fireproximityprompt then
+                        fireproximityprompt(p, 0)
+                    end
+                    p:InputHoldBegin()
+                    task.wait(0.05)
+                    p:InputHoldEnd()
+                    break
+                end
+            end
+        end
+    end)
+    pcall(function()
+        local pg = LocalPlayer:FindFirstChildOfClass("PlayerGui")
+        if pg and pg:FindFirstChild("Main02") then
+            local sf = pg.Main02:FindFirstChild("道具商店", true)
+            if sf then sf.Visible = true end
+        end
+    end)
+end
+
+-- Helper: Auto Beli Pengurangan Waktu Tumbuh (Growth Time / Water Bucket) di 道具商店 dengan Cash Game (100% Bebas Robux)
+-- Mendukung opsi 'Borong Semua' (Buy All In-Stock) sampai seluruh stok habis!
+local function buyGrowthTimeWithCash(targetBucket, buyAll)
+    openToolShop()
+    task.wait(0.15)
+    
     local pg = LocalPlayer:FindFirstChildOfClass("PlayerGui")
     if not pg then return false, nil end
     local main02 = pg:FindFirstChild("Main02")
     if not main02 then return false, nil end
-
-    -- Cari frame toko alat/ember (道具商店)
-    local shopFrame = main02:FindFirstChild("\233\129\147\229\133\183\229\149\134\229\186\151", true)
+    
+    local shopFrame = main02:FindFirstChild("道具商店", true)
     if not shopFrame then
         for _, desc in ipairs(main02:GetDescendants()) do
             if desc:IsA("TextLabel") and (string.find(desc.Text, "Restock in") or string.find(desc.Text, "Water Bucket")) then
                 local p = desc
-                while p and p.Parent and p.Parent ~= main02 do
-                    p = p.Parent
-                end
-                if p and p:IsA("Frame") then
-                    shopFrame = p
-                    break
-                end
+                while p and p.Parent and p.Parent ~= main02 do p = p.Parent end
+                if p and p:IsA("Frame") then shopFrame = p break end
             end
         end
     end
-
     if not shopFrame then return false, nil end
-
+    shopFrame.Visible = true
+    
     local scroller = shopFrame:FindFirstChildWhichIsA("ScrollingFrame", true)
     local boughtAny = false
-    local boughtName = nil
-
-    -- Pastikan frame sementara visible agar engine input Roblox dapat memproses klik
-    local wasVisible = shopFrame.Visible
-    if not wasVisible then
-        shopFrame.Visible = true
-    end
-
-    -- Scan semua tombol pembelian Cash (货币购买)
-    for _, btn in ipairs(shopFrame:GetDescendants()) do
-        if (btn:IsA("ImageButton") or btn:IsA("TextButton")) and btn.Visible then
-            local btnName = btn.Name
-            local isCashBtn = (btnName == "\232\180\167\229\184\129\232\180\173\228\185\176" or btnName == "货币购买")
-            
-            -- Hindari tombol '关闭' (Disabled / Out of Stock)
-            if btnName == "\229\133\179\233\151\173" or btnName == "关闭" then
-                isCashBtn = false
-            end
-
-            -- 100% Bebas Robux: Pastikan BUKAN di dalam frame 罗宝购买 / Robux
-            local isRobux = false
-            local ancestor = btn.Parent
-            while ancestor and ancestor ~= shopFrame do
-                local aName = ancestor.Name
-                if aName == "\231\189\151\229\174\157\232\180\173\228\185\176" or aName == "罗宝购买" or string.find(aName:lower(), "robux") then
-                    isRobux = true
-                    break
-                end
-                ancestor = ancestor.Parent
-            end
-
-            if isCashBtn and not isRobux then
-                -- Temukan kartu induk (card)
-                local card = btn:FindFirstAncestor("root")
-                if not card then
-                    local temp = btn.Parent
-                    while temp and temp.Parent and temp.Parent ~= scroller and temp.Parent ~= shopFrame do
-                        temp = temp.Parent
-                    end
-                    card = temp
-                end
-
-                if card then
-                    -- Baca nama item dan stok
-                    local itemName = "Water Bucket"
-                    local isBucket = false
-                    local isOut = false
-                    local priceText = "Cash"
-
-                    -- Baca TextLabel untuk nama item
-                    for _, tl in ipairs(card:GetDescendants()) do
-                        if tl:IsA("TextLabel") and tl.Visible and tl.Text ~= "" then
-                            local t = tl.Text
-                            local tlLower = t:lower()
-                            if string.find(tlLower, "bucket") or string.find(tlLower, "water") then
-                                itemName = t
-                                isBucket = true
-                            end
-                            -- Cek stok dari label stok ("x3 Stock", "x0 Stock", "No Stock")
-                            local parentName = tl.Parent and tl.Parent.Name or ""
-                            if parentName == "\229\186\147\229\173\152" or parentName == "库存" or string.find(tlLower, "stock") then
-                                if string.find(tlLower, "x0") or string.find(tlLower, " 0 stock") or tlLower == "x0 stock" or string.find(tlLower, "no stock") then
-                                    isOut = true
-                                end
-                            end
-                        end
-                    end
-
-                    -- Cek tombol '关闭' di dalam frame 货币购买 (jika visible, berarti out of stock)
-                    local cashContainer = btn.Parent
-                    if cashContainer then
-                        local disabledBtn = cashContainer:FindFirstChild("\229\133\179\233\151\173") or cashContainer:FindFirstChild("关闭")
-                        if disabledBtn and disabledBtn:IsA("GuiObject") and disabledBtn.Visible then
-                            isOut = true
-                        end
-                    end
-
-                    -- Baca harga dari dalam tombol
-                    for _, tl in ipairs(btn:GetDescendants()) do
-                        if tl:IsA("TextLabel") and (string.find(tl.Text, "K") or string.match(tl.Text, "%d+")) then
-                            priceText = tl.Text
-                            break
-                        end
-                    end
-
-                    -- Eksekusi pembelian jika merupakan ember air dan stok tersedia
-                    if isBucket and not isOut then
-                        local beforeCount = countPlayerBuckets(itemName)
-                        local beforeTotal = countTotalPlayerBuckets()
-                        local isAlreadyMax = (beforeCount >= 3)
-
-                        local matchesTarget = false
-                        if not isAlreadyMax then
-                            if not targetBucket or targetBucket == "All In-Stock" then
-                                matchesTarget = true
-                            else
-                                local tbLower = targetBucket:lower()
-                                local inLower = itemName:lower()
-                                if string.find(inLower, tbLower) or string.find(tbLower, inLower) then
-                                    matchesTarget = true
-                                elseif string.find(tbLower, "yellow") and string.find(inLower, "yellow") then
-                                    matchesTarget = true
-                                elseif string.find(tbLower, "orange") and string.find(inLower, "orange") then
-                                    matchesTarget = true
-                                elseif string.find(tbLower, "purple") and string.find(inLower, "purple") then
-                                    matchesTarget = true
-                                elseif string.find(tbLower, "epic") and (string.find(inLower, "yellow") or string.find(inLower, "epic")) then
-                                    matchesTarget = true
-                                elseif string.find(tbLower, "legendary") and (string.find(inLower, "orange") or string.find(inLower, "legendary")) then
-                                    matchesTarget = true
-                                end
-                            end
-                        end
-
-                        if matchesTarget then
-                            -- Scroll kartu ke view jika ada scroller
-                            if scroller and scroller:IsA("ScrollingFrame") then
-                                pcall(function()
-                                    local cardY = card.AbsolutePosition.Y - scroller.AbsolutePosition.Y + scroller.CanvasPosition.Y
-                                    scroller.CanvasPosition = Vector2.new(0, math.max(0, cardY - 10))
-                                end)
-                                task.wait(0.04)
-                            end
-
-                            -- Fokus seleksi GUI
-                            pcall(function()
-                                game:GetService("GuiService").SelectedObject = btn
-                            end)
-
-                            -- Eksekusi klik multi-layer
-                            triggerGuiClick(btn)
-                            if btn.Parent and btn.Parent:IsA("GuiObject") then
-                                triggerGuiClick(btn.Parent)
-                            end
-                            for _, child in ipairs(btn:GetChildren()) do
-                                if child:IsA("GuiObject") then
-                                    triggerGuiClick(child)
-                                end
-                            end
-
-                            -- Tunggu respon dari server game
-                            task.wait(0.4)
-
-                            -- VERIFIKASI SEBELUM & SESUDAH: HANYA BERHASIL JIKA INVENTORI BENAR-BENAR BERTAMBAH!
-                            local afterCount = countPlayerBuckets(itemName)
-                            local afterTotal = countTotalPlayerBuckets()
-                            if afterCount > beforeCount or afterTotal > beforeTotal then
-                                local newCount = math.max(afterCount, beforeCount + 1)
-                                print("[BrotherHub] Auto Buy Bucket Success VERIFIED: " .. itemName .. " (" .. tostring(newCount) .. "/3)")
-                                pcall(function()
-                                    StarterGui:SetCore("SendNotification", {
-                                        Title = "👑 Brother Hub",
-                                        Text = "✅ Berhasil Beli: " .. itemName .. " (" .. tostring(newCount) .. "/3)",
-                                        Duration = 4
-                                    })
-                                end)
-                                boughtAny = true
-                                boughtName = itemName
-                                break
-                            else
-                                print("[BrotherHub] Buy click fired but inventory did not increase for: " .. itemName)
-                            end
-                        end
-                    end
+    local lastBoughtName = nil
+    
+    local cards = {}
+    if scroller then
+        for _, child in ipairs(scroller:GetDescendants()) do
+            if child:IsA("Frame") and (child.Name == "上部" or child.Name == "root") then
+                local hasCash = child:FindFirstChild("货币购买", true)
+                if hasCash and not table.find(cards, child) then
+                    table.insert(cards, child)
                 end
             end
         end
     end
-
-    if not wasVisible then
-        pcall(function() shopFrame.Visible = false end)
+    if #cards == 0 then
+        for _, desc in ipairs(shopFrame:GetDescendants()) do
+            if (desc:IsA("ImageButton") or desc:IsA("TextButton")) and (desc.Name == "货币购买") then
+                local card = desc:FindFirstAncestor("上部") or desc:FindFirstAncestor("root")
+                if card and not table.find(cards, card) then
+                    table.insert(cards, card)
+                end
+            end
+        end
     end
-
-    return boughtAny, boughtName
+    
+    for _, card in ipairs(cards) do
+        local itemName = "Water Bucket"
+        local descText = ""
+        local stockNum = 0
+        local isOutOfStock = false
+        
+        for _, tl in ipairs(card:GetDescendants()) do
+            if tl:IsA("TextLabel") and tl.Text ~= "" then
+                local t = tl.Text
+                local tLow = t:lower()
+                if string.find(tLow, "bucket") or string.find(tLow, "water") then
+                    itemName = t
+                end
+                if string.find(tLow, "growth time") or string.find(tLow, "reduces") then
+                    descText = t
+                end
+                local pName = tl.Parent and tl.Parent.Name or ""
+                if pName == "库存" or string.find(tLow, "stock") then
+                    local digits = string.match(t, "%d+")
+                    if digits then stockNum = tonumber(digits) or 0 end
+                    if string.find(tLow, "x0") or string.find(tLow, "0 stock") or string.find(tLow, "no stock") then
+                        isOutOfStock = true
+                    end
+                end
+            end
+        end
+        
+        local cashContainer = card:FindFirstChild("货币购买", true)
+        if cashContainer then
+            local disabledBtn = cashContainer:FindFirstChild("关闭")
+            if disabledBtn and disabledBtn:IsA("GuiObject") and disabledBtn.Visible then
+                isOutOfStock = true
+            end
+        end
+        
+        local isTarget = false
+        local inLow = itemName:lower()
+        local tbLow = (targetBucket or "Borong Semua"):lower()
+        
+        if tbLow == "all in-stock" or string.find(tbLow, "borong") or tbLow == "all" then
+            isTarget = true
+        elseif string.find(tbLow, "purple") and string.find(inLow, "purple") then
+            isTarget = true
+        elseif string.find(tbLow, "orange") and string.find(inLow, "orange") then
+            isTarget = true
+        elseif string.find(tbLow, "yellow") and string.find(inLow, "yellow") then
+            isTarget = true
+        elseif string.find(tbLow, "water bucket") and inLow == "water bucket" and not string.find(inLow, "purple") and not string.find(inLow, "orange") and not string.find(inLow, "yellow") then
+            isTarget = true
+        end
+        
+        if isTarget and not isOutOfStock and stockNum > 0 then
+            local buyBtn = nil
+            if cashContainer then
+                for _, child in ipairs(cashContainer:GetChildren()) do
+                    if (child:IsA("ImageButton") or child:IsA("TextButton")) and child.Visible and child.Name ~= "关闭" then
+                        buyBtn = child
+                        break
+                    end
+                end
+            end
+            if not buyBtn then
+                buyBtn = card:FindFirstChild("货币购买", true)
+            end
+            
+            if buyBtn and (buyBtn:IsA("ImageButton") or buyBtn:IsA("TextButton")) then
+                if scroller and scroller:IsA("ScrollingFrame") then
+                    pcall(function()
+                        local cardY = card.AbsolutePosition.Y - scroller.AbsolutePosition.Y + scroller.CanvasPosition.Y
+                        scroller.CanvasPosition = Vector2.new(0, math.max(0, cardY - 10))
+                    end)
+                    task.wait(0.05)
+                end
+                
+                local purchases = 0
+                local maxBuy = buyAll and math.min(stockNum, 5) or 1
+                for iter = 1, maxBuy do
+                    triggerGuiClick(buyBtn)
+                    if buyBtn.Parent and buyBtn.Parent:IsA("GuiObject") then
+                        triggerGuiClick(buyBtn.Parent)
+                    end
+                    for _, c in ipairs(buyBtn:GetDescendants()) do
+                        if c:IsA("GuiObject") then triggerGuiClick(c) end
+                    end
+                    purchases = purchases + 1
+                    boughtAny = true
+                    lastBoughtName = itemName
+                    task.wait(0.25)
+                    
+                    if cashContainer then
+                        local dis = cashContainer:FindFirstChild("关闭")
+                        if dis and dis:IsA("GuiObject") and dis.Visible then break end
+                    end
+                end
+                
+                if boughtAny then
+                    notify("👑 BROTHER HUB", "✅ Borong Growth Time: " .. itemName .. " (x" .. tostring(purchases) .. " Sukses!)", 4)
+                end
+            end
+        end
+    end
+    
+    return boughtAny, lastBoughtName
 end
+local buyBucketWithCash = buyGrowthTimeWithCash
 
--- Helper: Cari apakah bibit tertentu saat ini benar-benar ada di arena dan siap dicuri
--- Memeriksa ProximityPrompt dengan ActionText "Steal", Enabled == true, dan belum dicuri
+
 local function findSeedPrompt(sInfo)
     if not sInfo then return nil, nil end
     local pattern = sInfo.pattern:lower()
@@ -1364,14 +1345,15 @@ local function executeFlashStealDirect(targetPos, prompt)
     -- Beri jeda mikro 0.04s
     task.wait(0.04)
 
-    -- 4. Tekan ProximityPrompt 'E' seketika
+    -- 4. Tekan ProximityPrompt 'E' dengan durasi validasi server (0.18s Handshake)
     pcall(function() prompt.HoldDuration = 0 end)
     if fireproximityprompt then
         fireproximityprompt(prompt, 0)
     end
     pcall(function() prompt:InputHoldBegin() end)
-    task.wait(0.04)
+    task.wait(0.18)
     pcall(function() prompt:InputHoldEnd() end)
+    task.wait(0.04)
 
     -- Catat prompt sebagai stolen agar tidak spam ke target yang sama
     markPromptAsStolen(prompt, targetPos)
@@ -1502,14 +1484,14 @@ registerThread(function()
     while true do
         if config.autoBuyBuckets then
             local s, err = pcall(function()
-                local target = config.targetBucket or "All In-Stock"
-                buyBucketWithCash(target)
+                local target = config.targetBucket or "Borong Semua Stok Tersedia (All In-Stock)"
+                buyBucketWithCash(target, true)
             end)
             if not s and err then
-                warn("[BrotherHub] buyBucketWithCash error: " .. tostring(err))
+                warn("[BrotherHub] buyGrowthTimeWithCash error: " .. tostring(err))
             end
         end
-        task.wait(0.6)
+        task.wait(1.5)
     end
 end)
 
@@ -2671,6 +2653,282 @@ local function createDropdown(parent, labelText, options, arg4, arg5)
 end
 local makeDropdown = createDropdown
 
+-- Helper: Multi-Select Droplist Standar 1:1 My Flower Shop (ZIndex 500 Popup Checklist)
+local function makeMultiDropdown(parent, label, getItems, store, emptyTxt, mapValue, onChanged)
+    local con = Instance.new("Frame", parent)
+    con.Size = UDim2.new(1, 0, 0, 38)
+    con.BackgroundColor3 = (THEME and THEME.Slot) or Color3.fromRGB(25, 27, 40)
+    con.BorderSizePixel = 0
+    con.ZIndex = 5
+    Instance.new("UICorner", con).CornerRadius = UDim.new(0, 8)
+    local cStroke = Instance.new("UIStroke", con)
+    cStroke.Color = THEME.Border
+    cStroke.Thickness = 1
+    
+    local name = Instance.new("TextLabel", con)
+    name.Size = UDim2.new(0.48, -10, 1, 0)
+    name.Position = UDim2.new(0, 12, 0, 0)
+    name.BackgroundTransparency = 1
+    name.Text = label
+    name.TextColor3 = THEME.Text
+    name.Font = THEME.Font
+    name.TextSize = 12
+    name.TextXAlignment = Enum.TextXAlignment.Left
+    name.TextTruncate = Enum.TextTruncate.AtEnd
+    name.ZIndex = 6
+    
+    local disp = Instance.new("TextLabel", con)
+    disp.Size = UDim2.new(0.48, -34, 1, 0)
+    disp.Position = UDim2.new(0.48, 0, 0, 0)
+    disp.BackgroundTransparency = 1
+    disp.TextColor3 = THEME.SubText
+    disp.Font = THEME.FontReg
+    disp.TextSize = 12
+    disp.TextXAlignment = Enum.TextXAlignment.Right
+    disp.TextTruncate = Enum.TextTruncate.AtEnd
+    disp.ZIndex = 6
+    
+    local arr = Instance.new("TextLabel", con)
+    arr.Size = UDim2.new(0, 26, 1, 0)
+    arr.Position = UDim2.new(1, -28, 0, 0)
+    arr.BackgroundTransparency = 1
+    arr.Text = "▼"
+    arr.TextColor3 = THEME.Title
+    arr.Font = THEME.Font
+    arr.TextSize = 12
+    arr.ZIndex = 6
+    
+    local trig = Instance.new("TextButton", con)
+    trig.Size = UDim2.new(1, 0, 1, 0)
+    trig.BackgroundTransparency = 1
+    trig.Text = ""
+    trig.ZIndex = 7
+    
+    local list
+    local function getList()
+        if list then return list end
+        local l = Instance.new("ScrollingFrame")
+        l.Size = UDim2.fromOffset(0, 0)
+        l.BackgroundColor3 = THEME.Panel
+        l.BorderSizePixel = 0
+        l.ScrollBarThickness = 4
+        l.ScrollBarImageColor3 = THEME.Title
+        l.Visible = false
+        l.ZIndex = 500
+        l.ClipsDescendants = true
+        Instance.new("UICorner", l).CornerRadius = UDim.new(0, 8)
+        local lStroke = Instance.new("UIStroke", l)
+        lStroke.Color = THEME.Title
+        lStroke.Thickness = 1
+        
+        local ll = Instance.new("UIListLayout", l)
+        ll.SortOrder = Enum.SortOrder.LayoutOrder
+        ll.Padding = UDim.new(0, 3)
+        local lp = Instance.new("UIPadding", l)
+        lp.PaddingTop = UDim.new(0, 4)
+        lp.PaddingLeft = UDim.new(0, 4)
+        lp.PaddingRight = UDim.new(0, 4)
+        lp.PaddingBottom = UDim.new(0, 4)
+        l.Parent = screenGui
+        list = l
+        return l
+    end
+    
+    local function listGeom()
+        local s = math.max(MainScale.Scale, 0.01)
+        local ap, as = con.AbsolutePosition, con.AbsoluteSize
+        return as.X / s, ap.X / s, (ap.Y + as.Y + 4) / s
+    end
+    
+    local function refreshDisplay()
+        local items = type(getItems) == "function" and getItems() or getItems
+        local n = 0
+        local firstText = nil
+        if type(items) == "table" and #items > 0 then
+            local valid = {}
+            for _, it in ipairs(items) do
+                local k = mapValue and mapValue(it) or it
+                valid[k] = it
+            end
+            for k, v in pairs(store) do
+                if v and valid[k] then
+                    n = n + 1
+                    if not firstText then firstText = valid[k] end
+                end
+            end
+        else
+            for k, v in pairs(store) do
+                if v then
+                    n = n + 1
+                    if not firstText then firstText = k end
+                end
+            end
+        end
+        if n == 0 then
+            disp.Text = emptyTxt or "None"
+            disp.TextColor3 = THEME.SubText
+        elseif n == 1 then
+            disp.Text = firstText or (emptyTxt or "None")
+            disp.TextColor3 = THEME.Title
+        else
+            disp.Text = "Various (" .. n .. ")"
+            disp.TextColor3 = THEME.Title
+        end
+    end
+    refreshDisplay()
+    
+    local isOpen = false
+    local myId = {}
+    local function closeList()
+        if not isOpen then return end
+        isOpen = false
+        arr.Text = "▼"
+        if DD.blocker then DD.blocker.Visible = false end
+        if not list then return end
+        local w = select(1, listGeom())
+        TweenService:Create(list, TweenInfo.new(0.14, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = UDim2.fromOffset(w, 0) }):Play()
+        task.delay(0.15, function()
+            if not isOpen and list then list.Visible = false end
+        end)
+    end
+    DD.closers[myId] = closeList
+    
+    local function rebuild()
+        local lst = getList()
+        for _, c in ipairs(lst:GetChildren()) do
+            if c:IsA("TextButton") or c:IsA("Frame") then
+                c:Destroy()
+            end
+        end
+        
+        local items = type(getItems) == "function" and getItems() or getItems
+        
+        -- Row tombol aksi cepat di bagian atas dropdown
+        local quickRow = Instance.new("Frame", lst)
+        quickRow.Size = UDim2.new(1, -6, 0, 26)
+        quickRow.BackgroundTransparency = 1
+        quickRow.LayoutOrder = -2
+        quickRow.ZIndex = 501
+        local qrLayout = Instance.new("UIListLayout", quickRow)
+        qrLayout.FillDirection = Enum.FillDirection.Horizontal
+        qrLayout.Padding = UDim.new(0, 4)
+        
+        local cancel = Instance.new("TextButton", quickRow)
+        cancel.Size = UDim2.new(0.24, -2, 1, 0)
+        cancel.BackgroundColor3 = Color3.fromRGB(180, 45, 45)
+        cancel.Text = "❌ Tutup"
+        cancel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        cancel.Font = THEME.Font
+        cancel.TextSize = 11
+        cancel.ZIndex = 502
+        Instance.new("UICorner", cancel).CornerRadius = UDim.new(0, 6)
+        cancel.MouseButton1Click:Connect(function()
+            closeList()
+        end)
+        
+        local quick5 = Instance.new("TextButton", quickRow)
+        quick5.Size = UDim2.new(0.42, -2, 1, 0)
+        quick5.BackgroundColor3 = Color3.fromRGB(45, 120, 210)
+        quick5.Text = "👑 5 Depan"
+        quick5.TextColor3 = Color3.fromRGB(255, 255, 255)
+        quick5.Font = THEME.Font
+        quick5.TextSize = 11
+        quick5.ZIndex = 502
+        Instance.new("UICorner", quick5).CornerRadius = UDim.new(0, 6)
+        
+        local quickAll = Instance.new("TextButton", quickRow)
+        quickAll.Size = UDim2.new(0.34, -2, 1, 0)
+        quickAll.BackgroundColor3 = THEME.Purple
+        quickAll.Text = "⚡ All/Clear"
+        quickAll.TextColor3 = Color3.fromRGB(255, 255, 255)
+        quickAll.Font = THEME.Font
+        quickAll.TextSize = 11
+        quickAll.ZIndex = 502
+        Instance.new("UICorner", quickAll).CornerRadius = UDim.new(0, 6)
+        
+        local rows = {}
+        local function paint(btn, key, teks)
+            local on = store[key] == true
+            btn.BackgroundColor3 = on and Color3.fromRGB(35, 65, 50) or ((THEME and THEME.Slot) or Color3.fromRGB(25, 27, 40))
+            btn.Text = (on and "  [✔]  " or "  [  ]  ") .. (teks or key)
+            btn.TextColor3 = on and Color3.fromRGB(0, 255, 170) or THEME.Text
+        end
+        
+        for i, item in ipairs(items) do
+            local key = mapValue and mapValue(item) or item
+            local opt = Instance.new("TextButton", lst)
+            opt.Size = UDim2.new(1, -6, 0, 26)
+            opt.Font = THEME.FontReg
+            opt.TextSize = 12
+            opt.TextXAlignment = Enum.TextXAlignment.Left
+            opt.TextTruncate = Enum.TextTruncate.AtEnd
+            opt.LayoutOrder = i
+            opt.ZIndex = 501
+            Instance.new("UICorner", opt).CornerRadius = UDim.new(0, 6)
+            paint(opt, key, item)
+            rows[key] = { b = opt, l = item }
+            opt.MouseButton1Click:Connect(function()
+                store[key] = not store[key] or nil
+                paint(opt, key, item)
+                refreshDisplay()
+                saveConfig()
+                if onChanged then pcall(onChanged, key, store[key]) end
+            end)
+        end
+        
+        quick5.MouseButton1Click:Connect(function()
+            for _, item in ipairs(items) do
+                local key = mapValue and mapValue(item) or item
+                local isFront = (key == "Lucifer Rose" or key == "Infernal Lily" or key == "Bloodthorn" or key == "Abyss Orchid" or key == "Underworld Flower")
+                store[key] = isFront or nil
+            end
+            for key, r in pairs(rows) do paint(r.b, key, r.l) end
+            refreshDisplay()
+            saveConfig()
+            if onChanged then pcall(onChanged, "*top5*", true) end
+        end)
+        
+        quickAll.MouseButton1Click:Connect(function()
+            local anyOn = false
+            for k, v in pairs(store) do if v then anyOn = true break end end
+            if anyOn then
+                for k in pairs(store) do store[k] = nil end
+            else
+                for _, item in ipairs(items) do
+                    local key = mapValue and mapValue(item) or item
+                    store[key] = true
+                end
+            end
+            for key, r in pairs(rows) do paint(r.b, key, r.l) end
+            refreshDisplay()
+            saveConfig()
+            if onChanged then pcall(onChanged, "*all*", not anyOn) end
+        end)
+        
+        lst.CanvasSize = UDim2.new(0, 0, 0, (#items + 1) * 30 + 38)
+    end
+    
+    trig.MouseButton1Click:Connect(function()
+        if isOpen then closeList(); return end
+        closeOtherDropdowns(myId)
+        local lst = getList()
+        rebuild()
+        isOpen = true
+        local w, x, y = listGeom()
+        lst.Position = UDim2.fromOffset(x, y)
+        lst.Size = UDim2.fromOffset(w, 0)
+        lst.Visible = true
+        dropdownBlocker().Visible = true
+        local items = type(getItems) == "function" and getItems() or getItems
+        local h = math.min((#items + 1) * 30 + 38, 230)
+        TweenService:Create(lst, TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { Size = UDim2.fromOffset(w, h) }):Play()
+        arr.Text = "▲"
+    end)
+    
+    return con, refreshDisplay
+end
+
+
 local function createButton(parent, labelText, arg3, arg4)
     local color = (typeof(arg3) == "Color3" and arg3) or THEME.Card
     local callback = (type(arg3) == "function" and arg3) or (type(arg4) == "function" and arg4) or function() end
@@ -2714,79 +2972,23 @@ local secSteal = createSection(pageSteal, "FLASH AUTO STEAL & SAFE HARVEST SUITE
 createToggle(secSteal, tr("FlashSteal"), config.autoSteal, function(v) config.autoSteal = v config.autoFlashSteal = v end)
 createToggle(secSteal, tr("SmartWait"), config.smartWaitSeed, function(v) config.smartWaitSeed = v end)
 
--- SEKSI MULTI-SELECT BIBIT TARGET (ROTASI BERGILIRAN)
-local secMulti = createSection(pageSteal, "🎯 Multi-Select Bibit Target (Rotasi Bergiliran)", "Pilih bibit yang ingin dicuri secara bergiliran. Script akan mengecek ketersediaan bibit terlebih dahulu, HANYA teleport jika bibit ada, tekan E, lalu langsung kembali ke markas.")
-
--- Baris 3 Tombol Aksi Cepat
-local quickRow = Instance.new("Frame", secMulti)
-quickRow.Size = UDim2.new(1, 0, 0, 32)
-quickRow.BackgroundTransparency = 1
-local qLayout = Instance.new("UIListLayout", quickRow)
-qLayout.FillDirection = Enum.FillDirection.Horizontal
-qLayout.Padding = UDim.new(0, 6)
-qLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-
-local seedSetters = {}
-
-local function makeQuickBtn(text, color, onClick)
-    local qb = Instance.new("TextButton", quickRow)
-    qb.Size = UDim2.new(0.32, -4, 1, 0)
-    qb.BackgroundColor3 = color
-    qb.Text = text
-    qb.TextColor3 = THEME.Text
-    qb.Font = THEME.Font
-    qb.TextSize = 11
-    Instance.new("UICorner", qb).CornerRadius = UDim.new(0, 6)
-    local qbStroke = Instance.new("UIStroke", qb)
-    qbStroke.Color = THEME.Border
-    qb.MouseButton1Click:Connect(onClick)
-    return qb
-end
-
-makeQuickBtn("👑 5 Bibit Depan", THEME.Panel, function()
-    for _, sInfo in ipairs(ALL_STEALABLE_SEEDS) do
-        local isTop5 = (sInfo.key == "Lucifer Rose" or sInfo.key == "Infernal Lily" or sInfo.key == "Bloodthorn" or sInfo.key == "Abyss Orchid" or sInfo.key == "Underworld Flower")
-        config.multiTargetSeeds[sInfo.key] = isTop5
-        if seedSetters[sInfo.key] then
-            seedSetters[sInfo.key](isTop5)
+-- SEKSI MULTI-SELECT DROPLIST STANDAR 1:1 MY FLOWER SHOP
+makeMultiDropdown(secSteal, "🎯 Target Seeds to Steal", function()
+    local list = {}
+    for _, s in ipairs(ALL_STEALABLE_SEEDS) do
+        table.insert(list, s.displayName)
+    end
+    return list
+end, config.multiTargetSeeds, "None (Stay at Base)", function(displayName)
+    for _, s in ipairs(ALL_STEALABLE_SEEDS) do
+        if s.displayName == displayName or s.key == displayName then
+            return s.key
         end
     end
+    return displayName
+end, function(key, state)
     saveConfig()
-    notify("👑 Multi-Select Target", "5 Bibit Paling Depan Diaktifkan!", 3)
 end)
-
-makeQuickBtn("✅ Pilih Semua", THEME.Panel, function()
-    for _, sInfo in ipairs(ALL_STEALABLE_SEEDS) do
-        config.multiTargetSeeds[sInfo.key] = true
-        if seedSetters[sInfo.key] then
-            seedSetters[sInfo.key](true)
-        end
-    end
-    saveConfig()
-    notify("👑 Multi-Select Target", "Semua 12 Bibit Diaktifkan!", 3)
-end)
-
-makeQuickBtn("❌ Batalkan Semua", THEME.Panel, function()
-    for _, sInfo in ipairs(ALL_STEALABLE_SEEDS) do
-        config.multiTargetSeeds[sInfo.key] = false
-        if seedSetters[sInfo.key] then
-            seedSetters[sInfo.key](false)
-        end
-    end
-    saveConfig()
-    notify("👑 Multi-Select Target", "Semua Pilihan Dibatalkan!", 3)
-end)
-
--- 12 Toggle Bibit Individual (Checklist)
-for _, sInfo in ipairs(ALL_STEALABLE_SEEDS) do
-    local sKey = sInfo.key
-    createToggle(secMulti, sInfo.displayName, config.multiTargetSeeds[sKey] or false, function(v)
-        config.multiTargetSeeds[sKey] = v
-        saveConfig()
-    end, function(setter)
-        seedSetters[sKey] = setter
-    end)
-end
 
 createToggle(secSteal, tr("AutoPlant"), config.autoPlant, function(v) config.autoPlant = v end)
 createToggle(secSteal, tr("HoldSeed"), config.holdSeedInHand, function(v) config.holdSeedInHand = v end)
@@ -2934,36 +3136,30 @@ end)
 -- TAB 4: 🛒 SEED SHOP & PACKS
 local pageShop = createTab("Shop", tr("TabShop"))
 
--- 🪣 TOKO EMBER AIR (WATER BUCKET SHOP — CASH IN-GAME)
-local secBuckets = createSection(pageShop, "Toko Ember Air (Water Bucket Shop — Cash)", "Beli ember penyiram tanaman secara otomatis dengan Cash in-game (100% Bebas Robux)")
-createDropdown(secBuckets, "Pilih Ember (Select Bucket)", BUCKET_OPTIONS, config.targetBucket or "All In-Stock", function(v)
+-- 🛒 TOKO PENGURANGAN WAKTU TUMBUH (GROWTH TIME SHOP — 道具商店)
+local secBuckets = createSection(pageShop, "🛒 Toko Growth Time (Water Buckets — 道具商店)", "道具商店 (UseItemStore) = Toko Ember Air & Pengurangan Waktu Tumbuh Tanaman 20% - 80% (100% Cash Game, Bebas Robux).")
+createDropdown(secBuckets, "🎯 Pilihan Target Growth Time", BUCKET_OPTIONS, config.targetBucket or "Borong Semua Stok Tersedia (All In-Stock)", function(v)
     config.targetBucket = v
     saveConfig()
 end)
-createToggle(secBuckets, "Auto Buy Ember Air (Cash Game)", config.autoBuyBuckets, function(v)
+createToggle(secBuckets, "⚡ Auto Borong Semua Growth Time (Cash Game)", config.autoBuyBuckets, function(v)
     config.autoBuyBuckets = v
     saveConfig()
 end)
-createButton(secBuckets, "🛒 Beli Ember Sekarang (Klik Test Beli Manual)", THEME.Green, function()
-    local target = config.targetBucket or "All In-Stock"
-    local success, boughtName = buyBucketWithCash(target)
-    if success then
-        notify("👑 Brother Hub", "✅ Berhasil beli ember: " .. tostring(boughtName), 4)
-    else
-        notify("👑 Brother Hub", "ℹ️ Tidak ada ember in-stock yang cocok / stok kosong!", 4)
+createButton(secBuckets, "🛒 Borong Semua Sekarang (Buy All In-Stock Now)", THEME.Green, function()
+    local target = config.targetBucket or "Borong Semua Stok Tersedia (All In-Stock)"
+    local success, boughtName = buyGrowthTimeWithCash(target, true)
+    if not success then
+        notify("👑 Brother Hub", "ℹ️ Stok Growth Time kosong / toko belum restock!", 4)
     end
 end)
-createButton(secBuckets, "Buka / Tutup Toko Ember (Toggle Shop Frame)", THEME.Panel, function()
+createButton(secBuckets, "Buka / Tutup Toko (Toggle Frame 道具商店)", THEME.Panel, function()
+    openToolShop()
     pcall(function()
         local pg = LocalPlayer:FindFirstChildOfClass("PlayerGui")
-        if pg then
-            local main02 = pg:FindFirstChild("Main02")
-            if main02 then
-                local f = main02:FindFirstChild("\233\129\147\229\133\183\229\149\134\229\186\151")
-                if f then
-                    f.Visible = not f.Visible
-                end
-            end
+        if pg and pg:FindFirstChild("Main02") then
+            local f = pg.Main02:FindFirstChild("\233\129\147\229\133\183\229\149\134\229\186\151") or pg.Main02:FindFirstChild("道具商店")
+            if f then f.Visible = not f.Visible end
         end
     end)
 end)
@@ -2973,21 +3169,19 @@ createToggle(secShop, tr("BlockRobux"), config.blockRobuxPopups, function(v) con
 createToggle(secShop, tr("AutoBuySeeds"), config.autoBuySeeds, function(v) config.autoBuySeeds = v end)
 createToggle(secShop, tr("AutoOpenPacks"), config.autoOpenPacks, function(v) config.autoOpenPacks = v end)
 
-local secSeedsFilter = createSection(pageShop, "Pilihan Bibit (Seed Selection Filter)", "Pilih jenis bibit yang ingin dibeli secara otomatis")
-for seedName, isChecked in pairs(config.targetSeeds) do
-    createToggle(secSeedsFilter, "Bibit: " .. seedName, isChecked, function(v)
-        config.targetSeeds[seedName] = v
-        saveConfig()
-    end)
-end
+makeMultiDropdown(secShop, "🌱 Filter Bibit Auto-Buy", function()
+    local list = {}
+    for seedName in pairs(config.targetSeeds) do table.insert(list, seedName) end
+    table.sort(list)
+    return list
+end, config.targetSeeds, "None", nil, function() saveConfig() end)
 
-local secPacksFilter = createSection(pageShop, "Pilihan Seed Pack (Pack Filter)", "Pilih pack bibit yang ingin dibuka otomatis")
-for packName, isChecked in pairs(config.targetPacks) do
-    createToggle(secPacksFilter, "Buka: " .. packName, isChecked, function(v)
-        config.targetPacks[packName] = v
-        saveConfig()
-    end)
-end
+makeMultiDropdown(secShop, "📦 Filter Seed Pack Auto-Open", function()
+    local list = {}
+    for packName in pairs(config.targetPacks) do table.insert(list, packName) end
+    table.sort(list)
+    return list
+end, config.targetPacks, "None", nil, function() saveConfig() end)
 
 -- TAB 5: 🐾 PETS & EVENTS
 local pagePets = createTab("Pets", tr("TabPets"))
