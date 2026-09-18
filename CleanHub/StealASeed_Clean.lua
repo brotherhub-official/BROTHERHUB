@@ -163,9 +163,11 @@ local config = {
     stealDelay            = 0.8,
     customBasePos         = nil,
     fullAfkLoop           = false,
+    smartWaitSeed         = true,     -- Stay aman di markas jika bibit di arena kosong/cooldown
 
     -- Auto Farm & Garden (Koleksi Kebun Sendiri)
     autoPlant             = true,
+    autoPickupReady       = true,     -- Ambil tanaman matang (Pickup / Pick Up)
     autoHarvest           = false,
     autoCollectCash       = true,
     harvestInterval       = 1.0,
@@ -320,6 +322,7 @@ local TRANSLATIONS = {
 
     -- Toggles & Sliders
     ["FlashSteal"]            = {ID = "⚡ Flash Auto Steal (Maju ➔ Curi ➔ Bawa Pulang)", EN = "⚡ Flash Auto Steal (Advance ➔ Steal ➔ Return Base)"},
+    ["SmartWait"]             = {ID = "⏳ Tunggu Bibit Spawn (Stay di Markas jika Kosong)", EN = "⏳ Smart Stay at Base (Wait for Seed Spawn)"},
     ["AntiGuard"]             = {ID = "🛡️ Anti-Kejar Penjaga Tanaman (Lumpuhkan Guard 100%)", EN = "🛡️ Anti-Guard Chase (Pacify & Paralyze Guards)"},
     ["HoldSeed"]              = {ID = "🤲 Pegang Bibit di Tangan (Equip Stolen Seed)", EN = "🤲 Hold Stolen Seed in Hand (Equip Seed)"},
     ["AntiFling"]             = {ID = "🛡️ Anti-Pental & Anti-Knockback (Bebas Pental / Kebal)", EN = "🛡️ Anti-Fling & Knockback Immunity"},
@@ -335,7 +338,9 @@ local TRANSLATIONS = {
     ["AutoApproach"]          = {ID = "Dekati Bibit Otomatis (Teleport Halus)", EN = "Auto Approach Seeds (Smooth TP)"},
     ["StealDistance"]         = {ID = "Jangkauan Jarak Curi (Studs)", EN = "Steal Search Radius (Studs)"},
     ["AutoPlant"]             = {ID = "Tanam Bibit ke Kebun Otomatis", EN = "Auto Plant Seeds to Garden"},
+    ["AutoPickupReady"]       = {ID = "🌾 Ambil Tanaman Matang (Auto Pick Up Ready Crops)", EN = "🌾 Auto Pick Up Ready Crops"},
     ["AutoHarvest"]           = {ID = "Panen Tanaman Kebun Otomatis", EN = "Auto Harvest Grown Crops"},
+    ["BtnPickupAll"]          = {ID = "🧺 Ambil Semua Tanaman Siap Panen Sekarang", EN = "🧺 Pick Up All Ready Plants Now"},
     ["AutoCollectCash"]       = {ID = "Sedot Uang Pasif Kebun Otomatis", EN = "Vacuum Passive Garden Cash"},
     ["AutoSell"]              = {ID = "Jual Otomatis ke SeedBuyer", EN = "Auto Sell to SeedBuyer"},
     ["SellThreshold"]         = {ID = "Batas Jumlah Item Dijual", EN = "Sell Amount Threshold"},
@@ -593,6 +598,40 @@ local function plantHeldSeedAtGarden()
     end)
 end
 
+-- Helper: Ambil tanaman matang / siap panen di kebun (Pickup / Pick Up Crops Engine)
+local function pickupReadyCrops(maxDistance)
+    local hrp = getHrp()
+    if not hrp then return 0 end
+    local markas = getBasePosition()
+    local limit = maxDistance or 100
+    local count = 0
+    
+    pcall(function()
+        for _, prompt in ipairs(workspace:GetDescendants()) do
+            if prompt:IsA("ProximityPrompt") and prompt.Enabled then
+                local act = prompt.ActionText:lower()
+                -- Deteksi ActionText Pickup, Pick Up, Harvest, Collect, Take
+                if string.find(act, "pickup") or string.find(act, "pick up") or string.find(act, "harvest") or string.find(act, "collect") or string.find(act, "take") then
+                    local pParent = prompt.Parent
+                    local pPos = pParent:IsA("BasePart") and pParent.Position or (pParent:IsA("Model") and pParent:GetPivot().Position)
+                    if pPos and ((hrp.Position - pPos).Magnitude <= limit or (markas - pPos).Magnitude <= limit) then
+                        pcall(function() prompt.HoldDuration = 0 end)
+                        if fireproximityprompt then
+                            fireproximityprompt(prompt, 0)
+                        else
+                            pcall(function() prompt:InputHoldBegin() end)
+                            task.wait(0.04)
+                            pcall(function() prompt:InputHoldEnd() end)
+                        end
+                        count = count + 1
+                    end
+                end
+            end
+        end
+    end)
+    return count
+end
+
 -- Helper: Cari posisi bibit dan ProximityPrompt berdasarkan nama bibit atau stage terpilih
 local function findTargetSeedPrompt(selectedSeed, selectedStage)
     local seedData = SEED_TARGETS[selectedSeed]
@@ -664,6 +703,67 @@ local function findTargetSeedPrompt(selectedSeed, selectedStage)
     
     -- Fallback ke stage 10
     return Vector3.new(-77.2, 3.5, -6080.9), nil
+end
+
+-- Helper: Cek ketersediaan bibit di arena (Smart Seed Availability Detector)
+-- Jika di zona target / arena belum ada bibit (cooldown/diambil player lain), script stay aman di markas
+local function isAnySeedAvailable(selectedSeed, selectedStage)
+    -- Step A: Jika pemain memilih nama bibit tertentu
+    local seedData = SEED_TARGETS[selectedSeed]
+    local pattern = seedData and seedData.pattern or ""
+    if pattern ~= "" then
+        for _, p in ipairs(workspace:GetDescendants()) do
+            if p:IsA("ProximityPrompt") and p.Enabled and p.ActionText == "Steal" then
+                local parent = p.Parent
+                local pName = parent and parent.Name:lower() or ""
+                local mName = (parent and parent.Parent) and parent.Parent.Name:lower() or ""
+                if string.find(pName, pattern) or string.find(mName, pattern) then
+                    local pos = parent:IsA("BasePart") and parent.Position or (parent:IsA("Model") and parent:GetPivot().Position)
+                    if pos then return true, pos, p end
+                end
+            end
+        end
+        return false, nil, nil
+    end
+    
+    -- Step B: Jika pemain memilih stage tertentu
+    local stData = STAGE_TARGETS[selectedStage]
+    if stData and stData.pos and selectedStage ~= "Auto Furthest (Stage 10 - Paling Depan / Tersulit)" and selectedStage ~= "Cycle All Stages (10 ke 01 Bergantian)" then
+        for _, p in ipairs(workspace:GetDescendants()) do
+            if p:IsA("ProximityPrompt") and p.Enabled and p.ActionText == "Steal" then
+                local parent = p.Parent
+                local pos = parent:IsA("BasePart") and parent.Position or (parent:IsA("Model") and parent:GetPivot().Position)
+                if pos and ((pos - stData.pos).Magnitude <= 220 or math.abs(pos.Z - stData.pos.Z) <= 120) then
+                    return true, pos, p
+                end
+            end
+        end
+        return false, nil, nil
+    end
+    
+    -- Step C: Auto Furthest / All Stages - Cek apakah ada prompt Steal aktif di mana pun di arena
+    local bestPrompt = nil
+    local bestPos = nil
+    local minZ = 0
+    for _, p in ipairs(workspace:GetDescendants()) do
+        if p:IsA("ProximityPrompt") and p.Enabled and p.ActionText == "Steal" then
+            local parent = p.Parent
+            local pos = parent:IsA("BasePart") and parent.Position or (parent:IsA("Model") and parent:GetPivot().Position)
+            if pos then
+                if pos.Z < minZ then
+                    minZ = pos.Z
+                    bestPos = pos
+                    bestPrompt = p
+                end
+            end
+        end
+    end
+    
+    if bestPos and bestPrompt then
+        return true, bestPos, bestPrompt
+    end
+    
+    return false, nil, nil
 end
 
 -- Helper: Kembali ke Markas dan Lakukan Gerakan Mikro (Wakes up touch/zone detection & plot register)
@@ -842,12 +942,17 @@ local function executeFlashSteal(targetPos, targetPrompt)
         equipStolenSeed()
     end
     
-    -- 9. Tanam bibit ke petak kebun jika Auto Plant aktif
+    -- 9. Ambil tanaman kebun yang sudah matang jika Auto Pickup aktif
+    if config.autoPickupReady or config.autoHarvest then
+        pickupReadyCrops(80)
+    end
+
+    -- 10. Tanam bibit ke petak kebun jika Auto Plant aktif
     if config.autoPlant then
         plantHeldSeedAtGarden()
     end
     
-    -- 10. Sedot cash pasif kebun di markas jika aktif
+    -- 11. Sedot cash pasif kebun di markas jika aktif
     if config.autoCollectCash then
         for _, plot in ipairs(workspace:GetDescendants()) do
             if plot:IsA("BasePart") and (plot.Name == "DF_BaseGlow" or string.find(plot.Name:lower(), "cash") or string.find(plot.Name:lower(), "coin")) then
@@ -877,17 +982,68 @@ registerThread(function()
                     local targetPos, targetPrompt = nil, nil
                     local sel = config.selectedStage or "Auto Furthest (Stage 10 - Paling Depan / Tersulit)"
                     
-                    if sel == "Cycle All Stages (10 ke 01 Bergantian)" then
-                        local stKey = cycleOrder[cycleIndex]
-                        cycleIndex = (cycleIndex % #cycleOrder) + 1
-                        for _, v in pairs(STAGE_TARGETS) do
-                            if v.stage == stKey and v.pos then
-                                targetPos = v.pos
-                                break
+                    if config.smartWaitSeed then
+                        if sel == "Cycle All Stages (10 ke 01 Bergantian)" then
+                            local anyAvail, anyPos, anyPrompt = isAnySeedAvailable("All / Furthest Rare Seed (Auto Paling Langka)", "Auto Furthest (Stage 10 - Paling Depan / Tersulit)")
+                            if not anyAvail then
+                                -- Seluruh arena kosong: Stay aman di markas
+                                local markas = getBasePosition()
+                                if (hrp.Position - markas).Magnitude > 35 then
+                                    returnToBaseWithMicroMove()
+                                end
+                                return
                             end
+                            local stKey = cycleOrder[cycleIndex]
+                            cycleIndex = (cycleIndex % #cycleOrder) + 1
+                            for _, v in pairs(STAGE_TARGETS) do
+                                if v.stage == stKey and v.pos then
+                                    targetPos = v.pos
+                                    break
+                                end
+                            end
+                            if targetPos then
+                                for _, p in ipairs(workspace:GetDescendants()) do
+                                    if p:IsA("ProximityPrompt") and p.Enabled and p.ActionText == "Steal" then
+                                        local parent = p.Parent
+                                        local pos = parent:IsA("BasePart") and parent.Position or (parent:IsA("Model") and parent:GetPivot().Position)
+                                        if pos and ((pos - targetPos).Magnitude <= 220 or math.abs(pos.Z - targetPos.Z) <= 120) then
+                                            targetPos = pos
+                                            targetPrompt = p
+                                            break
+                                        end
+                                    end
+                                end
+                            end
+                            if not targetPrompt then
+                                targetPos = anyPos
+                                targetPrompt = anyPrompt
+                            end
+                        else
+                            local avail, pos, p = isAnySeedAvailable(config.targetSeedName, sel)
+                            if not avail then
+                                -- Bibit belum spawn di zona target: Stay aman di markas
+                                local markas = getBasePosition()
+                                if (hrp.Position - markas).Magnitude > 35 then
+                                    returnToBaseWithMicroMove()
+                                end
+                                return
+                            end
+                            targetPos = pos
+                            targetPrompt = p
                         end
                     else
-                        targetPos, targetPrompt = findTargetSeedPrompt(config.targetSeedName, sel)
+                        if sel == "Cycle All Stages (10 ke 01 Bergantian)" then
+                            local stKey = cycleOrder[cycleIndex]
+                            cycleIndex = (cycleIndex % #cycleOrder) + 1
+                            for _, v in pairs(STAGE_TARGETS) do
+                                if v.stage == stKey and v.pos then
+                                    targetPos = v.pos
+                                    break
+                                end
+                            end
+                        else
+                            targetPos, targetPrompt = findTargetSeedPrompt(config.targetSeedName, sel)
+                        end
                     end
                     
                     if not targetPos then
@@ -905,8 +1061,13 @@ end)
 -- [6] 🌾 GARDEN CULTIVATION & PASSIVE CASH ENGINE
 registerThread(function()
     while true do
-        if config.autoPlant or config.autoHarvest or config.autoCollectCash then
+        if config.autoPlant or config.autoPickupReady or config.autoHarvest or config.autoCollectCash then
             pcall(function()
+                -- Auto Pick Up / Ambil tanaman matang di kebun pemain
+                if config.autoPickupReady or config.autoHarvest then
+                    pickupReadyCrops(120)
+                end
+
                 -- Auto Plant ke petak kebun pemain
                 if config.autoPlant then
                     plantHeldSeedAtGarden()
@@ -2151,6 +2312,7 @@ end
 local pageSteal = createTab("Steal", tr("TabSteal"))
 local secSteal = createSection(pageSteal, "FLASH AUTO STEAL & SAFE HARVEST SUITE", "Curi bibit instan di stratosfer langit Y+65, bawa pulang ke markas/taman (100% Bebas Dikejar Penjaga & Tidak Dijual)")
 createToggle(secSteal, tr("FlashSteal"), config.autoSteal, function(v) config.autoSteal = v end)
+createToggle(secSteal, tr("SmartWait"), config.smartWaitSeed, function(v) config.smartWaitSeed = v end)
 createDropdown(secSteal, tr("TargetSeed"), SEED_NAME_KEYS, config.targetSeedName, function(v) config.targetSeedName = v end)
 createDropdown(secSteal, tr("TargetStage"), STAGE_KEYS, config.selectedStage, function(v) config.selectedStage = v end)
 createToggle(secSteal, tr("AutoPlant"), config.autoPlant, function(v) config.autoPlant = v end)
@@ -2179,9 +2341,14 @@ createSlider(secManualSteal, tr("StealDistance"), 10, 150, config.stealDistance,
 -- TAB 2: 🌾 FARM & HARVEST
 local pageFarm = createTab("Farm", tr("TabFarm"))
 local secFarm = createSection(pageFarm, tr("FarmTitle"), tr("FarmDesc"))
+createToggle(secFarm, tr("AutoPickupReady"), config.autoPickupReady, function(v) config.autoPickupReady = v end)
 createToggle(secFarm, tr("AutoPlant"), config.autoPlant, function(v) config.autoPlant = v end)
 createToggle(secFarm, tr("AutoHarvest"), config.autoHarvest, function(v) config.autoHarvest = v end)
 createToggle(secFarm, tr("AutoCollectCash"), config.autoCollectCash, function(v) config.autoCollectCash = v end)
+createButton(secFarm, tr("BtnPickupAll"), THEME.Green, function()
+    local c = pickupReadyCrops(250)
+    showNotification("🧺 PANEN TANAMAN", "Berhasil mengambil " .. tostring(c) .. " tanaman matang!", 3)
+end)
 createSlider(secFarm, "Harvest Interval (s)", 0.2, 5.0, config.harvestInterval, function(v) config.harvestInterval = v end)
 
 -- TAB 3: 💰 AUTO SELL
