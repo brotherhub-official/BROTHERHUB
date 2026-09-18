@@ -666,6 +666,59 @@ local function findTargetSeedPrompt(selectedSeed, selectedStage)
     return Vector3.new(-77.2, 3.5, -6080.9), nil
 end
 
+-- Helper: Kembali ke Markas dan Lakukan Gerakan Mikro (Wakes up touch/zone detection & plot register)
+local function returnToBaseWithMicroMove(customPos)
+    local hrp = getHrp()
+    if not hrp then return end
+    local char = LocalPlayer.Character
+    local markas = customPos or getBasePosition()
+    
+    -- 1. Pulihkan collision pada karakter agar berpijak fisik di tanah
+    if char then
+        for _, p in ipairs(char:GetDescendants()) do
+            if p:IsA("BasePart") then
+                p.CanCollide = true
+            end
+        end
+    end
+    
+    -- 2. Teleport ke markas
+    hrp.AssemblyLinearVelocity = Vector3.zero
+    hrp.AssemblyAngularVelocity = Vector3.zero
+    hrp.CFrame = CFrame.new(markas + Vector3.new(0, 0.5, 0))
+    task.wait(0.12)
+    
+    -- 3. Equip bibit terlebih dahulu jika opsi aktif agar saat bergerak bibit terdaftar di tangan
+    if config.holdSeedInHand then
+        equipStolenSeed()
+    end
+    
+    -- 4. Gerak dikit (Micro-movement) agar Touch / Base Zone / Plot / Physics aktif
+    local hum = getHumanoid()
+    if hum and hrp then
+        local look = hrp.CFrame.LookVector
+        if look.Magnitude < 0.1 then look = Vector3.new(0, 0, -1) end
+        
+        -- Langkah 1: Gerak maju sedikit (sekitar 3 stud)
+        local step1 = markas + (look * 3.0) + Vector3.new(1.0, 0, 0)
+        hum:MoveTo(step1)
+        hrp.AssemblyLinearVelocity = (look * 7) + Vector3.new(2, 0, 0)
+        task.wait(0.2)
+        
+        -- Langkah 2: Gerak belok/geser sedikit (sekitar 2 stud)
+        local step2 = markas + Vector3.new(-1.0, 0, 1.2)
+        hum:MoveTo(step2)
+        hrp.AssemblyLinearVelocity = Vector3.new(-4, 0, 4)
+        task.wait(0.2)
+        
+        -- Langkah 3: Berhenti dan stabilkan posisi
+        hum:Move(Vector3.zero, false)
+        hrp.AssemblyLinearVelocity = Vector3.zero
+        hrp.AssemblyAngularVelocity = Vector3.zero
+    end
+    task.wait(0.08)
+end
+
 -- Flash Steal Routine (Maju di Langit Y+65 ➔ Tembus Jeruji Noclip Langsung Masuk KE DALAM KANDANG ➔ Tahan 1.15s Sesuai Server ➔ Balik Markas)
 local function executeFlashSteal(targetPos, targetPrompt)
     local hrp = getHrp()
@@ -781,13 +834,10 @@ local function executeFlashSteal(targetPos, targetPrompt)
         task.wait(0.3)
     end
     
-    -- 7. INSTANT WARP LANGSUNG KEMBALI KE MARKAS / TAMAN
-    hrp.AssemblyLinearVelocity = Vector3.zero
-    hrp.AssemblyAngularVelocity = Vector3.zero
-    hrp.CFrame = CFrame.new(markas)
-    task.wait(0.2)
+    -- 7. INSTANT WARP LANGSUNG KEMBALI KE MARKAS / TAMAN + GERAK DIKIT (MICRO-MOVEMENT)
+    returnToBaseWithMicroMove(markas)
     
-    -- 8. Pegang bibit di tangan jika opsi aktif
+    -- 8. Pastikan bibit di tangan tetap ter-equip jika opsi aktif
     if config.holdSeedInHand then
         equipStolenSeed()
     end
@@ -2119,10 +2169,7 @@ createButton(secSteal, tr("BtnSetBase"), THEME.Panel, function()
     end
 end)
 createButton(secSteal, tr("BtnReturnBase"), THEME.Green, function()
-    local hrp = getHrp()
-    if hrp then
-        hrp.CFrame = CFrame.new(getBasePosition())
-    end
+    returnToBaseWithMicroMove()
 end)
 
 local secManualSteal = createSection(pageSteal, "PENGATURAN STEAL PROXIMITY", "Bypass interaksi tombol dan radius scan bibit manual")
