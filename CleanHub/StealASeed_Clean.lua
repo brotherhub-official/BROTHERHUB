@@ -116,29 +116,31 @@ local STAGE_KEYS = {
 local CONFIG_FILE = "BrotherHub_StealASeed_Config.json"
 
 local config = {
-    -- Auto Steal & Flash Return Engine
+    -- Auto Steal & Safe Collection Engine
     autoSteal             = false,
     autoFlashSteal        = true,
     selectedStage         = "Auto Furthest (Stage 10 - Paling Depan / Tersulit)",
+    antiGuardChase        = true,
     antiFlingShield       = true,
-    skyFlightHeight       = 45,
+    holdSeedInHand        = true,
+    skyFlightHeight       = 65,
     instantPrompt         = true,
     stealDistance         = 35,
     stealDelay            = 0.8,
     customBasePos         = nil,
     fullAfkLoop           = false,
 
-    -- Auto Farm & Garden
-    autoPlant             = false,
+    -- Auto Farm & Garden (Koleksi Kebun Sendiri)
+    autoPlant             = true,
     autoHarvest           = false,
-    autoCollectCash       = false,
+    autoCollectCash       = true,
     harvestInterval       = 1.0,
 
-    -- Auto Sell
+    -- Auto Sell (100% OFF - TIDAK DIJUAL, DIKOLEKSI DI TAMAN/TANGAN)
     autoSell              = false,
-    sellInterval          = 3.0,
-    sellThreshold         = 10,
-    instantSellBuyer      = true,
+    sellInterval          = 10.0,
+    sellThreshold         = 999,
+    instantSellBuyer      = false,
 
     -- Shop & Seeds
     blockRobuxPopups      = true,
@@ -245,9 +247,9 @@ local TRANSLATIONS = {
     ["BtnCancel"]             = {ID = "Batal", EN = "Cancel"},
 
     -- Tabs
-    ["TabSteal"]              = {ID = "🌱 Auto Curi", EN = "🌱 Auto Steal"},
+    ["TabSteal"]              = {ID = "🌱 Auto Curi & Koleksi", EN = "🌱 Auto Steal & Keep"},
     ["TabFarm"]               = {ID = "🌾 Kebun & Panen", EN = "🌾 Farm & Harvest"},
-    ["TabSell"]               = {ID = "💰 Auto Jual", EN = "💰 Auto Sell"},
+    ["TabSell"]               = {ID = "💰 Auto Jual (Opsional)", EN = "💰 Auto Sell (Optional)"},
     ["TabShop"]               = {ID = "🛒 Toko Bibit", EN = "🛒 Seed Shop"},
     ["TabPets"]               = {ID = "🐾 Pet & Event", EN = "🐾 Pets & Events"},
     ["TabTeleport"]           = {ID = "🌌 Teleportasi", EN = "🌌 Teleport Hub"},
@@ -274,9 +276,11 @@ local TRANSLATIONS = {
     ["MovementDesc"]          = {ID = "Pengatur kecepatan, daya lompat, noclip, dan mode terbang", EN = "Customize walkspeed, jump power, noclip, and flight mode"},
 
     -- Toggles & Sliders
-    ["FlashSteal"]            = {ID = "⚡ Flash Auto Steal (Maju ➔ Curi ➔ Balik Markas)", EN = "⚡ Flash Auto Steal (Advance ➔ Steal ➔ Return Base)"},
-    ["AntiFling"]             = {ID = "🛡️ Anti-Pental & Anti-Guard (Bebas Pental / Kebal)", EN = "🛡️ Anti-Fling & Guard Shield (Knockback Immunity)"},
-    ["FullAfk"]               = {ID = "🌙 Full Autonomous AFK Loop (Curi ➔ Tanam ➔ Jual)", EN = "🌙 Full Autonomous AFK Loop (Steal ➔ Plant ➔ Sell)"},
+    ["FlashSteal"]            = {ID = "⚡ Flash Auto Steal (Maju ➔ Curi ➔ Bawa Pulang)", EN = "⚡ Flash Auto Steal (Advance ➔ Steal ➔ Return Base)"},
+    ["AntiGuard"]             = {ID = "🛡️ Anti-Kejar Penjaga Tanaman (Lumpuhkan Guard 100%)", EN = "🛡️ Anti-Guard Chase (Pacify & Paralyze Guards)"},
+    ["HoldSeed"]              = {ID = "🤲 Pegang Bibit di Tangan (Equip Stolen Seed)", EN = "🤲 Hold Stolen Seed in Hand (Equip Seed)"},
+    ["AntiFling"]             = {ID = "🛡️ Anti-Pental & Anti-Knockback (Bebas Pental / Kebal)", EN = "🛡️ Anti-Fling & Knockback Immunity"},
+    ["FullAfk"]               = {ID = "🌙 Full AFK Loop (Curi ➔ Koleksi di Taman / Pegang)", EN = "🌙 Full AFK Loop (Steal ➔ Garden Collect / Hold)"},
     ["TargetStage"]           = {ID = "🎯 Target Seed Stage", EN = "🎯 Target Seed Stage"},
     ["StealDelay"]            = {ID = "⏱️ Jeda Siklus Steal (Detik)", EN = "⏱️ Steal Cycle Interval (s)"},
     ["SkyHeight"]             = {ID = "🚀 Ketinggian Jalur Langit (Studs)", EN = "🚀 Sky Travel Altitude (Studs)"},
@@ -414,8 +418,71 @@ local function getBasePosition()
     return Vector3.new(-13.26, 4.0, 109.27)
 end
 
--- Active Anti-Fling & Knockback Neutralizer (Bebas Pental 100%)
+-- [4.5] 🛡️ GUARD PACIFIER & ANTI-CHASE NEUTRALIZER (100% BEBAS DIKEJAR PENJAGA TANAMAN)
+local function pacifyPlantGuards()
+    pcall(function()
+        for _, obj in ipairs(workspace:GetDescendants()) do
+            local isGuard = false
+            if obj:IsA("Model") then
+                local pName = obj.Parent and obj.Parent.Name or ""
+                if obj.Name == "敌人" or pName == "敌人" or string.find(obj.Name:lower(), "guard") or string.find(obj.Name:lower(), "plant") then
+                    isGuard = true
+                elseif obj:FindFirstChild("atk") or obj:FindFirstChild("Stem_Lower") or obj:FindFirstChild("Wing.L") or obj:FindFirstChild("Wing.R") then
+                    isGuard = true
+                end
+            end
+            
+            if isGuard then
+                -- 1. Matikan kecepatan jalan dan buat PlatformStand (lumpuhkan AI chase)
+                local hum = obj:FindFirstChildOfClass("Humanoid")
+                if hum then
+                    hum.WalkSpeed = 0
+                    hum.PlatformStand = true
+                end
+                
+                -- 2. Kunci RootPart fisik agar tidak bergerak mengejar ke mana pun
+                local root = obj:FindFirstChild("RootPart") or obj:FindFirstChild("HumanoidRootPart") or obj.PrimaryPart
+                if root and root:IsA("BasePart") then
+                    root.Anchored = true
+                    root.AssemblyLinearVelocity = Vector3.zero
+                    root.AssemblyAngularVelocity = Vector3.zero
+                end
+                
+                -- 3. Matikan hitbox sentuhan & collision (CanTouch = false & CanCollide = false)
+                for _, part in ipairs(obj:GetDescendants()) do
+                    if part:IsA("BasePart") then
+                        part.CanCollide = false
+                        part.CanTouch = false
+                    end
+                end
+            end
+        end
+    end)
+end
+
+-- Helper: Otomatis pegang bibit curian di tangan (Equip Seed to Hand)
+local function equipStolenSeed()
+    pcall(function()
+        local char = LocalPlayer.Character
+        local bp = LocalPlayer:FindFirstChildOfClass("Backpack")
+        if char and bp then
+            local hum = char:FindFirstChildOfClass("Humanoid")
+            for _, item in ipairs(bp:GetChildren()) do
+                if item:IsA("Tool") then
+                    if hum then hum:EquipTool(item) end
+                    break
+                end
+            end
+        end
+    end)
+end
+
+-- Active Guard Pacifier & Anti-Fling Neutralizer (Bebas Pental 100% & Bebas Dikejar)
 registerConnection(RunService.Heartbeat:Connect(function()
+    if config.antiGuardChase or config.autoSteal or config.fullAfkLoop then
+        pacifyPlantGuards()
+    end
+
     if config.antiFlingShield or config.autoSteal or config.fullAfkLoop then
         local hrp = getHrp()
         if hrp then
@@ -433,27 +500,32 @@ registerConnection(RunService.Heartbeat:Connect(function()
     end
 end))
 
--- Flash Steal Routine (Maju ➔ Curi ➔ Instan Balik Markas)
+-- Flash Steal Routine (Maju di Langit Y+65 ➔ Sky-Drop Curi ➔ Instan Balik Markas)
 local function executeFlashSteal(targetPos)
     local hrp = getHrp()
     if not hrp then return false end
     
     local markas = getBasePosition()
-    local skyY = targetPos.Y + (config.skyFlightHeight or 45)
+    local skyY = targetPos.Y + (config.skyFlightHeight or 65)
     
-    -- Step 1: Fly high in the sky (above plant guard attack range)
+    -- Lumpuhkan penjaga sebelum mendekat
+    if config.antiGuardChase then
+        pacifyPlantGuards()
+    end
+    
+    -- Step 1: Meluncur di stratosfer langit (Y + 65, jauh di atas radius pandang & deteksi guard)
     hrp.AssemblyLinearVelocity = Vector3.zero
     hrp.AssemblyAngularVelocity = Vector3.zero
     hrp.CFrame = CFrame.new(targetPos.X, skyY, targetPos.Z)
     task.wait(0.08)
     
-    -- Step 2: Sky-Drop directly onto target seed
+    -- Step 2: Sky-Drop sekejap langsung di atas bibit sasaran
     createSafePad(targetPos, 2.0)
     hrp.CFrame = CFrame.new(targetPos + Vector3.new(0, 3.0, 0))
     hrp.AssemblyLinearVelocity = Vector3.zero
-    task.wait(0.08)
+    task.wait(0.04)
     
-    -- Step 3: Trigger ProximityPrompt in 0 seconds
+    -- Step 3: Trigger ProximityPrompt instan 0 detik
     local stolen = false
     for _, prompt in ipairs(workspace:GetDescendants()) do
         if prompt:IsA("ProximityPrompt") and prompt.Enabled then
@@ -473,15 +545,21 @@ local function executeFlashSteal(targetPos)
         end
     end
     
-    -- Step 4: INSTANT WARP BACK TO MARKAS (ZERO TIME SPENT ON GROUND)
+    -- Step 4: INSTANT WARP LANGSUNG KEMBALI KE MARKAS / TAMAN (Waktu di darat < 0.05 detik)
     hrp.AssemblyLinearVelocity = Vector3.zero
     hrp.AssemblyAngularVelocity = Vector3.zero
     hrp.CFrame = CFrame.new(markas)
     
+    -- Step 5: Pegang bibit di tangan jika opsi aktif
+    if config.holdSeedInHand then
+        task.wait(0.1)
+        equipStolenSeed()
+    end
+    
     return stolen
 end
 
--- [5] 🌱 AUTONOMOUS FLASH STEAL & FULL AFK SUITE
+-- [5] 🌱 AUTONOMOUS FLASH STEAL & FULL AFK SUITE (KOLEKSI TAMAN / TANGAN - TANPA JUAL)
 registerThread(function()
     local cycleIndex = 1
     local cycleOrder = {"10", "09", "08", "07", "06", "05", "04", "03", "02", "01"}
@@ -508,7 +586,7 @@ registerThread(function()
                         targetPos = targetData.pos
                     end
                     
-                    -- Dynamic check: find furthest prompt along negative Z if auto furthest
+                    -- Dynamic check: cari bibit terjauh di Z negatif jika auto furthest
                     if string.find(sel:lower(), "furthest") or not targetPos then
                         local minZ = 0
                         for _, prompt in ipairs(workspace:GetDescendants()) do
@@ -529,10 +607,15 @@ registerThread(function()
                     if targetPos then
                         executeFlashSteal(targetPos)
                         
-                        -- Autonomous Base Actions when back at Markas
+                        -- Aksi Aman Setelah Tiba di Markas / Taman
                         if config.fullAfkLoop then
-                            task.wait(0.3)
-                            -- Auto Plant in empty plot spots
+                            task.wait(0.2)
+                            -- 1. Pegang bibit di tangan
+                            if config.holdSeedInHand then
+                                equipStolenSeed()
+                            end
+
+                            -- 2. Tanam bibit ke spot kebun/taman pemain (Koleksi Kebun Sendiri)
                             if config.autoPlant then
                                 for _, prompt in ipairs(workspace:GetDescendants()) do
                                     if prompt:IsA("ProximityPrompt") and (prompt.ActionText == "Place" or prompt.ActionText == "Plant") then
@@ -544,7 +627,8 @@ registerThread(function()
                                     end
                                 end
                             end
-                            -- Auto Collect Cash in Plot
+                            
+                            -- 3. Sedot Cash Pasif Kebun
                             if config.autoCollectCash then
                                 for _, plot in ipairs(workspace:GetDescendants()) do
                                     if plot:IsA("BasePart") and (plot.Name == "DF_BaseGlow" or string.find(plot.Name:lower(), "cash") or string.find(plot.Name:lower(), "coin")) then
@@ -557,10 +641,8 @@ registerThread(function()
                                     end
                                 end
                             end
-                            -- Auto Sell crops / seeds to Dealer
-                            if config.autoSell then
-                                performSellCrops()
-                            end
+                            
+                            -- HUKUM PERMINTAAN FOUNDER: TIDAK ADA AUTO JUAL! BIBIT 100% DIKOLEKSI!
                         end
                     end
                 end
@@ -1619,19 +1701,22 @@ end
 
 -- TAB 1: 🌱 AUTO STEAL
 local pageSteal = createTab("Steal", tr("TabSteal"))
-local secSteal = createSection(pageSteal, "FLASH AUTO STEAL & RETURN ENGINE", "Maju cepat ke seed target, curi instan, dan langsung kembali ke markas (Bebas Pental)")
+local secSteal = createSection(pageSteal, "FLASH AUTO STEAL & SAFE HARVEST SUITE", "Curi bibit instan di stratosfer langit Y+65, bawa pulang ke markas/taman (100% Bebas Dikejar Penjaga & Tidak Dijual)")
 createToggle(secSteal, tr("FlashSteal"), config.autoSteal, function(v) config.autoSteal = v end)
 createDropdown(secSteal, tr("TargetStage"), STAGE_KEYS, config.selectedStage, function(v) config.selectedStage = v end)
+createToggle(secSteal, tr("AntiGuard"), config.antiGuardChase, function(v) config.antiGuardChase = v end)
+createToggle(secSteal, tr("HoldSeed"), config.holdSeedInHand, function(v) config.holdSeedInHand = v end)
+createToggle(secSteal, tr("AutoPlant"), config.autoPlant, function(v) config.autoPlant = v end)
 createToggle(secSteal, tr("AntiFling"), config.antiFlingShield, function(v) config.antiFlingShield = v end)
 createToggle(secSteal, tr("FullAfk"), config.fullAfkLoop, function(v) config.fullAfkLoop = v end)
 createSlider(secSteal, tr("StealDelay"), 0.2, 5.0, config.stealDelay, function(v) config.stealDelay = v end)
-createSlider(secSteal, tr("SkyHeight"), 20, 80, config.skyFlightHeight, function(v) config.skyFlightHeight = v end)
+createSlider(secSteal, tr("SkyHeight"), 20, 100, config.skyFlightHeight, function(v) config.skyFlightHeight = v end)
 createButton(secSteal, tr("BtnSetBase"), THEME.Panel, function()
     local hrp = getHrp()
     if hrp then
         config.customBasePos = hrp.Position
         saveConfig()
-        showNotification("👑 MARKAS DISIMPAN", "Posisi saat ini berhasil disimpan sebagai titik pulang Markas!", 4)
+        showNotification("👑 MARKAS DISIMPAN", "Posisi saat ini berhasil disimpan sebagai titik pulang Markas/Taman!", 4)
     end
 end)
 createButton(secSteal, tr("BtnReturnBase"), THEME.Green, function()
