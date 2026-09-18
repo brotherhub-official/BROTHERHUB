@@ -465,16 +465,52 @@ registerConnection(RunService.Stepped:Connect(function()
 end))
 
 -- [4.5] 🏠 BASE / MARKAS RESOLVER & ANTI-FLING SHIELD
+-- Helper: Raycast untuk menentukan posisi persis di atas permukaan tanah (Anti-Slow Motion & Zero Air Height)
+local function getFloorPosition(pos)
+    local rayParams = RaycastParams.new()
+    rayParams.FilterType = RaycastFilterType.Exclude
+    if LocalPlayer.Character then
+        rayParams.FilterDescendantsInstances = {LocalPlayer.Character}
+    end
+    local ray = workspace:Raycast(pos + Vector3.new(0, 15, 0), Vector3.new(0, -45, 0), rayParams)
+    if ray and ray.Position then
+        return Vector3.new(pos.X, ray.Position.Y + 2.8, pos.Z)
+    end
+    return pos
+end
+
+-- Helper: Dapatkan kebun/plot milik pemain sendiri di workspace.Farm
+local function getMyPlot()
+    local Farm = workspace:FindFirstChild("Farm")
+    if Farm then
+        for _, plot in ipairs(Farm:GetChildren()) do
+            if plot:GetAttribute("OwnerId") == LocalPlayer.UserId then
+                return plot
+            end
+        end
+    end
+    return nil
+end
+
 local function getBasePosition()
     if config.customBasePos then
-        return config.customBasePos
+        return getFloorPosition(config.customBasePos)
     end
-    -- Look for player plot or SpawnLocation
+    
+    -- 1. Utamakan posisi kebun/plot pemain sendiri
+    local myPlot = getMyPlot()
+    if myPlot then
+        local pPos = myPlot:GetPivot().Position
+        return getFloorPosition(pPos)
+    end
+
+    -- 2. Fallback ke SpawnLocation
     local spawnPart = workspace:FindFirstChildOfClass("SpawnLocation") or workspace:FindFirstChild("SpawnLocation", true)
     if spawnPart then
-        return spawnPart.Position + Vector3.new(0, 3.5, 0)
+        return getFloorPosition(spawnPart.Position)
     end
-    return Vector3.new(-13.26, 4.0, 109.27)
+
+    return getFloorPosition(Vector3.new(-13.26, 1.0, 109.27))
 end
 
 -- [4.5] 🛡️ GUARD PACIFIER & ANTI-CHASE NEUTRALIZER (100% BEBAS DIKEJAR PENJAGA TANAMAN)
@@ -536,24 +572,21 @@ local function equipStolenSeed()
     end)
 end
 
--- Active Guard Pacifier & Anti-Fling Neutralizer (Bebas Pental 100% & Bebas Dikejar)
+-- Active Guard Pacifier & Anti-Fling Neutralizer (Bebas Pental 100% & Bebas Dikejar — TANPA Slow Motion Floating!)
 registerConnection(RunService.Heartbeat:Connect(function()
     if config.antiGuardChase or config.autoSteal or config.fullAfkLoop then
         pacifyPlantGuards()
     end
 
-    if config.antiFlingShield or config.autoSteal or config.fullAfkLoop then
+    -- Anti-Fling: Hanya netralkan jika karakter terpental ekstrem (velocity > 120), jangan ganggu gravitasi dan berjalan normal!
+    if config.antiFlingShield then
         local hrp = getHrp()
         if hrp then
-            hrp.AssemblyLinearVelocity = Vector3.zero
-            hrp.AssemblyAngularVelocity = Vector3.zero
-        end
-        local char = LocalPlayer.Character
-        if char then
-            for _, part in ipairs(char:GetDescendants()) do
-                if part:IsA("BasePart") then
-                    part.CanCollide = false
-                end
+            if hrp.AssemblyLinearVelocity.Magnitude > 120 then
+                hrp.AssemblyLinearVelocity = Vector3.zero
+            end
+            if hrp.AssemblyAngularVelocity.Magnitude > 60 then
+                hrp.AssemblyAngularVelocity = Vector3.zero
             end
         end
     end
@@ -728,12 +761,12 @@ local function buyBucketWithCash(targetBucket)
     if not main02 then return false end
 
     -- Cari frame toko alat/ember (道具商店)
-    local shopFrame = main02:FindFirstChild("\233\129\147\229\133\183\229\149\134\229\186\151")
+    local shopFrame = main02:FindFirstChild("\233\129\147\229\133\183\229\149\134\229\186\151", true)
     if not shopFrame then
         for _, desc in ipairs(main02:GetDescendants()) do
             if desc:IsA("TextLabel") and (string.find(desc.Text, "Restock in") or string.find(desc.Text, "Water Bucket")) then
                 local p = desc
-                while p and p.Parent ~= main02 do
+                while p and p.Parent and p.Parent ~= main02 do
                     p = p.Parent
                 end
                 if p and p:IsA("Frame") then
@@ -746,120 +779,100 @@ local function buyBucketWithCash(targetBucket)
 
     if not shopFrame then return false end
 
-    -- Cari container list barang (ScrollingFrame atau Frame yang memuat item-item)
-    local itemContainer = nil
-    for _, desc in ipairs(shopFrame:GetDescendants()) do
-        if desc:IsA("ScrollingFrame") or desc.Name == "\232\174\190\231\189\174" then
-            itemContainer = desc:FindFirstChild("Frame") or desc
-            break
-        end
-    end
-
-    if not itemContainer then
-        itemContainer = shopFrame:FindFirstChild("\228\184\187\230\161\134\230\158\182", true)
-    end
-    if not itemContainer then return false end
-
     local boughtAny = false
 
-    -- Scan setiap baris item (root frames)
-    for _, row in ipairs(itemContainer:GetChildren()) do
-        if row:IsA("Frame") and row.Visible then
-            -- 1. Cari Nama Item
-            local itemName = nil
-            for _, lbl in ipairs(row:GetDescendants()) do
-                if lbl:IsA("TextLabel") and lbl.Visible and string.find(lbl.Text, "Bucket") then
-                    itemName = lbl.Text
-                    break
-                end
+    -- Cari SEMUA label TextLabel yang mengandung "Bucket" di dalam seluruh toko
+    for _, lbl in ipairs(shopFrame:GetDescendants()) do
+        if lbl:IsA("TextLabel") and lbl.Visible and string.find(lbl.Text, "Bucket") then
+            local itemName = lbl.Text
+            
+            -- Cek kecocokan target droplist ("All In-Stock" atau nama ember tertentu)
+            local match = false
+            if not targetBucket or targetBucket == "All In-Stock" then
+                match = true
+            elseif string.find(itemName:lower(), targetBucket:lower()) or string.find(targetBucket:lower(), itemName:lower()) then
+                match = true
             end
 
-            if itemName then
-                -- Cek kecocokan target droplist
-                local match = false
-                if not targetBucket or targetBucket == "All In-Stock" then
-                    match = true
-                elseif string.find(itemName:lower(), targetBucket:lower()) or string.find(targetBucket:lower(), itemName:lower()) then
-                    match = true
+            if match then
+                -- Cari wadah baris item (walk up sampai ketemu parent frame atau wadah yang memuat tombol 货币购买)
+                local row = lbl.Parent
+                local cashContainer = nil
+                local depth = 0
+                while row and row ~= shopFrame and depth < 10 do
+                    -- Cari frame 货币购买 (Cash Buy) di dalam baris item
+                    local hb = row:FindFirstChild("\232\180\167\229\184\129\232\180\167\229\184\129", true)
+                    if hb then
+                        cashContainer = hb
+                        break
+                    end
+                    row = row.Parent
+                    depth = depth + 1
                 end
 
-                if match then
-                    -- 2. Cek Stock (Apakah ada stock?)
-                    local inStock = false
-                    for _, lbl in ipairs(row:GetDescendants()) do
-                        if lbl:IsA("TextLabel") and lbl.Visible then
-                            local s = string.match(lbl.Text, "x(%d+)%s*Stock")
-                            if s then
-                                if tonumber(s) and tonumber(s) > 0 then
-                                    inStock = true
+                if cashContainer then
+                    -- Cek tombol cash yang aktif di dalam wadah 货币购买
+                    local cashBtn = nil
+                    local priceText = ""
+                    
+                    for _, child in ipairs(cashContainer:GetDescendants()) do
+                        if (child:IsA("ImageButton") or child:IsA("TextButton")) and child.Visible then
+                            -- Pastikan BUKAN tombol '关闭' (No Stock)
+                            local isClosed = false
+                            if child.Name == "\229\133\183\233\151\173" or child.Name == "关闭" then
+                                isClosed = true
+                            end
+                            for _, t in ipairs(child:GetDescendants()) do
+                                if t:IsA("TextLabel") and string.find(t.Text:lower(), "no stock") then
+                                    isClosed = true
+                                    break
+                                end
+                            end
+
+                            if not isClosed then
+                                cashBtn = child
+                                for _, t in ipairs(child:GetDescendants()) do
+                                    if t:IsA("TextLabel") and (string.find(t.Text, "K") or string.match(t.Text, "%d+")) then
+                                        priceText = t.Text
+                                        break
+                                    end
                                 end
                                 break
                             end
                         end
                     end
 
-                    -- 3. Cari Tombol Beli Cash (Green Button dengan nominal Cash K)
-                    -- HUKUM MUTLAK: DILARANG MENEKAN TOMBOL ROBUX!
-                    local cashBuyBtn = nil
-                    local priceText = ""
-                    for _, btn in ipairs(row:GetDescendants()) do
-                        if (btn:IsA("ImageButton") or btn:IsA("TextButton")) and btn.Visible and btn.Active then
-                            -- Pastikan BUKAN tombol Robux (parent Robux bernama 罗宝购买 / \231\189\151\229\174\157)
-                            local isRobux = false
-                            local p = btn
-                            while p and p ~= row do
-                                local pName = p.Name:lower()
-                                if string.find(p.Name, "\231\189\151\229\174\157") or string.find(pName, "robux") then
-                                    isRobux = true
-                                    break
-                                end
-                                p = p.Parent
-                            end
-
-                            if not isRobux then
-                                -- Pastikan BUKAN tombol No Stock (关闭 / No Stock)
-                                local hasNoStock = false
-                                for _, l in ipairs(btn:GetDescendants()) do
-                                    if l:IsA("TextLabel") and string.find(l.Text:lower(), "no stock") then
-                                        hasNoStock = true
-                                        break
-                                    end
-                                end
-
-                                if not hasNoStock then
-                                    -- Tombol cash yang aktif memiliki TextLabel harga (misal "50K", "500K")
-                                    for _, l in ipairs(btn:GetDescendants()) do
-                                        if l:IsA("TextLabel") and (string.find(l.Text, "K") or string.match(l.Text, "%d+")) then
-                                            priceText = l.Text
-                                            cashBuyBtn = btn
-                                            break
-                                        end
-                                    end
-                                    if not cashBuyBtn and (btn.Name == "\230\137\147\229\188\128" or string.find(btn.Parent.Name, "\232\180\167\229\184\129")) then
-                                        cashBuyBtn = btn
-                                    end
-                                end
-                            end
-                        end
-                    end
-
-                    -- 4. Eksekusi Pembelian Cash Jika Tombol Valid & Stock Tersedia
-                    if cashBuyBtn and (inStock or priceText ~= "") then
+                    -- Eksekusi Pembelian Cash dengan Multi-Method Clicks (100% Reliable di Seluruh Executor)
+                    if cashBtn then
+                        -- 1. firesignal events
                         if firesignal then
-                            pcall(function() firesignal(cashBuyBtn.MouseButton1Click) end)
-                            pcall(function() firesignal(cashBuyBtn.Activated) end)
+                            pcall(function() firesignal(cashBtn.MouseButton1Click) end)
+                            pcall(function() firesignal(cashBtn.Activated) end)
+                            pcall(function() firesignal(cashBtn.MouseButton1Down) end)
+                            pcall(function() firesignal(cashBtn.MouseButton1Up) end)
                         end
+                        
+                        -- 2. VirtualInputManager (Desktop & Touch screen simulation)
                         pcall(function()
                             local vim = game:GetService("VirtualInputManager")
-                            local absPos = cashBuyBtn.AbsolutePosition + cashBuyBtn.AbsoluteSize / 2
+                            local absPos = cashBtn.AbsolutePosition + (cashBtn.AbsoluteSize / 2)
                             vim:SendMouseButtonEvent(absPos.X, absPos.Y, 0, true, game, 0)
                             task.wait(0.04)
                             vim:SendMouseButtonEvent(absPos.X, absPos.Y, 0, false, game, 0)
                         end)
 
-                        notify("🛒 Auto Buy", "Membeli " .. itemName .. " (" .. (priceText ~= "" and priceText or "Cash") .. ")!", 3)
+                        -- 3. VirtualUser fallback
+                        pcall(function()
+                            local vu = game:GetService("VirtualUser")
+                            local absPos = cashBtn.AbsolutePosition + (cashBtn.AbsoluteSize / 2)
+                            vu:Button1Down(Vector2.new(absPos.X, absPos.Y), workspace.CurrentCamera.CFrame)
+                            task.wait(0.04)
+                            vu:Button1Up(Vector2.new(absPos.X, absPos.Y), workspace.CurrentCamera.CFrame)
+                        end)
+
+                        notify("🛒 Auto Buy Bucket", "Membeli " .. itemName .. " (" .. (priceText ~= "" and priceText or "Cash") .. ")!", 3)
                         boughtAny = true
-                        task.wait(0.6)
+                        task.wait(0.4)
                     end
                 end
             end
@@ -1048,9 +1061,11 @@ local function returnToBaseWithMicroMove(customPos)
     local hrp = getHrp()
     if not hrp then return end
     local char = LocalPlayer.Character
-    local markas = customPos or getBasePosition()
-    
-    -- 1. Pulihkan collision pada karakter agar berpijak fisik di tanah
+    local hum = getHumanoid()
+    local rawMarkas = customPos or getBasePosition()
+    local floorPos = getFloorPosition(rawMarkas)
+
+    -- 1. Pulihkan collision seluruh part seketika agar langsung berpijak kokoh di tanah
     if char then
         for _, p in ipairs(char:GetDescendants()) do
             if p:IsA("BasePart") then
@@ -1058,45 +1073,44 @@ local function returnToBaseWithMicroMove(customPos)
             end
         end
     end
-    
-    -- 2. Teleport ke markas
+
+    -- 2. Teleport LANGSUNG mendarat di daratan lantai (Normal gravity, zero slow motion, zero melayang!)
     hrp.AssemblyLinearVelocity = Vector3.zero
     hrp.AssemblyAngularVelocity = Vector3.zero
-    hrp.CFrame = CFrame.new(markas + Vector3.new(0, 0.5, 0))
-    task.wait(0.12)
-    
-    -- 3. Equip bibit terlebih dahulu jika opsi aktif agar saat bergerak bibit terdaftar di tangan
+    hrp.CFrame = CFrame.new(floorPos)
+
+    if hum then
+        hum.PlatformStand = false
+        hum:ChangeState(Enum.HumanoidStateType.Running)
+    end
+
+    -- 3. Equip bibit di tangan jika opsi aktif
     if config.holdSeedInHand then
         equipStolenSeed()
     end
-    
-    -- 4. Gerak dikit (Micro-movement) agar Touch / Base Zone / Plot / Physics aktif
-    local hum = getHumanoid()
+
+    -- 4. Lari dikit kiri-kanan sesuai permintaan Founder ("lari dikit di saat balik kiri kanan apa gitu")
+    -- Memastikan zona plot / register touch aktif 100% secara alami
     if hum and hrp then
-        local look = hrp.CFrame.LookVector
-        if look.Magnitude < 0.1 then look = Vector3.new(0, 0, -1) end
+        local camCF = workspace.CurrentCamera and workspace.CurrentCamera.CFrame or hrp.CFrame
+        local rightVec = camCF.RightVector
+        if rightVec.Magnitude < 0.1 then rightVec = Vector3.new(1, 0, 0) end
         
-        -- Langkah 1: Gerak maju sedikit (sekitar 3 stud)
-        local step1 = markas + (look * 3.0) + Vector3.new(1.0, 0, 0)
-        hum:MoveTo(step1)
-        hrp.AssemblyLinearVelocity = (look * 7) + Vector3.new(2, 0, 0)
-        task.wait(0.2)
-        
-        -- Langkah 2: Gerak belok/geser sedikit (sekitar 2 stud)
-        local step2 = markas + Vector3.new(-1.0, 0, 1.2)
-        hum:MoveTo(step2)
-        hrp.AssemblyLinearVelocity = Vector3.new(-4, 0, 4)
-        task.wait(0.2)
-        
-        -- Langkah 3: Berhenti dan stabilkan posisi
+        -- Lari ke kanan sedikit (0.12 detik)
+        hum:Move(rightVec, false)
+        task.wait(0.12)
+        -- Lari ke kiri sedikit (0.12 detik)
+        hum:Move(-rightVec, false)
+        task.wait(0.12)
+        -- Berhenti normal
         hum:Move(Vector3.zero, false)
-        hrp.AssemblyLinearVelocity = Vector3.zero
-        hrp.AssemblyAngularVelocity = Vector3.zero
     end
-    task.wait(0.08)
+    
+    hrp.AssemblyLinearVelocity = Vector3.zero
+    hrp.AssemblyAngularVelocity = Vector3.zero
 end
 
--- Flash Steal Routine (Langsung Teleport ke Daratan / Dalam Kandang Tanpa Terbang di Atas & Tanpa Delay Turun ➔ Tahan 1.15s Sesuai Server ➔ Balik Markas)
+-- Flash Steal Routine (Ambil Langsung Tele Sekenceng Mungkin Balik + Lari Dikit Kiri Kanan Tanpa Slow Motion)
 local function executeFlashSteal(targetPos, targetPrompt)
     local hrp = getHrp()
     if not hrp then return false end
@@ -1147,8 +1161,6 @@ local function executeFlashSteal(targetPos, targetPrompt)
     end
     
     -- 4. TELEPORT LANGSUNG KE DARATAN DALAM KANDANG (ZERO DELAY, TANPA MELAYANG DI ATAS)
-    -- Karakter mendarat langsung setinggi tanah (Y + 0.2) tanpa ada fase melayang/turun di udara
-    -- sehingga penjaga tanaman tidak sempat mendeteksi atau menabrak karakter!
     local cageDropPos = insideCagePos + Vector3.new(0, 0.2, 0)
     hrp.AssemblyLinearVelocity = Vector3.zero
     hrp.AssemblyAngularVelocity = Vector3.zero
@@ -1179,7 +1191,7 @@ local function executeFlashSteal(targetPos, targetPrompt)
         hrp.CFrame = CFrame.new(cageDropPos)
     end
     
-    -- 5. Trigger ProximityPrompt Steal di daratan dalam kandang (Line of Sight 100% Bebas Rintangan)
+    -- 5. Trigger ProximityPrompt Steal: "ke ambil langsung tele sekenceng mungkin balik"
     local stolen = false
     if promptToFire then
         pcall(function() promptToFire.HoldDuration = 0 end)
@@ -1188,8 +1200,29 @@ local function executeFlashSteal(targetPos, targetPrompt)
         end
         pcall(function() promptToFire:InputHoldBegin() end)
         
+        -- Hitung item awal untuk mendeteksi seketika bibit masuk ke tas/tangan
+        local initialToolCount = 0
+        local bp = LocalPlayer:FindFirstChildOfClass("Backpack")
+        if char then for _, c in ipairs(char:GetChildren()) do if c:IsA("Tool") then initialToolCount = initialToolCount + 1 end end end
+        if bp then for _, c in ipairs(bp:GetChildren()) do if c:IsA("Tool") then initialToolCount = initialToolCount + 1 end end end
+
         local holdStart = tick()
         while (tick() - holdStart) < 1.15 do
+            -- Cek apakah bibit SUDAH KE-AMBIL (Tools bertambah atau prompt hilang/disabled)
+            local curToolCount = 0
+            if char then for _, c in ipairs(char:GetChildren()) do if c:IsA("Tool") then curToolCount = curToolCount + 1 end end end
+            if bp then for _, c in ipairs(bp:GetChildren()) do if c:IsA("Tool") then curToolCount = curToolCount + 1 end end end
+            
+            if curToolCount > initialToolCount then
+                stolen = true
+                break -- SEKETIKA BIBIT KE-AMBIL, LANGSUNG SELESAI TANPA NUNGGU LAGI!
+            end
+
+            if not promptToFire.Parent or not promptToFire.Enabled then
+                stolen = true
+                break
+            end
+
             -- Pertahankan karakter tetap di daratan dalam kandang dengan noclip aktif & lumpuhkan penjaga
             if config.antiGuardChase then
                 pacifyPlantGuards()
@@ -1207,17 +1240,17 @@ local function executeFlashSteal(targetPos, targetPrompt)
             if fireproximityprompt then
                 fireproximityprompt(promptToFire, 0)
             end
-            task.wait(0.08)
+            task.wait(0.04)
         end
         
         pcall(function() promptToFire:InputHoldEnd() end)
         markPromptAsStolen(promptToFire, cageDropPos)
         stolen = true
     else
-        task.wait(0.2)
+        task.wait(0.1)
     end
     
-    -- 7. INSTANT WARP LANGSUNG KEMBALI KE MARKAS / TAMAN + GERAK DIKIT (MICRO-MOVEMENT)
+    -- 7. INSTANT TELEPORT SEKENCENG MUNGKIN KEMBALI KE MARKAS + LARI DIKIT KIRI KANAN
     returnToBaseWithMicroMove(markas)
     
     -- 8. Pastikan bibit di tangan tetap ter-equip jika opsi aktif
@@ -1420,7 +1453,7 @@ registerThread(function()
                 buyBucketWithCash(target)
             end)
         end
-        task.wait(1.5)
+        task.wait(0.5)
     end
 end)
 
@@ -2604,6 +2637,20 @@ end
 
 -- TAB 1: 🌱 AUTO STEAL
 local pageSteal = createTab("Steal", tr("TabSteal"))
+-- Buka langsung tab pertama seketika dibuat agar halaman TIDAK AKAN PERNAH KOSONG / HITAM!
+pageSteal.Visible = true
+if tabs["Steal"] and tabs["Steal"].Button then
+    tabs["Steal"].Button.BackgroundColor3 = THEME.Panel
+    tabs["Steal"].Button.TextColor3 = THEME.Accent
+end
+currentTab = "Steal" 
+-- Buka langsung tab pertama seketika dibuat agar halaman TIDAK AKAN PERNAH KOSONG / HITAM!
+pageSteal.Visible = true
+if tabs["Steal"] and tabs["Steal"].Button then
+    tabs["Steal"].Button.BackgroundColor3 = THEME.Panel
+    tabs["Steal"].Button.TextColor3 = THEME.Accent
+end
+currentTab = "Steal" 
 local secSteal = createSection(pageSteal, "FLASH AUTO STEAL & SAFE HARVEST SUITE", "Curi bibit instan di stratosfer langit Y+65, bawa pulang ke markas/taman (100% Bebas Dikejar Penjaga & Tidak Dijual)")
 createToggle(secSteal, tr("FlashSteal"), config.autoSteal, function(v) config.autoSteal = v end)
 createToggle(secSteal, tr("SmartWait"), config.smartWaitSeed, function(v) config.smartWaitSeed = v end)
