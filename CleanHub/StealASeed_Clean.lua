@@ -257,10 +257,41 @@ local config = {
     hasLoadedCustomLang   = false
 }
 
+local function toVector3(val)
+    if not val then return nil end
+    if typeof(val) == "Vector3" then
+        return val
+    end
+    if type(val) == "table" then
+        local x = val.X or val.x or val[1]
+        local y = val.Y or val.y or val[2]
+        local z = val.Z or val.z or val[3]
+        if x and y and z then
+            return Vector3.new(tonumber(x), tonumber(y), tonumber(z))
+        end
+    end
+    return nil
+end
+
+local function posToTable(v3)
+    if typeof(v3) == "Vector3" then
+        return { X = v3.X, Y = v3.Y, Z = v3.Z }
+    end
+    return v3
+end
+
 local function saveConfig()
     pcall(function()
         if writefile then
-            writefile(CONFIG_FILE, HttpService:JSONEncode(config))
+            local exportData = {}
+            for k, v in pairs(config) do
+                if k == "customBasePos" or k == "customPalingDepanPos" then
+                    exportData[k] = posToTable(v)
+                else
+                    exportData[k] = v
+                end
+            end
+            writefile(CONFIG_FILE, HttpService:JSONEncode(exportData))
         end
     end)
 end
@@ -272,7 +303,9 @@ local function loadConfig()
             if type(data) == "table" then
                 for k, v in pairs(data) do
                     if config[k] ~= nil and v ~= nil then
-                        if type(v) == "table" and type(config[k]) == "table" then
+                        if k == "customBasePos" or k == "customPalingDepanPos" then
+                            config[k] = toVector3(v)
+                        elseif type(v) == "table" and type(config[k]) == "table" then
                             for subK, subV in pairs(v) do
                                 config[k][subK] = subV
                             end
@@ -290,6 +323,12 @@ local function loadConfig()
     end
     if not config.targetSeedName or config.targetSeedName == "" or type(config.targetSeedName) ~= "string" then
         config.targetSeedName = SEED_NAME_KEYS[1]
+    end
+    if config.customBasePos then
+        config.customBasePos = toVector3(config.customBasePos)
+    end
+    if config.customPalingDepanPos then
+        config.customPalingDepanPos = toVector3(config.customPalingDepanPos)
     end
 end
 loadConfig()
@@ -504,14 +543,16 @@ applyInstantPrompts()
 -- [4.5] 🏠 BASE / MARKAS RESOLVER & ANTI-FLING SHIELD
 -- Helper: Raycast untuk menentukan posisi persis di atas permukaan tanah (Anti-Slow Motion & Zero Air Height)
 local function getFloorPosition(pos)
+    pos = toVector3(pos)
+    if not pos then return nil end
     local rayParams = RaycastParams.new()
     rayParams.FilterType = RaycastFilterType.Exclude
     if LocalPlayer.Character then
         rayParams.FilterDescendantsInstances = {LocalPlayer.Character}
     end
-    local ray = workspace:Raycast(pos + Vector3.new(0, 15, 0), Vector3.new(0, -45, 0), rayParams)
+    local ray = workspace:Raycast(pos + Vector3.new(0, 10, 0), Vector3.new(0, -30, 0), rayParams)
     if ray and ray.Position then
-        return Vector3.new(pos.X, ray.Position.Y + 2.8, pos.Z)
+        return Vector3.new(pos.X, ray.Position.Y + 2.5, pos.Z)
     end
     return pos
 end
@@ -531,23 +572,26 @@ end
 
 local function getBasePosition()
     if config.customBasePos then
-        return getFloorPosition(config.customBasePos)
+        local customV3 = toVector3(config.customBasePos)
+        if customV3 then
+            return customV3
+        end
     end
     
     -- 1. Utamakan posisi kebun/plot pemain sendiri
     local myPlot = getMyPlot()
     if myPlot then
         local pPos = myPlot:GetPivot().Position
-        return getFloorPosition(pPos)
+        return getFloorPosition(pPos) or pPos
     end
 
     -- 2. Fallback ke SpawnLocation
     local spawnPart = workspace:FindFirstChildOfClass("SpawnLocation") or workspace:FindFirstChild("SpawnLocation", true)
     if spawnPart then
-        return getFloorPosition(spawnPart.Position)
+        return getFloorPosition(spawnPart.Position) or spawnPart.Position
     end
 
-    return getFloorPosition(Vector3.new(-13.26, 1.0, 109.27))
+    return Vector3.new(-13.26, 1.0, 109.27)
 end
 
 -- [4.5] 🛡️ GUARD PACIFIER & ANTI-CHASE NEUTRALIZER (100% BEBAS DIKEJAR PENJAGA TANAMAN)
@@ -881,170 +925,139 @@ local function buyBucketWithCash(targetBucket)
 
     if not shopFrame then return false end
 
-    -- Cari ScrollingFrame yang menampung kartu item (设置 / ScrollingFrame)
+    -- Buka frame toko agar AbsolutePosition valid untuk VirtualInputManager & simulasi klik
+    pcall(function() shopFrame.Visible = true end)
+
     local scroller = shopFrame:FindFirstChildWhichIsA("ScrollingFrame", true)
-
-    -- Kumpulkan seluruh kartu item (Frame 'root' atau Frame yang memiliki Frame '按钮')
-    local itemCards = {}
-    for _, obj in ipairs(shopFrame:GetDescendants()) do
-        if obj:IsA("Frame") and (obj.Name == "root" or obj:FindFirstChild("\230\140\137\233\146\174")) then
-            local hasBtnContainer = obj:FindFirstChild("\230\140\137\233\146\174") or obj:FindFirstChild("按钮")
-            if hasBtnContainer and not table.find(itemCards, obj) then
-                table.insert(itemCards, obj)
-            end
-        end
-    end
-
-    -- Fallback jika tidak ditemukan kartu via root
-    if #itemCards == 0 then
-        for _, obj in ipairs(shopFrame:GetDescendants()) do
-            if obj:IsA("Frame") and (obj.Name == "\232\180\167\229\184\129\232\180\173\228\185\176" or obj.Name == "货币购买") then
-                local card = obj.Parent
-                if card and card.Parent and card.Parent:IsA("Frame") then
-                    card = card.Parent
-                end
-                if card and not table.find(itemCards, card) then
-                    table.insert(itemCards, card)
-                end
-            end
-        end
-    end
-
     local boughtAny = false
 
-    for _, card in ipairs(itemCards) do
-        -- 1. Periksa apakah kartu ini adalah Ember Air (Water Bucket)
-        local isBucket = false
-        local cardItemName = "Water Bucket"
-        local rarityText = ""
-        local stockText = ""
-        local isOutOfStock = false
+    -- Scan semua tombol pembelian Cash (货币购买)
+    for _, btn in ipairs(shopFrame:GetDescendants()) do
+        if (btn:IsA("ImageButton") or btn:IsA("TextButton")) and btn.Visible then
+            local btnName = btn.Name
+            local isCashBtn = (btnName == "\232\180\167\229\184\129\232\180\173\228\185\176" or btnName == "货币购买")
+            
+            -- Hindari tombol '关闭' (Disabled / Out of Stock)
+            if btnName == "\229\133\179\233\151\173" or btnName == "关闭" then
+                isCashBtn = false
+            end
 
-        for _, tl in ipairs(card:GetDescendants()) do
-            if tl:IsA("TextLabel") then
-                local txt = tl.Text or ""
-                local txtLower = txt:lower()
-
-                -- Deteksi nama ember
-                if string.find(txtLower, "bucket") or string.find(txtLower, "water") then
-                    isBucket = true
-                    cardItemName = txt
+            -- 100% Bebas Robux: Pastikan BUKAN di dalam frame 罗宝购买 / Robux
+            local isRobux = false
+            local ancestor = btn.Parent
+            while ancestor and ancestor ~= shopFrame do
+                local aName = ancestor.Name
+                if aName == "\231\189\151\229\174\157\232\180\173\228\185\176" or aName == "罗宝购买" or string.find(aName:lower(), "robux") then
+                    isRobux = true
+                    break
                 end
+                ancestor = ancestor.Parent
+            end
 
-                -- Deteksi rarity
-                if string.find(txtLower, "epic") or string.find(txtLower, "legendary") or string.find(txtLower, "mythic") then
-                    rarityText = txt
-                end
-
-                -- Deteksi stok
-                if string.find(txtLower, "stock") then
-                    stockText = txt
-                    if string.find(txtLower, "x0") or string.find(txtLower, "no stock") then
-                        isOutOfStock = true
+            if isCashBtn and not isRobux then
+                -- Temukan kartu induk (card)
+                local card = btn:FindFirstAncestor("root")
+                if not card then
+                    local temp = btn.Parent
+                    while temp and temp.Parent and temp.Parent ~= scroller and temp.Parent ~= shopFrame do
+                        temp = temp.Parent
                     end
+                    card = temp
                 end
-                if string.find(txtLower, "no stock") then
-                    isOutOfStock = true
-                end
-            end
-        end
 
-        -- Jika kartu mengandung rarity Epic/Legendary/Mythic atau ada ember
-        if not isBucket and (rarityText ~= "" or string.find(cardItemName:lower(), "bucket")) then
-            isBucket = true
-            if rarityText ~= "" then
-                cardItemName = rarityText .. " Water Bucket"
-            end
-        end
+                if card then
+                    -- Baca nama item dan stok
+                    local itemName = "Water Bucket"
+                    local isBucket = false
+                    local isOut = false
+                    local priceText = "Cash"
 
-        -- Cek tombol Disabled '关闭'
-        local closeBtn = card:FindFirstChild("\229\133\179\233\151\173", true) or card:FindFirstChild("关闭", true)
-        if closeBtn and closeBtn:IsA("GuiObject") and closeBtn.Visible then
-            isOutOfStock = true
-        end
-
-        -- 2. Jika merupakan ember air dan TIDAK habis stok
-        if isBucket and not isOutOfStock then
-            -- 3. Cek kesesuaian dengan target dropdown
-            local matchesTarget = false
-            if not targetBucket or targetBucket == "All In-Stock" then
-                matchesTarget = true
-            else
-                local targetLower = targetBucket:lower()
-                local nameLower = cardItemName:lower()
-                local rareLower = rarityText:lower()
-                if string.find(nameLower, targetLower) or string.find(targetLower, nameLower) then
-                    matchesTarget = true
-                elseif rareLower ~= "" and string.find(targetLower, rareLower) then
-                    matchesTarget = true
-                end
-            end
-
-            if matchesTarget then
-                -- 4. Cari tombol Cash Buy (货币购买) di dalam kartu ini
-                local cashBtn = nil
-                local priceText = "Cash"
-
-                for _, desc in ipairs(card:GetDescendants()) do
-                    if (desc:IsA("ImageButton") or desc:IsA("TextButton")) then
-                        -- Pastikan BUKAN tombol Robux (parent 罗宝购买 / nama 打开 berharga robux)
-                        local isRobux = false
-                        local p = desc
-                        while p and p ~= card do
-                            if string.find(p.Name, "\231\189\151\229\174\157") or string.find(p.Name:lower(), "robux") then
-                                isRobux = true
-                                break
+                    -- Baca TextLabel untuk nama item
+                    for _, tl in ipairs(card:GetDescendants()) do
+                        if tl:IsA("TextLabel") and tl.Visible and tl.Text ~= "" then
+                            local t = tl.Text
+                            local tlLower = t:lower()
+                            if string.find(tlLower, "bucket") or string.find(tlLower, "water") then
+                                itemName = t
+                                isBucket = true
                             end
-                            p = p.Parent
+                            -- Cek stok hanya dari container / label stok khusus ("x3 Stock", "x0 Stock")
+                            local parentName = tl.Parent and tl.Parent.Name or ""
+                            if parentName == "\229\186\147\229\173\152" or parentName == "库存" or string.find(tlLower, "stock") then
+                                if string.find(tlLower, "x0") or string.find(tlLower, " 0 stock") or tlLower == "x0 stock" then
+                                    isOut = true
+                                end
+                            end
+                        end
+                    end
+
+                    -- Cek tombol '关闭' di dalam frame 货币购买 (jika visible, berarti out of stock)
+                    local cashContainer = btn.Parent
+                    if cashContainer then
+                        local disabledBtn = cashContainer:FindFirstChild("\229\133\179\233\151\173") or cashContainer:FindFirstChild("关闭")
+                        if disabledBtn and disabledBtn:IsA("GuiObject") and disabledBtn.Visible then
+                            isOut = true
+                        end
+                    end
+
+                    -- Baca harga dari dalam tombol
+                    for _, tl in ipairs(btn:GetDescendants()) do
+                        if tl:IsA("TextLabel") and (string.find(tl.Text, "K") or string.match(tl.Text, "%d+")) then
+                            priceText = tl.Text
+                            break
+                        end
+                    end
+
+                    -- Eksekusi pembelian jika merupakan ember air dan stok tersedia
+                    if isBucket and not isOut then
+                        local matchesTarget = false
+                        if not targetBucket or targetBucket == "All In-Stock" then
+                            matchesTarget = true
+                        else
+                            local tbLower = targetBucket:lower()
+                            local inLower = itemName:lower()
+                            if string.find(inLower, tbLower) or string.find(tbLower, inLower) then
+                                matchesTarget = true
+                            elseif string.find(tbLower, "yellow") and string.find(inLower, "yellow") then
+                                matchesTarget = true
+                            elseif string.find(tbLower, "orange") and string.find(inLower, "orange") then
+                                matchesTarget = true
+                            elseif string.find(tbLower, "purple") and string.find(inLower, "purple") then
+                                matchesTarget = true
+                            elseif string.find(tbLower, "epic") and (string.find(inLower, "yellow") or string.find(inLower, "epic")) then
+                                matchesTarget = true
+                            elseif string.find(tbLower, "legendary") and (string.find(inLower, "orange") or string.find(inLower, "legendary")) then
+                                matchesTarget = true
+                            end
                         end
 
-                        if not isRobux and desc.Name ~= "\229\133\179\233\151\173" and desc.Name ~= "关闭" then
-                            local isCurrency = (desc.Name == "\232\180\167\229\184\129\232\180\173\228\185\176" or desc.Name == "货币购买")
-                            if not isCurrency and desc.Parent then
-                                isCurrency = (desc.Parent.Name == "\232\180\167\229\184\129\232\180\173\228\185\176" or desc.Parent.Name == "货币购买")
+                        if matchesTarget then
+                            -- Scroll kartu ke view jika ada scroller
+                            if scroller and scroller:IsA("ScrollingFrame") then
+                                pcall(function()
+                                    local cardY = card.AbsolutePosition.Y - scroller.AbsolutePosition.Y + scroller.CanvasPosition.Y
+                                    scroller.CanvasPosition = Vector2.new(0, math.max(0, cardY - 10))
+                                end)
+                                task.wait(0.04)
                             end
 
-                            for _, t in ipairs(desc:GetDescendants()) do
-                                if t:IsA("TextLabel") and (string.find(t.Text, "K") or string.match(t.Text, "%d+")) then
-                                    priceText = t.Text
-                                    isCurrency = true
-                                    break
+                            -- Eksekusi klik multi-layer
+                            triggerGuiClick(btn)
+                            if btn.Parent and btn.Parent:IsA("GuiObject") then
+                                triggerGuiClick(btn.Parent)
+                            end
+                            for _, child in ipairs(btn:GetChildren()) do
+                                if child:IsA("GuiObject") then
+                                    triggerGuiClick(child)
                                 end
                             end
 
-                            if isCurrency then
-                                cashBtn = desc
-                                break
-                            end
+                            notify("🛒 Auto Buy Bucket", "Membeli " .. itemName .. " (" .. priceText .. ")!", 3)
+                            print("[BrotherHub] Auto Buy Bucket Success: " .. itemName .. " (" .. priceText .. ")")
+                            boughtAny = true
+                            task.wait(0.35)
                         end
                     end
-                end
-
-                if cashBtn then
-                    -- 5. Auto-Scroll kartu ke area pandang jika ada ScrollingFrame
-                    if scroller and scroller:IsA("ScrollingFrame") then
-                        pcall(function()
-                            local cardY = card.AbsolutePosition.Y - scroller.AbsolutePosition.Y + scroller.CanvasPosition.Y
-                            scroller.CanvasPosition = Vector2.new(0, math.max(0, cardY - 10))
-                        end)
-                        task.wait(0.04)
-                    end
-
-                    -- 6. Eksekusi klik multi-layer pada tombol & container
-                    triggerGuiClick(cashBtn)
-                    if cashBtn.Parent and cashBtn.Parent:IsA("GuiObject") then
-                        triggerGuiClick(cashBtn.Parent)
-                    end
-                    for _, child in ipairs(cashBtn:GetChildren()) do
-                        if child:IsA("GuiObject") then
-                            triggerGuiClick(child)
-                        end
-                    end
-
-                    notify("🛒 Auto Buy Bucket", "Membeli " .. cardItemName .. " (" .. priceText .. ")!", 3)
-                    print("[BrotherHub] Auto Buy Bucket: " .. cardItemName .. " (" .. priceText .. ")")
-                    boughtAny = true
-                    task.wait(0.35)
                 end
             end
         end
@@ -1233,16 +1246,17 @@ local function returnToBaseWithMicroMove(customPos)
     if not hrp then return end
     local char = LocalPlayer.Character
     local hum = getHumanoid()
-    local rawMarkas = customPos or getBasePosition()
-    local floorPos = getFloorPosition(rawMarkas)
+    local rawMarkas = toVector3(customPos) or getBasePosition()
+    local floorPos = (config.customBasePos and rawMarkas) or getFloorPosition(rawMarkas) or rawMarkas
 
-    -- 1. Pulihkan collision seluruh part seketika agar langsung berpijak kokoh di tanah
+    -- 1. Pulihkan collision seluruh part seketika (kecuali HumanoidRootPart) agar langsung berpijak kokoh di tanah
     if char then
         for _, p in ipairs(char:GetDescendants()) do
-            if p:IsA("BasePart") then
+            if p:IsA("BasePart") and p.Name ~= "HumanoidRootPart" then
                 p.CanCollide = true
             end
         end
+        char:PivotTo(CFrame.new(floorPos))
     end
 
     -- 2. Teleport LANGSUNG mendarat di daratan lantai (Normal gravity, zero slow motion, zero melayang!)
@@ -1267,12 +1281,12 @@ local function returnToBaseWithMicroMove(customPos)
         local rightVec = camCF.RightVector
         if rightVec.Magnitude < 0.1 then rightVec = Vector3.new(1, 0, 0) end
         
-        -- Lari ke kanan sedikit (0.12 detik)
+        -- Lari ke kanan sedikit (0.08 detik)
         hum:Move(rightVec, false)
-        task.wait(0.12)
-        -- Lari ke kiri sedikit (0.12 detik)
+        task.wait(0.08)
+        -- Lari ke kiri sedikit (0.08 detik)
         hum:Move(-rightVec, false)
-        task.wait(0.12)
+        task.wait(0.08)
         -- Berhenti normal
         hum:Move(Vector3.zero, false)
     end
@@ -1286,6 +1300,8 @@ local function executeFlashSteal(targetPos, targetPrompt)
     local hrp = getHrp()
     if not hrp then return false end
     local char = LocalPlayer.Character
+    targetPos = toVector3(targetPos)
+    if not targetPos then return false end
     local markas = getBasePosition()
     
     -- 1. Lumpuhkan AI penjaga tanaman sebelum lompat
@@ -1333,6 +1349,9 @@ local function executeFlashSteal(targetPos, targetPrompt)
     
     -- 4. TELEPORT KE PALING DEPAN (Daratan Kandang, Zero Delay, Langsung Mendarat di Tanah)
     local cageDropPos = insideCagePos + Vector3.new(0, 0.2, 0)
+    if char then
+        char:PivotTo(CFrame.new(cageDropPos))
+    end
     hrp.AssemblyLinearVelocity = Vector3.zero
     hrp.AssemblyAngularVelocity = Vector3.zero
     hrp.CFrame = CFrame.new(cageDropPos)
@@ -1346,6 +1365,9 @@ local function executeFlashSteal(targetPos, targetPrompt)
                 if (hrp.Position - pPos).Magnitude < 70 then
                     promptToFire = p
                     cageDropPos = pPos + Vector3.new(0, 0.2, 0)
+                    if char then
+                        char:PivotTo(CFrame.new(cageDropPos))
+                    end
                     hrp.CFrame = CFrame.new(cageDropPos)
                     break
                 end
@@ -2784,11 +2806,35 @@ createButton(secSteal, "📍 Simpan Posisi Saat Ini Sebagai Markas", THEME.Panel
     if hrp then
         config.customBasePos = hrp.Position
         saveConfig()
-        notify("👑 MARKAS DISIMPAN", "Posisi saat ini berhasil disimpan sebagai titik pulang Markas/Taman!", 4)
+        notify("👑 MARKAS DISIMPAN", string.format("Posisi saat ini (%.1f, %.1f, %.1f) disimpan sebagai titik Markas!", hrp.Position.X, hrp.Position.Y, hrp.Position.Z), 4)
     end
 end)
-createButton(secSteal, "🏠 Teleport ke Markas Sekarang", THEME.Green, function()
-    returnToBaseWithMicroMove(config.customBasePos or getBasePosition())
+createButton(secSteal, "🏠 Teleport / Return ke Markas Sekarang", THEME.Green, function()
+    local hrp = getHrp()
+    if not hrp then return end
+    local dest = toVector3(config.customBasePos) or getBasePosition()
+    if dest then
+        local char = LocalPlayer.Character
+        if char then
+            for _, p in ipairs(char:GetDescendants()) do
+                if p:IsA("BasePart") and p.Name ~= "HumanoidRootPart" then
+                    p.CanCollide = true
+                end
+            end
+            char:PivotTo(CFrame.new(dest))
+        end
+        hrp.AssemblyLinearVelocity = Vector3.zero
+        hrp.AssemblyAngularVelocity = Vector3.zero
+        hrp.CFrame = CFrame.new(dest)
+        local hum = getHumanoid()
+        if hum then
+            hum.PlatformStand = false
+            hum:ChangeState(Enum.HumanoidStateType.Running)
+        end
+        notify("🏠 MARKAS", string.format("Teleport ke Markas: (%.1f, %.1f, %.1f)!", dest.X, dest.Y, dest.Z), 3)
+    else
+        notify("❌ GAGAL", "Posisi markas belum tersimpan!", 3)
+    end
 end)
 
 createButton(secSteal, "📍 Simpan Posisi Saat Ini Sebagai Paling Depan", THEME.Panel, function()
@@ -2796,18 +2842,31 @@ createButton(secSteal, "📍 Simpan Posisi Saat Ini Sebagai Paling Depan", THEME
     if hrp then
         config.customPalingDepanPos = hrp.Position
         saveConfig()
-        notify("👑 PALING DEPAN DISIMPAN", "Posisi saat ini berhasil disimpan sebagai titik target Paling Depan!", 4)
+        notify("👑 PALING DEPAN DISIMPAN", string.format("Posisi saat ini (%.1f, %.1f, %.1f) disimpan sebagai Paling Depan!", hrp.Position.X, hrp.Position.Y, hrp.Position.Z), 4)
     end
 end)
-createButton(secSteal, "⚡ Teleport ke Paling Depan Sekarang", THEME.Gold, function()
+createButton(secSteal, "⚡ Teleport / Return ke Paling Depan Sekarang", THEME.Gold, function()
     local hrp = getHrp()
-    if hrp then
-        local dest = config.customPalingDepanPos or Vector3.new(-77.2, 3.5, -6080.9)
-        hrp.AssemblyLinearVelocity = Vector3.zero
-        hrp.AssemblyAngularVelocity = Vector3.zero
-        hrp.CFrame = CFrame.new(dest + Vector3.new(0, 0.5, 0))
-        notify("⚡ TELEPORT", "Berhasil teleport ke area Paling Depan (Stage 10)!", 3)
+    if not hrp then return end
+    local dest = toVector3(config.customPalingDepanPos) or Vector3.new(-77.2, 3.5, -6080.9)
+    local char = LocalPlayer.Character
+    if char then
+        for _, p in ipairs(char:GetDescendants()) do
+            if p:IsA("BasePart") and p.Name ~= "HumanoidRootPart" then
+                p.CanCollide = true
+            end
+        end
+        char:PivotTo(CFrame.new(dest))
     end
+    hrp.AssemblyLinearVelocity = Vector3.zero
+    hrp.AssemblyAngularVelocity = Vector3.zero
+    hrp.CFrame = CFrame.new(dest)
+    local hum = getHumanoid()
+    if hum then
+        hum.PlatformStand = false
+        hum:ChangeState(Enum.HumanoidStateType.Running)
+    end
+    notify("⚡ PALING DEPAN", string.format("Teleport ke Paling Depan: (%.1f, %.1f, %.1f)!", dest.X, dest.Y, dest.Z), 3)
 end)
 
 local secManualSteal = createSection(pageSteal, "PENGATURAN STEAL PROXIMITY", "Bypass interaksi tombol dan radius scan bibit manual")
