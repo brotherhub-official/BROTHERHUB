@@ -335,6 +335,17 @@ local HUB_ROUTER = {
         end,
         GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/PackABrainrotCard_BROTHERHUB.lua",
     },
+    {
+        Name = "Mine It",
+        Match = function(pid, gid, gname)
+            if pid == 92345193036001 then return true end
+            if string.find(gname, "mine it") then return true end
+            local ws = game:GetService("Workspace")
+            if ws:FindFirstChild("spawned_stones") then return true end
+            return false
+        end,
+        GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/MineIt_BROTHERHUB.lua",
+    },
 }
 
 local selectedGame = nil
