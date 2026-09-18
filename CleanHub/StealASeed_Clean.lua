@@ -81,16 +81,52 @@ local function registerThread(fn)
     return t
 end
 
+-- [1.5] 🎯 GAUNTLET STAGE TARGETS & LOCATIONS
+local STAGE_TARGETS = {
+    ["Auto Furthest (Stage 10 - Paling Depan / Tersulit)"] = { pos = Vector3.new(-77.2, 3.5, -6080.9), stage = "10" },
+    ["Stage 10 (Z: -6080 - Divine / Lucifer Tier)"]       = { pos = Vector3.new(-77.2, 3.5, -6080.9), stage = "10" },
+    ["Stage 09 (Z: -6068 - Mythic Tier)"]                 = { pos = Vector3.new(-41.4, 4.0, -6068.0), stage = "09" },
+    ["Stage 08 (Z: -4614 - Legendary Tier)"]              = { pos = Vector3.new(112.6, 3.5, -4614.2), stage = "08" },
+    ["Stage 07 (Z: -3221 - Master Tier)"]                 = { pos = Vector3.new(-4.1,  3.5, -3221.3), stage = "07" },
+    ["Stage 06 (Z: -2351 - Epic Tier)"]                   = { pos = Vector3.new(-82.3, 3.5, -2351.6), stage = "06" },
+    ["Stage 05 (Z: -1754 - Rare Tier)"]                   = { pos = Vector3.new(64.0,  3.5, -1754.5), stage = "05" },
+    ["Stage 04 (Z: -1150 - Advanced Tier)"]               = { pos = Vector3.new(-94.7, 3.5, -1156.4), stage = "04" },
+    ["Stage 03 (Z: -728 - Intermediate Tier)"]            = { pos = Vector3.new(92.4,  3.5, -728.3),  stage = "03" },
+    ["Stage 02 (Z: -437 - Beginner Tier)"]                = { pos = Vector3.new(-117.4, 4.0, -437.4), stage = "02" },
+    ["Stage 01 (Z: -200 - Starter Tier)"]                 = { pos = Vector3.new(127.8, 3.5, -200.3),  stage = "01" },
+    ["Cycle All Stages (10 ke 01 Bergantian)"]            = { pos = nil, stage = "ALL" },
+}
+
+local STAGE_KEYS = {
+    "Auto Furthest (Stage 10 - Paling Depan / Tersulit)",
+    "Stage 10 (Z: -6080 - Divine / Lucifer Tier)",
+    "Stage 09 (Z: -6068 - Mythic Tier)",
+    "Stage 08 (Z: -4614 - Legendary Tier)",
+    "Stage 07 (Z: -3221 - Master Tier)",
+    "Stage 06 (Z: -2351 - Epic Tier)",
+    "Stage 05 (Z: -1754 - Rare Tier)",
+    "Stage 04 (Z: -1150 - Advanced Tier)",
+    "Stage 03 (Z: -728 - Intermediate Tier)",
+    "Stage 02 (Z: -437 - Beginner Tier)",
+    "Stage 01 (Z: -200 - Starter Tier)",
+    "Cycle All Stages (10 ke 01 Bergantian)",
+}
+
 -- [2] CONFIGURATION & PERSISTENCE
 local CONFIG_FILE = "BrotherHub_StealASeed_Config.json"
 
 local config = {
-    -- Auto Steal
+    -- Auto Steal & Flash Return Engine
     autoSteal             = false,
+    autoFlashSteal        = true,
+    selectedStage         = "Auto Furthest (Stage 10 - Paling Depan / Tersulit)",
+    antiFlingShield       = true,
+    skyFlightHeight       = 45,
     instantPrompt         = true,
     stealDistance         = 35,
-    autoApproachSteal     = false,
-    stealDelay            = 0.3,
+    stealDelay            = 0.8,
+    customBasePos         = nil,
+    fullAfkLoop           = false,
 
     -- Auto Farm & Garden
     autoPlant             = false,
@@ -238,6 +274,14 @@ local TRANSLATIONS = {
     ["MovementDesc"]          = {ID = "Pengatur kecepatan, daya lompat, noclip, dan mode terbang", EN = "Customize walkspeed, jump power, noclip, and flight mode"},
 
     -- Toggles & Sliders
+    ["FlashSteal"]            = {ID = "⚡ Flash Auto Steal (Maju ➔ Curi ➔ Balik Markas)", EN = "⚡ Flash Auto Steal (Advance ➔ Steal ➔ Return Base)"},
+    ["AntiFling"]             = {ID = "🛡️ Anti-Pental & Anti-Guard (Bebas Pental / Kebal)", EN = "🛡️ Anti-Fling & Guard Shield (Knockback Immunity)"},
+    ["FullAfk"]               = {ID = "🌙 Full Autonomous AFK Loop (Curi ➔ Tanam ➔ Jual)", EN = "🌙 Full Autonomous AFK Loop (Steal ➔ Plant ➔ Sell)"},
+    ["TargetStage"]           = {ID = "🎯 Target Seed Stage", EN = "🎯 Target Seed Stage"},
+    ["StealDelay"]            = {ID = "⏱️ Jeda Siklus Steal (Detik)", EN = "⏱️ Steal Cycle Interval (s)"},
+    ["SkyHeight"]             = {ID = "🚀 Ketinggian Jalur Langit (Studs)", EN = "🚀 Sky Travel Altitude (Studs)"},
+    ["BtnSetBase"]            = {ID = "📍 Simpan Posisi Saat Ini Sebagai Markas", EN = "📍 Set Current Position as Base"},
+    ["BtnReturnBase"]         = {ID = "🏠 Teleport ke Markas Sekarang", EN = "🏠 Return to Base Now"},
     ["AutoSteal"]             = {ID = "Curi Bibit Otomatis (Auto Steal)", EN = "Auto Steal Seeds"},
     ["InstantPrompt"]         = {ID = "Bypass Tahan Tombol E (Instant 0s Prompt)", EN = "Instant 0s Prompt Bypass"},
     ["AutoApproach"]          = {ID = "Dekati Bibit Otomatis (Teleport Halus)", EN = "Auto Approach Seeds (Smooth TP)"},
@@ -357,40 +401,172 @@ registerConnection(RunService.Stepped:Connect(function()
     end
 end))
 
--- [5] 🌱 AUTONOMOUS SEED STEALING ENGINE
+-- [4.5] 🏠 BASE / MARKAS RESOLVER & ANTI-FLING SHIELD
+local function getBasePosition()
+    if config.customBasePos then
+        return config.customBasePos
+    end
+    -- Look for player plot or SpawnLocation
+    local spawnPart = workspace:FindFirstChildOfClass("SpawnLocation") or workspace:FindFirstChild("SpawnLocation", true)
+    if spawnPart then
+        return spawnPart.Position + Vector3.new(0, 3.5, 0)
+    end
+    return Vector3.new(-13.26, 4.0, 109.27)
+end
+
+-- Active Anti-Fling & Knockback Neutralizer (Bebas Pental 100%)
+registerConnection(RunService.Heartbeat:Connect(function()
+    if config.antiFlingShield or config.autoSteal or config.fullAfkLoop then
+        local hrp = getHrp()
+        if hrp then
+            hrp.AssemblyLinearVelocity = Vector3.zero
+            hrp.AssemblyAngularVelocity = Vector3.zero
+        end
+        local char = LocalPlayer.Character
+        if char then
+            for _, part in ipairs(char:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = false
+                end
+            end
+        end
+    end
+end))
+
+-- Flash Steal Routine (Maju ➔ Curi ➔ Instan Balik Markas)
+local function executeFlashSteal(targetPos)
+    local hrp = getHrp()
+    if not hrp then return false end
+    
+    local markas = getBasePosition()
+    local skyY = targetPos.Y + (config.skyFlightHeight or 45)
+    
+    -- Step 1: Fly high in the sky (above plant guard attack range)
+    hrp.AssemblyLinearVelocity = Vector3.zero
+    hrp.AssemblyAngularVelocity = Vector3.zero
+    hrp.CFrame = CFrame.new(targetPos.X, skyY, targetPos.Z)
+    task.wait(0.08)
+    
+    -- Step 2: Sky-Drop directly onto target seed
+    createSafePad(targetPos, 2.0)
+    hrp.CFrame = CFrame.new(targetPos + Vector3.new(0, 3.0, 0))
+    hrp.AssemblyLinearVelocity = Vector3.zero
+    task.wait(0.08)
+    
+    -- Step 3: Trigger ProximityPrompt in 0 seconds
+    local stolen = false
+    for _, prompt in ipairs(workspace:GetDescendants()) do
+        if prompt:IsA("ProximityPrompt") and prompt.Enabled then
+            local pParent = prompt.Parent
+            local pPos = pParent:IsA("BasePart") and pParent.Position or (pParent:IsA("Model") and pParent:GetPivot().Position)
+            if pPos and (hrp.Position - pPos).Magnitude <= 30 then
+                prompt.HoldDuration = 0
+                if fireproximityprompt then
+                    fireproximityprompt(prompt, 0)
+                else
+                    prompt:InputHoldBegin()
+                    task.wait(0.02)
+                    prompt:InputHoldEnd()
+                end
+                stolen = true
+            end
+        end
+    end
+    
+    -- Step 4: INSTANT WARP BACK TO MARKAS (ZERO TIME SPENT ON GROUND)
+    hrp.AssemblyLinearVelocity = Vector3.zero
+    hrp.AssemblyAngularVelocity = Vector3.zero
+    hrp.CFrame = CFrame.new(markas)
+    
+    return stolen
+end
+
+-- [5] 🌱 AUTONOMOUS FLASH STEAL & FULL AFK SUITE
 registerThread(function()
+    local cycleIndex = 1
+    local cycleOrder = {"10", "09", "08", "07", "06", "05", "04", "03", "02", "01"}
+    
     while true do
-        if config.autoSteal then
+        if config.autoSteal or config.fullAfkLoop then
             pcall(function()
                 local hrp = getHrp()
                 if hrp then
-                    local maxDist = config.stealDistance or 35
-                    for _, obj in ipairs(workspace:GetDescendants()) do
-                        if obj:IsA("ProximityPrompt") and obj.Enabled then
-                            local promptParent = obj.Parent
-                            local pPos = promptParent:IsA("BasePart") and promptParent.Position or (promptParent:IsA("Model") and promptParent:GetPivot().Position)
-                            if pPos then
-                                local dist = (hrp.Position - pPos).Magnitude
-                                if dist <= maxDist or config.autoApproachSteal then
-                                    if config.autoApproachSteal and dist > 10 then
-                                        hrp.CFrame = CFrame.new(pPos + Vector3.new(0, 3, 0))
-                                        task.wait(0.1)
-                                    end
-                                    if fireproximityprompt then
-                                        fireproximityprompt(obj, 0)
-                                    else
-                                        obj:InputHoldBegin()
-                                        task.wait(0.05)
-                                        obj:InputHoldEnd()
+                    local sel = config.selectedStage or "Auto Furthest (Stage 10 - Paling Depan / Tersulit)"
+                    local targetData = STAGE_TARGETS[sel]
+                    local targetPos = nil
+                    
+                    if sel == "Cycle All Stages (10 ke 01 Bergantian)" then
+                        local stKey = cycleOrder[cycleIndex]
+                        cycleIndex = (cycleIndex % #cycleOrder) + 1
+                        for _, v in pairs(STAGE_TARGETS) do
+                            if v.stage == stKey and v.pos then
+                                targetPos = v.pos
+                                break
+                            end
+                        end
+                    elseif targetData and targetData.pos then
+                        targetPos = targetData.pos
+                    end
+                    
+                    -- Dynamic check: find furthest prompt along negative Z if auto furthest
+                    if string.find(sel:lower(), "furthest") or not targetPos then
+                        local minZ = 0
+                        for _, prompt in ipairs(workspace:GetDescendants()) do
+                            if prompt:IsA("ProximityPrompt") and prompt.Enabled then
+                                local pParent = prompt.Parent
+                                local p = pParent:IsA("BasePart") and pParent.Position or (pParent:IsA("Model") and pParent:GetPivot().Position)
+                                if p and p.Z < minZ then
+                                    minZ = p.Z
+                                    targetPos = p
+                                end
+                            end
+                        end
+                        if not targetPos then
+                            targetPos = Vector3.new(-77.2, 3.5, -6080.9) -- Default Stage 10
+                        end
+                    end
+                    
+                    if targetPos then
+                        executeFlashSteal(targetPos)
+                        
+                        -- Autonomous Base Actions when back at Markas
+                        if config.fullAfkLoop then
+                            task.wait(0.3)
+                            -- Auto Plant in empty plot spots
+                            if config.autoPlant then
+                                for _, prompt in ipairs(workspace:GetDescendants()) do
+                                    if prompt:IsA("ProximityPrompt") and (prompt.ActionText == "Place" or prompt.ActionText == "Plant") then
+                                        local pp = prompt.Parent:IsA("BasePart") and prompt.Parent.Position or (prompt.Parent:IsA("Model") and prompt.Parent:GetPivot().Position)
+                                        if pp and (hrp.Position - pp).Magnitude <= 35 then
+                                            prompt.HoldDuration = 0
+                                            if fireproximityprompt then fireproximityprompt(prompt, 0) end
+                                        end
                                     end
                                 end
+                            end
+                            -- Auto Collect Cash in Plot
+                            if config.autoCollectCash then
+                                for _, plot in ipairs(workspace:GetDescendants()) do
+                                    if plot:IsA("BasePart") and (plot.Name == "DF_BaseGlow" or string.find(plot.Name:lower(), "cash") or string.find(plot.Name:lower(), "coin")) then
+                                        if (hrp.Position - plot.Position).Magnitude <= 60 then
+                                            if firetouchinterest then
+                                                firetouchinterest(hrp, plot, 0)
+                                                firetouchinterest(hrp, plot, 1)
+                                            end
+                                        end
+                                    end
+                                end
+                            end
+                            -- Auto Sell crops / seeds to Dealer
+                            if config.autoSell then
+                                performSellCrops()
                             end
                         end
                     end
                 end
             end)
         end
-        task.wait(math.clamp(config.stealDelay or 0.3, 0.1, 3.0))
+        task.wait(math.clamp(config.stealDelay or 0.8, 0.2, 5.0))
     end
 end)
 
@@ -1367,6 +1543,59 @@ local function createSlider(parent, labelText, minVal, maxVal, defaultVal, callb
     return container
 end
 
+local function createDropdown(parent, labelText, options, currentSelection, callback)
+    local ddRow = Instance.new("Frame")
+    ddRow.Size = UDim2.new(1, 0, 0, 38)
+    ddRow.BackgroundColor3 = THEME.Slot
+    ddRow.BorderSizePixel = 0
+    ddRow.Parent = parent
+
+    local ddCorner = Instance.new("UICorner")
+    ddCorner.CornerRadius = UDim.new(0, 6)
+    ddCorner.Parent = ddRow
+
+    local ddLabel = Instance.new("TextLabel")
+    ddLabel.Size = UDim2.new(0.42, 0, 1, 0)
+    ddLabel.Position = UDim2.new(0, 12, 0, 0)
+    ddLabel.BackgroundTransparency = 1
+    ddLabel.Font = THEME.Font
+    ddLabel.TextSize = 12
+    ddLabel.TextColor3 = THEME.Text
+    ddLabel.TextXAlignment = Enum.TextXAlignment.Left
+    ddLabel.Text = labelText
+    ddLabel.Parent = ddRow
+
+    local ddBtn = Instance.new("TextButton")
+    ddBtn.Size = UDim2.new(0.55, -12, 0, 26)
+    ddBtn.Position = UDim2.new(0.45, 0, 0.5, -13)
+    ddBtn.BackgroundColor3 = THEME.Panel
+    ddBtn.Font = THEME.Font
+    ddBtn.TextSize = 11
+    ddBtn.TextColor3 = THEME.Gold
+    ddBtn.Text = currentSelection .. " ▼"
+    ddBtn.BorderSizePixel = 0
+    ddBtn.Parent = ddRow
+    Instance.new("UICorner", ddBtn).CornerRadius = UDim.new(0, 4)
+
+    local currentIndex = 1
+    for i, opt in ipairs(options) do
+        if opt == currentSelection then
+            currentIndex = i
+            break
+        end
+    end
+
+    ddBtn.MouseButton1Click:Connect(function()
+        currentIndex = (currentIndex % #options) + 1
+        local newSel = options[currentIndex]
+        ddBtn.Text = newSel .. " ▼"
+        callback(newSel)
+        saveConfig()
+    end)
+
+    return ddRow
+end
+
 local function createButton(parent, labelText, color, callback)
     local btn = Instance.new("TextButton", parent)
     btn.Size = UDim2.new(1, 0, 0, 36)
@@ -1390,11 +1619,31 @@ end
 
 -- TAB 1: 🌱 AUTO STEAL
 local pageSteal = createTab("Steal", tr("TabSteal"))
-local secSteal = createSection(pageSteal, tr("StealTitle"), tr("StealDesc"))
-createToggle(secSteal, tr("AutoSteal"), config.autoSteal, function(v) config.autoSteal = v end)
-createToggle(secSteal, tr("InstantPrompt"), config.instantPrompt, function(v) config.instantPrompt = v end)
-createToggle(secSteal, tr("AutoApproach"), config.autoApproachSteal, function(v) config.autoApproachSteal = v end)
-createSlider(secSteal, tr("StealDistance"), 10, 150, config.stealDistance, function(v) config.stealDistance = v end)
+local secSteal = createSection(pageSteal, "FLASH AUTO STEAL & RETURN ENGINE", "Maju cepat ke seed target, curi instan, dan langsung kembali ke markas (Bebas Pental)")
+createToggle(secSteal, tr("FlashSteal"), config.autoSteal, function(v) config.autoSteal = v end)
+createDropdown(secSteal, tr("TargetStage"), STAGE_KEYS, config.selectedStage, function(v) config.selectedStage = v end)
+createToggle(secSteal, tr("AntiFling"), config.antiFlingShield, function(v) config.antiFlingShield = v end)
+createToggle(secSteal, tr("FullAfk"), config.fullAfkLoop, function(v) config.fullAfkLoop = v end)
+createSlider(secSteal, tr("StealDelay"), 0.2, 5.0, config.stealDelay, function(v) config.stealDelay = v end)
+createSlider(secSteal, tr("SkyHeight"), 20, 80, config.skyFlightHeight, function(v) config.skyFlightHeight = v end)
+createButton(secSteal, tr("BtnSetBase"), THEME.Panel, function()
+    local hrp = getHrp()
+    if hrp then
+        config.customBasePos = hrp.Position
+        saveConfig()
+        showNotification("👑 MARKAS DISIMPAN", "Posisi saat ini berhasil disimpan sebagai titik pulang Markas!", 4)
+    end
+end)
+createButton(secSteal, tr("BtnReturnBase"), THEME.Green, function()
+    local hrp = getHrp()
+    if hrp then
+        hrp.CFrame = CFrame.new(getBasePosition())
+    end
+end)
+
+local secManualSteal = createSection(pageSteal, "PENGATURAN STEAL PROXIMITY", "Bypass interaksi tombol dan radius scan bibit manual")
+createToggle(secManualSteal, tr("InstantPrompt"), config.instantPrompt, function(v) config.instantPrompt = v end)
+createSlider(secManualSteal, tr("StealDistance"), 10, 150, config.stealDistance, function(v) config.stealDistance = v end)
 
 -- TAB 2: 🌾 FARM & HARVEST
 local pageFarm = createTab("Farm", tr("TabFarm"))
