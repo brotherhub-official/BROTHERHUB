@@ -655,21 +655,29 @@ local function isPlayerCarryingSapling()
     -- 1. Cek visual sapling di dalam karakter
     if char:FindFirstChild("_CarriedSaplingVisual", true) then return true end
     for _, c in ipairs(char:GetChildren()) do
-        if c.Name == "_CarriedSaplingVisual" or string.find(c.Name:lower(), "sapling") then
+        if c.Name == "_CarriedSaplingVisual" then return true end
+        local cName = c.Name:lower()
+        if string.find(cName, "sapling") and not string.find(cName, "uprooted") and not string.find(cName, "tree") then
             return true
         end
     end
 
-    -- 2. Cek Tool di tangan karakter atau Backpack
+    -- 2. Cek Tool di tangan karakter atau Backpack (Eksklusif Sapling, DILARANG mencocokkan Uprooted Tree!)
     local tool = char:FindFirstChildWhichIsA("Tool")
-    if tool and (string.find(tool.Name:lower(), "sapling") or string.find(tool.Name:lower(), "tree")) then
-        return true
+    if tool then
+        local tName = tool.Name:lower()
+        if string.find(tName, "sapling") and not string.find(tName, "uprooted") and not string.find(tName, "tree") then
+            return true
+        end
     end
     local bp = LocalPlayer:FindFirstChild("Backpack")
     if bp then
         for _, item in ipairs(bp:GetChildren()) do
-            if item:IsA("Tool") and (string.find(item.Name:lower(), "sapling") or string.find(item.Name:lower(), "tree")) then
-                return true
+            if item:IsA("Tool") then
+                local iName = item.Name:lower()
+                if string.find(iName, "sapling") and not string.find(iName, "uprooted") and not string.find(iName, "tree") then
+                    return true
+                end
             end
         end
     end
@@ -688,10 +696,10 @@ local function isPlayerCarryingSapling()
     end
 
     -- 4. Cek Attributes pada LocalPlayer & Character
-    if char:GetAttribute("CarriedSapling") or char:GetAttribute("HasSapling") or char:GetAttribute("Carrying") then
+    if char:GetAttribute("CarriedSapling") or char:GetAttribute("HasSapling") then
         return true
     end
-    if LocalPlayer:GetAttribute("CarriedSapling") or LocalPlayer:GetAttribute("HasSapling") or LocalPlayer:GetAttribute("Carrying") then
+    if LocalPlayer:GetAttribute("CarriedSapling") or LocalPlayer:GetAttribute("HasSapling") then
         return true
     end
 
@@ -852,7 +860,19 @@ local function runStealSaplingsCycle()
         end
     end
 
-    if #candidates == 0 then return end
+    if #candidates == 0 then
+        local nowTick = tick()
+        if not lastTargetWaitNotification or (nowTick - lastTargetWaitNotification) > 8 then
+            lastTargetWaitNotification = nowTick
+            local chosenList = {}
+            for k, v in pairs(config.multiTargetTrees) do
+                if v then table.insert(chosenList, k) end
+            end
+            local chosenStr = #chosenList > 0 and table.concat(chosenList, ", ") or "Tidak ada"
+            showNotification("🌲 BROTHER HUB", "Menunggu bibit target spawn di arena:\n" .. chosenStr .. "\n(Centang Skylands/Candyland jika ingin ambil yang ada)", 4)
+        end
+        return
+    end
 
     -- Urutkan dari Z paling negatif (Pohon paling depan / terjauh di arena selalu diprioritaskan!)
     table.sort(candidates, function(a, b)
@@ -880,7 +900,7 @@ local function runStealSaplingsCycle()
             if prompt then
                 pcall(function()
                     prompt.HoldDuration = 0
-                    prompt.MaxActivationDistance = 30
+                    prompt.MaxActivationDistance = 50
                     prompt.RequiresLineOfSight = false
                     prompt.Enabled = true
                 end)
@@ -899,29 +919,29 @@ local function runStealSaplingsCycle()
                     root.CFrame = targetCF
                 end
 
-                -- 1. Picu ProximityPrompt secara native
+                -- 1. Picu ProximityPrompt secara native & simulasi trigger lengkap
                 if prompt and prompt.Parent and prompt.Enabled then
-                    pcall(function() prompt.HoldDuration = 0 end)
                     pcall(function()
+                        prompt.HoldDuration = 0
+                        prompt.MaxActivationDistance = 50
+                        prompt.RequiresLineOfSight = false
                         if typeof(fireproximityprompt) == "function" then
                             fireproximityprompt(prompt, 0)
+                            fireproximityprompt(prompt)
                         end
-                    end)
-                    pcall(function()
                         prompt:InputHoldBegin()
+                        task.wait(0.04)
+                        prompt:InputHoldEnd()
                     end)
                 end
 
-                -- 2. Touch interest pada anchor & part model bibit
+                -- 2. Touch interest pada anchor prompt
                 pcall(function()
-                    if typeof(firetouchinterest) == "function" and root and target.model then
-                        for _, pt in ipairs(target.model:GetChildren()) do
-                            if pt:IsA("BasePart") then
-                                firetouchinterest(root, pt, 0)
-                                task.wait()
-                                firetouchinterest(root, pt, 1)
-                            end
-                        end
+                    local pPart = prompt and prompt.Parent
+                    if typeof(firetouchinterest) == "function" and root and pPart and pPart:IsA("BasePart") then
+                        firetouchinterest(root, pPart, 0)
+                        task.wait()
+                        firetouchinterest(root, pPart, 1)
                     end
                 end)
 
@@ -929,6 +949,8 @@ local function runStealSaplingsCycle()
                 pcall(function()
                     local vim = game:GetService("VirtualInputManager")
                     vim:SendKeyEvent(true, Enum.KeyCode.E, false, game)
+                    task.wait(0.04)
+                    vim:SendKeyEvent(false, Enum.KeyCode.E, false, game)
                 end)
 
                 -- 4. Remote fallback server
