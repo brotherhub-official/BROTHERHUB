@@ -588,9 +588,9 @@ local ProximityPromptService = game:GetService("ProximityPromptService")
 local function makePromptInstant(p)
     if p and p:IsA("ProximityPrompt") then
         if p.Name == "CollectSaplingPrompt" then
-            -- CollectSaplingPrompt WAJIB mempertahankan HoldDuration asli (1.0s) agar validasi server tidak ditolak!
+            -- CollectSaplingPrompt WAJIB mempertahankan HoldDuration asli (1.0s) dan MaxActivationDistance asli (10)
             pcall(function()
-                p.MaxActivationDistance = 50
+                p.MaxActivationDistance = 10
                 p.RequiresLineOfSight = false
             end)
             return
@@ -953,33 +953,36 @@ local function runStealSaplingsCycle()
 
     task.spawn(function()
         pcall(function()
-            -- Teleport berdiri tegak 2 stud di depan bibit menghadap langsung ke bibit
             local anchorPos = target.pos
-            -- PENTING: anchorPos Y adalah di tanah. HumanoidRootPart wajib +2.8 studs agar kaki menapak sempurna di tanah!
+            -- PENTING: anchorPos Y adalah di tanah (~14.25). HumanoidRootPart wajib +2.8 studs agar kaki menapak sempurna di tanah!
             local playerPos = anchorPos + Vector3.new(0, 2.8, 2.2)
             local targetCF = CFrame.lookAt(playerPos, anchorPos)
             safeTeleport(targetCF)
 
-            -- Netralkan velocity dan kunci posisi (Anchored) agar tidak ada jitter, physics fling, atau dorongan
+            -- DILARANG KERAS root.Anchored = true!
+            -- Jika Anchored = true, Roblox menghentikan replikasi fisika dari client ke server!
+            -- Akibatnya server mengira posisi player masih di base (ribuan stud), sehingga interaksi prompt ditolak server!
             pcall(function()
                 root.AssemblyLinearVelocity = Vector3.zero
                 root.AssemblyAngularVelocity = Vector3.zero
-                root.Anchored = true
-            end)
-
-            -- Lepas pegangan tool apa pun (agar tangan 100% bebas dan tidak memblokir interaksi prompt)
-            pcall(function()
+                root.Anchored = false
                 local hum = char:FindFirstChildOfClass("Humanoid")
-                if hum then hum:UnequipTools() end
+                if hum then
+                    hum.PlatformStand = false
+                    hum:UnequipTools()
+                end
             end)
-            task.wait(0.1)
 
-            -- Arahkan Camera langsung menghadap bibit & anchor agar prompt 100% fokus
+            -- Berikan jeda 0.35 detik agar paket posisi client 100% diakui & disinkronisasi oleh server Roblox!
+            task.wait(0.35)
+
+            -- Arahkan Camera dan Karakter langsung menghadap bibit & anchor
             pcall(function()
                 local cam = workspace.CurrentCamera
                 if cam then
-                    cam.CFrame = CFrame.lookAt(cam.CFrame.Position, anchorPos)
+                    cam.CFrame = CFrame.lookAt(playerPos + Vector3.new(0, 1.5, 3.5), anchorPos)
                 end
+                root.CFrame = targetCF
             end)
 
             local prompt = target.prompt
@@ -988,16 +991,28 @@ local function runStealSaplingsCycle()
                 promptDuration = prompt.HoldDuration
             end
 
-            -- Jika executor memiliki native fireproximityprompt, panggil trigger instan sebagai jalur cepat
-            if prompt and prompt.Parent and prompt.Enabled and typeof(fireproximityprompt) == "function" then
-                pcall(function() fireproximityprompt(prompt, 0) end)
-            end
-
             local vim = game:GetService("VirtualInputManager")
             local gotSapling = false
 
-            -- Cek apakah sudah terambil via fireproximityprompt
-            task.wait(0.08)
+            -- JALUR 1: Firing RemoteEvent Resmi Permainan (LocalSaplingPickupRequest)
+            pcall(function()
+                local remotes = ReplicatedStorage:FindFirstChild("Modules")
+                    and ReplicatedStorage.Modules:FindFirstChild("REConnection")
+                    and ReplicatedStorage.Modules.REConnection:FindFirstChild("Remotes")
+                local req = remotes and remotes:FindFirstChild("LocalSaplingPickupRequest")
+                if req then
+                    req:FireServer(target.model)
+                    req:FireServer(target.model.Name)
+                end
+            end)
+
+            -- JALUR 2: Executor Native fireproximityprompt DENGAN DURASI PENUH (DILARANG DURASI 0!)
+            if prompt and prompt.Parent and prompt.Enabled and typeof(fireproximityprompt) == "function" then
+                pcall(function() fireproximityprompt(prompt, promptDuration) end)
+            end
+
+            -- Cek apakah sudah terambil seketika via remote
+            task.wait(0.1)
             if isPlayerCarryingSapling() 
                 or target.model.Name == "_CarriedSaplingVisual" 
                 or target.model:GetAttribute("Claimed") == true 
@@ -1005,33 +1020,50 @@ local function runStealSaplingsCycle()
                 gotSapling = true
             end
 
-            -- KONTINU SUSTAINED HOLD (TEKAN & TAHAN FISIK VIA VIRTUAL INPUT MANAGER TANPA INTERUPSI!)
+            -- JALUR 3 & 4: SIMULASI TEKAN FISIK KEYBOARD (E) & KLIK MOUSE DENGAN SUSTAINED HOLD
             if not gotSapling and prompt and prompt.Parent and prompt.Enabled then
                 for attempt = 1, 2 do
                     if gotSapling then break end
                     if not target.model:IsDescendantOf(workspace) 
                         or target.model.Name == "_CarriedSaplingVisual"
-                        or target.model:GetAttribute("Claimed") == true
+                        or target.model:GetAttribute("Claimed") == true 
                         or not prompt or not prompt.Parent or not prompt.Enabled then
                         gotSapling = true
                         break
                     end
 
-                    -- Pastikan karakter tetap tegak dan anchored di depan bibit
-                    safeTeleport(targetCF)
-                    pcall(function() root.Anchored = true end)
+                    -- Pastikan posisi tetap stabil di depan anchor tanpa velocity
+                    pcall(function()
+                        root.CFrame = targetCF
+                        root.AssemblyLinearVelocity = Vector3.zero
+                        root.AssemblyAngularVelocity = Vector3.zero
+                        root.Anchored = false
+                    end)
 
-                    -- Mulai tekan dan tahan tombol E (MURNI SIMULASI KEYBOARD ALAMI ROBLOX!)
-                    -- DILARANG KERAS memanggil prompt:InputHoldBegin() atau prompt:InputHoldEnd() karena InputHoldEnd membatalkan trigger!
+                    -- Hitung posisi screen jika prompt clickable
+                    local screenPos, onScreen = nil, false
+                    pcall(function()
+                        screenPos, onScreen = workspace.CurrentCamera:WorldToViewportPoint(anchorPos)
+                    end)
+
+                    -- Mulai tekan tombol E & klik mouse secara bersamaan
+                    pcall(function() vim:SendKeyEvent(false, Enum.KeyCode.E, false, game) end)
+                    task.wait(0.04)
                     pcall(function() vim:SendKeyEvent(true, Enum.KeyCode.E, false, game) end)
+                    if onScreen and screenPos then
+                        pcall(function() vim:SendMouseButtonEvent(screenPos.X, screenPos.Y, 0, true, game, 0) end)
+                    end
 
-                    -- Pertahankan tombol E ditekan selama (promptDuration + 0.35) detik agar Roblox engine menyelesaikan trigger 100%!
+                    -- Tahan secara kontinu selama (promptDuration + 0.35) detik
                     local holdStart = tick()
                     local holdDurationTarget = promptDuration + 0.35
                     while (tick() - holdStart) < holdDurationTarget do
                         task.wait(0.05)
+                        if root then
+                            root.AssemblyLinearVelocity = Vector3.zero
+                            root.AssemblyAngularVelocity = Vector3.zero
+                        end
 
-                        -- Cek apakah bibit sudah masuk ke tangan/tas atau tombol Drop muncul
                         if isPlayerCarryingSapling() 
                             or target.model.Name == "_CarriedSaplingVisual" 
                             or target.model:GetAttribute("Claimed") == true 
@@ -1042,11 +1074,14 @@ local function runStealSaplingsCycle()
                         end
                     end
 
-                    -- Lepaskan tombol E setelah durasi terpenuhi
+                    -- Lepaskan tombol E dan mouse
                     pcall(function() vim:SendKeyEvent(false, Enum.KeyCode.E, false, game) end)
+                    if onScreen and screenPos then
+                        pcall(function() vim:SendMouseButtonEvent(screenPos.X, screenPos.Y, 0, false, game, 0) end)
+                    end
 
-                    -- Beri jeda 0.15s bagi server untuk mereplikasi status pickup
-                    task.wait(0.15)
+                    -- Jeda server acknowledgment
+                    task.wait(0.2)
 
                     if isPlayerCarryingSapling() 
                         or target.model.Name == "_CarriedSaplingVisual" 
@@ -1058,9 +1093,11 @@ local function runStealSaplingsCycle()
                 end
             end
 
-            -- Lepas status Anchored setelah interaksi selesai
-            pcall(function() root.Anchored = false end)
-            pcall(function() vim:SendKeyEvent(false, Enum.KeyCode.E, false, game) end)
+            -- Pastikan tombol selalu dilepas
+            pcall(function()
+                vim:SendKeyEvent(false, Enum.KeyCode.E, false, game)
+                if root then root.Anchored = false end
+            end)
 
             if gotSapling then
                 recentlyTargetedSaplings[target.model] = tick() + 30.0
@@ -1068,16 +1105,16 @@ local function runStealSaplingsCycle()
 
                 -- HANYA KEMBALI KE KEBUN JIKA BIBIT SUDAH BENAR-BENAR BERHASIL TERAMBIL!
                 if config.smartReturnPlot then
-                    task.wait(0.2)
+                    task.wait(0.3)
                     returnToOwnPlot()
                     task.wait(0.5)
                     pcall(runAutoPlantAndGarden)
                 end
             else
                 -- JIKA BELUM/GAGAL DIAMBIL: DILARANG KERAS MEMULANGKAN PEMAIN KE PLOT!
-                -- Beri cooldown 4 detik agar bergantian mencoba bibit berikutnya di arena
-                recentlyTargetedSaplings[target.model] = tick() + 4.0
-                task.wait(0.3)
+                -- Beri cooldown 6 detik agar bergantian mencoba bibit berikutnya di arena
+                recentlyTargetedSaplings[target.model] = tick() + 6.0
+                task.wait(0.5)
             end
         end)
         pcall(function()
