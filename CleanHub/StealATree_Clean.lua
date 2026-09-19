@@ -543,6 +543,27 @@ local function safeTeleport(cframeOrVec)
     if not targetCF then return end
     local p = targetCF.Position
     if p.X ~= p.X or p.Y ~= p.Y or p.Z ~= p.Z then return end -- NaN protection
+
+    local currentPos = root.Position
+    local dist = (p - currentPos).Magnitude
+
+    -- Jika jarak sangat jauh (> 150 stud), lakukan teleport bertahap cepat (Glide Segment)
+    -- agar tidak memicu server position delta anti-cheat yang melempar balik ke base!
+    if dist > 150 then
+        local steps = math.clamp(math.floor(dist / 200), 2, 8)
+        for i = 1, steps do
+            local alpha = i / steps
+            local interPos = currentPos:Lerp(p, alpha)
+            local interCF = CFrame.new(interPos)
+            pcall(function()
+                char:PivotTo(interCF)
+                root.AssemblyLinearVelocity = Vector3.zero
+                root.AssemblyAngularVelocity = Vector3.zero
+            end)
+            task.wait(0.02)
+        end
+    end
+
     pcall(function()
         char:PivotTo(targetCF)
         root.AssemblyLinearVelocity = Vector3.zero
@@ -693,20 +714,7 @@ local function isPlayerCarryingSapling()
         end
     end
 
-    -- 3. Cek visual sapling di Workspace dalam radius 8 studs dari pemain
-    local root = getRoot(char)
-    if root then
-        for _, obj in ipairs(workspace:GetChildren()) do
-            if obj.Name == "_CarriedSaplingVisual" and obj:IsA("Model") then
-                local p = obj:GetPivot().Position
-                if (p - root.Position).Magnitude <= 8 then
-                    return true
-                end
-            end
-        end
-    end
-
-    -- 4. Cek Attributes pada LocalPlayer & Character
+    -- 3. Cek Attributes pada LocalPlayer & Character
     if char:GetAttribute("CarriedSapling") or char:GetAttribute("HasSapling") then
         return true
     end
@@ -913,56 +921,34 @@ local function runStealSaplingsCycle()
             local targetCF = CFrame.lookAt(playerPos, anchorPos)
             safeTeleport(targetCF)
 
-            -- Lepas pegangan tool apa pun (agar tangan bebas dan tidak memblokir interaksi prompt)
+            -- Lepas pegangan tool apa pun (agar tangan 100% bebas dan tidak memblokir interaksi prompt)
             pcall(function()
                 local hum = char:FindFirstChildOfClass("Humanoid")
                 if hum then hum:UnequipTools() end
             end)
+            task.wait(0.08)
 
             local prompt = target.prompt
             local promptDuration = 1.0
-            if prompt then
-                if prompt.HoldDuration and prompt.HoldDuration > 0 then
-                    promptDuration = prompt.HoldDuration
-                end
-                pcall(function()
-                    -- JANGAN ubah HoldDuration menjadi 0! Server memverifikasi durasi hold asli (1.0s).
-                    prompt.MaxActivationDistance = 50
-                    prompt.RequiresLineOfSight = false
-                    prompt.Enabled = true
-                end)
+            if prompt and prompt.HoldDuration and prompt.HoldDuration > 0 then
+                promptDuration = prompt.HoldDuration
             end
 
-            -- 1. Picu bypass executor native fireproximityprompt jika tersedia
+            -- Jika executor memiliki native fireproximityprompt, picu dengan durasi penuh
             if prompt and prompt.Parent and prompt.Enabled and typeof(fireproximityprompt) == "function" then
                 pcall(function() fireproximityprompt(prompt, promptDuration) end)
-                pcall(function() fireproximityprompt(prompt, 0) end)
-                pcall(function() fireproximityprompt(prompt) end)
             end
 
-            -- 2. RemoteEvent server fallback (ReplicatedStorage.Remotes.LocalSaplingPickupRequest)
-            pcall(function()
-                local remotes = ReplicatedStorage:FindFirstChild("Remotes") or ReplicatedStorage
-                local pickupReq = remotes:FindFirstChild("LocalSaplingPickupRequest") or ReplicatedStorage:FindFirstChild("LocalSaplingPickupRequest", true)
-                if pickupReq and pickupReq:IsA("RemoteEvent") then
-                    pickupReq:FireServer(target.model)
-                    pickupReq:FireServer(prompt)
-                    pickupReq:FireServer(target.model.Name)
-                end
-            end)
-
-            -- Cek instan apakah sudah terambil via bypass executor / remote
-            task.wait(0.06)
+            local vim = game:GetService("VirtualInputManager")
             local gotSapling = false
-            if isPlayerCarryingSapling() 
-                or not target.model:IsDescendantOf(workspace) 
-                or (prompt and (prompt.Parent == nil or not prompt.Enabled)) then
+
+            -- Cek instan apakah sudah terambil via fireproximityprompt
+            task.wait(0.05)
+            if isPlayerCarryingSapling() or not target.model:IsDescendantOf(workspace) then
                 gotSapling = true
             end
 
-            -- 3. KONTINU SUSTAINED HOLD (TEKAN & TAHAN FISIK PENUH 1.35 DETIK!)
-            -- Jika belum terambil instan, lakukan penekanan tombol E terus-menerus tanpa jeda lepas!
-            local vim = game:GetService("VirtualInputManager")
+            -- KONTINU SUSTAINED HOLD (TEKAN & TAHAN FISIK PENUH TANPA INTERUPSI!)
             if not gotSapling and prompt and prompt.Parent and prompt.Enabled then
                 for attempt = 1, 2 do
                     if gotSapling then break end
@@ -1052,6 +1038,9 @@ end
 
 -- [7] 🌱 AUTO PLANT & GARDEN FARMING (100% PANEN & TANAM OTOMATIS)
 local function runAutoPlantAndGarden()
+    -- JIKA SEDANG DALAM PROSES MENCURI DI ARENA, DILARANG KERAS MEMULANGKAN/TELEPORTASI PEMAIN!
+    if isStealingBusy then return end
+
     local char = LocalPlayer.Character
     local root = getRoot(char)
     if not char or not root then return end
