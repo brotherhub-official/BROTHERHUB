@@ -195,7 +195,7 @@ local config = {
     instantPrompt         = true,
     stealDistance         = 35,
     stealDelay            = 0.8,
-    customBasePos         = Vector3.new(-30.375, 1, 213.25),
+    customBasePos         = Vector3.new(7, 0.75, 360.375),
     customPalingDepanPos  = nil,
     fullAfkLoop           = false,
     smartWaitSeed         = true,     -- Stay aman di markas jika bibit di arena kosong/cooldown
@@ -592,7 +592,7 @@ local function getBasePosition()
         end
     end
     
-    return Vector3.new(-30.375, 1, 213.25)
+    return Vector3.new(7, 0.75, 360.375)
 end
 
 -- [4.5] 🛡️ GUARD PACIFIER & ANTI-CHASE NEUTRALIZER (100% BEBAS DIKEJAR PENJAGA TANAMAN)
@@ -1482,24 +1482,25 @@ local function getChuangjianFolder()
     return nil
 end
 
--- [1.8] 🌟 MODEL 8 SAMPAI 11 DI WORKSPACE.创建 (5 BIBIT TERDEPAN PALING LANGKA)
--- Rotasi bergiliran (Round-Robin) mengambil model 8, 9, 10, 11 jika tersedia di folder 创建
-local FRONT_MODEL_GROUPS = { 8, 9, 10, 11 }
+-- [1.8] 🌟 5 MODEL BIBIT TERDEPAN: 8 SAMPAI 12 DI WORKSPACE.创建 (8, 9, 10, 11, 12)
+-- Rotasi bergiliran (Round-Robin) mengambil model 8, 9, 10, 11, 12 jika tersedia di folder 创建
+local FRONT_MODEL_GROUPS = { 8, 9, 10, 11, 12 }
 local frontModelCycleIndex = 1
 
 local function findFrontSeedModel(numKey)
     local chuangjian = getChuangjianFolder()
+    if not chuangjian then return nil, nil end
     
     local numVal = tonumber(numKey)
     local numStr = tostring(numKey)
     local num02 = numVal and string.format("%02d", numVal) or numStr
 
     local function isModelCandidate(m)
-        if not m or not m:IsA("Model") then return nil, nil end
+        if not m or not m:IsA("Model") or not m.Parent then return nil, nil end
         local mName = m.Name
         local isMatch = false
 
-        -- 1. Cek kecocokan nama ("8", "08", "9", "09", "10", "11", "Stage08", dll)
+        -- 1. Cek kecocokan nama ("8", "08", "9", "09", "10", "11", "12", "Stage08", dll)
         if mName == num02 or mName == numStr or tonumber(mName) == numVal then
             isMatch = true
         elseif string.find(mName, "^" .. numStr .. "$") or string.find(mName, "^" .. num02 .. "$") then
@@ -1508,7 +1509,7 @@ local function findFrontSeedModel(numKey)
             isMatch = true
         end
 
-        -- 2. Cek atribut __mod_path (misal: "种子/区域-09/08" atau "-09/11")
+        -- 2. Cek atribut __mod_path (misal: "种子/区域-09/08", "-09/11", "-09/12")
         if not isMatch then
             local modPath = m:GetAttribute("__mod_path")
             if modPath and (string.find(tostring(modPath), "/" .. num02) or string.find(tostring(modPath), "/" .. numStr)) then
@@ -1517,38 +1518,40 @@ local function findFrontSeedModel(numKey)
         end
 
         if isMatch then
-            local pos = getModelPosition(m)
-            -- Validasi posisi: harus di atas tanah (bukan di void Y=-100) dan di area depan Z < -3500 (atau Z < 0)
-            if pos and pos.Y > -50 and (pos.Z < -3500 or (pos.Z < 0 and pos.Z > -7000)) then
-                if not isPromptAlreadyStolen(m, pos) then
-                    return m, pos
+            -- Verifikasi bahwa bibit nyata dan aktif (ada part fisik Body & tidak transparan)
+            local body = m:FindFirstChild("Body") or m.PrimaryPart or m:FindFirstChildWhichIsA("BasePart")
+            if body and body.Transparency < 0.9 then
+                local pos = getModelPosition(m)
+                -- Validasi posisi: harus di atas tanah (bukan di void Y=-100) dan di area depan Z < -3500 (atau Z < 0)
+                if pos and pos.Y > -50 and (pos.Z < -3500 or (pos.Z < 0 and pos.Z > -7000)) then
+                    if not isPromptAlreadyStolen(m, pos) then
+                        return m, pos
+                    end
                 end
             end
         end
         return nil, nil
     end
 
-    if chuangjian then
-        -- 1. Scan direct children di workspace.创建
-        for _, child in ipairs(chuangjian:GetChildren()) do
-            local mdl, pos = isModelCandidate(child)
+    -- 1. Scan direct children di workspace.创建
+    for _, child in ipairs(chuangjian:GetChildren()) do
+        local mdl, pos = isModelCandidate(child)
+        if mdl and pos then
+            return mdl, pos
+        end
+    end
+
+    -- 2. Scan deeper descendants jika dibungkus subfolder
+    for _, desc in ipairs(chuangjian:GetDescendants()) do
+        if desc:IsA("Model") and desc.Parent ~= chuangjian then
+            local mdl, pos = isModelCandidate(desc)
             if mdl and pos then
                 return mdl, pos
             end
         end
-
-        -- 2. Scan deeper descendants jika dibungkus subfolder
-        for _, desc in ipairs(chuangjian:GetDescendants()) do
-            if desc:IsA("Model") and desc.Parent ~= chuangjian then
-                local mdl, pos = isModelCandidate(desc)
-                if mdl and pos then
-                    return mdl, pos
-                end
-            end
-        end
     end
 
-    -- 3. Fallback scan Workspace jika folder 创建 dipindah atau tidak terdeteksi
+    -- 3. Fallback scan Workspace jika folder 创建 dipindah
     for _, ch in ipairs(workspace:GetChildren()) do
         if ch:IsA("Model") then
             local mdl, pos = isModelCandidate(ch)
@@ -1568,66 +1571,40 @@ local function getNextFrontSeedModel()
         local numKey = FRONT_MODEL_GROUPS[idx]
         local model, pos = findFrontSeedModel(numKey)
         if model and pos then
-            -- Majukan giliran ke nomor model berikutnya untuk siklus bergantian (8 -> 9 -> 10 -> 11)
+            -- Majukan giliran ke nomor model berikutnya untuk siklus bergantian (8 -> 9 -> 10 -> 11 -> 12)
             frontModelCycleIndex = (idx % total) + 1
             return model, pos, "Seed Model " .. tostring(numKey)
         end
     end
 
-    -- Fallback: Jika model angka 8..11 belum match nama persis,
-    -- cari model apapun di chuangjian yang berada di area paling depan (Z < -4000)
-    local chuangjian = getChuangjianFolder()
-    if chuangjian then
-        for _, child in ipairs(chuangjian:GetChildren()) do
-            if child:IsA("Model") then
-                local pos = getModelPosition(child)
-                if pos and pos.Y > -50 and pos.Z < -4000 and not isPromptAlreadyStolen(child, pos) then
-                    return child, pos, "Front Arena Seed " .. child.Name
-                end
-            end
-        end
-    end
-
+    -- HUKUM MUTLAK: Jika tidak ada bibit 8..12 yang aktif/tersedia, kembalikan NIL!
+    -- DILARANG MENGGUNAKAN FALLBACK OBJEK MAP KARENA MENYEBABKAN SPAM TELEPORT SAAT KOSONG!
     return nil, nil, nil
 end
 
--- Helper: Cek apakah seluruh bibit paling depan BENAR-BENAR KOSONG (Anti-False Empty)
+-- Helper: Cek apakah seluruh 5 bibit paling depan (8..12) BENAR-BENAR KOSONG
 local function areAllFrontSeedsEmpty()
-    local chuangjian = getChuangjianFolder()
-    if chuangjian then
-        for _, child in ipairs(chuangjian:GetChildren()) do
-            if child:IsA("Model") then
-                local mName = child.Name
-                local nVal = tonumber(mName)
-                local isTargetNum = (nVal and nVal >= 8 and nVal <= 11) or string.find(mName, "8") or string.find(mName, "9") or string.find(mName, "10") or string.find(mName, "11")
-                local modPath = child:GetAttribute("__mod_path")
-                if modPath and (string.find(tostring(modPath), "/08") or string.find(tostring(modPath), "/09") or string.find(tostring(modPath), "/10") or string.find(tostring(modPath), "/11")) then
-                    isTargetNum = true
-                end
+    -- Periksa ketersediaan dari 5 bibit depan: 8, 9, 10, 11, 12
+    for _, numKey in ipairs(FRONT_MODEL_GROUPS) do
+        local model, pos = findFrontSeedModel(numKey)
+        if model and pos then
+            return false, model, nil, pos
+        end
+    end
 
-                if isTargetNum then
-                    local pos = getModelPosition(child)
-                    if pos and pos.Y > -50 and not isPromptAlreadyStolen(child, pos) then
-                        return false, child, nil, pos
-                    end
-                else
-                    local pos = getModelPosition(child)
-                    if pos and pos.Y > -50 and pos.Z < -4000 and not isPromptAlreadyStolen(child, pos) then
-                        return false, child, nil, pos
-                    end
+    -- Scan juga bibit pilihan manual jika opsi multi-target aktif
+    if config.multiTargetSeeds then
+        for _, sInfo in ipairs(ALL_STEALABLE_SEEDS) do
+            if config.multiTargetSeeds[sInfo.key] == true then
+                local pos, p = findSeedPrompt(sInfo)
+                if pos and p and p.Enabled and p.Parent and not isPromptAlreadyStolen(p, pos) then
+                    return false, nil, p, pos
                 end
             end
         end
     end
 
-    -- Scan Top 5 Seeds juga sebagai verifikasi
-    for _, sInfo in ipairs(TOP5_SEEDS) do
-        local pos, p = findSeedPrompt(sInfo)
-        if pos and p and p.Enabled and p.Parent and not isPromptAlreadyStolen(p, pos) then
-            return false, nil, p, pos
-        end
-    end
-
+    -- 100% PASTI KOSONG! (Tidak ada satupun bibit 8..12 yang aktif)
     return true, nil, nil, nil
 end
 
@@ -1635,7 +1612,7 @@ end
 local stealCycleIndex = 1
 
 local function getNextAvailableTargetSeed()
-    -- 1. Prioritas Utama Sesuai Request Founder: Model angka 8 sampai 11 di folder 创建 bergantian
+    -- 1. Prioritas Utama Sesuai Request Founder: Model angka 8 sampai 12 di folder 创建 bergantian
     local fModel, fPos, fName = getNextFrontSeedModel()
     if fModel and fPos then
         return fModel, fPos, fName
@@ -1664,12 +1641,12 @@ local function getNextAvailableTargetSeed()
     end
 
     -- Jika TIDAK ADA satupun bibit terpilih yang saat ini ada di arena (sedang cooldown/belum spawn):
-    -- Mengembalikan nil agar karakter TETAP AMAN DI MARKAS (-30.375, 1, 213.25)
+    -- Mengembalikan nil agar karakter TETAP AMAN DI MARKAS (7, 0.75, 360.375)
     return nil, nil, nil
 end
 
--- ⚡ KOORDINAT BAKU MARKAS RESMI FOUNDER: -30.375, 1, 213.25
-local FOUNDER_EXACT_BASE = Vector3.new(-30.375, 1, 213.25)
+-- ⚡ KOORDINAT BAKU MARKAS RESMI FOUNDER: 7, 0.75, 360.375
+local FOUNDER_EXACT_BASE = Vector3.new(7, 0.75, 360.375)
 
 -- Helper: Kembali ke Markas dan Lakukan Gerakan Mikro
 local function returnToBaseWithMicroMove(customPos)
@@ -1678,7 +1655,7 @@ local function returnToBaseWithMicroMove(customPos)
     local char = LocalPlayer.Character
     local hum = getHumanoid()
 
-    -- ⚡ KOORDINAT BAKU MARKAS RESMI FOUNDER: -30.375, 1, 213.25
+    -- ⚡ KOORDINAT BAKU MARKAS RESMI FOUNDER: 7, 0.75, 360.375
     local destPos = toVector3(customPos) or FOUNDER_EXACT_BASE
 
     -- 1. Pulihkan collision seluruh part seketika (kecuali HumanoidRootPart)
@@ -1877,7 +1854,7 @@ local function executeFlashStealDirect(targetPos, promptOrModel)
 
     task.wait(0.03)
 
-    -- 4. ⚡ LANGSUNG TELEPORT BALIK KE KOORDINAT MARKAS PASTI: -30.375, 1, 213.25
+    -- 4. ⚡ LANGSUNG TELEPORT BALIK KE KOORDINAT MARKAS PASTI: 7, 0.75, 360.375
     returnToBaseWithMicroMove(markas)
 
     -- 5. Equip bibit di tangan jika opsi aktif
@@ -1907,59 +1884,51 @@ registerThread(function()
                 if hrp then
                     local markas = FOUNDER_EXACT_BASE
 
-                    -- 1. Cari bibit terdepan yang saat ini aktif (Model 8..11 di folder 创建 bergantian)
+                    -- 1. Cari 5 bibit terdepan yang saat ini aktif (Model 8..12 di folder 创建 bergantian)
                     local targetModel, targetPos, targetName = getNextFrontSeedModel()
                     if not targetModel or not targetPos then
                         targetModel, targetPos, targetName = getNextAvailableTargetSeed()
                     end
 
                     if targetModel and targetPos then
-                        -- Bibit terdepan TERSEDIA! Langsung Flash Steal tanpa menunggu!
+                        -- 🌟 Bibit terdepan (8..12) TERSEDIA (GAK KOSONG)! Langsung Flash Steal tanpa menunggu!
                         executeFlashStealDirect(targetPos, targetModel)
                     else
-                        -- Periksa apakah 5 bibit terdepan BENAR-BENAR KOSONG (Anti-False Empty)
-                        local isAllEmpty, foundMdl, foundP, foundPos = areAllFrontSeedsEmpty()
-                        if not isAllEmpty and (foundPos or foundMdl) then
-                            local actPos = foundPos or getModelPosition(foundMdl)
-                            if actPos then
-                                executeFlashStealDirect(actPos, foundMdl)
+                        -- 🛑 100% KOSONG! (Semua bibit 8..12 sudah terambil atau belum spawn)
+                        -- DIAM DI TEMPAT DI MARKAS (7, 0.75, 360.375) - DILARANG SPAM TELE KE DEPAN!
+                        if (hrp.Position - markas).Magnitude > 3 then
+                            returnToBaseWithMicroMove(markas)
+                        end
+
+                        -- Loop tunggu bibit baru spawn / countdown reset di markas (cek responsif setiap 0.3s)
+                        local waitStart = tick()
+                        while (config.autoSteal or config.autoFlashSteal or config.fullAfkLoop) do
+                            task.wait(0.3)
+
+                            -- 1. Cek seketika apakah ada bibit 8..12 baru spawn di paling depan
+                            local emptyCheck, newMdl, _, newPos = areAllFrontSeedsEmpty()
+                            if not emptyCheck then
+                                -- Bibit baru telah spawn! Langsung keluar dari loop tunggu dan ambil!
+                                recentlyStolenSeeds = {}
+                                frontModelCycleIndex = 1
+                                break
                             end
-                        else
-                            -- 100% PASTI KOSONG (Semua 5 bibit depan sudah terambil oleh kita atau scripter lain)
-                            -- Tetap aman di markas (-30.375, 1, 213.25) dan TUNGGU COOLDOWN RESET!
-                            if (hrp.Position - markas).Magnitude > 3 then
+
+                            -- 2. Cek apakah countdown reset sudah habis / reset ke babak baru
+                            local curSec = getArenaResetCountdown()
+                            if curSec and curSec <= 1 then
+                                -- Countdown reset habis! Bibit baru segera muncul!
+                                task.wait(0.8)
+                                recentlyStolenSeeds = {}
+                                frontModelCycleIndex = 1
+                                break
+                            end
+
+                            -- 3. Pastikan posisi karakter tetap terkunci di markas tanpa drifting
+                            local curHrp = getHrp()
+                            if curHrp and (curHrp.Position - markas).Magnitude > 3 then
                                 returnToBaseWithMicroMove(markas)
                             end
-
-                            -- Loop tunggu reset timer di markas (cek responsif setiap 0.4s)
-                            local waitStart = tick()
-                            while (config.autoSteal or config.autoFlashSteal or config.fullAfkLoop) do
-                                task.wait(0.4)
-
-                                -- 1. Cek seketika apakah ada bibit baru spawn di paling depan
-                                local emptyCheck, newMdl, _, newPos = areAllFrontSeedsEmpty()
-                                if not emptyCheck then
-                                    -- Bibit baru telah spawn! Langsung keluar dari loop tunggu dan ambil!
-                                    recentlyStolenSeeds = {}
-                                    frontModelCycleIndex = 1
-                                    break
-                                end
-
-                                -- 2. Cek apakah countdown reset sudah habis / reset ke babak baru
-                                local curSec = getArenaResetCountdown()
-                                if curSec and curSec <= 1 then
-                                    -- Countdown reset habis! Bibit baru segera muncul!
-                                    task.wait(0.8)
-                                    recentlyStolenSeeds = {}
-                                    frontModelCycleIndex = 1
-                                    break
-                                end
-
-                                -- 3. Pastikan posisi karakter tetap terkunci di markas tanpa drifting
-                                local curHrp = getHrp()
-                                if curHrp and (curHrp.Position - markas).Magnitude > 3 then
-                                    returnToBaseWithMicroMove(markas)
-                                end
 
                                 -- 4. Rawat kebun di markas selagi menunggu cooldown reset
                                 if config.autoPickupReady or config.autoHarvest then
@@ -1976,9 +1945,8 @@ registerThread(function()
                             end
                         end
                     end
-                end
-            end)
-        end
+                end)
+            end
         task.wait(math.clamp(config.stealDelay or 0.5, 0.2, 5.0))
     end
 end)
