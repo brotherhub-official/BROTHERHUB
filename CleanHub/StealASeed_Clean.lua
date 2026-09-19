@@ -195,7 +195,7 @@ local config = {
     instantPrompt         = true,
     stealDistance         = 35,
     stealDelay            = 0.8,
-    customBasePos         = nil,
+    customBasePos         = Vector3.new(-30.375, 1, 213.25),
     customPalingDepanPos  = nil,
     fullAfkLoop           = false,
     smartWaitSeed         = true,     -- Stay aman di markas jika bibit di arena kosong/cooldown
@@ -592,20 +592,7 @@ local function getBasePosition()
         end
     end
     
-    -- 1. Utamakan posisi kebun/plot pemain sendiri
-    local myPlot = getMyPlot()
-    if myPlot then
-        local pPos = myPlot:GetPivot().Position
-        return getFloorPosition(pPos) or pPos
-    end
-
-    -- 2. Fallback ke SpawnLocation
-    local spawnPart = workspace:FindFirstChildOfClass("SpawnLocation") or workspace:FindFirstChild("SpawnLocation", true)
-    if spawnPart then
-        return getFloorPosition(spawnPart.Position) or spawnPart.Position
-    end
-
-    return Vector3.new(-13.26, 1.0, 109.27)
+    return Vector3.new(-30.375, 1, 213.25)
 end
 
 -- [4.5] 🛡️ GUARD PACIFIER & ANTI-CHASE NEUTRALIZER (100% BEBAS DIKEJAR PENJAGA TANAMAN)
@@ -1029,6 +1016,12 @@ end
 
 -- Helper: Buka Toko Peralatan & Pengurangan Waktu Tumbuh (道具商店 / UseItemStore)
 local function openToolShop(forceVisible)
+    local sf = getToolShopFrame()
+    if sf and forceVisible then
+        userManuallyOpenedShop = true
+        sf.Position = UDim2.new(0.5, 0, 0.5, 0)
+        sf.Visible = true
+    end
     pcall(function()
         local sys = workspace:FindFirstChild("系统")
         local itemShop = sys and sys:FindFirstChild("道具商店_手雷")
@@ -1038,63 +1031,14 @@ local function openToolShop(forceVisible)
             local shopModel = workspace:FindFirstChild("道具商店_手雷", true)
             p = shopModel and shopModel:FindFirstChild("e_touch", true)
         end
-        if p and p:IsA("ProximityPrompt") then
-            p.HoldDuration = 0
-            p.MaxActivationDistance = 10
-            if fireproximityprompt then
-                fireproximityprompt(p, 0)
-            end
-            p:InputHoldBegin()
-            task.wait(0.04)
-            p:InputHoldEnd()
+        if p and p:IsA("ProximityPrompt") and fireproximityprompt then
+            fireproximityprompt(p, 0)
         end
     end)
-    
-    local sf = getToolShopFrame()
-    if sf then
-        if forceVisible then
-            userManuallyOpenedShop = true
-            sf.Position = UDim2.new(0.5, 0, 0.5, 0)
-            sf.Visible = true
-        else
-            -- 100% SILENT: Jangan pernah munculkan di layar pengguna!
-            if not userManuallyOpenedShop then
-                sf.Visible = false
-            end
-        end
-    end
 end
 
--- Guard: Auto-Suppress Shop GUI Popups (1:1 My Flower Shop Silent Background Buy)
-task.spawn(function()
-    local closeHooked = false
-    while true do
-        pcall(function()
-            local sf = getToolShopFrame()
-            if sf then
-                if not closeHooked then
-                    for _, c in ipairs(sf:GetDescendants()) do
-                        if (c:IsA("ImageButton") or c:IsA("TextButton")) and (c.Name == "关闭按钮" or c.Name == "Close" or string.find(c.Name, "关闭")) then
-                            c.MouseButton1Click:Connect(function()
-                                userManuallyOpenedShop = false
-                                sf.Visible = false
-                            end)
-                            closeHooked = true
-                        end
-                    end
-                end
-                if config.autoBuyBuckets and not userManuallyOpenedShop and sf.Visible then
-                    sf.Visible = false
-                    sf.Position = UDim2.new(0.5, 0, 0.5, 0)
-                end
-            end
-        end)
-        task.wait(0.5)
-    end
-end)
-
 -- Helper: Auto Beli Pengurangan Waktu Tumbuh (Growth Time / Water Bucket) di 道具商店 dengan Cash Game (100% Bebas Robux)
--- Berjalan 100% di background (Senyap) tanpa membuka jendela GUI di layar!
+-- Eksekusi aman tanpa mematikan / merusak GUI yang sedang dibuka pemain secara manual!
 local function buyGrowthTimeWithCash(targetBucket, buyAll)
     local pg = LocalPlayer:FindFirstChildOfClass("PlayerGui")
     if not pg then return false, nil end
@@ -1102,18 +1046,23 @@ local function buyGrowthTimeWithCash(targetBucket, buyAll)
     if not main02 then return false, nil end
     
     local shopFrame = getToolShopFrame()
-    if not shopFrame then
-        openToolShop(false)
-        task.wait(0.15)
-        shopFrame = getToolShopFrame()
-    end
     if not shopFrame then return false, nil end
     
-    local origPos = shopFrame.Position
-    -- 100% SILENT BACKGROUND: Sembunyikan Frame dari pandangan pemain
-    if not userManuallyOpenedShop then
-        shopFrame.Position = UDim2.new(50, 0, 50, 0)
-        shopFrame.Visible = false
+    local wasAlreadyOpen = shopFrame.Visible
+    local openedByScript = false
+    
+    if not wasAlreadyOpen then
+        openedByScript = true
+        shopFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+        shopFrame.Visible = true
+        pcall(function()
+            local p = workspace:FindFirstChild("道具商店_手雷", true)
+            local prompt = p and p:FindFirstChild("e_touch", true)
+            if prompt and fireproximityprompt then
+                fireproximityprompt(prompt, 0)
+            end
+        end)
+        task.wait(0.12)
     end
     
     local scroller = shopFrame:FindFirstChildWhichIsA("ScrollingFrame", true)
@@ -1123,9 +1072,8 @@ local function buyGrowthTimeWithCash(targetBucket, buyAll)
     local cards = {}
     if scroller then
         for _, child in ipairs(scroller:GetDescendants()) do
-            if child:IsA("Frame") and (child.Name == "上部" or child.Name == "root") then
-                local hasCash = child:FindFirstChild("货币购买", true)
-                if hasCash and not table.find(cards, child) then
+            if child:IsA("Frame") and child.Name == "root" then
+                if not table.find(cards, child) then
                     table.insert(cards, child)
                 end
             end
@@ -1133,50 +1081,73 @@ local function buyGrowthTimeWithCash(targetBucket, buyAll)
     end
     if #cards == 0 then
         for _, desc in ipairs(shopFrame:GetDescendants()) do
-            if (desc:IsA("ImageButton") or desc:IsA("TextButton")) and (desc.Name == "货币购买") then
-                local card = desc:FindFirstAncestor("上部") or desc:FindFirstAncestor("root")
-                if card and not table.find(cards, card) then
-                    table.insert(cards, card)
+            if desc:IsA("Frame") and desc.Name == "root" then
+                if not table.find(cards, desc) then
+                    table.insert(cards, desc)
                 end
             end
         end
     end
     
     for _, card in ipairs(cards) do
-        local itemName = "Water Bucket"
-        local descText = ""
-        local stockNum = 0
+        local itemName = ""
+        local stockNum = 1
         local isOutOfStock = false
         
-        for _, tl in ipairs(card:GetDescendants()) do
-            if tl:IsA("TextLabel") and tl.Text ~= "" then
-                local t = tl.Text
-                local tLow = t:lower()
-                if string.find(tLow, "bucket") or string.find(tLow, "water") then
-                    itemName = t
-                end
-                if string.find(tLow, "growth time") or string.find(tLow, "reduces") then
-                    descText = t
-                end
-                local pName = tl.Parent and tl.Parent.Name or ""
-                if pName == "库存" or string.find(tLow, "stock") then
-                    local digits = string.match(t, "%d+")
-                    if digits then stockNum = tonumber(digits) or 0 end
-                    if string.find(tLow, "x0") or string.find(tLow, "0 stock") or string.find(tLow, "no stock") then
-                        isOutOfStock = true
-                    end
+        -- 1. Baca nama item dari TextLabel
+        local nameFrame = card:FindFirstChild("名称", true)
+        if nameFrame then
+            local tl = nameFrame:FindFirstChildWhichIsA("TextLabel", true)
+            if tl and tl.Text ~= "" then itemName = tl.Text end
+        end
+        if itemName == "" then
+            for _, tl in ipairs(card:GetDescendants()) do
+                if tl:IsA("TextLabel") and tl.Text ~= "" and tl.Name == "名称" then
+                    itemName = tl.Text
+                    break
                 end
             end
         end
         
+        -- 2. Cek stok
+        local stockFrame = card:FindFirstChild("库存", true)
+        if stockFrame then
+            local tl = stockFrame:FindFirstChildWhichIsA("TextLabel", true)
+            if tl and tl.Text ~= "" then
+                local digits = string.match(tl.Text, "%d+")
+                if digits then stockNum = tonumber(digits) or 0 end
+                if stockNum == 0 or string.find(tl.Text:lower(), "x0") or string.find(tl.Text:lower(), "no stock") then
+                    isOutOfStock = true
+                end
+            end
+        end
+        
+        -- 3. Cek wadah tombol cash (货币购买)
         local cashContainer = card:FindFirstChild("货币购买", true)
+        local buyBtn = nil
         if cashContainer then
             local disabledBtn = cashContainer:FindFirstChild("关闭")
             if disabledBtn and disabledBtn:IsA("GuiObject") and disabledBtn.Visible then
                 isOutOfStock = true
             end
+            
+            for _, c in ipairs(cashContainer:GetChildren()) do
+                if (c:IsA("ImageButton") or c:IsA("TextButton")) and c.Name == "货币购买" and c.Visible then
+                    buyBtn = c
+                    break
+                end
+            end
+            if not buyBtn and not isOutOfStock then
+                for _, c in ipairs(cashContainer:GetChildren()) do
+                    if (c:IsA("ImageButton") or c:IsA("TextButton")) and c.Name ~= "关闭" and c.Visible then
+                        buyBtn = c
+                        break
+                    end
+                end
+            end
         end
         
+        -- 4. Cek target
         local isTarget = false
         local inLow = itemName:lower()
         local tbLow = (targetBucket or "Borong Semua"):lower()
@@ -1191,63 +1162,56 @@ local function buyGrowthTimeWithCash(targetBucket, buyAll)
             isTarget = true
         elseif string.find(tbLow, "water bucket") and inLow == "water bucket" and not string.find(inLow, "purple") and not string.find(inLow, "orange") and not string.find(inLow, "yellow") then
             isTarget = true
+        elseif inLow ~= "" and (string.find(inLow, "bucket") or string.find(inLow, "water") or string.find(inLow, "growth")) then
+            isTarget = true
         end
         
-        if isTarget and not isOutOfStock then
-            local buyBtn = nil
-            if cashContainer then
-                for _, child in ipairs(cashContainer:GetChildren()) do
-                    if (child:IsA("ImageButton") or child:IsA("TextButton")) and child.Visible and child.Name ~= "关闭" then
-                        buyBtn = child
-                        break
-                    end
-                end
-            end
-            if not buyBtn then
-                buyBtn = card:FindFirstChild("货币购买", true)
+        -- 5. Eksekusi Pembelian
+        if isTarget and not isOutOfStock and buyBtn then
+            if scroller and scroller:IsA("ScrollingFrame") then
+                pcall(function()
+                    local cardY = card.AbsolutePosition.Y - scroller.AbsolutePosition.Y + scroller.CanvasPosition.Y
+                    scroller.CanvasPosition = Vector2.new(0, math.max(0, cardY - 10))
+                end)
+                task.wait(0.04)
             end
             
-            if buyBtn and (buyBtn:IsA("ImageButton") or buyBtn:IsA("TextButton")) then
-                if scroller and scroller:IsA("ScrollingFrame") then
-                    pcall(function()
-                        local cardY = card.AbsolutePosition.Y - scroller.AbsolutePosition.Y + scroller.CanvasPosition.Y
-                        scroller.CanvasPosition = Vector2.new(0, math.max(0, cardY - 10))
-                    end)
-                    task.wait(0.05)
+            local purchases = 0
+            local maxBuy = buyAll and (stockNum > 0 and math.min(stockNum, 5) or 5) or 1
+            for iter = 1, maxBuy do
+                triggerGuiClick(buyBtn)
+                if buyBtn.Parent and buyBtn.Parent:IsA("GuiObject") then
+                    triggerGuiClick(buyBtn.Parent)
                 end
+                for _, c in ipairs(buyBtn:GetDescendants()) do
+                    if c:IsA("GuiObject") then triggerGuiClick(c) end
+                end
+                purchases = purchases + 1
+                boughtAny = true
+                lastBoughtName = (itemName ~= "" and itemName) or "Water Bucket"
+                task.wait(0.2)
                 
-                local purchases = 0
-                local maxBuy = buyAll and (stockNum > 0 and math.min(stockNum, 5) or 5) or 1
-                for iter = 1, maxBuy do
-                    triggerGuiClick(buyBtn)
-                    if buyBtn.Parent and buyBtn.Parent:IsA("GuiObject") then
-                        triggerGuiClick(buyBtn.Parent)
-                    end
-                    for _, c in ipairs(buyBtn:GetDescendants()) do
-                        if c:IsA("GuiObject") then triggerGuiClick(c) end
-                    end
-                    purchases = purchases + 1
-                    boughtAny = true
-                    lastBoughtName = itemName
-                    task.wait(0.2)
-                    
-                    if cashContainer then
-                        local dis = cashContainer:FindFirstChild("关闭")
-                        if dis and dis:IsA("GuiObject") and dis.Visible then break end
-                    end
+                if cashContainer then
+                    local dis = cashContainer:FindFirstChild("关闭")
+                    if dis and dis:IsA("GuiObject") and dis.Visible then break end
                 end
-                
-                if boughtAny then
-                    notify("👑 BROTHER HUB", "✅ Borong Growth Time: " .. itemName .. " (x" .. tostring(purchases) .. " Sukses!)", 4)
-                end
+            end
+            
+            if boughtAny then
+                notify("👑 BROTHER HUB", "✅ Borong Growth Time: " .. lastBoughtName .. " (x" .. tostring(purchases) .. " Sukses!)", 4)
             end
         end
     end
     
-    -- Pastikan GUI toko tetap tertutup 100% dan posisi normal
-    if not userManuallyOpenedShop and shopFrame then
-        shopFrame.Visible = false
-        shopFrame.Position = origPos or UDim2.new(0.5, 0, 0.5, 0)
+    -- 6. Tutup kembali HANYA jika script yang membukanya (bukan pemain)
+    -- Menggunakan tombol tutup resmi agar modal / input sink game ter-reset bersih
+    if openedByScript and shopFrame then
+        local closeBtn = shopFrame:FindFirstChild("关闭按钮", true) or shopFrame:FindFirstChild("Close", true)
+        if closeBtn then
+            triggerGuiClick(closeBtn)
+        else
+            shopFrame.Visible = false
+        end
     end
     
     return boughtAny, lastBoughtName
@@ -1365,12 +1329,107 @@ local function findSeedPrompt(sInfo)
     return nil, nil
 end
 
+-- [1.8] 🌟 MODEL 8 SAMPAI 11 DI WORKSPACE.创建 (5 BIBIT TERDEPAN PALING LANGKA)
+-- Rotasi bergiliran (Round-Robin) mengambil model 8, 9, 10, 11 jika tersedia di folder 创建
+local FRONT_SEED_MODELS = { "8", "9", "10", "11", "08", "09", "010", "011" }
+local frontModelCycleIndex = 1
+
+local function findFrontSeedModel(numKey)
+    local chuangjian = workspace:FindFirstChild("创建")
+    if not chuangjian then return nil, nil, nil end
+    
+    local numVal = tonumber(numKey)
+    local checkNames = {
+        tostring(numKey),
+        string.format("%02d", numVal or 0),
+        tostring(numVal or "")
+    }
+
+    local function checkModel(m)
+        if not m:IsA("Model") then return nil, nil, nil end
+        local mName = m.Name
+        local isMatch = false
+        for _, cn in ipairs(checkNames) do
+            if mName == cn or mName:lower() == cn:lower() then
+                isMatch = true
+                break
+            end
+        end
+        if not isMatch and numVal and tonumber(mName) == numVal then
+            isMatch = true
+        end
+        
+        if isMatch then
+            -- Cari ProximityPrompt di dalam Model atau anaknya
+            local prompt = m:FindFirstChildWhichIsA("ProximityPrompt", true)
+            if not prompt then
+                local pivot = m:GetPivot().Position
+                for _, desc in ipairs(chuangjian:GetDescendants()) do
+                    if desc:IsA("ProximityPrompt") and desc.Enabled then
+                        local pPos = desc.Parent and (desc.Parent:IsA("BasePart") and desc.Parent.Position or (desc.Parent:IsA("Model") and desc.Parent:GetPivot().Position))
+                        if pPos and (pPos - pivot).Magnitude <= 15 then
+                            prompt = desc
+                            break
+                        end
+                    end
+                end
+            end
+            
+            if prompt and prompt.Enabled and not isPromptAlreadyStolen(prompt) then
+                local pos = (prompt.Parent and prompt.Parent:IsA("BasePart") and prompt.Parent.Position) or m:GetPivot().Position
+                if not isPromptAlreadyStolen(prompt, pos) then
+                    return pos, prompt, mName
+                end
+            end
+        end
+        return nil, nil, nil
+    end
+
+    -- 1. Scan direct children di workspace.创建
+    for _, child in ipairs(chuangjian:GetChildren()) do
+        local p, pr, mn = checkModel(child)
+        if p and pr then return p, pr, mn end
+    end
+    -- 2. Scan deeper descendants
+    for _, desc in ipairs(chuangjian:GetDescendants()) do
+        if desc:IsA("Model") and desc.Parent ~= chuangjian then
+            local p, pr, mn = checkModel(desc)
+            if p and pr then return p, pr, mn end
+        end
+    end
+
+    return nil, nil, nil
+end
+
+local function getNextFrontSeedModel()
+    local groups = { "8", "9", "10", "11" }
+    local total = #groups
+    for step = 0, total - 1 do
+        local idx = ((frontModelCycleIndex - 1 + step) % total) + 1
+        local numKey = groups[idx]
+        local pos, prompt, name = findFrontSeedModel(numKey)
+        if pos and prompt then
+            -- Ditemukan! Majukan giliran ke nomor model berikutnya
+            frontModelCycleIndex = (idx % total) + 1
+            return pos, prompt, "Seed Model " .. tostring(name)
+        end
+    end
+    return nil, nil, nil
+end
+
 -- Rotasi Bergiliran (Round-Robin) untuk Multi-Select Bibit Target
 local stealCycleIndex = 1
 
 -- Helper: Ambil bibit berikutnya yang dipilih dan SAAT INI TERSEDIA di arena
 -- HUKUM MUTLAK: Jika bibit TIDAK ADA, fungsi mengembalikan nil (Script TIDAK AKAN PERNAH TELEPORT KOSONG!)
 local function getNextAvailableTargetSeed()
+    -- 1. Prioritas Utama Sesuai Request Founder: Model angka 8 sampai 11 di folder 创建 bergantian
+    local fPos, fPrompt, fName = getNextFrontSeedModel()
+    if fPos and fPrompt then
+        return fPos, fPrompt, fName
+    end
+
+    -- 2. Fallback: Multi-Select Bibit Target jika user memilih nama bibit lain
     local activeSeeds = {}
     for _, sInfo in ipairs(ALL_STEALABLE_SEEDS) do
         if config.multiTargetSeeds and config.multiTargetSeeds[sInfo.key] == true then
@@ -1378,32 +1437,21 @@ local function getNextAvailableTargetSeed()
         end
     end
 
-    -- Jika semua tidak dicentang, defaultkan ke 5 bibit depan
-    if #activeSeeds == 0 then
-        for _, sInfo in ipairs(ALL_STEALABLE_SEEDS) do
-            if sInfo.key == "Lucifer Rose" or sInfo.key == "Infernal Lily" or sInfo.key == "Bloodthorn" or sInfo.key == "Abyss Orchid" or sInfo.key == "Underworld Flower" then
-                table.insert(activeSeeds, sInfo)
+    local totalActive = #activeSeeds
+    if totalActive > 0 then
+        for step = 0, totalActive - 1 do
+            local idx = ((stealCycleIndex - 1 + step) % totalActive) + 1
+            local candidate = activeSeeds[idx]
+            local pos, prompt = findSeedPrompt(candidate)
+            if pos and prompt then
+                stealCycleIndex = (idx % totalActive) + 1
+                return pos, prompt, candidate.key
             end
         end
     end
 
-    local totalActive = #activeSeeds
-    if totalActive == 0 then return nil, nil, nil end
-
-    -- Cek satu per satu secara bergiliran mulai dari stealCycleIndex
-    for step = 0, totalActive - 1 do
-        local idx = ((stealCycleIndex - 1 + step) % totalActive) + 1
-        local candidate = activeSeeds[idx]
-        local pos, prompt = findSeedPrompt(candidate)
-        if pos and prompt then
-            -- Bibit ditemukan! Majukan cycle index ke giliran berikutnya
-            stealCycleIndex = (idx % totalActive) + 1
-            return pos, prompt, candidate.key
-        end
-    end
-
     -- Jika TIDAK ADA satupun bibit terpilih yang saat ini ada di arena (sedang cooldown/belum spawn):
-    -- Mengembalikan nil agar karakter TETAP AMAN DI MARKAS
+    -- Mengembalikan nil agar karakter TETAP AMAN DI MARKAS (-30.375, 1, 213.25)
     return nil, nil, nil
 end
 
