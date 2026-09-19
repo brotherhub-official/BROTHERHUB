@@ -538,10 +538,13 @@ end
 local function safeTeleport(cframeOrVec)
     local char = LocalPlayer.Character
     local root = getRoot(char)
-    if not root then return end
+    if not root or not char then return end
     local targetCF = typeof(cframeOrVec) == "Vector3" and CFrame.new(cframeOrVec) or cframeOrVec
+    if not targetCF then return end
+    local p = targetCF.Position
+    if p.X ~= p.X or p.Y ~= p.Y or p.Z ~= p.Z then return end -- NaN protection
     pcall(function()
-        if char then char:PivotTo(targetCF) end
+        char:PivotTo(targetCF)
         root.AssemblyLinearVelocity = Vector3.zero
         root.AssemblyAngularVelocity = Vector3.zero
         root.CFrame = targetCF
@@ -904,17 +907,10 @@ local function runStealSaplingsCycle()
 
     task.spawn(function()
         pcall(function()
-            -- Noclip sementara agar karakter tidak terdorong/tersangkut rintangan
-            for _, pt in ipairs(char:GetChildren()) do
-                if pt:IsA("BasePart") then
-                    pt.CanCollide = false
-                end
-            end
-
-            -- Teleport langsung menghadap posisi ProximityPrompt
-            local targetPos = target.pos + Vector3.new(0, 1.2, 0)
-            local lookAtPos = Vector3.new(target.pos.X, targetPos.Y, target.pos.Z)
-            local targetCF = CFrame.lookAt(targetPos, lookAtPos)
+            -- Teleport berdiri tegak 2 stud di depan bibit menghadap langsung ke bibit
+            local anchorPos = target.pos
+            local playerPos = anchorPos + Vector3.new(0, 0.6, 2.2)
+            local targetCF = CFrame.lookAt(playerPos, anchorPos)
             safeTeleport(targetCF)
 
             -- Lepas pegangan tool apa pun (agar tangan bebas dan tidak memblokir interaksi prompt)
@@ -944,23 +940,14 @@ local function runStealSaplingsCycle()
                 pcall(function() fireproximityprompt(prompt) end)
             end
 
-            -- 2. Touch interest ke anchor prompt
-            pcall(function()
-                local pPart = prompt and prompt.Parent
-                if typeof(firetouchinterest) == "function" and root and pPart and pPart:IsA("BasePart") then
-                    firetouchinterest(root, pPart, 0)
-                    task.wait(0.02)
-                    firetouchinterest(root, pPart, 1)
-                end
-            end)
-
-            -- 3. RemoteEvent server fallback (ReplicatedStorage.Remotes.LocalSaplingPickupRequest)
+            -- 2. RemoteEvent server fallback (ReplicatedStorage.Remotes.LocalSaplingPickupRequest)
             pcall(function()
                 local remotes = ReplicatedStorage:FindFirstChild("Remotes") or ReplicatedStorage
                 local pickupReq = remotes:FindFirstChild("LocalSaplingPickupRequest") or ReplicatedStorage:FindFirstChild("LocalSaplingPickupRequest", true)
                 if pickupReq and pickupReq:IsA("RemoteEvent") then
                     pickupReq:FireServer(target.model)
                     pickupReq:FireServer(prompt)
+                    pickupReq:FireServer(target.model.Name)
                 end
             end)
 
@@ -973,10 +960,10 @@ local function runStealSaplingsCycle()
                 gotSapling = true
             end
 
-            -- 4. KONTINU SUSTAINED HOLD (TEKAN & TAHAN FISIK PENUH 1.25 DETIK!)
+            -- 3. KONTINU SUSTAINED HOLD (TEKAN & TAHAN FISIK PENUH 1.35 DETIK!)
             -- Jika belum terambil instan, lakukan penekanan tombol E terus-menerus tanpa jeda lepas!
             local vim = game:GetService("VirtualInputManager")
-            if not gotSapling then
+            if not gotSapling and prompt and prompt.Parent and prompt.Enabled then
                 for attempt = 1, 2 do
                     if gotSapling then break end
                     if not target.model:IsDescendantOf(workspace) or not prompt or not prompt.Parent or not prompt.Enabled then
@@ -986,28 +973,23 @@ local function runStealSaplingsCycle()
                         break
                     end
 
-                    -- Pastikan posisi terkunci rapat di anchor
-                    if root then
-                        root.AssemblyLinearVelocity = Vector3.zero
-                        root.AssemblyAngularVelocity = Vector3.zero
-                        root.CFrame = targetCF
-                    end
+                    -- Pastikan berdiri tegak di depan bibit
+                    safeTeleport(targetCF)
 
                     -- Mulai tekan dan tahan E & InputHoldBegin (HANYA SEKALI DI AWAL!)
                     pcall(function() prompt:InputHoldBegin() end)
                     pcall(function() vim:SendKeyEvent(true, Enum.KeyCode.E, false, game) end)
 
-                    -- Pertahankan tombol E ditekan selama (promptDuration + 0.25) detik!
+                    -- Pertahankan tombol E ditekan selama (promptDuration + 0.35) detik!
                     local holdStart = tick()
-                    local holdDurationTarget = promptDuration + 0.25
+                    local holdDurationTarget = promptDuration + 0.35
                     while (tick() - holdStart) < holdDurationTarget do
-                        task.wait(0.04)
+                        task.wait(0.05)
 
-                        -- Kunci posisi stabil tanpa drift
+                        -- Netralkan velocity agar karakter tidak bergerak/bergeser
                         if root then
                             root.AssemblyLinearVelocity = Vector3.zero
                             root.AssemblyAngularVelocity = Vector3.zero
-                            root.CFrame = targetCF
                         end
 
                         -- Cek apakah bibit sudah masuk ke tas/tangan
@@ -1041,13 +1023,6 @@ local function runStealSaplingsCycle()
             pcall(function()
                 vim:SendKeyEvent(false, Enum.KeyCode.E, false, game)
             end)
-
-            -- Pulihkan collision part tubuh
-            for _, pt in ipairs(char:GetChildren()) do
-                if pt:IsA("BasePart") and pt.Name ~= "HumanoidRootPart" then
-                    pt.CanCollide = true
-                end
-            end
 
             if gotSapling then
                 recentlyTargetedSaplings[target.model] = tick() + 30.0
