@@ -552,6 +552,14 @@ end
 local ProximityPromptService = game:GetService("ProximityPromptService")
 local function makePromptInstant(p)
     if p and p:IsA("ProximityPrompt") then
+        if p.Name == "CollectSaplingPrompt" then
+            -- CollectSaplingPrompt WAJIB mempertahankan HoldDuration asli (1.0s) agar validasi server tidak ditolak!
+            pcall(function()
+                p.MaxActivationDistance = 50
+                p.RequiresLineOfSight = false
+            end)
+            return
+        end
         pcall(function()
             p.HoldDuration = 0
             p.MaxActivationDistance = 30
@@ -710,16 +718,24 @@ local function firePrompt(prompt)
     if not prompt or not prompt:IsA("ProximityPrompt") then return false end
     if not prompt.Enabled then return false end
     
+    local isCollectSapling = (prompt.Name == "CollectSaplingPrompt")
+    local holdDur = prompt.HoldDuration or 1
+    if holdDur <= 0 then holdDur = 1 end
+    
     pcall(function()
-        prompt.HoldDuration = 0
-        prompt.MaxActivationDistance = 30
+        if not isCollectSapling then
+            prompt.HoldDuration = 0
+        end
+        prompt.MaxActivationDistance = 50
         prompt.RequiresLineOfSight = false
     end)
     
     local ok = false
     pcall(function()
         if typeof(fireproximityprompt) == "function" then
+            fireproximityprompt(prompt, holdDur)
             fireproximityprompt(prompt, 0)
+            fireproximityprompt(prompt)
             ok = true
         end
     end)
@@ -727,7 +743,11 @@ local function firePrompt(prompt)
     pcall(function()
         if prompt.InputHoldBegin and prompt.InputHoldEnd then
             prompt:InputHoldBegin()
-            task.wait(0.05)
+            if isCollectSapling then
+                task.wait(holdDur + 0.15)
+            else
+                task.wait(0.05)
+            end
             prompt:InputHoldEnd()
             ok = true
         end
@@ -891,95 +911,134 @@ local function runStealSaplingsCycle()
                 end
             end
 
-            -- Teleport langsung ke posisi ProximityPrompt
+            -- Teleport langsung menghadap posisi ProximityPrompt
             local targetPos = target.pos + Vector3.new(0, 1.2, 0)
-            local targetCF = CFrame.new(targetPos)
+            local lookAtPos = Vector3.new(target.pos.X, targetPos.Y, target.pos.Z)
+            local targetCF = CFrame.lookAt(targetPos, lookAtPos)
             safeTeleport(targetCF)
 
+            -- Lepas pegangan tool apa pun (agar tangan bebas dan tidak memblokir interaksi prompt)
+            pcall(function()
+                local hum = char:FindFirstChildOfClass("Humanoid")
+                if hum then hum:UnequipTools() end
+            end)
+
             local prompt = target.prompt
+            local promptDuration = 1.0
             if prompt then
+                if prompt.HoldDuration and prompt.HoldDuration > 0 then
+                    promptDuration = prompt.HoldDuration
+                end
                 pcall(function()
-                    prompt.HoldDuration = 0
+                    -- JANGAN ubah HoldDuration menjadi 0! Server memverifikasi durasi hold asli (1.0s).
                     prompt.MaxActivationDistance = 50
                     prompt.RequiresLineOfSight = false
                     prompt.Enabled = true
                 end)
             end
 
-            -- Siklus Interaksi Presisi: Tahan posisi di bibit & picu prompt sampai bibit BENAR-BENAR TERAMBIL!
-            local startTime = tick()
+            -- 1. Picu bypass executor native fireproximityprompt jika tersedia
+            if prompt and prompt.Parent and prompt.Enabled and typeof(fireproximityprompt) == "function" then
+                pcall(function() fireproximityprompt(prompt, promptDuration) end)
+                pcall(function() fireproximityprompt(prompt, 0) end)
+                pcall(function() fireproximityprompt(prompt) end)
+            end
+
+            -- 2. Touch interest ke anchor prompt
+            pcall(function()
+                local pPart = prompt and prompt.Parent
+                if typeof(firetouchinterest) == "function" and root and pPart and pPart:IsA("BasePart") then
+                    firetouchinterest(root, pPart, 0)
+                    task.wait(0.02)
+                    firetouchinterest(root, pPart, 1)
+                end
+            end)
+
+            -- 3. RemoteEvent server fallback (ReplicatedStorage.Remotes.LocalSaplingPickupRequest)
+            pcall(function()
+                local remotes = ReplicatedStorage:FindFirstChild("Remotes") or ReplicatedStorage
+                local pickupReq = remotes:FindFirstChild("LocalSaplingPickupRequest") or ReplicatedStorage:FindFirstChild("LocalSaplingPickupRequest", true)
+                if pickupReq and pickupReq:IsA("RemoteEvent") then
+                    pickupReq:FireServer(target.model)
+                    pickupReq:FireServer(prompt)
+                end
+            end)
+
+            -- Cek instan apakah sudah terambil via bypass executor / remote
+            task.wait(0.06)
             local gotSapling = false
-            local maxHoldTime = 2.4 -- Cukup untuk latensi server dan replikasi
+            if isPlayerCarryingSapling() 
+                or not target.model:IsDescendantOf(workspace) 
+                or (prompt and (prompt.Parent == nil or not prompt.Enabled)) then
+                gotSapling = true
+            end
 
-            while (tick() - startTime) < maxHoldTime do
-                -- Kunci posisi & velocity karakter persis di titik bibit agar tidak bergeser/terlempar
-                if root then
-                    root.AssemblyLinearVelocity = Vector3.zero
-                    root.AssemblyAngularVelocity = Vector3.zero
-                    root.CFrame = targetCF
-                end
-
-                -- 1. Picu ProximityPrompt secara native & simulasi trigger lengkap
-                if prompt and prompt.Parent and prompt.Enabled then
-                    pcall(function()
-                        prompt.HoldDuration = 0
-                        prompt.MaxActivationDistance = 50
-                        prompt.RequiresLineOfSight = false
-                        if typeof(fireproximityprompt) == "function" then
-                            fireproximityprompt(prompt, 0)
-                            fireproximityprompt(prompt)
+            -- 4. KONTINU SUSTAINED HOLD (TEKAN & TAHAN FISIK PENUH 1.25 DETIK!)
+            -- Jika belum terambil instan, lakukan penekanan tombol E terus-menerus tanpa jeda lepas!
+            local vim = game:GetService("VirtualInputManager")
+            if not gotSapling then
+                for attempt = 1, 2 do
+                    if gotSapling then break end
+                    if not target.model:IsDescendantOf(workspace) or not prompt or not prompt.Parent or not prompt.Enabled then
+                        if isPlayerCarryingSapling() or not target.model:IsDescendantOf(workspace) then
+                            gotSapling = true
                         end
-                        prompt:InputHoldBegin()
+                        break
+                    end
+
+                    -- Pastikan posisi terkunci rapat di anchor
+                    if root then
+                        root.AssemblyLinearVelocity = Vector3.zero
+                        root.AssemblyAngularVelocity = Vector3.zero
+                        root.CFrame = targetCF
+                    end
+
+                    -- Mulai tekan dan tahan E & InputHoldBegin (HANYA SEKALI DI AWAL!)
+                    pcall(function() prompt:InputHoldBegin() end)
+                    pcall(function() vim:SendKeyEvent(true, Enum.KeyCode.E, false, game) end)
+
+                    -- Pertahankan tombol E ditekan selama (promptDuration + 0.25) detik!
+                    local holdStart = tick()
+                    local holdDurationTarget = promptDuration + 0.25
+                    while (tick() - holdStart) < holdDurationTarget do
                         task.wait(0.04)
-                        prompt:InputHoldEnd()
-                    end)
-                end
 
-                -- 2. Touch interest pada anchor prompt
-                pcall(function()
-                    local pPart = prompt and prompt.Parent
-                    if typeof(firetouchinterest) == "function" and root and pPart and pPart:IsA("BasePart") then
-                        firetouchinterest(root, pPart, 0)
-                        task.wait()
-                        firetouchinterest(root, pPart, 1)
+                        -- Kunci posisi stabil tanpa drift
+                        if root then
+                            root.AssemblyLinearVelocity = Vector3.zero
+                            root.AssemblyAngularVelocity = Vector3.zero
+                            root.CFrame = targetCF
+                        end
+
+                        -- Cek apakah bibit sudah masuk ke tas/tangan
+                        if isPlayerCarryingSapling() 
+                            or not target.model:IsDescendantOf(workspace) 
+                            or (prompt and (prompt.Parent == nil or not prompt.Enabled)) then
+                            gotSapling = true
+                            break
+                        end
                     end
-                end)
 
-                -- 3. Backup VirtualInputManager Key E
-                pcall(function()
-                    local vim = game:GetService("VirtualInputManager")
-                    vim:SendKeyEvent(true, Enum.KeyCode.E, false, game)
-                    task.wait(0.04)
-                    vim:SendKeyEvent(false, Enum.KeyCode.E, false, game)
-                end)
+                    -- Lepaskan penekanan tombol E setelah waktu hold terpenuhi
+                    pcall(function() prompt:InputHoldEnd() end)
+                    pcall(function() vim:SendKeyEvent(false, Enum.KeyCode.E, false, game) end)
 
-                -- 4. Remote fallback server
-                pcall(function()
-                    local pickupReq = ReplicatedStorage:FindFirstChild("LocalSaplingPickupRequest")
-                    if pickupReq and pickupReq:IsA("RemoteEvent") then
-                        pickupReq:FireServer(target.model)
+                    task.wait(0.1)
+
+                    if isPlayerCarryingSapling() or not target.model:IsDescendantOf(workspace) then
+                        gotSapling = true
+                        break
                     end
-                end)
-
-                task.wait(0.08)
-
-                -- Evaluasi keberhasilan penerimaan bibit
-                if isPlayerCarryingSapling() 
-                    or not target.model:IsDescendantOf(workspace) 
-                    or (prompt and (prompt.Parent == nil or not prompt.Enabled)) then
-                    gotSapling = true
-                    break
                 end
             end
 
-            -- Lepaskan hold prompt dan Key E
+            -- Pastikan tombol E dan prompt dilepas 100%
             pcall(function()
                 if prompt and prompt.Parent then
                     prompt:InputHoldEnd()
                 end
             end)
             pcall(function()
-                local vim = game:GetService("VirtualInputManager")
                 vim:SendKeyEvent(false, Enum.KeyCode.E, false, game)
             end)
 
@@ -1066,7 +1125,8 @@ local function runAutoPlantAndGarden()
         end
 
         pcall(function()
-            local plantRemote = ReplicatedStorage:FindFirstChild("RequestPlantSapling")
+            local remotes = ReplicatedStorage:FindFirstChild("Remotes") or ReplicatedStorage
+            local plantRemote = remotes:FindFirstChild("RequestPlantSapling") or ReplicatedStorage:FindFirstChild("RequestPlantSapling", true)
             if plantRemote and plantRemote:IsA("RemoteEvent") then
                 plantRemote:FireServer(saplingTool)
             end
