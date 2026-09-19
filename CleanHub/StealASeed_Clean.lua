@@ -132,8 +132,20 @@ local STAGE_KEYS = {
     "Cycle All Stages (10 ke 01 Bergantian)",
 }
 
--- [1.6] 🌿 SEED NAME TARGETS & SPECIFIC PATTERNS (5 BIBIT TERDEPAN DI POSISI TERATAS)
+-- [1.6] 🌟 5 BIBIT PALING DEPAN (ANGKA 8 SAMPAI 12) + DAFTAR BIBIT RESMI
 local ALL_STEALABLE_SEEDS = {
+    -- 5 BIBIT PALING DEPAN RESMI FOUNDER (ANGKA 8..12)
+    { key = "Seed 08", num = 8, displayName = "👑 Seed 08 (Paling Depan)" },
+    { key = "Seed 09", num = 9, displayName = "👑 Seed 09 (Paling Depan)" },
+    { key = "Seed 10", num = 10, displayName = "👑 Seed 10 (Paling Depan)" },
+    { key = "Seed 11", num = 11, displayName = "👑 Seed 11 (Paling Depan)" },
+    { key = "Seed 12", num = 12, displayName = "👑 Seed 12 (Paling Depan)" },
+
+    -- DAFTAR BIBIT RESMI DARI MENU GAME
+    { key = "Ember-Hollow",      pattern = "ember",       displayName = "🔥 Ember-Hollow Seed" },
+    { key = "Abyss-Infernal",    pattern = "infernal",    displayName = "💜 Abyss-Infernal Seed" },
+    { key = "Purgatory Burn",    pattern = "purgatory",   displayName = "🌋 Purgatory Burn Seed" },
+    { key = "Nether-Wither",     pattern = "wither",      displayName = "🥀 Nether-Wither Seed" },
     { key = "Lucifer Rose",      id = "75-LuciferRose",      pattern = "lucifer",    tier = "Divine",    pos = Vector3.new(-41.4, 4.0, -6068.0), displayName = "🌹 Lucifer Rose (Divine)" },
     { key = "Infernal Lily",     id = "76-InfernalLily",     pattern = "infernal",   tier = "Divine",    pos = Vector3.new(-77.2, 3.5, -6080.9), displayName = "🌸 Infernal Lily (Divine)" },
     { key = "Bloodthorn",        id = "73-Bloodthorn",        pattern = "bloodthorn", tier = "Mythic",    pos = Vector3.new(-4.1,  3.5, -3221.3), displayName = "🩸 Bloodthorn (Mythic)" },
@@ -155,13 +167,13 @@ for _, s in ipairs(ALL_STEALABLE_SEEDS) do
     table.insert(SEED_NAME_KEYS, s.displayName)
 end
 
--- [1.7] 🌟 5 BIBIT PALING DEPAN (STAGE 10 ENCLOSURE - MULTI-SELECT ENGINE)
+-- [1.7] 🌟 5 BIBIT PALING DEPAN (ANGKA 8 SAMPAI 12)
 local TOP5_SEEDS = {
-    { key = "Lucifer Rose",      pattern = "lucifer",    displayName = "🌹 Lucifer Rose (Divine)" },
-    { key = "Infernal Lily",     pattern = "infernal",   displayName = "🌸 Infernal Lily (Divine)" },
-    { key = "Bloodthorn",        pattern = "bloodthorn", displayName = "🩸 Bloodthorn (Mythic)" },
-    { key = "Abyss Orchid",      pattern = "abyss",      displayName = "🌌 Abyss Orchid (Legendary)" },
-    { key = "Underworld Flower", pattern = "underworld", displayName = "🌺 Underworld Flower (Mythic)" },
+    "Seed 08",
+    "Seed 09",
+    "Seed 10",
+    "Seed 11",
+    "Seed 12",
 }
 
 -- [2] CONFIGURATION & PERSISTENCE
@@ -173,18 +185,11 @@ local config = {
     autoFlashSteal        = true,
     useMultiSeedFilter    = true,     -- Aktifkan Multi-Select 5 Bibit Depan
     multiTargetSeeds      = {
-        ["Lucifer Rose"]      = true,
-        ["Infernal Lily"]     = true,
-        ["Bloodthorn"]        = true,
-        ["Abyss Orchid"]      = true,
-        ["Underworld Flower"] = true,
-        ["Eclypsion"]         = false,
-        ["Bloodmoon Orchid"]  = false,
-        ["Astralith Tree"]    = false,
-        ["Nyxroot"]           = false,
-        ["Solara Maw"]        = false,
-        ["Crysalith Vine"]    = false,
-        ["Virelia Bloom"]     = false,
+        ["Seed 08"]           = true,
+        ["Seed 09"]           = true,
+        ["Seed 10"]           = true,
+        ["Seed 11"]           = true,
+        ["Seed 12"]           = true,
     },
     targetSeedName        = "All / Furthest Rare Seed (Auto Paling Langka)",
     selectedStage         = "Auto Furthest (Stage 10 - Paling Depan / Tersulit)",
@@ -1559,85 +1564,73 @@ local function findFrontSeedModel(numKey)
     return nil, nil
 end
 
-local function getNextFrontSeedModel()
-    local available = scanFrontSeedModels()
-    local total = #FRONT_MODEL_GROUPS
-    for step = 0, total - 1 do
-        local idx = ((frontModelCycleIndex - 1 + step) % total) + 1
-        local numKey = FRONT_MODEL_GROUPS[idx]
-        local found = available[numKey]
-        if found and found.model and found.pos then
-            -- Majukan giliran ke nomor model berikutnya untuk siklus bergantian (8 -> 9 -> 10 -> 11 -> 12)
-            frontModelCycleIndex = (idx % total) + 1
-            return found.model, found.pos, "Seed Model " .. tostring(numKey)
-        end
-    end
-
-    -- HUKUM MUTLAK: Jika tidak ada bibit 8..12 yang aktif/tersedia, kembalikan NIL!
-    -- DILARANG MENGGUNAKAN FALLBACK OBJEK MAP KARENA MENYEBABKAN SPAM TELEPORT SAAT KOSONG!
-    return nil, nil, nil
-end
-
--- Helper: Cek apakah seluruh 5 bibit paling depan (8..12) BENAR-BENAR KOSONG
-local function areAllFrontSeedsEmpty()
-    local available = scanFrontSeedModels()
-    for _, numKey in ipairs(FRONT_MODEL_GROUPS) do
-        if available[numKey] then
-            return false, available[numKey].model, nil, available[numKey].pos
-        end
-    end
-
-    -- Scan juga bibit pilihan manual jika opsi multi-target aktif
-    if config.multiTargetSeeds then
-        for _, sInfo in ipairs(ALL_STEALABLE_SEEDS) do
-            if config.multiTargetSeeds[sInfo.key] == true then
-                local pos, p = findSeedPrompt(sInfo)
-                if pos and p and p.Enabled and p.Parent and not isPromptAlreadyStolen(p, pos) then
-                    return false, nil, p, pos
-                end
-            end
-        end
-    end
-
-    -- 100% PASTI KOSONG! (Tidak ada satupun bibit 8..12 yang aktif)
-    return true, nil, nil, nil
-end
-
 -- Rotasi Bergiliran (Round-Robin) untuk Multi-Select Bibit Target
 local stealCycleIndex = 1
 
 local function getNextAvailableTargetSeed()
-    -- 1. Prioritas Utama Sesuai Request Founder: Model angka 8 sampai 12 di folder 创建 bergantian
-    local fModel, fPos, fName = getNextFrontSeedModel()
-    if fModel and fPos then
-        return fModel, fPos, fName
-    end
+    local availableFront = scanFrontSeedModels()
 
-    -- 2. Fallback: Multi-Select Bibit Target jika user memilih nama bibit lain
-    local activeSeeds = {}
-    for _, sInfo in ipairs(ALL_STEALABLE_SEEDS) do
-        if config.multiTargetSeeds and config.multiTargetSeeds[sInfo.key] == true then
-            table.insert(activeSeeds, sInfo)
+    -- 1. Evaluasi apakah user mencentang salah satu dari 5 Bibit Depan (Seed 08..12) di Droplist
+    local activeFronts = {}
+    for _, numKey in ipairs(FRONT_MODEL_GROUPS) do
+        local keyStr = string.format("Seed %02d", numKey)
+        if config.multiTargetSeeds and config.multiTargetSeeds[keyStr] == true then
+            table.insert(activeFronts, { key = keyStr, num = numKey })
         end
     end
 
-    local totalActive = #activeSeeds
-    if totalActive > 0 then
-        for step = 0, totalActive - 1 do
-            local idx = ((stealCycleIndex - 1 + step) % totalActive) + 1
-            local candidate = activeSeeds[idx]
+    local totalFront = #activeFronts
+    if totalFront > 0 then
+        -- User MENCENTANG Bibit Depan (8..12)!
+        -- Rotasikan secara bergiliran (Round-Robin) HANYA di antara nomor yang dicentang:
+        for step = 0, totalFront - 1 do
+            local idx = ((frontModelCycleIndex - 1 + step) % totalFront) + 1
+            local fInfo = activeFronts[idx]
+            local found = availableFront[fInfo.num]
+            if found and found.model and found.pos then
+                frontModelCycleIndex = (idx % totalFront) + 1
+                return found.model, found.pos, fInfo.key
+            end
+        end
+
+        -- HUKUM MUTLAK FOUNDER:
+        -- "seed paling depan itu hanya angka 8 sampai 12, kalau gak ada angka itu, jangan di ambil, ini yang paling depan"!
+        -- JIKA BIBIT DEPAN TERPILIH SEDANG KOSONG: DILARANG MENGAMBIL BIBIT LAIN! TETAP DIAM DI TEMPAT!
+        return nil, nil, nil
+    end
+
+    -- 2. Jika user TIDAK mencentang angka 8..12 sama sekali (hanya mencentang nama bibit spesifik):
+    local activeNamedSeeds = {}
+    for _, sInfo in ipairs(ALL_STEALABLE_SEEDS) do
+        if not sInfo.num and config.multiTargetSeeds and config.multiTargetSeeds[sInfo.key] == true then
+            table.insert(activeNamedSeeds, sInfo)
+        end
+    end
+
+    local totalNamed = #activeNamedSeeds
+    if totalNamed > 0 then
+        for step = 0, totalNamed - 1 do
+            local idx = ((stealCycleIndex - 1 + step) % totalNamed) + 1
+            local candidate = activeNamedSeeds[idx]
             local pos, prompt = findSeedPrompt(candidate)
             if pos and prompt and not isPromptAlreadyStolen(prompt, pos) then
-                stealCycleIndex = (idx % totalActive) + 1
+                stealCycleIndex = (idx % totalNamed) + 1
                 local mdl = prompt.Parent and (prompt.Parent:IsA("Model") and prompt.Parent or prompt.Parent:FindFirstAncestorOfClass("Model"))
                 return mdl or prompt, pos, candidate.key
             end
         end
     end
 
-    -- Jika TIDAK ADA satupun bibit terpilih yang saat ini ada di arena (sedang cooldown/belum spawn):
-    -- Mengembalikan nil agar karakter TETAP AMAN DI MARKAS (7, 0.75, 360.375)
     return nil, nil, nil
+end
+
+-- Helper: Cek apakah bibit target saat ini BENAR-BENAR KOSONG
+local function areAllFrontSeedsEmpty()
+    local mdl, pos, name = getNextAvailableTargetSeed()
+    if mdl and pos then
+        return false, mdl, nil, pos
+    end
+    return true, nil, nil, nil
 end
 
 -- ⚡ KOORDINAT BAKU MARKAS RESMI FOUNDER: 7, 0.75, 360.375
@@ -1879,17 +1872,14 @@ registerThread(function()
                 if hrp then
                     local markas = FOUNDER_EXACT_BASE
 
-                    -- 1. Cari 5 bibit terdepan yang saat ini aktif (Model 8..12 di folder 创建 bergantian)
-                    local targetModel, targetPos, targetName = getNextFrontSeedModel()
-                    if not targetModel or not targetPos then
-                        targetModel, targetPos, targetName = getNextAvailableTargetSeed()
-                    end
+                    -- 1. Cari bibit target aktif sesuai centang Multi-Select droplist
+                    local targetModel, targetPos, targetName = getNextAvailableTargetSeed()
 
                     if targetModel and targetPos then
-                        -- 🌟 Bibit terdepan (8..12) TERSEDIA (GAK KOSONG)! Langsung Flash Steal tanpa menunggu!
+                        -- 🌟 Bibit target TERSEDIA (GAK KOSONG)! Langsung Flash Steal tanpa menunggu!
                         executeFlashStealDirect(targetPos, targetModel)
                     else
-                        -- 🛑 100% KOSONG! (Semua bibit 8..12 sudah terambil atau belum spawn)
+                        -- 🛑 100% KOSONG! (Semua bibit terpilih sudah terambil atau belum spawn)
                         -- DIAM DI TEMPAT:
                         -- 1. DILARANG SPAM TELEPORT KE DEPAN! (Tetap tenang menunggu bibit spawn)
                         -- 2. DILARANG MENGUNCI POSISI PEMAIN! Pemain 100% BEBAS jalan ke mana saja tanpa lag & tanpa tertarik balik!
@@ -3440,7 +3430,7 @@ local function makeMultiDropdown(parent, label, getItems, store, emptyTxt, mapVa
         quick5.MouseButton1Click:Connect(function()
             for _, item in ipairs(items) do
                 local key = mapValue and mapValue(item) or item
-                local isFront = (key == "Lucifer Rose" or key == "Infernal Lily" or key == "Bloodthorn" or key == "Abyss Orchid" or key == "Underworld Flower")
+                local isFront = (key == "Seed 08" or key == "Seed 09" or key == "Seed 10" or key == "Seed 11" or key == "Seed 12")
                 store[key] = isFront or nil
             end
             for key, r in pairs(rows) do paint(r.b, key, r.l) end
