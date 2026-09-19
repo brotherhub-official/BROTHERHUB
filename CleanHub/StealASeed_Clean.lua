@@ -602,17 +602,15 @@ local lastGuardScan = 0
 local function pacifyPlantGuards()
     pcall(function()
         local now = tick()
-        if now - lastGuardScan > 3.0 or #guardCache == 0 then
+        if now - lastGuardScan > 5.0 or #guardCache == 0 then
             lastGuardScan = now
+            guardCache = {}
             local chuangjian = workspace:FindFirstChild("创建")
-            local scanRoots = chuangjian and { chuangjian } or { workspace }
-            for _, r in ipairs(scanRoots) do
-                for _, obj in ipairs(r:GetDescendants()) do
+            if chuangjian then
+                for _, obj in ipairs(chuangjian:GetChildren()) do
                     if obj:IsA("Model") then
-                        local pName = obj.Parent and obj.Parent.Name or ""
-                        if obj.Name == "敌人" or pName == "敌人" or string.find(obj.Name:lower(), "guard") or string.find(obj.Name:lower(), "plant") then
-                            table.insert(guardCache, obj)
-                        elseif obj:FindFirstChild("atk") or obj:FindFirstChild("Stem_Lower") or obj:FindFirstChild("Wing.L") or obj:FindFirstChild("Wing.R") then
+                        local n = obj.Name:lower()
+                        if n == "敌人" or string.find(n, "guard") or obj:FindFirstChild("atk") or obj:FindFirstChild("Stem_Lower") then
                             table.insert(guardCache, obj)
                         end
                     end
@@ -661,13 +659,13 @@ local function equipStolenSeed()
     end)
 end
 
--- Thread Background Terpisah untuk Penjaga (Interval 2.0s - TIDAK MENGGANGGU FPS SAMA SEKALI)
+-- Thread Background Terpisah untuk Penjaga (Interval 3.0s - Ringan & 0% Lag)
 registerThread(function()
     while true do
         if config.antiGuardChase or config.autoSteal or config.fullAfkLoop then
             pacifyPlantGuards()
         end
-        task.wait(2.0)
+        task.wait(3.0)
     end
 end)
 
@@ -686,7 +684,7 @@ registerConnection(RunService.Heartbeat:Connect(function()
     end
 end))
 
--- Helper: Tanam bibit yang dipegang ke petak kebun pemain (Auto Plant ke Garden Plot)
+-- Helper: Tanam bibit yang dipegang ke petak kebun pemain (Super Ringan - Hanya Scan workspace.Farm)
 local function plantHeldSeedAtGarden()
     pcall(function()
         local hrp = getHrp()
@@ -710,24 +708,33 @@ local function plantHeldSeedAtGarden()
                     local hum = char and char:FindFirstChildOfClass("Humanoid")
                     if hum then hum:EquipTool(item) end
                     hasTool = true
-                    task.wait(0.1)
+                    task.wait(0.04)
                     break
                 end
             end
         end
         
-        -- Trigger prompt Place / Plant di petak kebun dekat markas
-        for _, prompt in ipairs(workspace:GetDescendants()) do
-            if prompt:IsA("ProximityPrompt") and prompt.Enabled and (prompt.ActionText == "Place" or prompt.ActionText == "Plant") then
-                local pp = prompt.Parent:IsA("BasePart") and prompt.Parent.Position or (prompt.Parent:IsA("Model") and prompt.Parent:GetPivot().Position)
-                if pp and (hrp.Position - pp).Magnitude <= 45 then
-                    pcall(function() prompt.HoldDuration = 0 end)
-                    if fireproximityprompt then
-                        fireproximityprompt(prompt, 0)
-                    else
-                        pcall(function() prompt:InputHoldBegin() end)
-                        task.wait(0.05)
-                        pcall(function() prompt:InputHoldEnd() end)
+        -- Trigger prompt Place / Plant di petak kebun milik pemain (workspace.Farm)
+        local myPlot = getMyPlot()
+        local containers = myPlot and { myPlot } or {}
+        if #containers == 0 then
+            local Farm = workspace:FindFirstChild("Farm")
+            if Farm then containers = Farm:GetChildren() end
+        end
+
+        for _, c in ipairs(containers) do
+            for _, prompt in ipairs(c:GetDescendants()) do
+                if prompt:IsA("ProximityPrompt") and prompt.Enabled and (prompt.ActionText == "Place" or prompt.ActionText == "Plant" or prompt.Name == "Plant" or prompt.Name == "e_touch") then
+                    local pp = prompt.Parent and (prompt.Parent:IsA("BasePart") and prompt.Parent.Position or (prompt.Parent:IsA("Model") and prompt.Parent:GetPivot().Position))
+                    if pp and (hrp.Position - pp).Magnitude <= 45 then
+                        pcall(function() prompt.HoldDuration = 0 end)
+                        if fireproximityprompt then
+                            fireproximityprompt(prompt, 0)
+                        else
+                            pcall(function() prompt:InputHoldBegin() end)
+                            task.wait(0.04)
+                            pcall(function() prompt:InputHoldEnd() end)
+                        end
                     end
                 end
             end
@@ -735,19 +742,22 @@ local function plantHeldSeedAtGarden()
     end)
 end
 
--- Helper: Ambil Tanaman Matang di Sekitar Kebun (Ringan, Cepat & Bebas Lag)
+-- Helper: Ambil Tanaman Matang di Sekitar Kebun (Super Ringan - Hanya Scan workspace.Farm)
 local function pickupReadyCrops()
     pcall(function()
         local hrp = getHrp()
         if not hrp then return end
-        local markas = getBasePosition()
-        for _, prompt in ipairs(workspace:GetDescendants()) do
-            if prompt:IsA("ProximityPrompt") and prompt.Enabled then
-                local act = prompt.ActionText:lower()
-                if act == "pick up" or act == "pickup" or act == "claim" or act == "harvest" or act == "take" then
-                    local pParent = prompt.Parent
-                    local pPos = pParent:IsA("BasePart") and pParent.Position or (pParent:IsA("Model") and pParent:GetPivot().Position)
-                    if pPos and ((hrp.Position - pPos).Magnitude <= 50 or (markas - pPos).Magnitude <= 50) then
+        local myPlot = getMyPlot()
+        local containers = myPlot and { myPlot } or {}
+        if #containers == 0 then
+            local Farm = workspace:FindFirstChild("Farm")
+            if Farm then containers = Farm:GetChildren() end
+        end
+        for _, c in ipairs(containers) do
+            for _, prompt in ipairs(c:GetDescendants()) do
+                if prompt:IsA("ProximityPrompt") and prompt.Enabled then
+                    local act = prompt.ActionText:lower()
+                    if act == "pick up" or act == "pickup" or act == "claim" or act == "harvest" or act == "take" then
                         pcall(function() prompt.HoldDuration = 0 end)
                         if fireproximityprompt then
                             fireproximityprompt(prompt, 0)
@@ -1329,89 +1339,80 @@ local function findSeedPrompt(sInfo)
     return nil, nil
 end
 
+-- Helper: Dapatkan posisi aman dari Model atau BasePart
+local function getModelPosition(m)
+    if not m then return nil end
+    if m:IsA("BasePart") then return m.Position end
+    if m:IsA("Model") then
+        local p = m.PrimaryPart
+        if p then return p.Position end
+        local piv = m:GetPivot()
+        if piv and piv.Position ~= Vector3.zero then
+            return piv.Position
+        end
+        for _, ch in ipairs(m:GetChildren()) do
+            if ch:IsA("BasePart") then return ch.Position end
+        end
+    end
+    return nil
+end
+
 -- [1.8] 🌟 MODEL 8 SAMPAI 11 DI WORKSPACE.创建 (5 BIBIT TERDEPAN PALING LANGKA)
 -- Rotasi bergiliran (Round-Robin) mengambil model 8, 9, 10, 11 jika tersedia di folder 创建
-local FRONT_SEED_MODELS = { "8", "9", "10", "11", "08", "09", "010", "011" }
 local frontModelCycleIndex = 1
 
 local function findFrontSeedModel(numKey)
     local chuangjian = workspace:FindFirstChild("创建")
-    if not chuangjian then return nil, nil, nil end
+    if not chuangjian then return nil, nil end
     
     local numVal = tonumber(numKey)
-    local checkNames = {
-        tostring(numKey),
-        string.format("%02d", numVal or 0),
-        tostring(numVal or "")
+    local numStr = tostring(numKey)
+    local num02 = numVal and string.format("%02d", numVal) or numStr
+
+    -- 1. Direct FindFirstChild (0% CPU cost - Instant O(1))
+    local candidates = {
+        chuangjian:FindFirstChild(numStr),
+        chuangjian:FindFirstChild(num02),
+        chuangjian:FindFirstChild("0" .. numStr),
+        chuangjian:FindFirstChild("Stage" .. numStr),
+        chuangjian:FindFirstChild("Stage " .. numStr),
+        chuangjian:FindFirstChild("Stage" .. num02)
     }
-
-    local function checkModel(m)
-        if not m:IsA("Model") then return nil, nil, nil end
-        local mName = m.Name
-        local isMatch = false
-        for _, cn in ipairs(checkNames) do
-            if mName == cn or mName:lower() == cn:lower() then
-                isMatch = true
-                break
+    for _, cand in ipairs(candidates) do
+        if cand and cand:IsA("Model") then
+            local pos = getModelPosition(cand)
+            if pos and not isPromptAlreadyStolen(cand, pos) then
+                return cand, pos
             end
         end
-        if not isMatch and numVal and tonumber(mName) == numVal then
-            isMatch = true
-        end
-        
-        if isMatch then
-            -- Cari ProximityPrompt di dalam Model atau anaknya
-            local prompt = m:FindFirstChildWhichIsA("ProximityPrompt", true)
-            if not prompt then
-                local pivot = m:GetPivot().Position
-                for _, desc in ipairs(chuangjian:GetDescendants()) do
-                    if desc:IsA("ProximityPrompt") and desc.Enabled then
-                        local pPos = desc.Parent and (desc.Parent:IsA("BasePart") and desc.Parent.Position or (desc.Parent:IsA("Model") and desc.Parent:GetPivot().Position))
-                        if pPos and (pPos - pivot).Magnitude <= 15 then
-                            prompt = desc
-                            break
-                        end
-                    end
-                end
-            end
-            
-            if prompt and prompt.Enabled and not isPromptAlreadyStolen(prompt) then
-                local pos = (prompt.Parent and prompt.Parent:IsA("BasePart") and prompt.Parent.Position) or m:GetPivot().Position
-                if not isPromptAlreadyStolen(prompt, pos) then
-                    return pos, prompt, mName
-                end
-            end
-        end
-        return nil, nil, nil
     end
 
-    -- 1. Scan direct children di workspace.创建
+    -- 2. Scan HANYA direct children dari chuangjian (Tanpa GetDescendants bertingkat!)
     for _, child in ipairs(chuangjian:GetChildren()) do
-        local p, pr, mn = checkModel(child)
-        if p and pr then return p, pr, mn end
-    end
-    -- 2. Scan deeper descendants
-    for _, desc in ipairs(chuangjian:GetDescendants()) do
-        if desc:IsA("Model") and desc.Parent ~= chuangjian then
-            local p, pr, mn = checkModel(desc)
-            if p and pr then return p, pr, mn end
+        if child:IsA("Model") then
+            local mName = child.Name
+            if mName == numStr or mName == num02 or tonumber(mName) == numVal or string.find(mName, numStr) then
+                local pos = getModelPosition(child)
+                if pos and not isPromptAlreadyStolen(child, pos) then
+                    return child, pos
+                end
+            end
         end
     end
 
-    return nil, nil, nil
+    return nil, nil
 end
 
 local function getNextFrontSeedModel()
-    local groups = { "8", "9", "10", "11" }
+    local groups = { 8, 9, 10, 11 }
     local total = #groups
     for step = 0, total - 1 do
         local idx = ((frontModelCycleIndex - 1 + step) % total) + 1
         local numKey = groups[idx]
-        local pos, prompt, name = findFrontSeedModel(numKey)
-        if pos and prompt then
-            -- Ditemukan! Majukan giliran ke nomor model berikutnya
+        local model, pos = findFrontSeedModel(numKey)
+        if model and pos then
             frontModelCycleIndex = (idx % total) + 1
-            return pos, prompt, "Seed Model " .. tostring(name)
+            return model, pos, "Seed Model " .. tostring(numKey)
         end
     end
     return nil, nil, nil
@@ -1507,28 +1508,23 @@ local function returnToBaseWithMicroMove(customPos)
 end
 
 -- Flash Steal Routine Presisi: Tele Langsung ke Seed -> Klik E -> Langsung Balik Markas
-local function executeFlashStealDirect(targetPos, prompt)
+local function executeFlashStealDirect(targetPos, promptOrModel)
     local hrp = getHrp()
-    if not hrp or not targetPos or not prompt then return false end
+    if not hrp or not targetPos then return false end
     local char = LocalPlayer.Character
     local markas = getBasePosition()
 
-    -- 1. Lumpuhkan AI penjaga tanaman sebelum lompat
-    if config.antiGuardChase then
-        pacifyPlantGuards()
-    end
-
-    -- 2. Noclip karakter sementara agar tidak tertahan jeruji/rintangan
+    -- 1. Noclip karakter sementara agar tidak tertahan jeruji/rintangan
     if char then
-        for _, part in ipairs(char:GetDescendants()) do
+        for _, part in ipairs(char:GetChildren()) do
             if part:IsA("BasePart") then
                 part.CanCollide = false
             end
         end
     end
 
-    -- 3. Teleport LANGSUNG ke posisi bibit tersebut
-    local seedDropPos = targetPos + Vector3.new(0, 0.2, 0)
+    -- 2. Teleport LANGSUNG ke posisi bibit tersebut
+    local seedDropPos = targetPos + Vector3.new(0, 0.5, 0)
     if char then
         char:PivotTo(CFrame.new(seedDropPos))
     end
@@ -1539,20 +1535,70 @@ local function executeFlashStealDirect(targetPos, prompt)
     -- Beri jeda mikro 0.04s
     task.wait(0.04)
 
-    -- 4. Tekan ProximityPrompt 'E' dengan durasi validasi server (0.18s Handshake)
-    pcall(function() prompt.HoldDuration = 0 end)
-    if fireproximityprompt then
-        fireproximityprompt(prompt, 0)
+    -- 3. Cari ProximityPrompt di targetModel atau anaknya
+    local prompt = nil
+    if promptOrModel then
+        if promptOrModel:IsA("ProximityPrompt") then
+            prompt = promptOrModel
+        elseif promptOrModel:IsA("Model") or promptOrModel:IsA("BasePart") then
+            prompt = promptOrModel:FindFirstChildWhichIsA("ProximityPrompt", true)
+        end
     end
-    pcall(function() prompt:InputHoldBegin() end)
-    task.wait(0.18)
-    pcall(function() prompt:InputHoldEnd() end)
+
+    -- Fallback: Cari prompt terdekat di sekitar target (radius 15 studs)
+    if not prompt then
+        local chuangjian = workspace:FindFirstChild("创建")
+        if chuangjian then
+            for _, p in ipairs(chuangjian:GetChildren()) do
+                if p:IsA("ProximityPrompt") and p.Enabled then
+                    local pPos = p.Parent and (p.Parent:IsA("BasePart") and p.Parent.Position or (p.Parent:IsA("Model") and p.Parent:GetPivot().Position))
+                    if pPos and (pPos - seedDropPos).Magnitude <= 15 then
+                        prompt = p
+                        break
+                    end
+                elseif p:IsA("Model") then
+                    local subP = p:FindFirstChildWhichIsA("ProximityPrompt", true)
+                    if subP and subP.Enabled then
+                        local pPos = p:GetPivot().Position
+                        if (pPos - seedDropPos).Magnitude <= 15 then
+                            prompt = subP
+                            break
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    -- 4. Tekan ProximityPrompt 'E' dengan durasi validasi server
+    if prompt then
+        pcall(function() prompt.HoldDuration = 0 end)
+        if fireproximityprompt then
+            fireproximityprompt(prompt, 0)
+        end
+        pcall(function() prompt:InputHoldBegin() end)
+        task.wait(0.12)
+        pcall(function() prompt:InputHoldEnd() end)
+    end
+
+    -- Backup input simulasi tombol E untuk interaksi native Roblox
+    pcall(function()
+        local vim = game:GetService("VirtualInputManager")
+        vim:SendKeyEvent(true, Enum.KeyCode.E, false, game)
+        task.wait(0.08)
+        vim:SendKeyEvent(false, Enum.KeyCode.E, false, game)
+    end)
+
     task.wait(0.04)
 
-    -- Catat prompt sebagai stolen agar tidak spam ke target yang sama
-    markPromptAsStolen(prompt, targetPos)
+    -- Catat prompt / target sebagai stolen agar tidak spam ke target yang sama
+    if prompt then
+        markPromptAsStolen(prompt, targetPos)
+    elseif promptOrModel then
+        markPromptAsStolen(promptOrModel, targetPos)
+    end
 
-    -- 5. LANGSUNG TELEPORT SEKENCENG MUNGKIN BALIK KE MARKAS (Zero Delay)
+    -- 5. LANGSUNG TELEPORT SEKENCENG MUNGKIN BALIK KE MARKAS (-30.375, 1, 213.25)
     returnToBaseWithMicroMove(markas)
 
     -- 6. Equip bibit di tangan jika opsi aktif
@@ -1580,17 +1626,20 @@ registerThread(function()
             pcall(function()
                 local hrp = getHrp()
                 if hrp then
-                    -- Cari bibit target berikutnya yang SAAT INI TERSEDIA di arena
-                    local targetPos, targetPrompt, targetKey = getNextAvailableTargetSeed()
-
-                    -- HUKUM MUTLAK: HANYA TELEPORT JIKA BIBIT BENAR-BENAR ADA & PROMPT VALID!
-                    -- Jika tidak ada bibit di arena, script TETAP AMAN DI MARKAS (0% Blind Teleport)
-                    if targetPos and targetPrompt then
-                        executeFlashStealDirect(targetPos, targetPrompt)
-                    elseif config.smartWaitSeed then
-                        local markas = toVector3(config.customBasePos) or getBasePosition()
-                        if markas and (hrp.Position - markas).Magnitude > 20 then
-                            returnToBaseWithMicroMove(markas)
+                    -- 1. Prioritas Utama Sesuai Request Founder: Model 8 sampai 11 di folder 创建 bergantian
+                    local targetModel, targetPos, targetName = getNextFrontSeedModel()
+                    if targetModel and targetPos then
+                        executeFlashStealDirect(targetPos, targetModel)
+                    else
+                        -- 2. Fallback: Bibit target lainnya jika ada yang dipilih
+                        local fallbackPos, fallbackPrompt, fallbackKey = getNextAvailableTargetSeed()
+                        if fallbackPos and fallbackPrompt then
+                            executeFlashStealDirect(fallbackPos, fallbackPrompt)
+                        elseif config.smartWaitSeed then
+                            local markas = toVector3(config.customBasePos) or getBasePosition()
+                            if markas and (hrp.Position - markas).Magnitude > 20 then
+                                returnToBaseWithMicroMove(markas)
+                            end
                         end
                     end
                 end
