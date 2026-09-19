@@ -401,20 +401,12 @@ local function equipToolByName(keyword)
 end
 
 -- Comprehensive Rock & Ore Solid Collision Restorer (Guarantees Rocks NEVER Become Ghost/Noclip & NEVER Strips Ore Tags)
+-- Comprehensive Rock & Ore Solid Collision Restorer (Zero Ghost/Noclip Parts)
 local function restoreAllRockCollisions()
     pcall(function()
         local oresFolder = workspace:FindFirstChild("Ores")
         if oresFolder then
             for _, node in ipairs(oresFolder:GetDescendants()) do
-                if (node:IsA("BasePart") or node:IsA("Model")) and node.Parent ~= oresFolder then
-                    local isNode = node.Name:find("Node") or node.Name:find("Ore") or node.Name:find("Rock")
-                    local hasHealth = node:FindFirstChild("Health") or node:GetAttribute("Health")
-                    if hasHealth or isNode then
-                        if not CollectionService:HasTag(node, "Ore") and not CollectionService:HasTag(node, "RockWall") then
-                            pcall(function() CollectionService:AddTag(node, "Ore") end)
-                        end
-                    end
-                end
                 if node:IsA("BasePart") then
                     if node.Name == "Rock" or node.Name == "Ore" or node:IsA("MeshPart") then
                         node.CanCollide = true
@@ -441,47 +433,13 @@ end
 
 restoreAllRockCollisions()
 
--- Robust Target Resolvers (Guarantees Only Valid Top-Level Server Targets are Passed — Zero Raw MeshParts)
-local function resolveOreNode(inst)
-    if not inst or not inst.Parent then return nil end
-    if CollectionService:HasTag(inst, "Ore") or CollectionService:HasTag(inst, "RockWall") then
-        return inst
-    end
-    if inst:FindFirstChild("Health") then
-        return inst
-    end
-    local cur = inst
-    while cur and cur ~= workspace do
-        if CollectionService:HasTag(cur, "Ore") or CollectionService:HasTag(cur, "RockWall") or cur:FindFirstChild("Health") then
-            return cur
-        end
-        cur = cur.Parent
-    end
-    return inst
-end
-
-local function resolveEnemyModel(inst)
-    if not inst or not inst.Parent then return nil end
-    local npcFolder = workspace:FindFirstChild("Npc")
-    if not npcFolder then return inst end
-    if inst.Parent == npcFolder then
-        return inst
-    end
-    local cur = inst
-    while cur and cur ~= workspace do
-        if cur.Parent == npcFolder then
-            return cur
-        end
-        cur = cur.Parent
-    end
-    return inst
-end
-
--- Autonomous Tool Swing Executor (Independent from Player Manual Mouse Click)
+-- ====================================================================
+-- ⚔️ MASTER PUKUL BIASA / NORMAL SWING EXECUTOR (ZERO CUSTOM INSTANCES)
+-- ====================================================================
 local lastSwingClock = 0
 local cachedTracks = {}
 
-local function executeToolSwing(toolType, targets, targetPos)
+local function executeToolSwing(toolType, targetPos)
     local char = LocalPlayer.Character
     if not char then return end
     local root = char and char:FindFirstChild("HumanoidRootPart")
@@ -490,7 +448,7 @@ local function executeToolSwing(toolType, targets, targetPos)
     -- Dynamic cadence matching weapon attack speed
     local equippedTool = char:FindFirstChildOfClass("Tool")
     local atkSpeed = (equippedTool and equippedTool:GetAttribute("AttackSpeed")) or 1.0
-    local swingInterval = math.clamp(1 / math.max(0.2, atkSpeed), 0.25, 0.9)
+    local swingInterval = math.clamp(1 / math.max(0.2, atkSpeed), 0.20, 0.8)
 
     if os.clock() - lastSwingClock < swingInterval then
         return
@@ -498,6 +456,7 @@ local function executeToolSwing(toolType, targets, targetPos)
     lastSwingClock = os.clock()
 
     -- 1. Collision-Safe Face Direction & Horizontal Alignment
+    -- Karakter menghadap langsung ke batu/musuh sehingga kerucut MeleeSwingBounds mengarah tepat ke target
     if targetPos then
         pcall(function()
             local curPos = root.Position
@@ -508,9 +467,7 @@ local function executeToolSwing(toolType, targets, targetPos)
         end)
     end
 
-    -- 2. Visual character swing animation
-    -- Default: Silent Damage (Diem Tapi Damage) -> Karakter tetap tenang tanpa animasi ayunan liar di rekaman video.
-    -- Jika Silent Damage dimatikan (false): mainkan animasi normal 1.0x speed yang di-cache.
+    -- 2. Visual Character Swing Animation (Jika Silent Damage mati)
     if not Flags.SilentDamage then
         pcall(function()
             local hum = char:FindFirstChildOfClass("Humanoid")
@@ -543,88 +500,50 @@ local function executeToolSwing(toolType, targets, targetPos)
         end)
     end
 
-    -- 3. SANITIZED TARGET GATHERING (ONLY TOP-LEVEL ORE / NPC INSTANCES — ZERO RAW SUB-PARTS)
-    local cleanTargets = {}
-    local seen = {}
-
-    local function addClean(inst)
-        if not inst or typeof(inst) ~= "Instance" or not inst.Parent then return end
-        local valid = nil
-        if toolType == "Pickaxe" then
-            valid = resolveOreNode(inst)
-        elseif toolType == "Sword" then
-            valid = resolveEnemyModel(inst)
-        else
-            valid = inst
-        end
-        if valid and not seen[valid] then
-            seen[valid] = true
-            table.insert(cleanTargets, valid)
-        end
-    end
-
-    for _, t in ipairs(targets) do
-        addClean(t)
-    end
-
-    -- Overlap query using exact game MeleeSwingBounds box in front of player
-    pcall(function()
-        local pivot = char:GetPivot()
-        local range = (equippedTool and equippedTool:GetAttribute("Range")) or 16.0
-        local overlap = OverlapParams.new()
-        overlap.FilterType = Enum.RaycastFilterType.Exclude
-        overlap.FilterDescendantsInstances = { char }
-        local swingCF = pivot * CFrame.new(0, 0, -range / 4) + Vector3.new(0, 1.5, 0)
-        local boxParts = workspace:GetPartBoundsInBox(swingCF, Vector3.new(range, range, range), overlap)
-        for _, bp in ipairs(boxParts) do
-            if toolType == "Pickaxe" then
-                local ore = resolveOreNode(bp)
-                if ore then
-                    addClean(ore)
-                end
-            elseif toolType == "Sword" then
-                local enemy = resolveEnemyModel(bp)
-                if enemy then
-                    addClean(enemy)
-                end
-            end
-        end
-    end)
-
-    if #cleanTargets == 0 then return end
-
-    -- 4. CLEAN DIRECT REMOTE DAMAGE DELIVERY (NO CLIENT HIJACKING / ZERO RATE-LIMIT VIOLATION)
-    local sent = false
-    -- Pathway A: Official Knit ToolController ActiveTool Execution
+    -- 3. PUKUL BIASA METODE 1: ActiveTool:Swing() (Official Native Pickaxe / Sword Engine)
+    -- Ini memanggil fungsi :Swing() asli game (Pickaxe.lua / Sword.lua).
+    -- Game sendiri yang menghitung MeleeSwingBounds dan mendeteksi instans Ore / Musuh yang valid secara 100% native!
     pcall(function()
         local tc = Knit and Knit.GetController and Knit.GetController("ToolController")
         local active = tc and tc.ActiveTool
-        if active and active.Execute then
-            active.Execute:Fire({ "Swing", cleanTargets })
-            sent = true
+        if active then
+            if active.Range == nil or (typeof(active.Range) == "number" and active.Range <= 0) then
+                active.Range = (equippedTool and equippedTool:GetAttribute("Range")) or 25
+            end
+            if active.LastSwing then
+                active.LastSwing = 0 -- Reset cooldown agar ayunan langsung dieksekusi
+            end
+            if active.Swing then
+                active:Swing()
+            end
         end
     end)
 
-    -- Pathway B: Fallback to ToolService Update if ActiveTool not initialized
-    if not sent then
-        pcall(function()
-            local ts = getKnitService("ToolService")
-            if ts and ts.Update then
-                ts.Update:Fire({ "Swing", cleanTargets })
-                sent = true
-            end
-        end)
-    end
+    -- 4. PUKUL BIASA METODE 2: Tool:Activate() (Roblox Standard Tool Activation)
+    pcall(function()
+        if equippedTool and equippedTool:IsA("Tool") then
+            equippedTool:Activate()
+        end
+    end)
 
-    -- Pathway C: Direct RemoteEvent fallback
-    if not sent then
-        pcall(function()
-            local tsRE, _ = getToolServiceRemote()
-            if tsRE and tsRE:IsA("RemoteEvent") then
-                tsRE:FireServer({ "Swing", cleanTargets })
-            end
-        end)
-    end
+    -- 5. PUKUL BIASA METODE 3: Virtual Input Mouse Click Simulation (Native Primary Attack)
+    -- Meniru klik mouse kiri (Left Click / Primary Attack) pemain secara presisi
+    pcall(function()
+        local vu = game:GetService("VirtualUser")
+        if vu then
+            vu:Button1Down(Vector2.new(0, 0))
+            task.wait(0.01)
+            vu:Button1Up(Vector2.new(0, 0))
+        end
+    end)
+    pcall(function()
+        local vim = game:GetService("VirtualInputManager")
+        if vim then
+            vim:SendMouseButtonEvent(0, 0, 0, true, game, 0)
+            task.wait(0.01)
+            vim:SendMouseButtonEvent(0, 0, 0, false, game, 0)
+        end
+    end)
 end
 
 -- [3] CONFIGURATION FILE SYSTEM (FLOWER SHOP MASTER STANDARD)
@@ -1725,7 +1644,7 @@ local function scanMinableTargets(maxRange)
 
     local function addTargetNode(node, preferredPart)
         if not node then return end
-        local rootNode = resolveOreNode(node) or node
+        local rootNode = node
         if seen[rootNode] then return end
 
         local healthVal = nil
@@ -1737,11 +1656,6 @@ local function scanMinableTargets(maxRange)
         end
         if healthVal and healthVal <= 0 then
             return
-        end
-
-        -- Ensure rootNode has client-side tag "Ore" so Pickaxe findTaggedAncestor recognizes it
-        if not CollectionService:HasTag(rootNode, "Ore") and not CollectionService:HasTag(rootNode, "RockWall") then
-            pcall(function() CollectionService:AddTag(rootNode, "Ore") end)
         end
 
         local pos = (preferredPart and preferredPart:IsA("BasePart") and preferredPart.Position)
@@ -1886,11 +1800,11 @@ registerThread(function()
                         currentCombatTarget = nil
                     end
 
-                    -- A. Hostile Enemy in range -> Fight with Sword
+                    -- A. Hostile Enemy in range -> Fight with Sword (Pukul Biasa)
                     if Flags.AutoKillHostile and bestEnemy and bestPart and not isTeleporting then
                         equipToolByName("Sword")
-                        executeToolSwing("Sword", { bestEnemy }, bestPart.Position)
-                    -- B. Mine Rocks/Ores -> Mine with Pickaxe
+                        executeToolSwing("Sword", bestPart.Position)
+                    -- B. Mine Rocks/Ores -> Mine with Pickaxe (Pukul Biasa)
                     elseif Flags.AutoMineAura then
                         local targets = scanMinableTargets(Flags.MineRadius or 60)
                         if #targets > 0 then
@@ -1904,7 +1818,7 @@ registerThread(function()
                             -- Pickaxe melee reach extends up to 14 studs from surface or 18 studs from center
                             if surfaceDist <= 14.0 or centerDist <= 18.0 then
                                 equipToolByName("Pickaxe")
-                                executeToolSwing("Pickaxe", { best.Node }, best.Position)
+                                executeToolSwing("Pickaxe", best.Position)
                             end
                         else
                             currentMineTarget = nil
