@@ -773,9 +773,29 @@ local function pickupReadyCrops()
     end)
 end
 
--- Helper: Baca sisa waktu reset bibit arena (ServerInfo / Level Reset Timer)
+-- [4.8] ⏱️ ARENA RESET TIME ENGINE (RESET TIME: MM:SS)
+local cachedResetLabel = nil
+local lastResetScanTick = 0
+local stolenSeedsHistory = {}
+local lastResetCountdown = -1
+
+-- Helper: Baca sisa waktu reset bibit arena (RESET TIME: 00:38 / ServerInfo / Level Reset Timer)
 local function getArenaResetCountdown()
     local rem = nil
+    
+    -- 1. Baca cepat dari cached label (0ms Instant!)
+    if cachedResetLabel and cachedResetLabel.Parent and cachedResetLabel:IsA("TextLabel") then
+        local txt = cachedResetLabel.Text
+        local m, s = string.match(txt, "(%d+):(%d+)")
+        if m and s and not string.find(txt, "d") then
+            local sec = (tonumber(m) * 60) + tonumber(s)
+            if sec >= 0 and sec < 1800 then
+                return sec, string.format("%02d:%02d", tonumber(m), tonumber(s))
+            end
+        end
+    end
+
+    -- 2. Coba baca dari ServerInfo.Gp_Time jika ada
     pcall(function()
         local sInfo = workspace:FindFirstChild("ServerInfo", true)
         if sInfo then
@@ -785,95 +805,139 @@ local function getArenaResetCountdown()
             end
         end
     end)
-    if rem then return rem end
-    
-    local cachedResetLabel = nil
-    local lastLabelScan = 0
-    pcall(function()
-        if cachedResetLabel and cachedResetLabel.Parent and cachedResetLabel:IsA("TextLabel") and cachedResetLabel.Visible then
-            local m, s = string.match(cachedResetLabel.Text, "(%d+):(%d+)")
-            if m and s then
-                local sec = (tonumber(m) * 60) + tonumber(s)
-                if sec >= 0 and sec < 1800 then
-                    rem = sec
-                    return
-                end
-            end
-        end
-        
-        local now = tick()
-        if now - lastLabelScan > 2.0 then
-            lastLabelScan = now
+    if rem then
+        local mm = math.floor(rem / 60)
+        local ss = rem % 60
+        return rem, string.format("%02d:%02d", mm, ss)
+    end
+
+    -- 3. Scan PlayerGui secara terarah (Prioritas pGui.提示.Buff.重置时间 yang memuat RESET TIME)
+    local now = tick()
+    if now - lastResetScanTick > 1.0 or not cachedResetLabel then
+        lastResetScanTick = now
+        pcall(function()
             local pGui = LocalPlayer:FindFirstChildOfClass("PlayerGui")
-            if pGui then
-                -- Check direct containers first
-                local candidateLabels = {}
-                local main01 = pGui:FindFirstChild("Main01")
-                local promptGui = pGui:FindFirstChild("提示")
-                if main01 then
-                    for _, d in ipairs(main01:GetDescendants()) do
-                        if d:IsA("TextLabel") and d.Visible and string.find(d.Text, ":") then
-                            table.insert(candidateLabels, d)
-                        end
-                    end
-                end
-                if promptGui then
-                    for _, d in ipairs(promptGui:GetDescendants()) do
-                        if d:IsA("TextLabel") and d.Visible and string.find(d.Text, ":") then
-                            table.insert(candidateLabels, d)
-                        end
-                    end
-                end
-                if #candidateLabels == 0 then
-                    for _, d in ipairs(pGui:GetDescendants()) do
-                        if d:IsA("TextLabel") and d.Visible and string.find(d.Text, ":") then
-                            table.insert(candidateLabels, d)
-                        end
-                    end
-                end
-                
-                for _, lbl in ipairs(candidateLabels) do
-                    local txt = lbl.Text:lower()
-                    if string.find(txt, "reset") or string.find(txt, "time") or string.find(txt, "重置") then
-                        local m, s = string.match(lbl.Text, "(%d+):(%d+)")
-                        if m and s then
-                            local sec = (tonumber(m) * 60) + tonumber(s)
-                            if sec >= 0 and sec < 1800 then
-                                cachedResetLabel = lbl
-                                rem = sec
+            if not pGui then return end
+
+            local tiShi = pGui:FindFirstChild("提示")
+            if tiShi then
+                -- Cari frame 重置时间 di Buff
+                local resetFrame = tiShi:FindFirstChild("重置时间", true)
+                if resetFrame then
+                    for _, d in ipairs(resetFrame:GetDescendants()) do
+                        if d:IsA("TextLabel") and d.Visible then
+                            local txt = d.Text
+                            local m, s = string.match(txt, "(%d+):(%d+)")
+                            if m and s and not string.find(txt, "d") and txt ~= "RESET TIME:" then
+                                cachedResetLabel = d
+                                rem = (tonumber(m) * 60) + tonumber(s)
                                 return
                             end
                         end
                     end
                 end
-            end
-        end
-    end)
-    return rem
-end
 
--- Riwayat bibit yang telah dicuri dalam 1 babak (Mendukung borong semua 5 bibit di Stage 10 satu per satu)
-local stolenSeedsHistory = {}
-local lastResetCountdown = -1
+                -- Scan label yang memuat teks RESET TIME
+                for _, d in ipairs(tiShi:GetDescendants()) do
+                    if d:IsA("TextLabel") and d.Visible then
+                        local txt = d.Text
+                        if string.find(txt:upper(), "RESET TIME") then
+                            local m, s = string.match(txt, "(%d+):(%d+)")
+                            if m and s and not string.find(txt, "d") then
+                                cachedResetLabel = d
+                                rem = (tonumber(m) * 60) + tonumber(s)
+                                return
+                            end
+                            local anc = d:FindFirstAncestor("重置时间") or d:FindFirstAncestor("Buff") or d.Parent
+                            if anc then
+                                for _, sub in ipairs(anc:GetDescendants()) do
+                                    if sub:IsA("TextLabel") and sub.Visible and sub ~= d then
+                                        local sm, ss_val = string.match(sub.Text, "(%d+):(%d+)")
+                                        if sm and ss_val and not string.find(sub.Text, "d") then
+                                            cachedResetLabel = sub
+                                            rem = (tonumber(sm) * 60) + tonumber(ss_val)
+                                            return
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+
+            -- 4. Fallback scan pGui.Main01 / Main jika di pGui.提示 belum ketemu
+            if not rem then
+                local otherGuis = { pGui:FindFirstChild("Main01"), pGui:FindFirstChild("Main"), pGui:FindFirstChild("HUD") }
+                for _, ogui in ipairs(otherGuis) do
+                    if ogui then
+                        for _, d in ipairs(ogui:GetDescendants()) do
+                            if d:IsA("TextLabel") and d.Visible then
+                                local txt = d.Text
+                                if string.find(txt:upper(), "RESET TIME") then
+                                    local m, s = string.match(txt, "(%d+):(%d+)")
+                                    if m and s and not string.find(txt, "d") then
+                                        cachedResetLabel = d
+                                        rem = (tonumber(m) * 60) + tonumber(s)
+                                        return
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+    end
+
+    if rem then
+        local mm = math.floor(rem / 60)
+        local ss = rem % 60
+        return rem, string.format("%02d:%02d", mm, ss)
+    end
+
+    return nil, nil
+end
 
 local function checkAndClearResetHistory()
     local curCountdown = getArenaResetCountdown()
     if curCountdown then
-        if lastResetCountdown ~= -1 and curCountdown > (lastResetCountdown + 4) then
-            -- Babak baru saja reset / bibit baru respawn, bersihkan riwayat agar bisa diborong lagi
+        -- Jika countdown timer mendekati 0 atau timer melompat naik (misal dari 2s kembali ke 60s/90s ronde baru):
+        if (lastResetCountdown ~= -1 and curCountdown > (lastResetCountdown + 4)) or curCountdown <= 1 then
+            -- Babak baru saja reset / bibit baru respawn, bersihkan riwayat agar bisa diborong lagi!
             stolenSeedsHistory = {}
+            frontModelCycleIndex = 1
         end
         lastResetCountdown = curCountdown
     end
 end
 
+-- Listener otomatis: Jika bibit baru ditambahkan ke folder 创建, langsung reset riwayat seketika!
+pcall(function()
+    local chuangjian = workspace:FindFirstChild("创建")
+    if chuangjian then
+        registerConnection(chuangjian.ChildAdded:Connect(function()
+            stolenSeedsHistory = {}
+            frontModelCycleIndex = 1
+        end))
+    end
+    registerConnection(workspace.ChildAdded:Connect(function(child)
+        if child.Name == "创建" then
+            registerConnection(child.ChildAdded:Connect(function()
+                stolenSeedsHistory = {}
+                frontModelCycleIndex = 1
+            end))
+        end
+    end))
+end)
+
 local function isPromptAlreadyStolen(p, pos)
     checkAndClearResetHistory()
-    if p and stolenSeedsHistory[p] and (tick() - stolenSeedsHistory[p]) < 25 then
+    if p and stolenSeedsHistory[p] and (tick() - stolenSeedsHistory[p]) < 5 then
         return true
     end
     if pos then
-        local posKey = tostring(math.floor(pos.X / 3.0)) .. "_" .. tostring(math.floor(pos.Z / 3.0))
+        local posKey = tostring(math.floor(pos.X / 2.5)) .. "_" .. tostring(math.floor(pos.Z / 2.5))
         if stolenSeedsHistory[posKey] and (tick() - stolenSeedsHistory[posKey]) < 4 then
             return true
         end
@@ -1361,6 +1425,18 @@ end
 -- Rotasi bergiliran (Round-Robin) mengambil model 8, 9, 10, 11 jika tersedia di folder 创建
 local frontModelCycleIndex = 1
 
+local function checkModelHasActivePrompt(cand)
+    if not cand then return nil, nil, nil end
+    local p = cand:FindFirstChildWhichIsA("ProximityPrompt", true)
+    if p and p.Enabled and p.Parent then
+        local pos = getModelPosition(cand) or (p.Parent and p.Parent:IsA("BasePart") and p.Parent.Position or p.Parent:GetPivot().Position)
+        if pos and not isPromptAlreadyStolen(cand, pos) and not isPromptAlreadyStolen(p, pos) then
+            return cand, pos, p
+        end
+    end
+    return nil, nil, nil
+end
+
 local function findFrontSeedModel(numKey)
     local chuangjian = workspace:FindFirstChild("创建")
     if not chuangjian then return nil, nil end
@@ -1380,21 +1456,21 @@ local function findFrontSeedModel(numKey)
     }
     for _, cand in ipairs(candidates) do
         if cand and cand:IsA("Model") then
-            local pos = getModelPosition(cand)
-            if pos and not isPromptAlreadyStolen(cand, pos) then
-                return cand, pos
+            local mdl, pos = checkModelHasActivePrompt(cand)
+            if mdl and pos then
+                return mdl, pos
             end
         end
     end
 
-    -- 2. Scan HANYA direct children dari chuangjian (Tanpa GetDescendants bertingkat!)
+    -- 2. Scan direct children dari chuangjian
     for _, child in ipairs(chuangjian:GetChildren()) do
         if child:IsA("Model") then
             local mName = child.Name
             if mName == numStr or mName == num02 or tonumber(mName) == numVal or string.find(mName, numStr) then
-                local pos = getModelPosition(child)
-                if pos and not isPromptAlreadyStolen(child, pos) then
-                    return child, pos
+                local mdl, pos = checkModelHasActivePrompt(child)
+                if mdl and pos then
+                    return mdl, pos
                 end
             end
         end
@@ -1415,7 +1491,65 @@ local function getNextFrontSeedModel()
             return model, pos, "Seed Model " .. tostring(numKey)
         end
     end
+
+    -- Tambahan Cerdas: Jika model angka 8..11 tidak bernama standar,
+    -- cari model apapun di chuangjian yang berada di area paling depan (Z < -4000) dengan prompt aktif
+    local chuangjian = workspace:FindFirstChild("创建")
+    if chuangjian then
+        for _, child in ipairs(chuangjian:GetChildren()) do
+            if child:IsA("Model") then
+                local mdl, pos = checkModelHasActivePrompt(child)
+                if mdl and pos and pos.Z < -4000 then
+                    return mdl, pos, "Front Arena Seed " .. child.Name
+                end
+            end
+        end
+    end
+
     return nil, nil, nil
+end
+
+-- Helper: Cek apakah seluruh 5 bibit paling depan BENAR-BENAR KOSONG (Anti-False Empty)
+-- Memeriksa apakah bibit masih ada di arena atau sudah diambil oleh pemain lain
+local function areAllFrontSeedsEmpty()
+    local chuangjian = workspace:FindFirstChild("创建")
+    
+    -- 1. Scan semua model di workspace.创建
+    if chuangjian then
+        for _, child in ipairs(chuangjian:GetChildren()) do
+            if child:IsA("Model") then
+                local p = child:FindFirstChildWhichIsA("ProximityPrompt", true)
+                if p and p.Enabled and p.Parent then
+                    local pos = getModelPosition(child) or (p.Parent and p.Parent:IsA("BasePart") and p.Parent.Position)
+                    if pos and pos.Z < -3500 then
+                        -- Ada bibit aktif di area depan (Stage 8/9/10)! Pasti TIDAK kosong!
+                        return false, child, p, pos
+                    end
+                    local mName = child.Name
+                    local nVal = tonumber(mName)
+                    if (nVal and nVal >= 8 and nVal <= 11) or string.find(mName, "8") or string.find(mName, "9") or string.find(mName, "10") or string.find(mName, "11") then
+                        return false, child, p, pos
+                    end
+                end
+            elseif child:IsA("ProximityPrompt") and child.Enabled and child.Parent then
+                local pPos = child.Parent:IsA("BasePart") and child.Parent.Position or (child.Parent:IsA("Model") and child.Parent:GetPivot().Position)
+                if pPos and pPos.Z < -3500 then
+                    return false, child.Parent, child, pPos
+                end
+            end
+        end
+    end
+
+    -- 2. Scan Top 5 Seeds (Lucifer Rose, Infernal Lily, Bloodthorn, Abyss Orchid, Underworld Flower)
+    for _, sInfo in ipairs(TOP5_SEEDS) do
+        local pos, p = findSeedPrompt(sInfo)
+        if pos and p and p.Enabled and p.Parent then
+            -- Bibit top 5 masih ada dan aktif!
+            return false, nil, p, pos
+        end
+    end
+
+    return true, nil, nil, nil
 end
 
 -- Rotasi Bergiliran (Round-Robin) untuk Multi-Select Bibit Target
@@ -1462,8 +1596,10 @@ local function returnToBaseWithMicroMove(customPos)
     if not hrp then return end
     local char = LocalPlayer.Character
     local hum = getHumanoid()
-    local rawMarkas = toVector3(customPos) or getBasePosition()
-    local floorPos = (config.customBasePos and rawMarkas) or getFloorPosition(rawMarkas) or rawMarkas
+
+    -- Koordinat baku Markas yang diberikan Founder: -30.375, 1, 213.25
+    local EXACT_MARKAS = Vector3.new(-30.375, 1, 213.25)
+    local destPos = toVector3(customPos) or (config.customBasePos and toVector3(config.customBasePos)) or EXACT_MARKAS
 
     -- 1. Pulihkan collision seluruh part seketika (kecuali HumanoidRootPart)
     if char then
@@ -1472,13 +1608,13 @@ local function returnToBaseWithMicroMove(customPos)
                 p.CanCollide = true
             end
         end
-        char:PivotTo(CFrame.new(floorPos))
+        char:PivotTo(CFrame.new(destPos))
     end
 
-    -- 2. Teleport LANGSUNG mendarat di daratan lantai
+    -- 2. Teleport PRESISI mendarat tepat di titik koordinat Markas tanpa drifting
     hrp.AssemblyLinearVelocity = Vector3.zero
     hrp.AssemblyAngularVelocity = Vector3.zero
-    hrp.CFrame = CFrame.new(floorPos)
+    hrp.CFrame = CFrame.new(destPos)
 
     if hum then
         hum.PlatformStand = false
@@ -1489,30 +1625,18 @@ local function returnToBaseWithMicroMove(customPos)
     if config.holdSeedInHand then
         equipStolenSeed()
     end
-
-    -- 4. Lari dikit kiri-kanan
-    if hum and hrp then
-        local camCF = workspace.CurrentCamera and workspace.CurrentCamera.CFrame or hrp.CFrame
-        local rightVec = camCF.RightVector
-        if rightVec.Magnitude < 0.1 then rightVec = Vector3.new(1, 0, 0) end
-        
-        hum:Move(rightVec, false)
-        task.wait(0.08)
-        hum:Move(-rightVec, false)
-        task.wait(0.08)
-        hum:Move(Vector3.zero, false)
-    end
     
     hrp.AssemblyLinearVelocity = Vector3.zero
     hrp.AssemblyAngularVelocity = Vector3.zero
 end
 
--- Flash Steal Routine Presisi: Tele Langsung ke Seed -> Klik E -> Langsung Balik Markas
+-- Flash Steal Routine Presisi: Tele Langsung ke Seed -> Interaksi Sampai Bibit Terambil -> Balik Markas Presisi
 local function executeFlashStealDirect(targetPos, promptOrModel)
     local hrp = getHrp()
     if not hrp or not targetPos then return false end
     local char = LocalPlayer.Character
-    local markas = getBasePosition()
+    local EXACT_MARKAS = Vector3.new(-30.375, 1, 213.25)
+    local markas = (config.customBasePos and toVector3(config.customBasePos)) or EXACT_MARKAS
 
     -- 1. Noclip karakter sementara agar tidak tertahan jeruji/rintangan
     if char then
@@ -1532,73 +1656,123 @@ local function executeFlashStealDirect(targetPos, promptOrModel)
     hrp.AssemblyAngularVelocity = Vector3.zero
     hrp.CFrame = CFrame.new(seedDropPos)
 
-    -- Beri jeda mikro 0.04s
-    task.wait(0.04)
-
-    -- 3. Cari ProximityPrompt di targetModel atau anaknya
-    local prompt = nil
-    if promptOrModel then
-        if promptOrModel:IsA("ProximityPrompt") then
-            prompt = promptOrModel
-        elseif promptOrModel:IsA("Model") or promptOrModel:IsA("BasePart") then
-            prompt = promptOrModel:FindFirstChildWhichIsA("ProximityPrompt", true)
+    -- Catat jumlah Tool awal pemain untuk memverifikasi bibit benar-benar masuk tas
+    local bp = LocalPlayer:FindFirstChildOfClass("Backpack")
+    local function countPlayerTools()
+        local c = 0
+        if bp then
+            for _, it in ipairs(bp:GetChildren()) do
+                if it:IsA("Tool") then c = c + 1 end
+            end
         end
+        if char then
+            for _, it in ipairs(char:GetChildren()) do
+                if it:IsA("Tool") then c = c + 1 end
+            end
+        end
+        return c
     end
+    local initialToolCount = countPlayerTools()
 
-    -- Fallback: Cari prompt terdekat di sekitar target (radius 15 studs)
-    if not prompt then
+    -- Helper pencari prompt interaktif
+    local function resolvePrompt()
+        if promptOrModel then
+            if promptOrModel:IsA("ProximityPrompt") and promptOrModel.Enabled and promptOrModel.Parent then
+                return promptOrModel
+            elseif promptOrModel:IsA("Model") or promptOrModel:IsA("BasePart") then
+                local p = promptOrModel:FindFirstChildWhichIsA("ProximityPrompt", true)
+                if p and p.Enabled and p.Parent then return p end
+            end
+        end
+
         local chuangjian = workspace:FindFirstChild("创建")
         if chuangjian then
             for _, p in ipairs(chuangjian:GetChildren()) do
                 if p:IsA("ProximityPrompt") and p.Enabled then
                     local pPos = p.Parent and (p.Parent:IsA("BasePart") and p.Parent.Position or (p.Parent:IsA("Model") and p.Parent:GetPivot().Position))
                     if pPos and (pPos - seedDropPos).Magnitude <= 15 then
-                        prompt = p
-                        break
+                        return p
                     end
                 elseif p:IsA("Model") then
                     local subP = p:FindFirstChildWhichIsA("ProximityPrompt", true)
                     if subP and subP.Enabled then
                         local pPos = p:GetPivot().Position
                         if (pPos - seedDropPos).Magnitude <= 15 then
-                            prompt = subP
-                            break
+                            return subP
                         end
                     end
                 end
             end
         end
+        return nil
     end
 
-    -- 4. Tekan ProximityPrompt 'E' dengan durasi validasi server
-    if prompt then
-        pcall(function() prompt.HoldDuration = 0 end)
-        if fireproximityprompt then
-            fireproximityprompt(prompt, 0)
+    -- 4. Siklus Interaksi Presisi: Tahan posisi di bibit & picu prompt sampai bibit BENAR-BENAR TERAMBIL!
+    -- Mencegah bug "kadang gak ke ambil udah balik duluan"
+    local seedAcquired = false
+    local startTime = tick()
+    local maxHoldTime = 1.3 -- Batas waktu toleransi hold validasi server
+
+    while (tick() - startTime) < maxHoldTime do
+        -- Kunci posisi karakter di titik bibit
+        if hrp then
+            hrp.AssemblyLinearVelocity = Vector3.zero
+            hrp.AssemblyAngularVelocity = Vector3.zero
+            hrp.CFrame = CFrame.new(seedDropPos)
         end
-        pcall(function() prompt:InputHoldBegin() end)
-        task.wait(0.12)
-        pcall(function() prompt:InputHoldEnd() end)
+
+        local prompt = resolvePrompt()
+        if prompt then
+            pcall(function() prompt.HoldDuration = 0 end)
+            if fireproximityprompt then
+                fireproximityprompt(prompt, 0)
+            end
+            pcall(function() prompt:InputHoldBegin() end)
+        end
+
+        -- Backup simulasi tombol E native Roblox
+        pcall(function()
+            local vim = game:GetService("VirtualInputManager")
+            vim:SendKeyEvent(true, Enum.KeyCode.E, false, game)
+        end)
+
+        task.wait(0.08)
+
+        -- Verifikasi apakah bibit SUDAH berhasil masuk ke tas/tangan
+        local currentToolCount = countPlayerTools()
+        if currentToolCount > initialToolCount then
+            seedAcquired = true
+            break
+        end
+
+        -- Cek jika prompt sudah selesai / hilang dari game
+        if prompt and (prompt.Parent == nil or not prompt.Enabled) then
+            seedAcquired = true
+            break
+        end
     end
 
-    -- Backup input simulasi tombol E untuk interaksi native Roblox
+    -- Lepaskan hold prompt dan tombol E secara bersih
+    pcall(function()
+        local prompt = resolvePrompt()
+        if prompt then prompt:InputHoldEnd() end
+    end)
     pcall(function()
         local vim = game:GetService("VirtualInputManager")
-        vim:SendKeyEvent(true, Enum.KeyCode.E, false, game)
-        task.wait(0.08)
         vim:SendKeyEvent(false, Enum.KeyCode.E, false, game)
     end)
 
-    task.wait(0.04)
-
-    -- Catat prompt / target sebagai stolen agar tidak spam ke target yang sama
-    if prompt then
-        markPromptAsStolen(prompt, targetPos)
-    elseif promptOrModel then
-        markPromptAsStolen(promptOrModel, targetPos)
+    -- Catat target sebagai stolen HANYA jika bibit benar-benar terkonfirmasi didapatkan!
+    -- Mencegah bug "dibilang kosong padahal masih ada di paling depan"
+    if seedAcquired then
+        if promptOrModel then
+            markPromptAsStolen(promptOrModel, targetPos)
+        end
     end
 
-    -- 5. LANGSUNG TELEPORT SEKENCENG MUNGKIN BALIK KE MARKAS (-30.375, 1, 213.25)
+    task.wait(0.04)
+
+    -- 5. LANGSUNG TELEPORT BALIK KE KOORDINAT MARKAS PASTI: -30.375, 1, 213.25
     returnToBaseWithMicroMove(markas)
 
     -- 6. Equip bibit di tangan jika opsi aktif
@@ -1619,33 +1793,93 @@ local function executeFlashStealDirect(targetPos, promptOrModel)
     return true
 end
 
--- [5] 🌱 AUTONOMOUS FLASH STEAL & FULL AFK SUITE (KOLEKSI TAMAN / TANGAN - TANPA JUAL)
+-- [5] 🌱 AUTONOMOUS FLASH STEAL & SMART ARENA RESET WAIT SUITE
 registerThread(function()
     while true do
         if config.autoSteal or config.autoFlashSteal or config.fullAfkLoop then
             pcall(function()
                 local hrp = getHrp()
                 if hrp then
-                    -- 1. Prioritas Utama Sesuai Request Founder: Model 8 sampai 11 di folder 创建 bergantian
+                    local EXACT_MARKAS = Vector3.new(-30.375, 1, 213.25)
+                    local markas = toVector3(config.customBasePos) or EXACT_MARKAS
+
+                    -- 1. Cari bibit terdepan yang saat ini aktif (Model 8..11 atau area paling depan)
                     local targetModel, targetPos, targetName = getNextFrontSeedModel()
+                    if not targetModel or not targetPos then
+                        targetPos, targetModel, targetName = getNextAvailableTargetSeed()
+                    end
+
                     if targetModel and targetPos then
+                        -- Bibit terdepan TERSEDIA! Langsung Flash Steal tanpa menunggu!
                         executeFlashStealDirect(targetPos, targetModel)
                     else
-                        -- 2. Fallback: Bibit target lainnya jika ada yang dipilih
-                        local fallbackPos, fallbackPrompt, fallbackKey = getNextAvailableTargetSeed()
-                        if fallbackPos and fallbackPrompt then
-                            executeFlashStealDirect(fallbackPos, fallbackPrompt)
-                        elseif config.smartWaitSeed then
-                            local markas = toVector3(config.customBasePos) or getBasePosition()
-                            if markas and (hrp.Position - markas).Magnitude > 20 then
+                        -- Periksa apakah 5 bibit terdepan BENAR-BENAR KOSONG (Anti-False Empty)
+                        local isAllEmpty, foundMdl, foundP, foundPos = areAllFrontSeedsEmpty()
+                        if not isAllEmpty and (foundPos or foundMdl or foundP) then
+                            -- Ternyata MASIH ADA bibit di depan! Langsung eksekusi tanpa bilang kosong!
+                            local actPos = foundPos or getModelPosition(foundMdl) or (foundP.Parent and (foundP.Parent:IsA("BasePart") and foundP.Parent.Position or foundP.Parent:GetPivot().Position))
+                            if actPos then
+                                executeFlashStealDirect(actPos, foundP or foundMdl)
+                            end
+                        else
+                            -- 100% PASTI KOSONG (Semua 5 bibit depan sudah terambil oleh kita atau scripter lain)
+                            -- Tetap aman di markas (-30.375, 1, 213.25) dan TUNGGU COOLDOWN RESET!
+                            if (hrp.Position - markas).Magnitude > 3 then
                                 returnToBaseWithMicroMove(markas)
+                            end
+
+                            -- Baca sisa waktu reset arena (RESET TIME: MM:SS)
+                            local remSec, timeStr = getArenaResetCountdown()
+
+                            -- Loop tunggu reset timer di markas (cek responsif setiap 0.4s)
+                            local waitStart = tick()
+                            while (config.autoSteal or config.autoFlashSteal or config.fullAfkLoop) do
+                                task.wait(0.4)
+
+                                -- 1. Cek seketika apakah ada bibit baru spawn di paling depan
+                                local emptyCheck, newMdl, newP, newPos = areAllFrontSeedsEmpty()
+                                if not emptyCheck then
+                                    -- Bibit baru telah spawn! Langsung keluar dari loop tunggu dan ambil!
+                                    stolenSeedsHistory = {}
+                                    frontModelCycleIndex = 1
+                                    break
+                                end
+
+                                -- 2. Cek apakah countdown reset sudah habis / reset ke babak baru
+                                local curSec, curStr = getArenaResetCountdown()
+                                if curSec and curSec <= 1 then
+                                    -- Countdown reset habis! Bibit baru segera muncul!
+                                    task.wait(0.8)
+                                    stolenSeedsHistory = {}
+                                    frontModelCycleIndex = 1
+                                    break
+                                end
+
+                                -- 3. Pastikan posisi karakter tetap terkunci di markas tanpa drifting
+                                local curHrp = getHrp()
+                                if curHrp and (curHrp.Position - markas).Magnitude > 3 then
+                                    returnToBaseWithMicroMove(markas)
+                                end
+
+                                -- 4. Rawat kebun di markas selagi menunggu cooldown reset
+                                if config.autoPickupReady or config.autoHarvest then
+                                    pickupReadyCrops()
+                                end
+                                if config.autoPlant then
+                                    plantHeldSeedAtGarden()
+                                end
+
+                                -- 5. Keamanan refresh loop berkala (maks 6 detik per evaluasi)
+                                if (tick() - waitStart) > 6 then
+                                    break
+                                end
                             end
                         end
                     end
                 end
             end)
         end
-        task.wait(math.clamp(config.stealDelay or 0.8, 0.2, 5.0))
+        task.wait(math.clamp(config.stealDelay or 0.6, 0.2, 5.0))
     end
 end)
 
