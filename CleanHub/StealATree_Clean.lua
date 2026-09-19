@@ -114,6 +114,44 @@ local SAPLING_AREAS = {
     ["Plains Sapling (Z: -247 • Starter)"]            = { pos = Vector3.new(-202.4, 15.0, -247.5), name = "Plains", area = "Plains", tier = 1 },
 }
 
+-- [1.6] 🌟 ALL STEALABLE TREES (URUTAN DARI PALING DEPAN / TERJAUH KE DEKAT • 1:1 STEAL A SEED STANDAR)
+local ALL_STEALABLE_TREES = {
+    -- 5 POHON PALING DEPAN RESMI FOUNDER (CLOCKWORK, VOID, COSMIC, SKYLANDS, CANDYLAND)
+    { key = "Clockwork",     displayName = "👑 Clockwork Sapling (Paling Depan • Z: -8150)", area = "Clockwork", pattern = "clockwork", z = -8150.0, pos = Vector3.new(-261.3, 35.7, -8150.0) },
+    { key = "Void",          displayName = "👑 Void Sapling (Paling Depan • Z: -5084)",      area = "Void",      pattern = "void",      z = -5084.6, pos = Vector3.new(-301.7, 16.0, -5084.6) },
+    { key = "Cosmic",        displayName = "👑 Cosmic Sapling (Paling Depan • Z: -4615)",    area = "Cosmic",    pattern = "cosmic",    z = -4615.2, pos = Vector3.new(-238.0, 14.2, -4615.2) },
+    { key = "Skylands",      displayName = "👑 Skylands Sapling (Paling Depan • Z: -3466)",  area = "Skylands",  pattern = "skyland",   z = -3466.8, pos = Vector3.new(-198.9, 14.2, -3466.8) },
+    { key = "Candyland",     displayName = "👑 Candyland Sapling (Paling Depan • Z: -3049)", area = "Candyland", pattern = "candy",     z = -3049.8, pos = Vector3.new(-353.4, 14.3, -3049.8) },
+
+    -- ZONA POHON BERIKUTNYA DI WORLD CORRIDOR
+    { key = "Frozen",        displayName = "❄️ Frozen Sapling (Z: -2465)",                  area = "Frozen",    pattern = "frozen",    z = -2465.7, pos = Vector3.new(-311.5, 14.3, -2465.7) },
+    { key = "Crystal Cavern",displayName = "💎 Crystal Cavern Sapling (Z: -2399)",          area = "Crystal Cavern", pattern = "crystal", z = -2399.6, pos = Vector3.new(-234.5, 22.0, -2399.6) },
+    { key = "Volcano",       displayName = "🌋 Volcano Sapling (Z: -2145)",                 area = "Volcano",   pattern = "volcano",   z = -2145.8, pos = Vector3.new(-289.3, 32.8, -2145.8) },
+    { key = "Desert",        displayName = "🏜️ Desert Sapling (Z: -2008)",                  area = "Desert",    pattern = "desert",    z = -2008.6, pos = Vector3.new(-335.1, 14.3, -2008.6) },
+    { key = "Abyssal Sea",   displayName = "🌊 Abyssal Sea Sapling (Z: -1618)",             area = "Abysall Sea", pattern = "abys",   z = -1618.2, pos = Vector3.new(-362.8, 18.9, -1618.2) },
+    { key = "Beach",         displayName = "🏖️ Beach Sapling (Z: -1191)",                   area = "Beach",     pattern = "beach",     z = -1191.5, pos = Vector3.new(-262.1, 14.3, -1191.5) },
+    { key = "Forest",        displayName = "🌲 Forest Sapling (Z: -971)",                   area = "Forest",    pattern = "forest",    z = -971.9,  pos = Vector3.new(-292.5, 14.8, -971.9) },
+    { key = "Flowerfield",   displayName = "🌸 Flowerfield Sapling (Z: -596)",              area = "Flowerfield", pattern = "flower",  z = -596.4,  pos = Vector3.new(-255.2, 14.3, -596.4) },
+    { key = "Plains",        displayName = "🌱 Plains Sapling (Z: -247)",                   area = "Plains",    pattern = "plain",     z = -247.5,  pos = Vector3.new(-202.4, 15.0, -247.5) },
+}
+
+local TOP5_TREES = { "Clockwork", "Void", "Cosmic", "Skylands", "Candyland" }
+
+local function getTreeKeyList()
+    local list = {}
+    for _, t in ipairs(ALL_STEALABLE_TREES) do
+        table.insert(list, t.key)
+    end
+    return list
+end
+
+local function getTreeDisplayLabel(k)
+    for _, t in ipairs(ALL_STEALABLE_TREES) do
+        if t.key == k or t.displayName == k then return t.displayName end
+    end
+    return tostring(k)
+end
+
 local TYCOON_LOCATIONS = {
     ["Tycoon 1 (Plot 1)"] = Vector3.new(-547.5, 39.2, -35.0),
     ["Tycoon 2 (Plot 2)"] = Vector3.new(35.5, 41.5, 26.5),
@@ -347,10 +385,27 @@ local config = {
     language              = currentLang,
     guiScale              = 1.0,
 
-    -- Auto Steal Saplings
+    -- Auto Steal Saplings (Standar 1:1 Steal A Seed)
     autoStealSaplings     = false,
-    stealMethod           = "Teleport", -- Default Teleport agar ProximityPrompt 100% valid jaraknya
+    stealMethod           = "Teleport",
     smartReturnPlot       = true,
+    only5FrontSaplings    = true, -- Default HANYA 5 Pohon Paling Depan (Clockwork, Void, Cosmic, Skylands, Candyland)
+    multiTargetTrees      = {
+        ["Clockwork"]     = true,
+        ["Void"]          = true,
+        ["Cosmic"]        = true,
+        ["Skylands"]      = true,
+        ["Candyland"]     = true,
+        ["Frozen"]        = false,
+        ["Crystal Cavern"]= false,
+        ["Volcano"]       = false,
+        ["Desert"]        = false,
+        ["Abyssal Sea"]   = false,
+        ["Beach"]         = false,
+        ["Forest"]        = false,
+        ["Flowerfield"]   = false,
+        ["Plains"]        = false,
+    },
     targetSaplingAreas    = {
         ["Clockwork"]     = true,
         ["Void"]          = true,
@@ -491,6 +546,60 @@ local function safeTeleport(cframeOrVec)
 end
 
 -- Teleport ke Plot Sendiri Resmi Server
+-- Cek apakah instance berada di dalam plot / kebun pemain (100% Proteksi Plot)
+local function isModelInAnyPlot(m)
+    if not m then return true end
+    local skriptF = workspace:FindFirstChild("SkriptF")
+    local plots = (skriptF and skriptF:FindFirstChild("Plots")) or workspace:FindFirstChild("Plots")
+    if plots and m:IsDescendantOf(plots) then
+        return true
+    end
+    if m:FindFirstAncestor("Plots") or m:FindFirstAncestor("PlotSkriptF") or m:FindFirstAncestor("PlantedTreeRuntime") or m:FindFirstAncestor("GrowLocation") then
+        return true
+    end
+    return false
+end
+
+-- Deteksi Tycoon / Kebun Milik Pemain Sendiri Secara Dinamis
+local function getOwnPlot()
+    local skriptF = workspace:FindFirstChild("SkriptF")
+    local plots = (skriptF and skriptF:FindFirstChild("Plots")) or workspace:FindFirstChild("Plots")
+    if not plots then return nil end
+    local char = LocalPlayer.Character
+    local root = getRoot(char)
+
+    for _, tycoon in ipairs(plots:GetChildren()) do
+        local ownerVal = tycoon:FindFirstChild("Owner") or tycoon:FindFirstChild("OwnerValue")
+        if ownerVal and (ownerVal.Value == LocalPlayer or ownerVal.Value == LocalPlayer.Name or ownerVal.Value == LocalPlayer.UserId) then
+            return tycoon
+        end
+        local ownerAttr = tycoon:GetAttribute("Owner") or tycoon:GetAttribute("OwnerUserId") or tycoon:GetAttribute("OwnerName")
+        if ownerAttr == LocalPlayer.Name or ownerAttr == LocalPlayer.UserId then
+            return tycoon
+        end
+    end
+
+    -- Fallback: Tycoon terdekat dari posisi saat ini (jika baru kembali ke base)
+    if root then
+        local bestTycoon = nil
+        local bestDist = 70
+        for _, tycoon in ipairs(plots:GetChildren()) do
+            local pPart = tycoon.PrimaryPart or tycoon:FindFirstChildWhichIsA("BasePart") or tycoon:GetPivot()
+            local pPos = typeof(pPart) == "CFrame" and pPart.Position or (pPart and pPart.Position)
+            if pPos then
+                local d = (pPos - root.Position).Magnitude
+                if d < bestDist then
+                    bestDist = d
+                    bestTycoon = tycoon
+                end
+            end
+        end
+        if bestTycoon then return bestTycoon end
+    end
+    return nil
+end
+
+-- Teleport ke Plot Sendiri Resmi Server
 local function returnToOwnPlot()
     local done = false
     pcall(function()
@@ -501,7 +610,13 @@ local function returnToOwnPlot()
         end
     end)
     if not done then
-        safeTeleport(TYCOON_LOCATIONS["Tycoon 1 (Plot 1)"] + Vector3.new(0, 3, 0))
+        local own = getOwnPlot()
+        if own then
+            local cf = own:GetPivot()
+            safeTeleport(cf.Position + Vector3.new(0, 3, 0))
+        else
+            safeTeleport(TYCOON_LOCATIONS["Tycoon 1 (Plot 1)"] + Vector3.new(0, 3, 0))
+        end
     end
 end
 
@@ -523,7 +638,6 @@ local function isPlayerCarryingSapling()
     return false
 end
 
--- Robust ProximityPrompt Solver (Mendukung Hold Duration 1.0 Detik & Executor Mobile/PC)
 local function firePrompt(prompt)
     if not prompt or not prompt:IsA("ProximityPrompt") then return false end
     if not prompt.Enabled then return false end
@@ -554,40 +668,43 @@ local function firePrompt(prompt)
     return ok
 end
 
--- [5] 🌟 AUTO STEAL SAPLINGS LOGIC (MULTI-FOLDER SCAN & 100% PICKUP VERIFICATION)
+-- [5] 🌟 AUTO STEAL SAPLINGS LOGIC (100% WILD ARENA ONLY • BEBAS KEBUN ORANG LAIN)
 local function getAllSaplingModels()
     local models = {}
     local seen = {}
     
     local function addModel(m)
         if m and m:IsA("Model") and not seen[m] and m.Name ~= "_CarriedSaplingVisual" then
-            seen[m] = true
-            table.insert(models, m)
+            -- Verifikasi ketat: DILARANG KERAS menyentuh bibit di dalam plot/kebun orang lain!
+            if not isModelInAnyPlot(m) then
+                seen[m] = true
+                table.insert(models, m)
+            end
         end
     end
     
-    -- 1. Folder SpawnedSaplings di SkriptF
-    local skriptF = workspace:FindFirstChild("SkriptF")
-    if skriptF then
-        local sp = skriptF:FindFirstChild("SpawnedSaplings")
-        if sp then
-            for _, c in ipairs(sp:GetChildren()) do addModel(c) end
-        end
-    end
-    -- 2. Folder SpawnedSaplings langsung di Workspace
+    -- 1. Folder SpawnedSaplings langsung di Workspace (Sumber utama wild saplings arena!)
     local directSpawned = workspace:FindFirstChild("SpawnedSaplings")
     if directSpawned then
         for _, c in ipairs(directSpawned:GetChildren()) do addModel(c) end
+    end
+    -- 2. Folder _LocalAreaSaplings di Workspace
+    local localSaplings = workspace:FindFirstChild("_LocalAreaSaplings")
+    if localSaplings then
+        for _, c in ipairs(localSaplings:GetChildren()) do addModel(c) end
     end
     -- 3. Folder Saplings di Workspace
     local directSaplings = workspace:FindFirstChild("Saplings")
     if directSaplings then
         for _, c in ipairs(directSaplings:GetChildren()) do addModel(c) end
     end
-    -- 4. Clockwork / Lost World Preview Saplings
-    local clockPreview = workspace:FindFirstChild("ClockworkGardenPreview")
-    if clockPreview and clockPreview:FindFirstChild("Saplings") then
-        for _, c in ipairs(clockPreview.Saplings:GetChildren()) do addModel(c) end
+    -- 4. SpawnedSaplings di SkriptF (Hanya folder SpawnedSaplings, BUKAN Plots!)
+    local skriptF = workspace:FindFirstChild("SkriptF")
+    if skriptF then
+        local sp = skriptF:FindFirstChild("SpawnedSaplings")
+        if sp then
+            for _, c in ipairs(sp:GetChildren()) do addModel(c) end
+        end
     end
     
     return models
@@ -605,7 +722,7 @@ local function runStealSaplingsCycle()
     if isPlayerCarryingSapling() then
         if config.smartReturnPlot then
             returnToOwnPlot()
-            task.wait(0.5)
+            task.wait(0.4)
             pcall(runAutoPlantAndGarden)
         end
         return
@@ -620,24 +737,50 @@ local function runStealSaplingsCycle()
         
         if prompt and prompt.Enabled then
             local modelName = model.Name
-            local allowed = false
-            for areaKey, isChecked in pairs(config.targetSaplingAreas) do
-                if isChecked and (string.find(modelName, areaKey) or string.find(prompt.ObjectText, areaKey)) then
-                    allowed = true
+            local objText = prompt.ObjectText or ""
+            
+            -- Cari kecocokan tipe pohon dengan ALL_STEALABLE_TREES
+            local matchedTreeInfo = nil
+            for _, tInfo in ipairs(ALL_STEALABLE_TREES) do
+                if string.find(modelName:lower(), tInfo.pattern) 
+                    or string.find(objText:lower(), tInfo.pattern) 
+                    or string.find(modelName:lower(), tInfo.key:lower()) then
+                    matchedTreeInfo = tInfo
                     break
                 end
             end
             
-            if allowed then
-                local promptPart = prompt.Parent
-                local pPos = (promptPart and promptPart:IsA("BasePart") and promptPart.Position) or (anchor and anchor.Position) or (model.PrimaryPart and model.PrimaryPart.Position) or (model:FindFirstChildWhichIsA("BasePart") and model:FindFirstChildWhichIsA("BasePart").Position)
-                if pPos then
-                    table.insert(candidates, {
-                        model = model,
-                        prompt = prompt,
-                        pos = pPos,
-                        dist = (pPos - root.Position).Magnitude
-                    })
+            if matchedTreeInfo then
+                local isTop5 = (matchedTreeInfo.key == "Clockwork" or matchedTreeInfo.key == "Void" or matchedTreeInfo.key == "Cosmic" or matchedTreeInfo.key == "Skylands" or matchedTreeInfo.key == "Candyland")
+                local isAllowed = false
+                
+                -- Evaluasi filter droplist multi-select & toggle 5 pohon terdepan
+                if config.only5FrontSaplings then
+                    if isTop5 and (config.multiTargetTrees[matchedTreeInfo.key] ~= false) then
+                        isAllowed = true
+                    end
+                else
+                    if config.multiTargetTrees[matchedTreeInfo.key] == true then
+                        isAllowed = true
+                    end
+                end
+                
+                if isAllowed then
+                    local promptPart = prompt.Parent
+                    local pPos = (promptPart and promptPart:IsA("BasePart") and promptPart.Position) 
+                        or (anchor and anchor.Position) 
+                        or (model.PrimaryPart and model.PrimaryPart.Position) 
+                        or (model:FindFirstChildWhichIsA("BasePart") and model:FindFirstChildWhichIsA("BasePart").Position)
+                    if pPos then
+                        table.insert(candidates, {
+                            model = model,
+                            prompt = prompt,
+                            pos = pPos,
+                            treeInfo = matchedTreeInfo,
+                            z = pPos.Z,
+                            dist = (pPos - root.Position).Magnitude
+                        })
+                    end
                 end
             end
         end
@@ -645,9 +788,9 @@ local function runStealSaplingsCycle()
 
     if #candidates == 0 then return end
 
-    -- Urutkan dari Z paling negatif (zona terdalam / Clockwork / Void / Cosmic paling langka duluan)
+    -- Urutkan dari Z paling negatif (Pohon paling depan / terjauh di arena selalu diprioritaskan!)
     table.sort(candidates, function(a, b)
-        return a.pos.Z < b.pos.Z
+        return a.z < b.z
     end)
 
     local target = candidates[1]
@@ -655,17 +798,24 @@ local function runStealSaplingsCycle()
 
     task.spawn(function()
         pcall(function()
-            -- WAJIB Teleport langsung ke posisi ProximityPrompt (radius 1-2 stud) agar server tidak menolak!
+            -- Noclip sementara agar karakter tidak tertabrak rintangan/dinding
+            for _, pt in ipairs(char:GetChildren()) do
+                if pt:IsA("BasePart") then
+                    pt.CanCollide = false
+                end
+            end
+
+            -- WAJIB Teleport langsung ke posisi ProximityPrompt (radius 1 stud)
             safeTeleport(target.pos + Vector3.new(0, 1.2, 0))
-            task.wait(0.2)
+            task.wait(0.15)
             
-            -- Bekukan velocity agar karakter diam stabil di prompt
+            -- Bekukan velocity agar karakter stabil di titik prompt
             if root then
                 root.AssemblyLinearVelocity = Vector3.zero
                 root.AssemblyAngularVelocity = Vector3.zero
             end
 
-            -- Eksekusi ProximityPrompt dengan durasi penuh
+            -- Eksekusi ProximityPrompt
             task.spawn(function()
                 firePrompt(target.prompt)
             end)
@@ -678,26 +828,33 @@ local function runStealSaplingsCycle()
                 end
             end)
 
-            -- Tunggu konfirmasi penerimaan bibit (maksimal 1.5 detik)
+            -- Tunggu konfirmasi penerimaan bibit (maksimal 1.4 detik)
             local startTime = tick()
             local gotSapling = false
-            while tick() - startTime < 1.6 do
+            while tick() - startTime < 1.4 do
                 if isPlayerCarryingSapling() or not target.model:IsDescendantOf(workspace) then
                     gotSapling = true
                     break
                 end
-                task.wait(0.1)
+                task.wait(0.08)
+            end
+
+            -- Pulihkan collision part tubuh
+            for _, pt in ipairs(char:GetChildren()) do
+                if pt:IsA("BasePart") and pt.Name ~= "HumanoidRootPart" then
+                    pt.CanCollide = true
+                end
             end
 
             if gotSapling then
-                showNotification("🌲 BROTHER HUB", "Berhasil mengambil bibit: " .. (target.prompt.ObjectText or target.model.Name), 3)
+                showNotification("🌲 BROTHER HUB", "Berhasil mengambil: " .. (target.treeInfo.displayName or target.model.Name), 3)
             end
 
             -- Kembali ke kebun sendiri dan langsung tanam
             if config.smartReturnPlot then
                 task.wait(0.2)
                 returnToOwnPlot()
-                task.wait(0.5)
+                task.wait(0.4)
                 pcall(runAutoPlantAndGarden)
             end
         end)
@@ -705,47 +862,8 @@ local function runStealSaplingsCycle()
     end)
 end
 
--- [6] 🌳 AUTO STEAL RIVAL PLANTED TREES (RIVAL PLOT HEIST)
 local function runStealRivalTreesCycle()
-    if not config.autoStealRivalTrees then return end
-    local skriptF = workspace:FindFirstChild("SkriptF")
-    local plotsFolder = skriptF and skriptF:FindFirstChild("Plots")
-    if not plotsFolder then return end
-
-    local root = getRoot()
-    if not root then return end
-
-    for _, tycoon in ipairs(plotsFolder:GetChildren()) do
-        if tycoon:IsA("Model") then
-            -- Check if not own tycoon
-            local plotSkriptF = tycoon:FindFirstChild("PlotSkriptF")
-            local plantedTrees = plotSkriptF and plotSkriptF:FindFirstChild("PlantedTreeRuntime")
-            if plantedTrees then
-                local claimable = plantedTrees:FindFirstChild("_ClaimableTrees")
-                local searchContainers = { claimable, plantedTrees }
-                for _, container in ipairs(searchContainers) do
-                    if container then
-                        for _, tree in ipairs(container:GetChildren()) do
-                            local prompt = tree:FindFirstChildWhichIsA("ProximityPrompt", true)
-                            if prompt and prompt.Enabled and (string.find(prompt.ActionText:lower(), "claim") or string.find(prompt.ActionText:lower(), "collect") or string.find(prompt.Name:lower(), "claim")) then
-                                local tPos = (tree:IsA("BasePart") and tree.Position) or (tree:IsA("Model") and tree:GetPivot().Position)
-                                if tPos then
-                                    safeTeleport(tPos + Vector3.new(0, 3, 0))
-                                    task.wait(0.2)
-                                    firePrompt(prompt)
-                                    task.wait(0.3)
-                                    if config.smartReturnPlot then
-                                        returnToOwnPlot()
-                                    end
-                                    return
-                                end
-                            end
-                        end
-                    end
-                end
-            end
-        end
-    end
+    return -- Dinonaktifkan total demi isolasi 100% dari kebun pemain lain
 end
 
 -- [7] 🌱 AUTO PLANT & GARDEN FARMING (100% PANEN & TANAM OTOMATIS)
@@ -830,28 +948,22 @@ local function runAutoPlantAndGarden()
         end
     end
 
-    -- 3. Auto Collect Mature Saplings & Trees di Kebun Sendiri (Teleport Presisi ke Pohon)
+    -- 3. Auto Collect Mature Saplings & Trees EKSKLUSIF di Kebun Sendiri (100% Bebas Salah Masuk Kebun Orang Lain!)
     if config.autoHarvestTrees then
-        local skriptF = workspace:FindFirstChild("SkriptF")
-        local plots = skriptF and skriptF:FindFirstChild("Plots")
-        if plots then
-            for _, tycoon in ipairs(plots:GetChildren()) do
-                local plotSk = tycoon:FindFirstChild("PlotSkriptF")
-                local planted = plotSk and plotSk:FindFirstChild("PlantedTreeRuntime")
-                if planted then
-                    for _, tree in ipairs(planted:GetChildren()) do
-                        local collectPrompt = tree:FindFirstChild("CollectSaplingPrompt", true) or tree:FindFirstChildWhichIsA("ProximityPrompt", true)
-                        if collectPrompt and collectPrompt.Enabled then
-                            local pPart = collectPrompt.Parent
-                            if pPart and pPart:IsA("BasePart") then
-                                -- Hanya panen jika pohon berada di radius kebun kita
-                                if (pPart.Position - root.Position).Magnitude < 100 then
-                                    safeTeleport(pPart.Position + Vector3.new(0, 1.5, 0))
-                                    task.wait(0.2)
-                                    firePrompt(collectPrompt)
-                                    task.wait(0.2)
-                                end
-                            end
+        local ownTycoon = getOwnPlot()
+        if ownTycoon then
+            local plotSk = ownTycoon:FindFirstChild("PlotSkriptF")
+            local planted = plotSk and plotSk:FindFirstChild("PlantedTreeRuntime")
+            if planted then
+                for _, tree in ipairs(planted:GetChildren()) do
+                    local collectPrompt = tree:FindFirstChild("CollectSaplingPrompt", true) or tree:FindFirstChildWhichIsA("ProximityPrompt", true)
+                    if collectPrompt and collectPrompt.Enabled then
+                        local pPart = collectPrompt.Parent
+                        if pPart and pPart:IsA("BasePart") then
+                            safeTeleport(pPart.Position + Vector3.new(0, 1.5, 0))
+                            task.wait(0.2)
+                            firePrompt(collectPrompt)
+                            task.wait(0.2)
                         end
                     end
                 end
@@ -1795,6 +1907,466 @@ local function addButton(parent, labelText, iconText, callback)
     return btn
 end
 
+-- [12.1] 💎 POPUP DROPDOWN MANAGER (1:1 MY FLOWER SHOP / STEAL A SEED EXACT STANDARD)
+local openDropdownId = nil
+local allDropdownClosers = {}
+
+local function closeOtherDropdowns(exceptId)
+    openDropdownId = exceptId
+    for id, closer in pairs(allDropdownClosers) do
+        if id ~= exceptId then pcall(closer) end
+    end
+end
+
+local dropdownBlockerFrame = nil
+local function dropdownBlocker()
+    if dropdownBlockerFrame and dropdownBlockerFrame.Parent then return dropdownBlockerFrame end
+    local b = Instance.new("TextButton")
+    b.Name = "BH_DropdownBlocker"
+    b.Size = UDim2.new(1, 0, 1, 0)
+    b.BackgroundTransparency = 1
+    b.Text = ""
+    b.Visible = false
+    b.ZIndex = 490
+    b.Parent = ScreenGui
+    b.MouseButton1Click:Connect(function()
+        closeOtherDropdowns(nil)
+        b.Visible = false
+    end)
+    dropdownBlockerFrame = b
+    return b
+end
+
+-- [12.2] 💎 POPUP DROPDOWN MENU ENGINE (SINGLE SELECT)
+local function createDropdown(parent, labelText, options, defaultVal, callback)
+    local selectedValue = tostring(defaultVal or (type(options) == "table" and options[1]) or "Auto")
+    local isOpen = false
+    local myId = {}
+
+    local ddRow = Instance.new("Frame")
+    ddRow.Size = UDim2.new(1, 0, 0, 38)
+    ddRow.BackgroundColor3 = THEME.Card
+    ddRow.BorderSizePixel = 0
+    ddRow.Parent = parent
+    ddRow.ZIndex = 5
+    corner(ddRow, 8)
+    local ddStroke = stroke(ddRow, THEME.Border, 1)
+
+    local ddLabel = Instance.new("TextLabel", ddRow)
+    ddLabel.Size = UDim2.new(0.42, 0, 1, 0)
+    ddLabel.Position = UDim2.new(0, 12, 0, 0)
+    ddLabel.BackgroundTransparency = 1
+    ddLabel.Font = THEME.Font
+    ddLabel.TextSize = 12
+    ddLabel.TextColor3 = THEME.Text
+    ddLabel.TextXAlignment = Enum.TextXAlignment.Left
+    ddLabel.TextTruncate = Enum.TextTruncate.AtEnd
+    ddLabel.Text = labelText or "Dropdown"
+    ddLabel.ZIndex = 6
+
+    local ddBtn = Instance.new("TextButton", ddRow)
+    ddBtn.Size = UDim2.new(0.55, -12, 0, 28)
+    ddBtn.Position = UDim2.new(0.45, 0, 0.5, -14)
+    ddBtn.BackgroundColor3 = THEME.Panel
+    ddBtn.AutoButtonColor = false
+    ddBtn.Text = ""
+    ddBtn.BorderSizePixel = 0
+    ddBtn.ZIndex = 6
+    corner(ddBtn, 6)
+    stroke(ddBtn, THEME.Border, 1)
+
+    local ddValLabel = Instance.new("TextLabel", ddBtn)
+    ddValLabel.Size = UDim2.new(1, -24, 1, 0)
+    ddValLabel.Position = UDim2.new(0, 8, 0, 0)
+    ddValLabel.BackgroundTransparency = 1
+    ddValLabel.Font = THEME.Font
+    ddValLabel.TextSize = 11
+    ddValLabel.TextColor3 = THEME.Title
+    ddValLabel.TextXAlignment = Enum.TextXAlignment.Left
+    ddValLabel.TextTruncate = Enum.TextTruncate.AtEnd
+    ddValLabel.Text = selectedValue
+    ddValLabel.ZIndex = 7
+
+    local ddArrow = Instance.new("TextLabel", ddBtn)
+    ddArrow.Size = UDim2.new(0, 18, 1, 0)
+    ddArrow.Position = UDim2.new(1, -20, 0, 0)
+    ddArrow.BackgroundTransparency = 1
+    ddArrow.Font = THEME.Font
+    ddArrow.TextSize = 11
+    ddArrow.TextColor3 = THEME.Title
+    ddArrow.Text = "▼"
+    ddArrow.ZIndex = 7
+
+    local listFrame = nil
+    local function getList()
+        if listFrame and listFrame.Parent then return listFrame end
+        local l = Instance.new("ScrollingFrame")
+        l.Name = "BH_DropdownList"
+        l.Size = UDim2.fromOffset(0, 0)
+        l.BackgroundColor3 = THEME.Panel
+        l.BorderSizePixel = 0
+        l.ScrollBarThickness = 4
+        l.ScrollBarImageColor3 = THEME.Title
+        l.Visible = false
+        l.ZIndex = 500
+        l.ClipsDescendants = true
+        corner(l, 8)
+        stroke(l, THEME.Title, 1.5)
+
+        local ll = Instance.new("UIListLayout", l)
+        ll.SortOrder = Enum.SortOrder.LayoutOrder
+        ll.Padding = UDim.new(0, 3)
+
+        local lp = Instance.new("UIPadding", l)
+        lp.PaddingTop = UDim.new(0, 4)
+        lp.PaddingBottom = UDim.new(0, 4)
+        lp.PaddingLeft = UDim.new(0, 4)
+        lp.PaddingRight = UDim.new(0, 4)
+
+        l.Parent = ScreenGui
+        listFrame = l
+        return l
+    end
+
+    local function closeMenu()
+        if not isOpen then return end
+        isOpen = false
+        ddArrow.Text = "▼"
+        ddStroke.Color = THEME.Border
+        if listFrame then listFrame.Visible = false end
+        dropdownBlocker().Visible = false
+    end
+    allDropdownClosers[myId] = closeMenu
+
+    local function openMenu()
+        closeOtherDropdowns(myId)
+        isOpen = true
+        ddArrow.Text = "▲"
+        ddStroke.Color = THEME.Title
+
+        local l = getList()
+        for _, ch in ipairs(l:GetChildren()) do
+            if ch:IsA("TextButton") then ch:Destroy() end
+        end
+
+        local curOptions = type(options) == "function" and options() or options
+        local itemH = 26
+        local maxVisible = 6
+        local totalH = math.min(#curOptions, maxVisible) * (itemH + 3) + 8
+
+        local absPos = ddBtn.AbsolutePosition
+        local absSize = ddBtn.AbsoluteSize
+        local s = (ScreenGui:FindFirstChildOfClass("UIScale") and ScreenGui:FindFirstChildOfClass("UIScale").Scale) or 1
+        l.Size = UDim2.fromOffset(math.max(absSize.X / s, 200), totalH)
+        l.Position = UDim2.fromOffset(absPos.X / s, (absPos.Y + absSize.Y + 4) / s)
+        l.CanvasSize = UDim2.new(0, 0, 0, #curOptions * (itemH + 3) + 8)
+
+        for i, opt in ipairs(curOptions) do
+            local optStr = tostring(opt)
+            local itemBtn = Instance.new("TextButton", l)
+            itemBtn.Size = UDim2.new(1, 0, 0, itemH)
+            itemBtn.BackgroundColor3 = (optStr == selectedValue) and THEME.Slot or THEME.Card
+            itemBtn.Text = "  " .. optStr
+            itemBtn.TextColor3 = (optStr == selectedValue) and THEME.Title or THEME.Text
+            itemBtn.Font = THEME.Font
+            itemBtn.TextSize = 11
+            itemBtn.TextXAlignment = Enum.TextXAlignment.Left
+            itemBtn.TextTruncate = Enum.TextTruncate.AtEnd
+            itemBtn.ZIndex = 502
+            corner(itemBtn, 4)
+
+            itemBtn.MouseButton1Click:Connect(function()
+                selectedValue = optStr
+                ddValLabel.Text = optStr
+                closeMenu()
+                if callback then callback(optStr) end
+                saveConfig()
+            end)
+        end
+
+        l.Visible = true
+        dropdownBlocker().Visible = true
+    end
+
+    ddBtn.MouseButton1Click:Connect(function()
+        if isOpen then closeMenu() else openMenu() end
+    end)
+
+    return { row = ddRow, getValue = function() return selectedValue end }
+end
+
+-- [12.3] 💎 MULTI-SELECT DROPLIST ENGINE (STANDAR 1:1 STEAL A SEED / MY FLOWER SHOP)
+local function makeMultiDropdown(parent, label, getItems, store, emptyTxt, mapValue, onChanged)
+    local con = Instance.new("Frame", parent)
+    con.Size = UDim2.new(1, 0, 0, 38)
+    con.BackgroundColor3 = THEME.Card
+    con.BorderSizePixel = 0
+    con.ZIndex = 5
+    corner(con, 8)
+    local cStroke = stroke(con, THEME.Border, 1)
+
+    local name = Instance.new("TextLabel", con)
+    name.Size = UDim2.new(0.48, -10, 1, 0)
+    name.Position = UDim2.new(0, 12, 0, 0)
+    name.BackgroundTransparency = 1
+    name.Text = label
+    name.TextColor3 = THEME.Text
+    name.Font = THEME.Font
+    name.TextSize = 12
+    name.TextXAlignment = Enum.TextXAlignment.Left
+    name.TextTruncate = Enum.TextTruncate.AtEnd
+    name.ZIndex = 6
+
+    local disp = Instance.new("TextLabel", con)
+    disp.Size = UDim2.new(0.48, -34, 1, 0)
+    disp.Position = UDim2.new(0.48, 0, 0, 0)
+    disp.BackgroundTransparency = 1
+    disp.TextColor3 = THEME.SubText
+    disp.Font = THEME.FontReg
+    disp.TextSize = 12
+    disp.TextXAlignment = Enum.TextXAlignment.Right
+    disp.TextTruncate = Enum.TextTruncate.AtEnd
+    disp.ZIndex = 6
+
+    local arr = Instance.new("TextLabel", con)
+    arr.Size = UDim2.new(0, 26, 1, 0)
+    arr.Position = UDim2.new(1, -28, 0, 0)
+    arr.BackgroundTransparency = 1
+    arr.Text = "▼"
+    arr.TextColor3 = THEME.Title
+    arr.Font = THEME.Font
+    arr.TextSize = 12
+    arr.ZIndex = 6
+
+    local trig = Instance.new("TextButton", con)
+    trig.Size = UDim2.new(1, 0, 1, 0)
+    trig.BackgroundTransparency = 1
+    trig.Text = ""
+    trig.ZIndex = 7
+
+    local list
+    local function getList()
+        if list and list.Parent then return list end
+        local l = Instance.new("ScrollingFrame")
+        l.Name = "BH_MultiDropdownList"
+        l.Size = UDim2.fromOffset(0, 0)
+        l.BackgroundColor3 = THEME.Panel
+        l.BorderSizePixel = 0
+        l.ScrollBarThickness = 4
+        l.ScrollBarImageColor3 = THEME.Title
+        l.Visible = false
+        l.ZIndex = 500
+        l.ClipsDescendants = true
+        corner(l, 8)
+        stroke(l, THEME.Title, 1.5)
+
+        local ll = Instance.new("UIListLayout", l)
+        ll.SortOrder = Enum.SortOrder.LayoutOrder
+        ll.Padding = UDim.new(0, 3)
+        local lp = Instance.new("UIPadding", l)
+        lp.PaddingTop = UDim.new(0, 4)
+        lp.PaddingLeft = UDim.new(0, 4)
+        lp.PaddingRight = UDim.new(0, 4)
+        lp.PaddingBottom = UDim.new(0, 4)
+        l.Parent = ScreenGui
+        list = l
+        return l
+    end
+
+    local function listGeom()
+        local s = (ScreenGui:FindFirstChildOfClass("UIScale") and ScreenGui:FindFirstChildOfClass("UIScale").Scale) or 1
+        local ap, as = con.AbsolutePosition, con.AbsoluteSize
+        local w = math.max(as.X / s, 280)
+        local x = ap.X / s
+        local y = (ap.Y + as.Y + 4) / s
+        if x < 12 then x = 12 end
+        return w, x, y
+    end
+
+    local function refreshDisplay()
+        local items = type(getItems) == "function" and getItems() or getItems
+        local n = 0
+        local firstText = nil
+        if type(items) == "table" and #items > 0 then
+            local valid = {}
+            for _, it in ipairs(items) do
+                local k = mapValue and mapValue(it) or it
+                valid[k] = it
+            end
+            for k, v in pairs(store) do
+                if v and valid[k] then
+                    n = n + 1
+                    if not firstText then firstText = valid[k] end
+                end
+            end
+        else
+            for _, v in pairs(store) do if v then n = n + 1 end end
+        end
+
+        if n == 0 then
+            disp.Text = emptyTxt or "None"
+            disp.TextColor3 = THEME.SubText
+        elseif n == 1 and firstText then
+            disp.Text = firstText
+            disp.TextColor3 = THEME.Title
+        else
+            disp.Text = string.format("%d Dipilih", n)
+            disp.TextColor3 = THEME.Title
+        end
+    end
+
+    local myId = {}
+    local open = false
+    local function closeMe()
+        if not open then return end
+        open = false
+        arr.Text = "▼"
+        cStroke.Color = THEME.Border
+        if list then list.Visible = false end
+        dropdownBlocker().Visible = false
+    end
+    allDropdownClosers[myId] = closeMe
+
+    local function buildList()
+        local l = getList()
+        for _, ch in ipairs(l:GetChildren()) do
+            if ch:IsA("Frame") or ch:IsA("TextButton") then ch:Destroy() end
+        end
+
+        local items = type(getItems) == "function" and getItems() or getItems
+        if type(items) ~= "table" then items = {} end
+
+        local rowCount = #items + 1
+        local itemH = 28
+        local maxH = 220
+        local totalH = math.min(rowCount * (itemH + 3) + 8, maxH)
+        local w, x, y = listGeom()
+        l.Size = UDim2.fromOffset(w, totalH)
+        l.Position = UDim2.fromOffset(x, y)
+        l.CanvasSize = UDim2.new(0, 0, 0, rowCount * (itemH + 3) + 8)
+
+        -- Row tombol aksi cepat di bagian atas dropdown
+        local actionRow = Instance.new("Frame", l)
+        actionRow.Size = UDim2.new(1, 0, 0, 26)
+        actionRow.BackgroundTransparency = 1
+        actionRow.LayoutOrder = 0
+
+        local btnAll = Instance.new("TextButton", actionRow)
+        btnAll.Size = UDim2.new(0.48, 0, 1, 0)
+        btnAll.BackgroundColor3 = THEME.Card
+        btnAll.Text = "✓ Pilih Semua"
+        btnAll.TextColor3 = THEME.Title
+        btnAll.Font = THEME.Font
+        btnAll.TextSize = 11
+        corner(btnAll, 6)
+
+        local btnNone = Instance.new("TextButton", actionRow)
+        btnNone.Size = UDim2.new(0.48, 0, 1, 0)
+        btnNone.Position = UDim2.new(0.52, 0, 0, 0)
+        btnNone.BackgroundColor3 = THEME.Card
+        btnNone.Text = "✕ Hapus Semua"
+        btnNone.TextColor3 = THEME.SubText
+        btnNone.Font = THEME.Font
+        btnNone.TextSize = 11
+        corner(btnNone, 6)
+
+        btnAll.MouseButton1Click:Connect(function()
+            for _, it in ipairs(items) do
+                local k = mapValue and mapValue(it) or it
+                store[k] = true
+            end
+            buildList()
+            refreshDisplay()
+            if onChanged then onChanged() end
+            saveConfig()
+        end)
+
+        btnNone.MouseButton1Click:Connect(function()
+            for _, it in ipairs(items) do
+                local k = mapValue and mapValue(it) or it
+                store[k] = false
+            end
+            buildList()
+            refreshDisplay()
+            if onChanged then onChanged() end
+            saveConfig()
+        end)
+
+        for i, it in ipairs(items) do
+            local k = mapValue and mapValue(it) or it
+            local checked = store[k] == true
+
+            local row = Instance.new("TextButton", l)
+            row.Size = UDim2.new(1, 0, 0, itemH)
+            row.BackgroundColor3 = checked and THEME.Slot or THEME.Card
+            row.AutoButtonColor = false
+            row.Text = ""
+            row.LayoutOrder = i
+            corner(row, 6)
+            local rStroke = stroke(row, checked and THEME.Title or THEME.Border, 1)
+
+            local box = Instance.new("Frame", row)
+            box.Size = UDim2.fromOffset(16, 16)
+            box.Position = UDim2.new(0, 8, 0.5, -8)
+            box.BackgroundColor3 = checked and THEME.Title or THEME.Panel
+            corner(box, 4)
+            stroke(box, checked and THEME.Title or THEME.Border, 1)
+
+            local chkMark = Instance.new("TextLabel", box)
+            chkMark.Size = UDim2.new(1, 0, 1, 0)
+            chkMark.BackgroundTransparency = 1
+            chkMark.Text = checked and "✓" or ""
+            chkMark.TextColor3 = THEME.Panel
+            chkMark.Font = THEME.Font
+            chkMark.TextSize = 11
+
+            local txt = Instance.new("TextLabel", row)
+            txt.Size = UDim2.new(1, -34, 1, 0)
+            txt.Position = UDim2.new(0, 30, 0, 0)
+            txt.BackgroundTransparency = 1
+            txt.Text = tostring(it)
+            txt.TextColor3 = checked and THEME.Title or THEME.Text
+            txt.Font = checked and THEME.Font or THEME.FontReg
+            txt.TextSize = 11
+            txt.TextXAlignment = Enum.TextXAlignment.Left
+            txt.TextTruncate = Enum.TextTruncate.AtEnd
+
+            row.MouseButton1Click:Connect(function()
+                checked = not checked
+                store[k] = checked
+                row.BackgroundColor3 = checked and THEME.Slot or THEME.Card
+                rStroke.Color = checked and THEME.Title or THEME.Border
+                box.BackgroundColor3 = checked and THEME.Title or THEME.Panel
+                stroke(box, checked and THEME.Title or THEME.Border, 1)
+                chkMark.Text = checked and "✓" or ""
+                txt.TextColor3 = checked and THEME.Title or THEME.Text
+                txt.Font = checked and THEME.Font or THEME.FontReg
+                refreshDisplay()
+                if onChanged then onChanged(k, checked) end
+                saveConfig()
+            end)
+        end
+    end
+
+    local function openMe()
+        closeOtherDropdowns(myId)
+        open = true
+        arr.Text = "▲"
+        cStroke.Color = THEME.Title
+        buildList()
+        getList().Visible = true
+        dropdownBlocker().Visible = true
+    end
+
+    trig.MouseButton1Click:Connect(function()
+        if open then closeMe() else openMe() end
+    end)
+
+    refreshDisplay()
+    return { container = con, refresh = refreshDisplay, close = closeMe }
+end
+
+
 -- [14] POPULATE ALL 9 TABS
 
 -- TAB 1: AUTO STEAL
@@ -1806,27 +2378,34 @@ end)
 addToggle(pageSteal, tr("SmartReturnPlot"), config.smartReturnPlot, function(val)
     config.smartReturnPlot = val
 end)
-
-addSection(pageSteal, "FILTER AREA BIBIT TARGET (CHECKLIST)")
-for areaLabel, areaInfo in pairs(SAPLING_AREAS) do
-    local isChecked = config.targetSaplingAreas[areaInfo.area] ~= false
-    addToggle(pageSteal, "🎯 " .. areaLabel, isChecked, function(val)
-        config.targetSaplingAreas[areaInfo.area] = val
-    end)
-end
-
-addSection(pageSteal, tr("SecStealRivalTrees"))
-addToggle(pageSteal, tr("AutoStealRivalTrees"), config.autoStealRivalTrees, function(val)
-    config.autoStealRivalTrees = val
+addToggle(pageSteal, "🏆 Only 5 Front Saplings (Clockwork, Void, Cosmic, Skylands, Candyland)", config.only5FrontSaplings, function(val)
+    config.only5FrontSaplings = val
+    saveConfig()
 end)
-addToggle(pageSteal, tr("ProtectFriends"), config.protectFriends, function(val)
-    config.protectFriends = val
+
+-- SEKSI MULTI-SELECT DROPLIST STANDAR 1:1 STEAL A SEED / MY FLOWER SHOP
+makeMultiDropdown(pageSteal, "🎯 Target Saplings to Steal", function()
+    local list = {}
+    for _, s in ipairs(ALL_STEALABLE_TREES) do
+        table.insert(list, s.displayName)
+    end
+    return list
+end, config.multiTargetTrees, "None (Stay at Base)", function(displayName)
+    for _, s in ipairs(ALL_STEALABLE_TREES) do
+        if s.displayName == displayName or s.key == displayName then
+            return s.key
+        end
+    end
+    return displayName
+end, function(key, state)
+    saveConfig()
 end)
+
+addSection(pageSteal, "PERTAHANAN JEBAKAN ARENA (TRAP REMOVAL)")
 addToggle(pageSteal, tr("AutoDisarmTraps"), config.autoDisarmTraps, function(val)
     config.autoDisarmTraps = val
 end)
 
--- TAB 2: OWN GARDEN & FARM
 local pageFarm = createTab("Farm", tr("TabGardenFarm"))
 addSection(pageFarm, tr("SecGardenPlant"))
 addToggle(pageFarm, tr("AutoPlantGarden"), config.autoPlantGarden, function(val)
@@ -1984,11 +2563,18 @@ end)
 local pageMove = createTab("Movement", tr("TabMovement"))
 addSection(pageMove, tr("SecMove"))
 
--- TP-Walk Engine (Speed Bypass Bebas Reset Server)
+-- TP-Walk Engine (Speed Bypass Bebas Reset Server & Bebas Rubberband)
 addToggle(pageMove, tr("TPWalk"), config.tpWalk, function(val)
     config.tpWalk = val
     if val then
-        showNotification("⚡ TP-WALK AKTIF", "Bypass Speed aktif! Anda bebas berlari kencang tanpa risiko ter-reset ke base!", 4)
+        showNotification("⚡ TP-WALK AKTIF", "Bypass Speed aktif! Bebas berlari kencang tanpa rubberband & bebas reset base!", 4)
+    else
+        pcall(function()
+            local root = getRoot()
+            if root then
+                root.AssemblyLinearVelocity = Vector3.new(0, root.AssemblyLinearVelocity.Y, 0)
+            end
+        end)
     end
 end)
 addSlider(pageMove, tr("TPWalkSpeed"), 20, 250, config.tpWalkSpeed, function(val)
@@ -2143,16 +2729,26 @@ registerConnection(RunService.Stepped:Connect(function()
     end)
 end))
 
--- TP-Walk Engine (CFrame MoveDirection Bypass)
+-- TP-Walk Engine (Zero Rubberband Physics Velocity Bypass • Bebas Blink-Blink & Bebas Reset Base)
 registerConnection(RunService.Heartbeat:Connect(function(dt)
     pcall(function()
         if config.tpWalk then
             local char = LocalPlayer.Character
             local root = getRoot(char)
             local hum = getHum(char)
-            if root and hum and hum.MoveDirection.Magnitude > 0 then
-                local step = hum.MoveDirection * (config.tpWalkSpeed * dt)
-                root.CFrame = root.CFrame + step
+            if root and hum then
+                -- Jaga WalkSpeed normal <= 55 agar anti-cheat server TIDAK PERNAH mereset karakter ke base!
+                if hum.WalkSpeed > 55 then
+                    hum.WalkSpeed = 16
+                end
+                local md = hum.MoveDirection
+                if md.Magnitude > 0 then
+                    local targetVel = md.Unit * config.tpWalkSpeed
+                    root.AssemblyLinearVelocity = Vector3.new(targetVel.X, root.AssemblyLinearVelocity.Y, targetVel.Z)
+                else
+                    -- Saat berhenti bergerak, nolkan velocity horizontal agar tidak tergelincir
+                    root.AssemblyLinearVelocity = Vector3.new(0, root.AssemblyLinearVelocity.Y, 0)
+                end
             end
         end
     end)
@@ -2223,12 +2819,7 @@ registerThread(function()
     end
 end)
 
-registerThread(function()
-    while true do
-        task.wait(1.5)
-        pcall(runStealRivalTreesCycle)
-    end
-end)
+-- Thread runStealRivalTreesCycle dinonaktifkan total agar tidak pernah menyentuh kebun lawan
 
 registerThread(function()
     while true do
