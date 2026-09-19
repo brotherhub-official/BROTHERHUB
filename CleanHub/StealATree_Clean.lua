@@ -547,13 +547,24 @@ local function safeTeleport(cframeOrVec)
     local currentPos = root.Position
     local dist = (p - currentPos).Magnitude
 
-    -- Jika jarak sangat jauh (> 150 stud), lakukan teleport bertahap cepat (Glide Segment)
-    -- agar tidak memicu server position delta anti-cheat yang melempar balik ke base!
+    -- Jika jarak sangat jauh (> 150 stud), lakukan teleport bertahap cepat via high-altitude arc
+    -- agar tidak menabrak bukit/gunung dan tidak memicu server position delta anti-cheat!
     if dist > 150 then
-        local steps = math.clamp(math.floor(dist / 200), 2, 8)
+        pcall(function()
+            for _, part in ipairs(char:GetDescendants()) do
+                if part:IsA("BasePart") then
+                    part.CanCollide = false
+                end
+            end
+        end)
+
+        local steps = math.clamp(math.floor(dist / 300), 2, 6)
+        local highY = math.max(currentPos.Y, p.Y) + 25
         for i = 1, steps do
             local alpha = i / steps
-            local interPos = currentPos:Lerp(p, alpha)
+            local interX = currentPos.X + (p.X - currentPos.X) * alpha
+            local interZ = currentPos.Z + (p.Z - currentPos.Z) * alpha
+            local interPos = Vector3.new(interX, highY, interZ)
             local interCF = CFrame.new(interPos)
             pcall(function()
                 char:PivotTo(interCF)
@@ -684,7 +695,20 @@ local function isPlayerCarryingSapling()
     local char = LocalPlayer.Character
     if not char then return false end
 
-    -- 1. Cek visual sapling di dalam karakter
+    -- 1. INDIKATOR RESMI RESMI GAME STEAL A TREE: Tombol Drop di MainGuis
+    -- Di Steal A Tree, tombol Drop (TextButton) di MainGuis hanya Visible == true saat pemain sedang membawa bibit!
+    local pGui = LocalPlayer:FindFirstChild("PlayerGui")
+    if pGui then
+        local mainGuis = pGui:FindFirstChild("MainGuis")
+        if mainGuis then
+            local dropBtn = mainGuis:FindFirstChild("Drop")
+            if dropBtn and dropBtn:IsA("GuiObject") and dropBtn.Visible then
+                return true
+            end
+        end
+    end
+
+    -- 2. Cek visual sapling di dalam karakter
     if char:FindFirstChild("_CarriedSaplingVisual", true) then return true end
     for _, c in ipairs(char:GetChildren()) do
         if c.Name == "_CarriedSaplingVisual" then return true end
@@ -694,7 +718,24 @@ local function isPlayerCarryingSapling()
         end
     end
 
-    -- 2. Cek Tool di tangan karakter atau Backpack (Eksklusif Sapling, DILARANG mencocokkan Uprooted Tree!)
+    -- 3. Cek model _CarriedSaplingVisual yang sedang dibawa/menempel di dekat karakter
+    local root = getRoot(char)
+    if root then
+        local skriptF = workspace:FindFirstChild("SkriptF")
+        local spawned = (skriptF and skriptF:FindFirstChild("SpawnedSaplings")) or workspace:FindFirstChild("SpawnedSaplings")
+        if spawned then
+            for _, m in ipairs(spawned:GetChildren()) do
+                if m.Name == "_CarriedSaplingVisual" or m:GetAttribute("Claimed") == true then
+                    local p = m.PrimaryPart or m:FindFirstChildWhichIsA("BasePart")
+                    if p and (p.Position - root.Position).Magnitude < 10 then
+                        return true
+                    end
+                end
+            end
+        end
+    end
+
+    -- 4. Cek Tool di tangan karakter atau Backpack (Eksklusif Sapling, DILARANG mencocokkan Uprooted Tree!)
     local tool = char:FindFirstChildWhichIsA("Tool")
     if tool then
         local tName = tool.Name:lower()
@@ -714,7 +755,7 @@ local function isPlayerCarryingSapling()
         end
     end
 
-    -- 3. Cek Attributes pada LocalPlayer & Character
+    -- 5. Cek Attributes pada LocalPlayer & Character
     if char:GetAttribute("CarriedSapling") or char:GetAttribute("HasSapling") then
         return true
     end
@@ -729,40 +770,37 @@ local function firePrompt(prompt)
     if not prompt or not prompt:IsA("ProximityPrompt") then return false end
     if not prompt.Enabled then return false end
     
-    local isCollectSapling = (prompt.Name == "CollectSaplingPrompt")
-    local holdDur = prompt.HoldDuration or 1
-    if holdDur <= 0 then holdDur = 1 end
+    local holdDur = prompt.HoldDuration or 0
+    local vim = game:GetService("VirtualInputManager")
     
     pcall(function()
-        if not isCollectSapling then
-            prompt.HoldDuration = 0
-        end
-        prompt.MaxActivationDistance = 50
+        prompt.MaxActivationDistance = 30
         prompt.RequiresLineOfSight = false
     end)
     
     local ok = false
-    pcall(function()
-        if typeof(fireproximityprompt) == "function" then
-            fireproximityprompt(prompt, holdDur)
+    if typeof(fireproximityprompt) == "function" then
+        pcall(function()
             fireproximityprompt(prompt, 0)
-            fireproximityprompt(prompt)
             ok = true
-        end
-    end)
+        end)
+    end
     
-    pcall(function()
-        if prompt.InputHoldBegin and prompt.InputHoldEnd then
-            prompt:InputHoldBegin()
-            if isCollectSapling then
-                task.wait(holdDur + 0.15)
-            else
-                task.wait(0.05)
-            end
-            prompt:InputHoldEnd()
+    if holdDur <= 0.1 then
+        pcall(function()
+            vim:SendKeyEvent(true, Enum.KeyCode.E, false, game)
+            task.wait(0.05)
+            vim:SendKeyEvent(false, Enum.KeyCode.E, false, game)
             ok = true
-        end
-    end)
+        end)
+    else
+        pcall(function()
+            vim:SendKeyEvent(true, Enum.KeyCode.E, false, game)
+            task.wait(holdDur + 0.2)
+            vim:SendKeyEvent(false, Enum.KeyCode.E, false, game)
+            ok = true
+        end)
+    end
     
     return ok
 end
@@ -917,16 +955,32 @@ local function runStealSaplingsCycle()
         pcall(function()
             -- Teleport berdiri tegak 2 stud di depan bibit menghadap langsung ke bibit
             local anchorPos = target.pos
-            local playerPos = anchorPos + Vector3.new(0, 0.6, 2.2)
+            -- PENTING: anchorPos Y adalah di tanah. HumanoidRootPart wajib +2.8 studs agar kaki menapak sempurna di tanah!
+            local playerPos = anchorPos + Vector3.new(0, 2.8, 2.2)
             local targetCF = CFrame.lookAt(playerPos, anchorPos)
             safeTeleport(targetCF)
+
+            -- Netralkan velocity dan kunci posisi (Anchored) agar tidak ada jitter, physics fling, atau dorongan
+            pcall(function()
+                root.AssemblyLinearVelocity = Vector3.zero
+                root.AssemblyAngularVelocity = Vector3.zero
+                root.Anchored = true
+            end)
 
             -- Lepas pegangan tool apa pun (agar tangan 100% bebas dan tidak memblokir interaksi prompt)
             pcall(function()
                 local hum = char:FindFirstChildOfClass("Humanoid")
                 if hum then hum:UnequipTools() end
             end)
-            task.wait(0.08)
+            task.wait(0.1)
+
+            -- Arahkan Camera langsung menghadap bibit & anchor agar prompt 100% fokus
+            pcall(function()
+                local cam = workspace.CurrentCamera
+                if cam then
+                    cam.CFrame = CFrame.lookAt(cam.CFrame.Position, anchorPos)
+                end
+            end)
 
             local prompt = target.prompt
             local promptDuration = 1.0
@@ -934,52 +988,53 @@ local function runStealSaplingsCycle()
                 promptDuration = prompt.HoldDuration
             end
 
-            -- Jika executor memiliki native fireproximityprompt, picu dengan durasi penuh
+            -- Jika executor memiliki native fireproximityprompt, panggil trigger instan sebagai jalur cepat
             if prompt and prompt.Parent and prompt.Enabled and typeof(fireproximityprompt) == "function" then
-                pcall(function() fireproximityprompt(prompt, promptDuration) end)
+                pcall(function() fireproximityprompt(prompt, 0) end)
             end
 
             local vim = game:GetService("VirtualInputManager")
             local gotSapling = false
 
-            -- Cek instan apakah sudah terambil via fireproximityprompt
-            task.wait(0.05)
-            if isPlayerCarryingSapling() or not target.model:IsDescendantOf(workspace) then
+            -- Cek apakah sudah terambil via fireproximityprompt
+            task.wait(0.08)
+            if isPlayerCarryingSapling() 
+                or target.model.Name == "_CarriedSaplingVisual" 
+                or target.model:GetAttribute("Claimed") == true 
+                or not target.model:IsDescendantOf(workspace) then
                 gotSapling = true
             end
 
-            -- KONTINU SUSTAINED HOLD (TEKAN & TAHAN FISIK PENUH TANPA INTERUPSI!)
+            -- KONTINU SUSTAINED HOLD (TEKAN & TAHAN FISIK VIA VIRTUAL INPUT MANAGER TANPA INTERUPSI!)
             if not gotSapling and prompt and prompt.Parent and prompt.Enabled then
                 for attempt = 1, 2 do
                     if gotSapling then break end
-                    if not target.model:IsDescendantOf(workspace) or not prompt or not prompt.Parent or not prompt.Enabled then
-                        if isPlayerCarryingSapling() or not target.model:IsDescendantOf(workspace) then
-                            gotSapling = true
-                        end
+                    if not target.model:IsDescendantOf(workspace) 
+                        or target.model.Name == "_CarriedSaplingVisual"
+                        or target.model:GetAttribute("Claimed") == true
+                        or not prompt or not prompt.Parent or not prompt.Enabled then
+                        gotSapling = true
                         break
                     end
 
-                    -- Pastikan berdiri tegak di depan bibit
+                    -- Pastikan karakter tetap tegak dan anchored di depan bibit
                     safeTeleport(targetCF)
+                    pcall(function() root.Anchored = true end)
 
-                    -- Mulai tekan dan tahan E & InputHoldBegin (HANYA SEKALI DI AWAL!)
-                    pcall(function() prompt:InputHoldBegin() end)
+                    -- Mulai tekan dan tahan tombol E (MURNI SIMULASI KEYBOARD ALAMI ROBLOX!)
+                    -- DILARANG KERAS memanggil prompt:InputHoldBegin() atau prompt:InputHoldEnd() karena InputHoldEnd membatalkan trigger!
                     pcall(function() vim:SendKeyEvent(true, Enum.KeyCode.E, false, game) end)
 
-                    -- Pertahankan tombol E ditekan selama (promptDuration + 0.35) detik!
+                    -- Pertahankan tombol E ditekan selama (promptDuration + 0.35) detik agar Roblox engine menyelesaikan trigger 100%!
                     local holdStart = tick()
                     local holdDurationTarget = promptDuration + 0.35
                     while (tick() - holdStart) < holdDurationTarget do
                         task.wait(0.05)
 
-                        -- Netralkan velocity agar karakter tidak bergerak/bergeser
-                        if root then
-                            root.AssemblyLinearVelocity = Vector3.zero
-                            root.AssemblyAngularVelocity = Vector3.zero
-                        end
-
-                        -- Cek apakah bibit sudah masuk ke tas/tangan
+                        -- Cek apakah bibit sudah masuk ke tangan/tas atau tombol Drop muncul
                         if isPlayerCarryingSapling() 
+                            or target.model.Name == "_CarriedSaplingVisual" 
+                            or target.model:GetAttribute("Claimed") == true 
                             or not target.model:IsDescendantOf(workspace) 
                             or (prompt and (prompt.Parent == nil or not prompt.Enabled)) then
                             gotSapling = true
@@ -987,28 +1042,25 @@ local function runStealSaplingsCycle()
                         end
                     end
 
-                    -- Lepaskan penekanan tombol E setelah waktu hold terpenuhi
-                    pcall(function() prompt:InputHoldEnd() end)
+                    -- Lepaskan tombol E setelah durasi terpenuhi
                     pcall(function() vim:SendKeyEvent(false, Enum.KeyCode.E, false, game) end)
 
-                    task.wait(0.1)
+                    -- Beri jeda 0.15s bagi server untuk mereplikasi status pickup
+                    task.wait(0.15)
 
-                    if isPlayerCarryingSapling() or not target.model:IsDescendantOf(workspace) then
+                    if isPlayerCarryingSapling() 
+                        or target.model.Name == "_CarriedSaplingVisual" 
+                        or target.model:GetAttribute("Claimed") == true 
+                        or not target.model:IsDescendantOf(workspace) then
                         gotSapling = true
                         break
                     end
                 end
             end
 
-            -- Pastikan tombol E dan prompt dilepas 100%
-            pcall(function()
-                if prompt and prompt.Parent then
-                    prompt:InputHoldEnd()
-                end
-            end)
-            pcall(function()
-                vim:SendKeyEvent(false, Enum.KeyCode.E, false, game)
-            end)
+            -- Lepas status Anchored setelah interaksi selesai
+            pcall(function() root.Anchored = false end)
+            pcall(function() vim:SendKeyEvent(false, Enum.KeyCode.E, false, game) end)
 
             if gotSapling then
                 recentlyTargetedSaplings[target.model] = tick() + 30.0
@@ -1027,6 +1079,9 @@ local function runStealSaplingsCycle()
                 recentlyTargetedSaplings[target.model] = tick() + 4.0
                 task.wait(0.3)
             end
+        end)
+        pcall(function()
+            if root then root.Anchored = false end
         end)
         isStealingBusy = false
     end)
