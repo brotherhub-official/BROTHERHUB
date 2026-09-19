@@ -17,16 +17,17 @@ AUTHORIZED_GUILD_ID = 1547929421284114453
 ROLES_CHANNEL_ID = 1547960169206644838
 SERVER_ICON_URL = "https://cdn.discordapp.com/icons/1547929421284114453/45d5b82878099746173bff32ee6a53e1.png?size=512"
 
-# 1. Action Buttons Config (Row 0: 5 Buttons max)
+# 1. Action Buttons Config (Row 0: 5 Buttons, Row 1: Casino Player)
 ACTION_BUTTONS_CONFIG = [
     {"id_key": "announcements", "name": "📢 Announcement Ping", "color": 0x3498DB, "emoji": "📢", "style": discord.ButtonStyle.primary, "row": 0},
     {"id_key": "script_update", "name": "⚡ Script Update Ping", "color": 0xF1C40F, "emoji": "⚡", "style": discord.ButtonStyle.primary, "row": 0},
     {"id_key": "giveaways", "name": "🎁 Giveaway Ping", "color": 0xE91E63, "emoji": "🎁", "style": discord.ButtonStyle.primary, "row": 0},
     {"id_key": "pc_player", "name": "💻 PC Player", "color": 0x95A5A6, "emoji": "💻", "style": discord.ButtonStyle.success, "row": 0},
     {"id_key": "mobile_player", "name": "📱 Mobile Player", "color": 0x2ECC71, "emoji": "📱", "style": discord.ButtonStyle.success, "row": 0},
+    {"id_key": "casino_player", "name": "🎰 Casino Player", "color": 0xF1C40F, "emoji": "🎰", "style": discord.ButtonStyle.secondary, "row": 1},
 ]
 
-# 2. Supported Games Config (Row 1: Dropdown Select Menu up to 25 games)
+# 2. Supported Games Config (Row 2: Dropdown Select Menu up to 25 games)
 GAMES_CONFIG = [
     {"id_key": "steal_a_seed", "name": "🌱 Steal A Seed", "color": 0x2ECC71, "emoji": "🌱", "desc": "Auto steal 0s bypass, plant & harvest, sell, seed & pack shop, pet hatch"},
     {"id_key": "fish_on", "name": "🎣 Fish On", "color": 0x00BFFF, "emoji": "🎣", "desc": "Auto cast & reel, instant catch, sell, rod & bait shop, boats & islands"},
@@ -105,7 +106,7 @@ class SelfRoleButton(discord.ui.Button):
 
         if role in member.roles:
             try:
-                await member.remove_roles(role, reason="Self-Role Removed by User")
+                await member.remove_roles(role, reason="Self-Role Button Toggled Off")
                 await interaction.response.send_message(
                     f"❌ Role **{role.name}** telah **dilepas** dari profil Anda!",
                     ephemeral=True
@@ -114,7 +115,7 @@ class SelfRoleButton(discord.ui.Button):
                 await interaction.response.send_message(f"⚠️ Gagal melepas role: {e}", ephemeral=True)
         else:
             try:
-                await member.add_roles(role, reason="Self-Role Added by User")
+                await member.add_roles(role, reason="Self-Role Button Toggled On")
                 await interaction.response.send_message(
                     f"✅ Role **{role.name}** berhasil **ditambahkan** ke profil Anda!",
                     ephemeral=True
@@ -148,7 +149,7 @@ class SelfRoleGameSelect(discord.ui.Select):
             max_values=1,
             options=options,
             custom_id="bh_selfrole_games_dropdown",
-            row=1
+            row=2
         )
         self.games_by_key = {g["id_key"]: g["name"] for g in GAMES_CONFIG}
 
@@ -187,10 +188,10 @@ class SelfRoleGameSelect(discord.ui.Select):
 class SelfRolesView(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
-        # Row 0: 5 Action Buttons
+        # Action Buttons (Row 0 & Row 1)
         for item in ACTION_BUTTONS_CONFIG:
             self.add_item(SelfRoleButton(item))
-        # Row 1: Unified Dropdown for all 21 games
+        # Row 2: Unified Dropdown for all 23 games
         self.add_item(SelfRoleGameSelect())
 
 
@@ -208,10 +209,11 @@ def create_roles_embed() -> discord.Embed:
         description=(
             "Selamat datang di Panel Pemilihan Role Mandiri **BROTHER HUB**!\n"
             "Gunakan tombol dan menu dropdown di bawah untuk mengambil atau melepas role sesuai minat Anda:\n\n"
-            "🔔 **NOTIFICATION PINGS & DEVICE**\n"
+            "🔔 **NOTIFICATION PINGS & COMMUNITY**\n"
             "• `📢 Announcement Ping` : Dapatkan info pengumuman penting server.\n"
             "• `⚡ Script Update Ping` : Notifikasi instan saat ada update script Roblox.\n"
             "• `🎁 Giveaway Ping` : Peringatan saat ada event giveaway berhadiah.\n"
+            "• `🎰 Casino Player` : Notifikasi event jackpot & update kasino di `#🎰・casino`.\n"
             "• `💻 PC Player` | `📱 Mobile Player` : Tipe perangkat bermain Anda.\n\n"
             "🎮 **23 SUPPORTED GAMES LIST (PILIH LEWAT DROPDOWN DI BAWAH)**\n"
             "• `🌱 Steal A Seed` • `🎣 Fish On` • `🌸 My Flower Shop`\n"
@@ -224,7 +226,7 @@ def create_roles_embed() -> discord.Embed:
             "• `🃏 Pack A Brainrot Card` • `⛏️ Mine It`\n\n"
             "────────────────────────────────────────\n"
             "💡 **CARA PENGGUNAAN:**\n"
-            "1. Klik tombol **Pings / Device** di atas untuk toggle instan.\n"
+            "1. Klik tombol **Pings / Community / Device** di atas untuk toggle instan.\n"
             "2. Klik menu dropdown **'🎮 Pilih Game Favorit Anda'** di bawah untuk memilih game yang Anda mainkan.\n"
             "3. Memilih game yang sama untuk kedua kalinya otomatis **melepas** role tersebut."
         ),
