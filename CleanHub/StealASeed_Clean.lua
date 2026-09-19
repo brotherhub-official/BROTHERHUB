@@ -200,7 +200,7 @@ local config = {
     instantPrompt         = true,
     stealDistance         = 35,
     stealDelay            = 0.8,
-    customBasePos         = Vector3.new(7, 0.75, 360.375),
+    customBasePos         = Vector3.new(-0.467, 0.75, 410.989),
     customPalingDepanPos  = nil,
     fullAfkLoop           = false,
     smartWaitSeed         = true,     -- Stay aman di markas jika bibit di arena kosong/cooldown
@@ -345,6 +345,12 @@ local function loadConfig()
     end
     if config.customBasePos then
         config.customBasePos = toVector3(config.customBasePos)
+        if config.customBasePos and (config.customBasePos - Vector3.new(7, 0.75, 360.375)).Magnitude < 1.0 then
+            config.customBasePos = Vector3.new(-0.467, 0.75, 410.989)
+            saveConfig()
+        end
+    else
+        config.customBasePos = Vector3.new(-0.467, 0.75, 410.989)
     end
     if config.customPalingDepanPos then
         config.customPalingDepanPos = toVector3(config.customPalingDepanPos)
@@ -597,7 +603,7 @@ local function getBasePosition()
         end
     end
     
-    return Vector3.new(7, 0.75, 360.375)
+    return Vector3.new(-0.467, 0.75, 410.989)
 end
 
 -- [4.5] 🛡️ GUARD PACIFIER & ANTI-CHASE NEUTRALIZER (100% BEBAS DIKEJAR PENJAGA TANAMAN)
@@ -1639,8 +1645,8 @@ local function areAllFrontSeedsEmpty()
     return true, nil, nil, nil
 end
 
--- ⚡ KOORDINAT BAKU MARKAS RESMI FOUNDER: 7, 0.75, 360.375
-local FOUNDER_EXACT_BASE = Vector3.new(7, 0.75, 360.375)
+-- ⚡ KOORDINAT BAKU MARKAS RESMI FOUNDER: -0.467, 0.75, 410.989
+local FOUNDER_EXACT_BASE = Vector3.new(-0.467, 0.75, 410.989)
 
 -- Helper: Kembali ke Markas dan Lakukan Gerakan Mikro
 local function returnToBaseWithMicroMove(customPos)
@@ -1649,7 +1655,7 @@ local function returnToBaseWithMicroMove(customPos)
     local char = LocalPlayer.Character
     local hum = getHumanoid()
 
-    -- ⚡ KOORDINAT BAKU MARKAS RESMI FOUNDER: 7, 0.75, 360.375
+    -- ⚡ KOORDINAT BAKU MARKAS RESMI FOUNDER: -0.467, 0.75, 410.989
     local destPos = toVector3(customPos) or FOUNDER_EXACT_BASE
 
     -- 1. Pulihkan collision seluruh part seketika (kecuali HumanoidRootPart)
@@ -1848,7 +1854,7 @@ local function executeFlashStealDirect(targetPos, promptOrModel)
 
     task.wait(0.03)
 
-    -- 4. ⚡ LANGSUNG TELEPORT BALIK KE KOORDINAT MARKAS PASTI: 7, 0.75, 360.375
+    -- 4. ⚡ LANGSUNG TELEPORT BALIK KE KOORDINAT MARKAS PASTI: -0.467, 0.75, 410.989
     returnToBaseWithMicroMove(markas)
 
     -- 5. Equip bibit di tangan jika opsi aktif
