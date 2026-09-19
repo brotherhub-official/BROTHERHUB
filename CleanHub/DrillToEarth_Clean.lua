@@ -593,40 +593,38 @@ local function executeToolSwing(toolType, targets, targetPos)
 
     if #cleanTargets == 0 then return end
 
-    -- 4. MULTI-CHANNEL GUARANTEED DAMAGE DELIVERY
+    -- 4. CLEAN DIRECT REMOTE DAMAGE DELIVERY (NO CLIENT HIJACKING / ZERO RATE-LIMIT VIOLATION)
+    local sent = false
     -- Pathway A: Official Knit ToolController ActiveTool Execution
     pcall(function()
         local tc = Knit and Knit.GetController and Knit.GetController("ToolController")
         local active = tc and tc.ActiveTool
-        if active then
-            if active.Execute then
-                active.Execute:Fire({ "Swing", cleanTargets })
+        if active and active.Execute then
+            active.Execute:Fire({ "Swing", cleanTargets })
+            sent = true
+        end
+    end)
+
+    -- Pathway B: Fallback to ToolService Update if ActiveTool not initialized
+    if not sent then
+        pcall(function()
+            local ts = getKnitService("ToolService")
+            if ts and ts.Update then
+                ts.Update:Fire({ "Swing", cleanTargets })
+                sent = true
             end
-            if type(active.Swing) == "function" then
-                active.LastSwing = 0
-                active:Swing()
+        end)
+    end
+
+    -- Pathway C: Direct RemoteEvent fallback
+    if not sent then
+        pcall(function()
+            local tsRE, _ = getToolServiceRemote()
+            if tsRE and tsRE:IsA("RemoteEvent") then
+                tsRE:FireServer({ "Swing", cleanTargets })
             end
-        end
-    end)
-
-    -- Pathway B: Direct Knit ToolService Update ClientRemoteSignal
-    pcall(function()
-        local ts = getKnitService("ToolService")
-        if ts and ts.Update then
-            ts.Update:Fire({ "Swing", cleanTargets })
-        end
-    end)
-
-    -- Pathway C: Direct Server RemoteEvent FireServer
-    pcall(function()
-        local tsRE, _ = getToolServiceRemote()
-        if tsRE and tsRE:IsA("RemoteEvent") then
-            tsRE:FireServer({ "Swing", cleanTargets })
-        end
-    end)
-
-    -- Pathway D: Native Simulated Click (Triggers Pickaxe.lua UserInputService listener)
-    simulateNativeClick()
+        end)
+    end
 end
 
 -- [3] CONFIGURATION FILE SYSTEM (FLOWER SHOP MASTER STANDARD)
