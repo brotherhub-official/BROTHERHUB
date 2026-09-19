@@ -547,40 +547,38 @@ local function safeTeleport(cframeOrVec)
     local currentPos = root.Position
     local dist = (p - currentPos).Magnitude
 
-    -- Jika jarak sangat jauh (> 150 stud), lakukan teleport bertahap cepat via high-altitude arc
-    -- agar tidak menabrak bukit/gunung dan tidak memicu server position delta anti-cheat!
-    if dist > 150 then
-        pcall(function()
-            for _, part in ipairs(char:GetDescendants()) do
-                if part:IsA("BasePart") then
-                    part.CanCollide = false
-                end
+    -- Nonaktifkan CanCollide agar karakter meluncur mulus tanpa terbentur dinding/gapura
+    pcall(function()
+        for _, part in ipairs(char:GetDescendants()) do
+            if part:IsA("BasePart") then
+                part.CanCollide = false
             end
-        end)
+        end
+    end)
 
-        local steps = math.clamp(math.floor(dist / 300), 2, 6)
-        local highY = math.max(currentPos.Y, p.Y) + 25
+    if dist > 80 then
+        -- Interpolasi cepat di sepanjang lintasan koridor di ketinggian tanah yang wajar
+        -- (DILARANG terbang tinggi ke langit Y=39 karena memicu boundary reset server!)
+        local stepDist = 70
+        local steps = math.clamp(math.ceil(dist / stepDist), 3, 35)
         for i = 1, steps do
             local alpha = i / steps
-            local interX = currentPos.X + (p.X - currentPos.X) * alpha
-            local interZ = currentPos.Z + (p.Z - currentPos.Z) * alpha
-            local interPos = Vector3.new(interX, highY, interZ)
-            local interCF = CFrame.new(interPos)
+            local interPos = currentPos:Lerp(p, alpha)
             pcall(function()
-                char:PivotTo(interCF)
                 root.AssemblyLinearVelocity = Vector3.zero
                 root.AssemblyAngularVelocity = Vector3.zero
+                root.CFrame = CFrame.new(interPos, p)
             end)
-            task.wait(0.02)
+            task.wait(0.012)
         end
     end
 
     pcall(function()
-        char:PivotTo(targetCF)
         root.AssemblyLinearVelocity = Vector3.zero
         root.AssemblyAngularVelocity = Vector3.zero
         root.CFrame = targetCF
     end)
+    task.wait(0.08)
 end
 
 -- [4.3] ⚡ ZERO-LAG INSTANT PROXIMITY PROMPT ENGINE (100% NATIVE EVENT-DRIVEN)
@@ -718,24 +716,7 @@ local function isPlayerCarryingSapling()
         end
     end
 
-    -- 3. Cek model _CarriedSaplingVisual yang sedang dibawa/menempel di dekat karakter
-    local root = getRoot(char)
-    if root then
-        local skriptF = workspace:FindFirstChild("SkriptF")
-        local spawned = (skriptF and skriptF:FindFirstChild("SpawnedSaplings")) or workspace:FindFirstChild("SpawnedSaplings")
-        if spawned then
-            for _, m in ipairs(spawned:GetChildren()) do
-                if m.Name == "_CarriedSaplingVisual" or m:GetAttribute("Claimed") == true then
-                    local p = m.PrimaryPart or m:FindFirstChildWhichIsA("BasePart")
-                    if p and (p.Position - root.Position).Magnitude < 10 then
-                        return true
-                    end
-                end
-            end
-        end
-    end
-
-    -- 4. Cek Tool di tangan karakter atau Backpack (Eksklusif Sapling, DILARANG mencocokkan Uprooted Tree!)
+    -- 3. Cek Tool di tangan karakter atau Backpack (Eksklusif Sapling, DILARANG mencocokkan Uprooted Tree!)
     local tool = char:FindFirstChildWhichIsA("Tool")
     if tool then
         local tName = tool.Name:lower()
@@ -755,7 +736,7 @@ local function isPlayerCarryingSapling()
         end
     end
 
-    -- 5. Cek Attributes pada LocalPlayer & Character
+    -- 4. Cek Attributes pada LocalPlayer & Character
     if char:GetAttribute("CarriedSapling") or char:GetAttribute("HasSapling") then
         return true
     end
@@ -994,25 +975,13 @@ local function runStealSaplingsCycle()
             local vim = game:GetService("VirtualInputManager")
             local gotSapling = false
 
-            -- JALUR 1: Firing RemoteEvent Resmi Permainan (LocalSaplingPickupRequest)
-            pcall(function()
-                local remotes = ReplicatedStorage:FindFirstChild("Modules")
-                    and ReplicatedStorage.Modules:FindFirstChild("REConnection")
-                    and ReplicatedStorage.Modules.REConnection:FindFirstChild("Remotes")
-                local req = remotes and remotes:FindFirstChild("LocalSaplingPickupRequest")
-                if req then
-                    req:FireServer(target.model)
-                    req:FireServer(target.model.Name)
-                end
-            end)
-
-            -- JALUR 2: Executor Native fireproximityprompt DENGAN DURASI PENUH (DILARANG DURASI 0!)
+            -- JALUR 1: Executor Native fireproximityprompt DENGAN DURASI PENUH (DILARANG DURASI 0!)
             if prompt and prompt.Parent and prompt.Enabled and typeof(fireproximityprompt) == "function" then
                 pcall(function() fireproximityprompt(prompt, promptDuration) end)
             end
 
-            -- Cek apakah sudah terambil seketika via remote
-            task.wait(0.1)
+            -- Cek status awal
+            task.wait(0.08)
             if isPlayerCarryingSapling() 
                 or target.model.Name == "_CarriedSaplingVisual" 
                 or target.model:GetAttribute("Claimed") == true 
