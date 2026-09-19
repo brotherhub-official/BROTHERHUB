@@ -118,28 +118,27 @@ local BUCKET_OPTIONS = {
 }
 
 local STAGE_KEYS = {
-    "Auto Furthest (Stage 10 - Paling Depan / Tersulit)",
-    "Stage 10 (Z: -6080 - Divine / Lucifer Tier)",
-    "Stage 09 (Z: -6068 - Mythic Tier)",
-    "Stage 08 (Z: -4614 - Legendary Tier)",
-    "Stage 07 (Z: -3221 - Master Tier)",
+    "Auto Furthest (Stage 9 Underworld - Paling Depan / Tersulit)",
+    "Stage 09 (Z: -6080 - Underworld / Divine Tier)",
+    "Stage 08 (Z: -4614 - Mythic Tier)",
+    "Stage 07 (Z: -3221 - Legendary Tier)",
     "Stage 06 (Z: -2351 - Epic Tier)",
     "Stage 05 (Z: -1754 - Rare Tier)",
     "Stage 04 (Z: -1150 - Advanced Tier)",
     "Stage 03 (Z: -728 - Intermediate Tier)",
     "Stage 02 (Z: -437 - Beginner Tier)",
     "Stage 01 (Z: -200 - Starter Tier)",
-    "Cycle All Stages (10 ke 01 Bergantian)",
+    "Cycle All Stages (09 ke 01 Bergantian)",
 }
 
--- [1.6] 🌟 5 BIBIT PALING DEPAN (ANGKA 8 SAMPAI 12) + DAFTAR BIBIT RESMI
+-- [1.6] 🌟 5 BIBIT PALING DEPAN (ANGKA 08 SAMPAI 12 DI STAGE 9 UNDERWORLD)
 local ALL_STEALABLE_SEEDS = {
-    -- 5 BIBIT PALING DEPAN RESMI FOUNDER (ANGKA 8..12)
-    { key = "Seed 08", num = 8, displayName = "👑 Seed 08 (Paling Depan)" },
-    { key = "Seed 09", num = 9, displayName = "👑 Seed 09 (Paling Depan)" },
-    { key = "Seed 10", num = 10, displayName = "👑 Seed 10 (Paling Depan)" },
-    { key = "Seed 11", num = 11, displayName = "👑 Seed 11 (Paling Depan)" },
-    { key = "Seed 12", num = 12, displayName = "👑 Seed 12 (Paling Depan)" },
+    -- 5 BIBIT PALING DEPAN RESMI FOUNDER (ANGKA 08..12)
+    { key = "Seed 08", num = "08", displayName = "👑 Seed 08 (Paling Depan)" },
+    { key = "Seed 09", num = "09", displayName = "👑 Seed 09 (Paling Depan)" },
+    { key = "Seed 10", num = "10", displayName = "👑 Seed 10 (Paling Depan)" },
+    { key = "Seed 11", num = "11", displayName = "👑 Seed 11 (Paling Depan)" },
+    { key = "Seed 12", num = "12", displayName = "👑 Seed 12 (Paling Depan)" },
 
     -- DAFTAR BIBIT RESMI DARI MENU GAME
     { key = "Ember-Hollow",      pattern = "ember",       displayName = "🔥 Ember-Hollow Seed" },
@@ -167,7 +166,7 @@ for _, s in ipairs(ALL_STEALABLE_SEEDS) do
     table.insert(SEED_NAME_KEYS, s.displayName)
 end
 
--- [1.7] 🌟 5 BIBIT PALING DEPAN (ANGKA 8 SAMPAI 12)
+-- [1.7] 🌟 5 BIBIT PALING DEPAN (ANGKA 08 SAMPAI 12 DI STAGE 9 UNDERWORLD)
 local TOP5_SEEDS = {
     "Seed 08",
     "Seed 09",
@@ -183,6 +182,7 @@ local config = {
     -- Auto Steal & Multi-Select 5 Bibit Paling Depan
     autoSteal             = false,
     autoFlashSteal        = true,
+    onlyStage9Underworld  = true,     -- Only Stage 9 Underworld (Hanya 08, 09, 10, 11, 12 Paling Depan)
     useMultiSeedFilter    = true,     -- Aktifkan Multi-Select 5 Bibit Depan
     multiTargetSeeds      = {
         ["Seed 08"]           = true,
@@ -192,7 +192,7 @@ local config = {
         ["Seed 12"]           = true,
     },
     targetSeedName        = "All / Furthest Rare Seed (Auto Paling Langka)",
-    selectedStage         = "Auto Furthest (Stage 10 - Paling Depan / Tersulit)",
+    selectedStage         = "Auto Furthest (Stage 9 Underworld - Paling Depan / Tersulit)",
     antiGuardChase        = true,
     antiFlingShield       = true,
     holdSeedInHand        = true,
@@ -1487,12 +1487,12 @@ local function getChuangjianFolder()
     return nil
 end
 
--- [1.8] 🌟 5 MODEL BIBIT TERDEPAN: 8 SAMPAI 12 DI WORKSPACE.创建 (8, 9, 10, 11, 12)
--- Rotasi bergiliran (Round-Robin) mengambil model 8, 9, 10, 11, 12 jika tersedia di folder 创建
-local FRONT_MODEL_GROUPS = { 8, 9, 10, 11, 12 }
+-- [1.8] 🌟 5 MODEL BIBIT TERDEPAN: 08 SAMPAI 12 DI STAGE 9 UNDERWORLD (08, 09, 10, 11, 12)
+-- Rotasi bergiliran (Round-Robin) mengambil model 08, 09, 10, 11, 12 di Stage 9 Underworld
+local FRONT_MODEL_GROUPS = { "08", "09", "10", "11", "12" }
 local frontModelCycleIndex = 1
 
--- Helper: Scan Cepat 1-Pass Seluruh Model Bibit Terdepan (8..12) Tanpa Lag (0% Lag - Ringan & 60 FPS!)
+-- Helper: Scan Cepat 1-Pass Seluruh Model Bibit Terdepan (08..12) di Stage 9 Underworld (0% Lag - Ringan & 60 FPS!)
 local function scanFrontSeedModels()
     local chuangjian = getChuangjianFolder()
     if not chuangjian then return {} end
@@ -1509,28 +1509,29 @@ local function scanFrontSeedModels()
         for _, numKey in ipairs(FRONT_MODEL_GROUPS) do
             if not available[numKey] then
                 local numVal = tonumber(numKey)
-                local numStr = tostring(numKey)
-                local num02 = numVal and string.format("%02d", numVal) or numStr
-
                 local isMatch = false
-                if mName == num02 or mName == numStr or tonumber(mName) == numVal then
+
+                -- Cocokkan nama model secara eksak: "08", "09", "10", "11", "12"
+                if mName == numKey or (tonumber(mName) and tonumber(mName) == numVal) then
                     isMatch = true
-                elseif string.find(mName, "^" .. numStr .. "$") or string.find(mName, "^" .. num02 .. "$") then
-                    isMatch = true
-                elseif string.find(mName, "Stage" .. num02) or string.find(mName, "Stage" .. numStr) or string.find(mName, "Stage " .. numStr) then
-                    isMatch = true
-                elseif modPathStr ~= "" and (string.find(modPathStr, "/" .. num02) or string.find(modPathStr, "/" .. numStr) or string.find(modPathStr, "-" .. num02) or string.find(modPathStr, "-" .. numStr)) then
+                elseif modPathStr ~= "" and (string.find(modPathStr, "/" .. numKey .. "$") or string.find(modPathStr, "/" .. numKey .. "/")) then
                     isMatch = true
                 end
 
                 if isMatch then
-                    -- Verifikasi bahwa bibit nyata dan aktif (ada part fisik Body & tidak transparan)
-                    local body = m:FindFirstChild("Body") or m.PrimaryPart or m:FindFirstChildWhichIsA("BasePart")
-                    if body and body.Transparency < 0.9 then
-                        local pos = getModelPosition(m)
-                        if pos and pos.Y > -50 and (pos.Z < -3500 or (pos.Z < 0 and pos.Z > -7000)) then
-                            if not isPromptAlreadyStolen(m, pos) then
-                                available[numKey] = { model = m, pos = pos }
+                    local pos = getModelPosition(m)
+                    if pos and pos.Y > -50 then
+                        -- ⚡ FILTER KETAT STAGE 9 UNDERWORLD:
+                        -- Stage 9 Underworld berada di koordinat Z <= -6040 dan Z >= -6250.
+                        -- Ini memblokir 100% seluruh bibit di Stage 01 s/d Stage 08 agar tidak pernah tersentuh!
+                        local isUnderworldStage9 = (pos.Z <= -6040 and pos.Z >= -6250)
+                        if (not config.onlyStage9Underworld) or isUnderworldStage9 then
+                            -- Verifikasi bahwa bibit nyata dan aktif (ada part fisik Body & tidak transparan)
+                            local body = m:FindFirstChild("Body") or m.PrimaryPart or m:FindFirstChildWhichIsA("BasePart")
+                            if body and body.Transparency < 0.9 then
+                                if not isPromptAlreadyStolen(m, pos) then
+                                    available[numKey] = { model = m, pos = pos }
+                                end
                             end
                         end
                     end
@@ -1557,7 +1558,8 @@ end
 
 local function findFrontSeedModel(numKey)
     local available = scanFrontSeedModels()
-    local found = available[tonumber(numKey) or numKey]
+    local strKey = type(numKey) == "number" and string.format("%02d", numKey) or tostring(numKey)
+    local found = available[strKey] or available[tonumber(numKey)]
     if found then
         return found.model, found.pos
     end
@@ -1573,15 +1575,15 @@ local function getNextAvailableTargetSeed()
     -- 1. Evaluasi apakah user mencentang salah satu dari 5 Bibit Depan (Seed 08..12) di Droplist
     local activeFronts = {}
     for _, numKey in ipairs(FRONT_MODEL_GROUPS) do
-        local keyStr = string.format("Seed %02d", numKey)
-        if config.multiTargetSeeds and config.multiTargetSeeds[keyStr] == true then
+        local keyStr = string.format("Seed %s", numKey)
+        if config.multiTargetSeeds and (config.multiTargetSeeds[keyStr] == true or config.multiTargetSeeds[numKey] == true) then
             table.insert(activeFronts, { key = keyStr, num = numKey })
         end
     end
 
     local totalFront = #activeFronts
     if totalFront > 0 then
-        -- User MENCENTANG Bibit Depan (8..12)!
+        -- User MENCENTANG Bibit Depan (08..12)!
         -- Rotasikan secara bergiliran (Round-Robin) HANYA di antara nomor yang dicentang:
         for step = 0, totalFront - 1 do
             local idx = ((frontModelCycleIndex - 1 + step) % totalFront) + 1
@@ -1594,16 +1596,18 @@ local function getNextAvailableTargetSeed()
         end
 
         -- HUKUM MUTLAK FOUNDER:
-        -- "seed paling depan itu hanya angka 8 sampai 12, kalau gak ada angka itu, jangan di ambil, ini yang paling depan"!
+        -- "seed paling depan itu hanya angka 08 sampai 12, kalau gak ada angka itu, jangan di ambil, ini yang paling depan"!
         -- JIKA BIBIT DEPAN TERPILIH SEDANG KOSONG: DILARANG MENGAMBIL BIBIT LAIN! TETAP DIAM DI TEMPAT!
         return nil, nil, nil
     end
 
-    -- 2. Jika user TIDAK mencentang angka 8..12 sama sekali (hanya mencentang nama bibit spesifik):
+    -- 2. Jika user TIDAK mencentang angka 08..12 sama sekali (hanya mencentang nama bibit spesifik):
     local activeNamedSeeds = {}
     for _, sInfo in ipairs(ALL_STEALABLE_SEEDS) do
         if not sInfo.num and config.multiTargetSeeds and config.multiTargetSeeds[sInfo.key] == true then
-            table.insert(activeNamedSeeds, sInfo)
+            if (not config.onlyStage9Underworld) or (sInfo.pos and sInfo.pos.Z <= -6040 and sInfo.pos.Z >= -6250) then
+                table.insert(activeNamedSeeds, sInfo)
+            end
         end
     end
 
@@ -1614,9 +1618,11 @@ local function getNextAvailableTargetSeed()
             local candidate = activeNamedSeeds[idx]
             local pos, prompt = findSeedPrompt(candidate)
             if pos and prompt and not isPromptAlreadyStolen(prompt, pos) then
-                stealCycleIndex = (idx % totalNamed) + 1
-                local mdl = prompt.Parent and (prompt.Parent:IsA("Model") and prompt.Parent or prompt.Parent:FindFirstAncestorOfClass("Model"))
-                return mdl or prompt, pos, candidate.key
+                if (not config.onlyStage9Underworld) or (pos.Z <= -6040 and pos.Z >= -6250) then
+                    stealCycleIndex = (idx % totalNamed) + 1
+                    local mdl = prompt.Parent and (prompt.Parent:IsA("Model") and prompt.Parent or prompt.Parent:FindFirstAncestorOfClass("Model"))
+                    return mdl or prompt, pos, candidate.key
+                end
             end
         end
     end
@@ -3380,7 +3386,7 @@ local function makeMultiDropdown(parent, label, getItems, store, emptyTxt, mapVa
         local quick5 = Instance.new("TextButton", quickRow)
         quick5.Size = UDim2.new(0.42, -2, 1, 0)
         quick5.BackgroundColor3 = Color3.fromRGB(45, 120, 210)
-        quick5.Text = "👑 5 Depan"
+        quick5.Text = "👑 5 Depan (08-12)"
         quick5.TextColor3 = Color3.fromRGB(255, 255, 255)
         quick5.Font = THEME.Font
         quick5.TextSize = 11
@@ -3532,6 +3538,7 @@ currentTab = "Steal"
 local secSteal = createSection(pageSteal, "FLASH AUTO STEAL & SAFE HARVEST SUITE", "Curi bibit instan, teleport langsung ke bibit, tekan E, langsung kembali ke markas (100% Bebas Dikejar Penjaga)")
 createToggle(secSteal, tr("FlashSteal"), config.autoSteal, function(v) config.autoSteal = v config.autoFlashSteal = v end)
 createToggle(secSteal, tr("SmartWait"), config.smartWaitSeed, function(v) config.smartWaitSeed = v end)
+createToggle(secSteal, "🏆 Only Stage 9 Underworld (Hanya 08, 09, 10, 11, 12 Depan)", config.onlyStage9Underworld, function(v) config.onlyStage9Underworld = v saveConfig() end)
 
 -- SEKSI MULTI-SELECT DROPLIST STANDAR 1:1 MY FLOWER SHOP
 makeMultiDropdown(secSteal, "🎯 Target Seeds to Steal", function()
