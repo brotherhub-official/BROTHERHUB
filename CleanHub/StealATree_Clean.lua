@@ -389,6 +389,7 @@ local config = {
     autoStealSaplings     = false,
     stealMethod           = "Teleport",
     smartReturnPlot       = true,
+    instantPrompt         = true,
     only5FrontSaplings    = true, -- Default HANYA 5 Pohon Paling Depan (Clockwork, Void, Cosmic, Skylands, Candyland)
     multiTargetTrees      = {
         ["Clockwork"]     = true,
@@ -535,15 +536,41 @@ local function getHum(char)
 end
 
 local function safeTeleport(cframeOrVec)
-    local root = getRoot()
+    local char = LocalPlayer.Character
+    local root = getRoot(char)
     if not root then return end
     local targetCF = typeof(cframeOrVec) == "Vector3" and CFrame.new(cframeOrVec) or cframeOrVec
     pcall(function()
+        if char then char:PivotTo(targetCF) end
         root.AssemblyLinearVelocity = Vector3.zero
         root.AssemblyAngularVelocity = Vector3.zero
         root.CFrame = targetCF
     end)
 end
+
+-- [4.3] ⚡ ZERO-LAG INSTANT PROXIMITY PROMPT ENGINE (100% NATIVE EVENT-DRIVEN)
+local ProximityPromptService = game:GetService("ProximityPromptService")
+local function makePromptInstant(p)
+    if p and p:IsA("ProximityPrompt") then
+        pcall(function()
+            p.HoldDuration = 0
+            p.MaxActivationDistance = 30
+            p.RequiresLineOfSight = false
+        end)
+    end
+end
+
+registerConnection(ProximityPromptService.PromptShown:Connect(function(prompt)
+    if config.instantPrompt then
+        makePromptInstant(prompt)
+    end
+end))
+
+registerConnection(workspace.DescendantAdded:Connect(function(child)
+    if config.instantPrompt and child:IsA("ProximityPrompt") then
+        makePromptInstant(child)
+    end
+end))
 
 -- Teleport ke Plot Sendiri Resmi Server
 -- Cek apakah instance berada di dalam plot / kebun pemain (100% Proteksi Plot)
@@ -624,17 +651,50 @@ end
 local function isPlayerCarryingSapling()
     local char = LocalPlayer.Character
     if not char then return false end
-    if char:FindFirstChild("_CarriedSaplingVisual") then return true end
+
+    -- 1. Cek visual sapling di dalam karakter
+    if char:FindFirstChild("_CarriedSaplingVisual", true) then return true end
+    for _, c in ipairs(char:GetChildren()) do
+        if c.Name == "_CarriedSaplingVisual" or string.find(c.Name:lower(), "sapling") then
+            return true
+        end
+    end
+
+    -- 2. Cek Tool di tangan karakter atau Backpack
     local tool = char:FindFirstChildWhichIsA("Tool")
-    if tool and string.find(tool.Name, "Sapling") then return true end
+    if tool and (string.find(tool.Name:lower(), "sapling") or string.find(tool.Name:lower(), "tree")) then
+        return true
+    end
     local bp = LocalPlayer:FindFirstChild("Backpack")
     if bp then
         for _, item in ipairs(bp:GetChildren()) do
-            if item:IsA("Tool") and string.find(item.Name, "Sapling") then
+            if item:IsA("Tool") and (string.find(item.Name:lower(), "sapling") or string.find(item.Name:lower(), "tree")) then
                 return true
             end
         end
     end
+
+    -- 3. Cek visual sapling di Workspace dalam radius 8 studs dari pemain
+    local root = getRoot(char)
+    if root then
+        for _, obj in ipairs(workspace:GetChildren()) do
+            if obj.Name == "_CarriedSaplingVisual" and obj:IsA("Model") then
+                local p = obj:GetPivot().Position
+                if (p - root.Position).Magnitude <= 8 then
+                    return true
+                end
+            end
+        end
+    end
+
+    -- 4. Cek Attributes pada LocalPlayer & Character
+    if char:GetAttribute("CarriedSapling") or char:GetAttribute("HasSapling") or char:GetAttribute("Carrying") then
+        return true
+    end
+    if LocalPlayer:GetAttribute("CarriedSapling") or LocalPlayer:GetAttribute("HasSapling") or LocalPlayer:GetAttribute("Carrying") then
+        return true
+    end
+
     return false
 end
 
@@ -642,24 +702,24 @@ local function firePrompt(prompt)
     if not prompt or not prompt:IsA("ProximityPrompt") then return false end
     if not prompt.Enabled then return false end
     
-    local holdDuration = prompt.HoldDuration or 1.0
-    local ok = false
+    pcall(function()
+        prompt.HoldDuration = 0
+        prompt.MaxActivationDistance = 30
+        prompt.RequiresLineOfSight = false
+    end)
     
-    -- 1. Jalankan native fireproximityprompt jika didukung executor
+    local ok = false
     pcall(function()
         if typeof(fireproximityprompt) == "function" then
             fireproximityprompt(prompt, 0)
-            fireproximityprompt(prompt, holdDuration)
             ok = true
         end
     end)
     
-    -- 2. Simulasi InputHoldBegin dan InputHoldEnd dengan timing presisi durasi penuh
     pcall(function()
         if prompt.InputHoldBegin and prompt.InputHoldEnd then
             prompt:InputHoldBegin()
-            local waitTime = holdDuration > 0 and (holdDuration + 0.15) or 0.2
-            task.wait(waitTime)
+            task.wait(0.05)
             prompt:InputHoldEnd()
             ok = true
         end
@@ -667,6 +727,8 @@ local function firePrompt(prompt)
     
     return ok
 end
+
+local recentlyTargetedSaplings = {}
 
 -- [5] 🌟 AUTO STEAL SAPLINGS LOGIC (100% WILD ARENA ONLY • BEBAS KEBUN ORANG LAIN)
 local function getAllSaplingModels()
@@ -730,56 +792,60 @@ local function runStealSaplingsCycle()
 
     local allModels = getAllSaplingModels()
     local candidates = {}
+    local now = tick()
     
     for _, model in ipairs(allModels) do
-        local anchor = model:FindFirstChild("_CollectSaplingPromptAnchor")
-        local prompt = (anchor and anchor:FindFirstChildOfClass("ProximityPrompt")) or model:FindFirstChildWhichIsA("ProximityPrompt", true)
-        
-        if prompt and prompt.Enabled then
-            local modelName = model.Name
-            local objText = prompt.ObjectText or ""
+        -- Lewati target yang sedang dalam cooldown gagal
+        if not recentlyTargetedSaplings[model] or now > recentlyTargetedSaplings[model] then
+            local anchor = model:FindFirstChild("_CollectSaplingPromptAnchor")
+            local prompt = (anchor and anchor:FindFirstChildOfClass("ProximityPrompt")) or model:FindFirstChildWhichIsA("ProximityPrompt", true)
             
-            -- Cari kecocokan tipe pohon dengan ALL_STEALABLE_TREES
-            local matchedTreeInfo = nil
-            for _, tInfo in ipairs(ALL_STEALABLE_TREES) do
-                if string.find(modelName:lower(), tInfo.pattern) 
-                    or string.find(objText:lower(), tInfo.pattern) 
-                    or string.find(modelName:lower(), tInfo.key:lower()) then
-                    matchedTreeInfo = tInfo
-                    break
-                end
-            end
-            
-            if matchedTreeInfo then
-                local isTop5 = (matchedTreeInfo.key == "Clockwork" or matchedTreeInfo.key == "Void" or matchedTreeInfo.key == "Cosmic" or matchedTreeInfo.key == "Skylands" or matchedTreeInfo.key == "Candyland")
-                local isAllowed = false
+            if prompt and prompt.Enabled then
+                local modelName = model.Name
+                local objText = prompt.ObjectText or ""
                 
-                -- Evaluasi filter droplist multi-select & toggle 5 pohon terdepan
-                if config.only5FrontSaplings then
-                    if isTop5 and (config.multiTargetTrees[matchedTreeInfo.key] ~= false) then
-                        isAllowed = true
-                    end
-                else
-                    if config.multiTargetTrees[matchedTreeInfo.key] == true then
-                        isAllowed = true
+                -- Cari kecocokan tipe pohon dengan ALL_STEALABLE_TREES
+                local matchedTreeInfo = nil
+                for _, tInfo in ipairs(ALL_STEALABLE_TREES) do
+                    if string.find(modelName:lower(), tInfo.pattern) 
+                        or string.find(objText:lower(), tInfo.pattern) 
+                        or string.find(modelName:lower(), tInfo.key:lower()) then
+                        matchedTreeInfo = tInfo
+                        break
                     end
                 end
                 
-                if isAllowed then
-                    local promptPart = prompt.Parent
-                    local pPos = (promptPart and promptPart:IsA("BasePart") and promptPart.Position) 
-                        or (anchor and anchor.Position) 
-                        or (model.PrimaryPart and model.PrimaryPart.Position) 
-                        or (model:FindFirstChildWhichIsA("BasePart") and model:FindFirstChildWhichIsA("BasePart").Position)
-                    if pPos then
-                        table.insert(candidates, {
-                            model = model,
-                            prompt = prompt,
-                            pos = pPos,
-                            treeInfo = matchedTreeInfo,
-                            z = pPos.Z,
-                            dist = (pPos - root.Position).Magnitude
-                        })
+                if matchedTreeInfo then
+                    local isTop5 = (matchedTreeInfo.key == "Clockwork" or matchedTreeInfo.key == "Void" or matchedTreeInfo.key == "Cosmic" or matchedTreeInfo.key == "Skylands" or matchedTreeInfo.key == "Candyland")
+                    local isAllowed = false
+                    
+                    -- Evaluasi filter droplist multi-select & toggle 5 pohon terdepan
+                    if config.only5FrontSaplings then
+                        if isTop5 and (config.multiTargetTrees[matchedTreeInfo.key] ~= false) then
+                            isAllowed = true
+                        end
+                    else
+                        if config.multiTargetTrees[matchedTreeInfo.key] == true then
+                            isAllowed = true
+                        end
+                    end
+                    
+                    if isAllowed then
+                        local promptPart = prompt.Parent
+                        local pPos = (promptPart and promptPart:IsA("BasePart") and promptPart.Position) 
+                            or (anchor and anchor.Position) 
+                            or (model.PrimaryPart and model.PrimaryPart.Position) 
+                            or (model:FindFirstChildWhichIsA("BasePart") and model:FindFirstChildWhichIsA("BasePart").Position)
+                        if pPos then
+                            table.insert(candidates, {
+                                model = model,
+                                prompt = prompt,
+                                pos = pPos,
+                                treeInfo = matchedTreeInfo,
+                                z = pPos.Z,
+                                dist = (pPos - root.Position).Magnitude
+                            })
+                        end
                     end
                 end
             end
@@ -798,46 +864,102 @@ local function runStealSaplingsCycle()
 
     task.spawn(function()
         pcall(function()
-            -- Noclip sementara agar karakter tidak tertabrak rintangan/dinding
+            -- Noclip sementara agar karakter tidak terdorong/tersangkut rintangan
             for _, pt in ipairs(char:GetChildren()) do
                 if pt:IsA("BasePart") then
                     pt.CanCollide = false
                 end
             end
 
-            -- WAJIB Teleport langsung ke posisi ProximityPrompt (radius 1 stud)
-            safeTeleport(target.pos + Vector3.new(0, 1.2, 0))
-            task.wait(0.15)
-            
-            -- Bekukan velocity agar karakter stabil di titik prompt
-            if root then
-                root.AssemblyLinearVelocity = Vector3.zero
-                root.AssemblyAngularVelocity = Vector3.zero
+            -- Teleport langsung ke posisi ProximityPrompt
+            local targetPos = target.pos + Vector3.new(0, 1.2, 0)
+            local targetCF = CFrame.new(targetPos)
+            safeTeleport(targetCF)
+
+            local prompt = target.prompt
+            if prompt then
+                pcall(function()
+                    prompt.HoldDuration = 0
+                    prompt.MaxActivationDistance = 30
+                    prompt.RequiresLineOfSight = false
+                    prompt.Enabled = true
+                end)
             end
 
-            -- Eksekusi ProximityPrompt
-            task.spawn(function()
-                firePrompt(target.prompt)
-            end)
-            
-            -- Eksekusi remote fallback server
-            pcall(function()
-                local pickupReq = ReplicatedStorage:FindFirstChild("LocalSaplingPickupRequest")
-                if pickupReq and pickupReq:IsA("RemoteEvent") then
-                    pickupReq:FireServer(target.model)
-                end
-            end)
-
-            -- Tunggu konfirmasi penerimaan bibit (maksimal 1.4 detik)
+            -- Siklus Interaksi Presisi: Tahan posisi di bibit & picu prompt sampai bibit BENAR-BENAR TERAMBIL!
             local startTime = tick()
             local gotSapling = false
-            while tick() - startTime < 1.4 do
-                if isPlayerCarryingSapling() or not target.model:IsDescendantOf(workspace) then
+            local maxHoldTime = 2.4 -- Cukup untuk latensi server dan replikasi
+
+            while (tick() - startTime) < maxHoldTime do
+                -- Kunci posisi & velocity karakter persis di titik bibit agar tidak bergeser/terlempar
+                if root then
+                    root.AssemblyLinearVelocity = Vector3.zero
+                    root.AssemblyAngularVelocity = Vector3.zero
+                    root.CFrame = targetCF
+                end
+
+                -- 1. Picu ProximityPrompt secara native
+                if prompt and prompt.Parent and prompt.Enabled then
+                    pcall(function() prompt.HoldDuration = 0 end)
+                    pcall(function()
+                        if typeof(fireproximityprompt) == "function" then
+                            fireproximityprompt(prompt, 0)
+                        end
+                    end)
+                    pcall(function()
+                        prompt:InputHoldBegin()
+                    end)
+                end
+
+                -- 2. Touch interest pada anchor & part model bibit
+                pcall(function()
+                    if typeof(firetouchinterest) == "function" and root and target.model then
+                        for _, pt in ipairs(target.model:GetChildren()) do
+                            if pt:IsA("BasePart") then
+                                firetouchinterest(root, pt, 0)
+                                task.wait()
+                                firetouchinterest(root, pt, 1)
+                            end
+                        end
+                    end
+                end)
+
+                -- 3. Backup VirtualInputManager Key E
+                pcall(function()
+                    local vim = game:GetService("VirtualInputManager")
+                    vim:SendKeyEvent(true, Enum.KeyCode.E, false, game)
+                end)
+
+                -- 4. Remote fallback server
+                pcall(function()
+                    local pickupReq = ReplicatedStorage:FindFirstChild("LocalSaplingPickupRequest")
+                    if pickupReq and pickupReq:IsA("RemoteEvent") then
+                        pickupReq:FireServer(target.model)
+                    end
+                end)
+
+                task.wait(0.08)
+
+                -- Evaluasi keberhasilan penerimaan bibit
+                if isPlayerCarryingSapling() 
+                    or not target.model:IsDescendantOf(workspace) 
+                    or (prompt and (prompt.Parent == nil or not prompt.Enabled)) then
                     gotSapling = true
                     break
                 end
-                task.wait(0.08)
             end
+
+            -- Lepaskan hold prompt dan Key E
+            pcall(function()
+                if prompt and prompt.Parent then
+                    prompt:InputHoldEnd()
+                end
+            end)
+            pcall(function()
+                local vim = game:GetService("VirtualInputManager")
+                vim:SendKeyEvent(false, Enum.KeyCode.E, false, game)
+            end)
 
             -- Pulihkan collision part tubuh
             for _, pt in ipairs(char:GetChildren()) do
@@ -847,15 +969,21 @@ local function runStealSaplingsCycle()
             end
 
             if gotSapling then
+                recentlyTargetedSaplings[target.model] = tick() + 30.0
                 showNotification("🌲 BROTHER HUB", "Berhasil mengambil: " .. (target.treeInfo.displayName or target.model.Name), 3)
-            end
 
-            -- Kembali ke kebun sendiri dan langsung tanam
-            if config.smartReturnPlot then
-                task.wait(0.2)
-                returnToOwnPlot()
-                task.wait(0.4)
-                pcall(runAutoPlantAndGarden)
+                -- HANYA KEMBALI KE KEBUN JIKA BIBIT SUDAH BENAR-BENAR BERHASIL TERAMBIL!
+                if config.smartReturnPlot then
+                    task.wait(0.2)
+                    returnToOwnPlot()
+                    task.wait(0.5)
+                    pcall(runAutoPlantAndGarden)
+                end
+            else
+                -- JIKA BELUM/GAGAL DIAMBIL: DILARANG KERAS MEMULANGKAN PEMAIN KE PLOT!
+                -- Beri cooldown 4 detik agar bergantian mencoba bibit berikutnya di arena
+                recentlyTargetedSaplings[target.model] = tick() + 4.0
+                task.wait(0.3)
             end
         end)
         isStealingBusy = false
