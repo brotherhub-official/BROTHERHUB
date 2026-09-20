@@ -594,6 +594,16 @@ end
 local ProximityPromptService = game:GetService("ProximityPromptService")
 local function makePromptInstant(p)
     if p and p:IsA("ProximityPrompt") then
+        -- JANGAN PERNAH MENGUBAH HoldDuration UNTUK PROMPT BIBIT!
+        -- Server Roblox Steal A Tree memverifikasi durasi hold 1.0s. Jika di-set 0 di client,
+        -- server akan mendeteksi packet trigger instan dan MENOLAKNYA (rejected)!
+        if p.Name == "CollectSaplingPrompt" or string.find(p.Name, "Sapling") or (p.Parent and string.find(p.Parent.Name, "Sapling")) then
+            pcall(function()
+                p.MaxActivationDistance = 25
+                p.RequiresLineOfSight = false
+            end)
+            return
+        end
         pcall(function()
             p.HoldDuration = 0
             p.MaxActivationDistance = 35
@@ -774,7 +784,11 @@ local function firePrompt(prompt)
     local ok = false
     if typeof(fireproximityprompt) == "function" then
         pcall(function()
-            fireproximityprompt(prompt, 0)
+            if holdDur > 0.1 then
+                fireproximityprompt(prompt, holdDur + 0.1)
+            else
+                fireproximityprompt(prompt, 0)
+            end
             ok = true
         end)
     end
@@ -947,10 +961,11 @@ local function runStealSaplingsCycle()
     task.spawn(function()
         pcall(function()
             local anchorPos = target.pos
-            local targetDropPos = anchorPos + Vector3.new(0, 0.5, 0)
-            local targetCF = CFrame.new(targetDropPos)
+            -- Berdiri tepat di depan bibit (2.5 studs) di ketinggian tanah yang pas menghadap ke bibit
+            local standPos = Vector3.new(anchorPos.X, anchorPos.Y + 0.5, anchorPos.Z + 2.5)
+            local standCF = CFrame.lookAt(standPos, anchorPos)
 
-            -- 1. Noclip karakter sementara agar tidak tertahan collider pohon/terrain
+            -- 1. Noclip karakter sementara & pastikan tangan kosong (unequip tool agar bisa menggendong bibit)
             pcall(function()
                 for _, part in ipairs(char:GetDescendants()) do
                     if part:IsA("BasePart") then
@@ -960,30 +975,31 @@ local function runStealSaplingsCycle()
                 local hum = char:FindFirstChildOfClass("Humanoid")
                 if hum then
                     hum.PlatformStand = false
+                    hum.Sit = false
                     hum:UnequipTools()
                     hum:ChangeState(Enum.HumanoidStateType.Running)
                 end
             end)
 
-            -- 2. Teleportasi aman langsung ke titik prompt bibit
-            safeTeleport(targetCF)
+            -- 2. Teleportasi aman langsung ke depan bibit
+            safeTeleport(standCF)
 
-            -- Kunci posisi langsung di titik anchor bibit (Jarak 0 stud)
+            -- Kunci posisi menghadap bibit secara presisi
             pcall(function()
                 root.AssemblyLinearVelocity = Vector3.zero
                 root.AssemblyAngularVelocity = Vector3.zero
                 root.Anchored = false
-                root.CFrame = targetCF
+                root.CFrame = standCF
             end)
 
-            -- Jeda 0.15 detik agar posisi client disinkronisasi server
-            task.wait(0.15)
+            -- Jeda 0.12 detik agar posisi client disinkronisasi server
+            task.wait(0.12)
 
             -- Arahkan Camera langsung menghadap anchor bibit
             pcall(function()
                 local cam = workspace.CurrentCamera
                 if cam then
-                    cam.CFrame = CFrame.lookAt(targetDropPos + Vector3.new(0, 1.5, 3.5), anchorPos)
+                    cam.CFrame = CFrame.lookAt(standPos + Vector3.new(0, 2, 3), anchorPos)
                 end
             end)
 
@@ -1002,69 +1018,50 @@ local function runStealSaplingsCycle()
             end
 
             -- =========================================================================
-            -- FLASH STEAL ENGINE PRESISI (1:1 STEAL A SEED STANDAR RESMI FOUNDER)
-            -- Menjalankan pulsa interaksi multi-trigger setiap 0.06s langsung di titik bibit
+            -- PURE NATURAL INTERACTION ENGINE (100% VALID SERVER REPLICATION)
+            -- Membiarkan HoldDuration asli (1.0s) & mengeksekusi penekanan tombol E 
+            -- secara native via VirtualInputManager selama 1.20s (1x tekan, 0% spam reset)
             -- =========================================================================
             if not gotSapling and prompt and prompt.Parent then
-                local startTime = tick()
-                local maxHoldTime = 1.8 -- Waktu maksimal hold (cukup untuk 1.0s natural hold ataupun instant)
+                -- Pastikan parameter prompt aktif & jangkauan luas tanpa merusak HoldDuration!
+                pcall(function()
+                    prompt.HoldDuration = 1.0 -- Wajib 1.0s asli agar server menerima validasi hold!
+                    prompt.MaxActivationDistance = 25
+                    prompt.RequiresLineOfSight = false
+                    prompt.Enabled = true
+                end)
 
-                while (tick() - startTime) < maxHoldTime do
-                    -- Kunci posisi karakter persis di titik anchor bibit (Jarak 0 stud)
+                local pressedKey = false
+                -- Tekan tombol E native ke bawah (1x SAJA)
+                if vim then
+                    pcall(function()
+                        vim:SendKeyEvent(true, Enum.KeyCode.E, false, game)
+                        pressedKey = true
+                    end)
+                end
+
+                -- Dukung juga fireproximityprompt jika didukung oleh executor
+                if typeof(fireproximityprompt) == "function" then
+                    task.spawn(function()
+                        pcall(function() fireproximityprompt(prompt, 1.0) end)
+                        pcall(function() fireproximityprompt(prompt) end)
+                    end)
+                end
+
+                -- Tunggu hingga 1.20 detik (1.0s durasi asli + 0.2s toleransi jaringan)
+                local holdStartTime = tick()
+                local holdDuration = 1.20
+
+                while (tick() - holdStartTime) < holdDuration do
+                    task.wait(0.05)
+                    -- Jaga posisi dan orientasi karakter tetap stabil menghadap bibit
                     pcall(function()
                         root.AssemblyLinearVelocity = Vector3.zero
                         root.AssemblyAngularVelocity = Vector3.zero
-                        root.CFrame = targetCF
-                        for _, part in ipairs(char:GetDescendants()) do
-                            if part:IsA("BasePart") then
-                                part.CanCollide = false
-                            end
-                        end
+                        root.CFrame = standCF
                     end)
 
-                    -- Bypass parameter prompt di client
-                    pcall(function()
-                        prompt.HoldDuration = 0
-                        prompt.MaxActivationDistance = 35
-                        prompt.RequiresLineOfSight = false
-                    end)
-
-                    -- Trigger executor ProximityPrompt hook
-                    if typeof(fireproximityprompt) == "function" then
-                        pcall(function() fireproximityprompt(prompt, 0) end)
-                        pcall(function() fireproximityprompt(prompt) end)
-                    end
-
-                    -- Native C++ InputHoldBegin
-                    pcall(function() prompt:InputHoldBegin() end)
-
-                    -- Trigger firesignal jika ada listener client
-                    if typeof(firesignal) == "function" then
-                        pcall(function() firesignal(prompt.Triggered, LocalPlayer) end)
-                        pcall(function() firesignal(prompt.Triggered) end)
-                    end
-
-                    -- Trigger touch interest pada seluruh part bibit (Model & Parts)
-                    if typeof(firetouchinterest) == "function" and root and target.model then
-                        pcall(function()
-                            for _, pt in ipairs(target.model:GetChildren()) do
-                                if pt:IsA("BasePart") then
-                                    firetouchinterest(root, pt, 0)
-                                    task.wait()
-                                    firetouchinterest(root, pt, 1)
-                                end
-                            end
-                        end)
-                    end
-
-                    -- Simulasi tombol E native Roblox
-                    pcall(function()
-                        vim:SendKeyEvent(true, Enum.KeyCode.E, false, game)
-                    end)
-
-                    task.wait(0.06)
-
-                    -- Cek verifikasi seketika jika bibit sudah berhasil terambil
+                    -- Verifikasi seketika jika bibit sudah terambil
                     if isPlayerCarryingSapling() 
                         or target.model.Name == "_CarriedSaplingVisual" 
                         or target.model:GetAttribute("Claimed") == true 
@@ -1076,13 +1073,29 @@ local function runStealSaplingsCycle()
                     end
                 end
 
-                -- Lepaskan input tombol E & hold prompt secara bersih
-                pcall(function()
-                    prompt:InputHoldEnd()
-                end)
-                pcall(function()
-                    vim:SendKeyEvent(false, Enum.KeyCode.E, false, game)
-                end)
+                -- Lepaskan tombol E native ke atas (1x SAJA)
+                if pressedKey and vim then
+                    pcall(function()
+                        vim:SendKeyEvent(false, Enum.KeyCode.E, false, game)
+                    end)
+                end
+
+                -- Periode toleransi replikasi server (hingga 0.8s jika ada jeda ping)
+                if not gotSapling then
+                    local repStart = tick()
+                    while (tick() - repStart) < 0.8 do
+                        if isPlayerCarryingSapling() 
+                            or target.model.Name == "_CarriedSaplingVisual" 
+                            or target.model:GetAttribute("Claimed") == true 
+                            or not target.model:IsDescendantOf(workspace)
+                            or not prompt.Parent
+                            or not prompt.Enabled then
+                            gotSapling = true
+                            break
+                        end
+                        task.wait(0.08)
+                    end
+                end
             end
 
             -- Pulihkan CanCollide karakter setelah interaksi selesai
@@ -1092,7 +1105,9 @@ local function runStealSaplingsCycle()
                         part.CanCollide = true
                     end
                 end
-                vim:SendKeyEvent(false, Enum.KeyCode.E, false, game)
+                if vim then
+                    vim:SendKeyEvent(false, Enum.KeyCode.E, false, game)
+                end
                 if root then root.Anchored = false end
             end)
 
