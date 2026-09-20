@@ -390,22 +390,22 @@ local config = {
     stealMethod           = "Teleport",
     smartReturnPlot       = true,
     instantPrompt         = true,
-    only5FrontSaplings    = true, -- Default HANYA 5 Pohon Paling Depan (Clockwork, Void, Cosmic, Skylands, Candyland)
+    only5FrontSaplings    = false, -- Bebas curi semua bibit di arena (termasuk Plains & Flowerfield)
     multiTargetTrees      = {
         ["Clockwork"]     = true,
         ["Void"]          = true,
         ["Cosmic"]        = true,
         ["Skylands"]      = true,
         ["Candyland"]     = true,
-        ["Frozen"]        = false,
-        ["Crystal Cavern"]= false,
-        ["Volcano"]       = false,
-        ["Desert"]        = false,
-        ["Abyssal Sea"]   = false,
-        ["Beach"]         = false,
-        ["Forest"]        = false,
-        ["Flowerfield"]   = false,
-        ["Plains"]        = false,
+        ["Frozen"]        = true,
+        ["Crystal Cavern"]= true,
+        ["Volcano"]       = true,
+        ["Desert"]        = true,
+        ["Abyssal Sea"]   = true,
+        ["Beach"]         = true,
+        ["Forest"]        = true,
+        ["Flowerfield"]   = true,
+        ["Plains"]        = true,
     },
     targetSaplingAreas    = {
         ["Clockwork"]     = true,
@@ -535,6 +535,8 @@ local function getHum(char)
     return char:FindFirstChildOfClass("Humanoid")
 end
 
+local isStealingBusy = false
+
 local function safeTeleport(cframeOrVec)
     local char = LocalPlayer.Character
     local root = getRoot(char)
@@ -577,9 +579,11 @@ local function safeTeleport(cframeOrVec)
         root.AssemblyLinearVelocity = Vector3.zero
         root.AssemblyAngularVelocity = Vector3.zero
         root.CFrame = targetCF
-        for _, part in ipairs(char:GetDescendants()) do
-            if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
-                part.CanCollide = true
+        if not isStealingBusy then
+            for _, part in ipairs(char:GetDescendants()) do
+                if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                    part.CanCollide = true
+                end
             end
         end
         local hum = char:FindFirstChildOfClass("Humanoid")
@@ -905,7 +909,6 @@ local function showAssistBanner(treeName)
     return sg
 end
 
-local isStealingBusy = false
 local function runStealSaplingsCycle()
     if not config.autoStealSaplings or isStealingBusy then return end
 
@@ -1010,11 +1013,24 @@ local function runStealSaplingsCycle()
     task.spawn(function()
         pcall(function()
             local anchorPos = target.pos
-            -- Berdiri tepat di depan bibit (2.0 studs) menapak tanah secara presisi
-            local standPos = Vector3.new(anchorPos.X, anchorPos.Y - 0.2, anchorPos.Z + 2.0)
+            -- Berdiri bersih 0.5 stud di atas ground level (ANTI-FLING: DILARANG minus Y karena tertanam di mesh tanah!)
+            local standPos = Vector3.new(anchorPos.X, anchorPos.Y + 0.6, anchorPos.Z + 2.2)
             local standCF = CFrame.lookAt(standPos, anchorPos)
 
-            -- 1. Noclip karakter sementara selama terbang/teleport & pastikan tangan kosong
+            -- 1. Nonaktifkan part Barriery di workspace agar tidak ada dinding tak kasat mata yang melempar pemain
+            pcall(function()
+                local barriery = workspace:FindFirstChild("Barriery")
+                if barriery then
+                    for _, b in ipairs(barriery:GetDescendants()) do
+                        if b:IsA("BasePart") then
+                            b.CanCollide = false
+                            b.CanTouch = false
+                        end
+                    end
+                end
+            end)
+
+            -- 2. Noclip karakter penuh selama pendekatan
             pcall(function()
                 for _, part in ipairs(char:GetDescendants()) do
                     if part:IsA("BasePart") then
@@ -1029,30 +1045,21 @@ local function runStealSaplingsCycle()
                 end
             end)
 
-            -- 2. Teleportasi aman langsung ke depan bibit
+            -- 3. Teleportasi langsung tepat di depan bibit
             safeTeleport(standCF)
 
-            -- 3. KAKI MENAPAK TANAH & COLLISION PULIH (KRUSIAL UNTUK VALIDASI SERVER!)
-            pcall(function()
-                root.AssemblyLinearVelocity = Vector3.zero
-                root.AssemblyAngularVelocity = Vector3.zero
-                root.Anchored = false
-                root.CFrame = standCF
-                for _, part in ipairs(char:GetDescendants()) do
-                    if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
-                        part.CanCollide = true
+            -- 4. ANTI-FLING KUNCI KOKOH (RenderStepped Anchor Pin)
+            -- Menjaga CFrame tepat di depan bibit setiap frame tanpa terpengaruh gaya fisika tolak
+            local pinConnection = nil
+            pinConnection = RunService.RenderStepped:Connect(function()
+                pcall(function()
+                    if root and root.Parent then
+                        root.AssemblyLinearVelocity = Vector3.zero
+                        root.AssemblyAngularVelocity = Vector3.zero
+                        root.CFrame = standCF
                     end
-                end
-                local hum = char:FindFirstChildOfClass("Humanoid")
-                if hum then
-                    hum.PlatformStand = false
-                    hum.Sit = false
-                    hum:ChangeState(Enum.HumanoidStateType.Running)
-                end
+                end)
             end)
-
-            -- Jeda 0.2 detik agar server mencatat posisi baru pemain di depan bibit
-            task.wait(0.2)
 
             -- Arahkan Camera langsung menghadap anchor bibit
             pcall(function()
@@ -1066,22 +1073,15 @@ local function runStealSaplingsCycle()
             local vim = game:GetService("VirtualInputManager")
             local gotSapling = false
 
-            -- PERIKSA AWAL: Hanya true jika bibit BENAR-BENAR sudah ada di tangan pemain
-            if isPlayerCarryingSapling() then
-                gotSapling = true
-            end
-
             -- =========================================================================
             -- 👑 BROTHER HUB — SEMI-AUTO ASSIST STEALING ENGINE
-            -- Karakter menapak tanah di depan pohon, collision aktif, kamera fokus.
-            -- Memberikan jendela leluasa 6.0 detik bagi user menahan [E] (atau trigger otomatis).
-            -- DILARANG PULANG PREMATUR: Hanya pulang jika bibit sudah 100% di tangan!
+            -- Karakter terkunci stabil di depan pohon tanpa mental 1 milimeter pun.
+            -- Memberikan jendela 5.0 detik bagi user menahan [E] (atau trigger otomatis).
             -- =========================================================================
             local banner = nil
-            if not gotSapling and prompt and prompt.Parent then
-                -- 1. Tampilkan banner visual & notifikasi instruksi
+            if prompt and prompt.Parent then
                 banner = showAssistBanner(target.treeInfo.displayName or target.treeInfo.name)
-                showNotification("🌲 TAHAN [E] 1 DETIK!", "👉 Tahan tombol [E] di keyboard selama 1 detik!\nBibit: " .. (target.treeInfo.displayName or target.treeInfo.name) .. "\n(Karakter diam di depan pohon menunggu bibit diambil)", 5)
+                showNotification("🌲 TAHAN [E] 1 DETIK!", "👉 Tahan tombol [E] di keyboard selama 1 detik!\nBibit: " .. (target.treeInfo.displayName or target.treeInfo.name) .. "\n(Karakter terkunci stabil di depan pohon)", 5)
                 
                 -- Audio penanda siap ambil
                 pcall(function()
@@ -1093,28 +1093,22 @@ local function runStealSaplingsCycle()
                     game:GetService("Debris"):AddItem(snd, 2)
                 end)
 
-                -- Pastikan parameter prompt valid (jarak 12 studs, batas server 10 studs)
+                -- Pastikan parameter prompt valid
                 pcall(function()
-                    prompt.HoldDuration = 1.0 -- Wajib 1.0s asli agar server menerima validasi hold!
-                    prompt.MaxActivationDistance = 12
+                    prompt.HoldDuration = 1.0
+                    prompt.MaxActivationDistance = 15
                     prompt.RequiresLineOfSight = false
                     prompt.Enabled = true
                 end)
 
-                -- 2. Jalankan percobaan trigger background (fireproximityprompt & remote fallback)
+                -- Percobaan trigger background
                 pcall(function()
                     if typeof(fireproximityprompt) == "function" then
                         fireproximityprompt(prompt, 1.0)
                     end
                 end)
-                pcall(function()
-                    local r = ReplicatedStorage:FindFirstChild("LocalSaplingPickupRequest")
-                    if r and r:IsA("RemoteEvent") then
-                        r:FireServer(target.model)
-                    end
-                end)
 
-                -- 3. VirtualInputManager KeyDown (otomatis tekan E di background)
+                -- VirtualInputManager KeyDown (otomatis tekan E di background)
                 local pressedVim = false
                 if vim then
                     pcall(function()
@@ -1123,17 +1117,12 @@ local function runStealSaplingsCycle()
                     end)
                 end
 
-                -- 4. Jendela interaksi aktif hingga 6.0 detik (SABAR MENUNGGU, DILARANG PULANG PREMATUR!)
+                -- Jendela interaksi aktif hingga 5.0 detik
                 local assistStartTime = tick()
-                local assistDuration = 6.0
+                local assistDuration = 5.0
 
                 while (tick() - assistStartTime) < assistDuration do
-                    task.wait(0.08)
-                    -- Jaga karakter tetap stabil menapak tanah
-                    pcall(function()
-                        root.AssemblyLinearVelocity = Vector3.zero
-                        root.AssemblyAngularVelocity = Vector3.zero
-                    end)
+                    task.wait(0.1)
 
                     -- Verifikasi seketika jika bibit sudah terambil
                     if isPlayerCarryingSapling() then
@@ -1148,6 +1137,12 @@ local function runStealSaplingsCycle()
                         vim:SendKeyEvent(false, Enum.KeyCode.E, false, game)
                     end)
                 end
+            end
+
+            -- Lepaskan pin RenderStepped setelah selesai interaksi
+            if pinConnection then
+                pcall(function() pinConnection:Disconnect() end)
+                pinConnection = nil
             end
 
             -- Hapus banner assist setelah selesai interaksi
