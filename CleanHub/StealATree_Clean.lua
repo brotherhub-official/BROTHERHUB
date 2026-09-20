@@ -594,17 +594,9 @@ end
 local ProximityPromptService = game:GetService("ProximityPromptService")
 local function makePromptInstant(p)
     if p and p:IsA("ProximityPrompt") then
-        if p.Name == "CollectSaplingPrompt" or (p.Parent and p.Parent.Name == "_CollectSaplingPromptAnchor") or string.find(p.Name:lower(), "sapling") then
-            -- Seluruh CollectSaplingPrompt WAJIB mempertahankan HoldDuration asli (1.0s) dan MaxActivationDistance asli (10)
-            pcall(function()
-                p.MaxActivationDistance = 10
-                p.RequiresLineOfSight = false
-            end)
-            return
-        end
         pcall(function()
             p.HoldDuration = 0
-            p.MaxActivationDistance = 30
+            p.MaxActivationDistance = 35
             p.RequiresLineOfSight = false
         end)
     end
@@ -955,28 +947,33 @@ local function runStealSaplingsCycle()
     task.spawn(function()
         pcall(function()
             local anchorPos = target.pos
+            local playerPos = nil
 
-            -- 1. Posisikan player berdiri persis 2.0 studs di depan anchor, menghadap langsung ke anchor
-            local playerPos = Vector3.new(anchorPos.X, anchorPos.Y + 2.5, anchorPos.Z + 2.0)
-            local targetCF = CFrame.lookAt(playerPos, anchorPos)
-
-            -- Buat landing pad aman di bawah kaki agar tidak jatuh / freefall
+            -- 1. Posisikan player berdiri tepat di depan anchor di atas tanah asli (Real Ground Raycast)
+            -- anchorPos adalah _CollectSaplingPromptAnchor (Y ~ 14.25).
+            -- Raycast tepat di titik berdiri (Z + 2.0) dari ketinggian Y + 1.5, menembak ke bawah 8 studs.
+            -- Filter ketat mengabaikan char, target.model, dan SpawnedSaplings agar tidak terhalang daun/ranting pohon!
             pcall(function()
-                local oldPad = workspace:FindFirstChild("BH_SafeLandingPad")
-                if oldPad then oldPad:Destroy() end
-                local pad = Instance.new("Part")
-                pad.Name = "BH_SafeLandingPad"
-                pad.Size = Vector3.new(6, 1, 6)
-                pad.Position = playerPos - Vector3.new(0, 3.0, 0)
-                pad.Anchored = true
-                pad.CanCollide = true
-                pad.Transparency = 1
-                pad.Parent = workspace
+                local rayOrigin = Vector3.new(anchorPos.X, anchorPos.Y + 1.5, anchorPos.Z + 2.0)
+                local rayDir = Vector3.new(0, -8, 0)
+                local p = RaycastParams.new()
+                p.FilterDescendantsInstances = {char, target.model, workspace:FindFirstChild("SpawnedSaplings")}
+                p.FilterType = Enum.RaycastFilterType.Exclude
+                local hit = workspace:Raycast(rayOrigin, rayDir, p)
+                if hit and hit.Position and hit.Position.Y <= (anchorPos.Y + 0.5) then
+                    playerPos = Vector3.new(anchorPos.X, hit.Position.Y + 3.0, anchorPos.Z + 2.0)
+                end
             end)
 
+            if not playerPos then
+                -- Fallback presisi: sejajar anchor Y + 0.3, jarak tepat 2.02 studs dari prompt anchor!
+                playerPos = Vector3.new(anchorPos.X, anchorPos.Y + 0.3, anchorPos.Z + 2.0)
+            end
+
+            local targetCF = CFrame.lookAt(playerPos, anchorPos)
             safeTeleport(targetCF)
 
-            -- Pastikan karakter berdiri tegak dengan CanCollide = true dan state Running
+            -- Pastikan karakter berdiri tegak di tanah dengan CanCollide = true dan tangan kosong
             pcall(function()
                 root.AssemblyLinearVelocity = Vector3.zero
                 root.AssemblyAngularVelocity = Vector3.zero
@@ -993,10 +990,15 @@ local function runStealSaplingsCycle()
                     hum:UnequipTools()
                     hum:ChangeState(Enum.HumanoidStateType.Running)
                 end
+                for _, item in ipairs(char:GetChildren()) do
+                    if item:IsA("Tool") then
+                        item.Parent = LocalPlayer:FindFirstChild("Backpack") or char.Parent
+                    end
+                end
             end)
 
-            -- Jeda 0.35 detik agar paket posisi client 100% diakui & disinkronisasi server Roblox
-            task.wait(0.35)
+            -- Jeda 0.25 detik agar posisi client 100% diakui & disinkronisasi server Roblox
+            task.wait(0.25)
 
             -- Arahkan Camera langsung menghadap bibit & anchor
             pcall(function()
@@ -1011,6 +1013,23 @@ local function runStealSaplingsCycle()
             local vim = game:GetService("VirtualInputManager")
             local gotSapling = false
 
+            -- Helper: Eksekusi RemoteEvent LocalSaplingPickupRequest jika server menggunakannya
+            local function fireSaplingPickupRemotes()
+                pcall(function()
+                    local remotes = ReplicatedStorage:FindFirstChild("Modules") 
+                        and ReplicatedStorage.Modules:FindFirstChild("REConnection") 
+                        and ReplicatedStorage.Modules.REConnection:FindFirstChild("Remotes")
+                    if remotes then
+                        local req = remotes:FindFirstChild("LocalSaplingPickupRequest")
+                        if req and req:IsA("RemoteEvent") then
+                            pcall(function() req:FireServer(target.model) end)
+                            pcall(function() req:FireServer(target.prompt) end)
+                            pcall(function() req:FireServer(target.model.Name) end)
+                        end
+                    end
+                end)
+            end
+
             -- Cek status awal
             if isPlayerCarryingSapling() 
                 or target.model.Name == "_CarriedSaplingVisual" 
@@ -1020,55 +1039,78 @@ local function runStealSaplingsCycle()
             end
 
             -- =========================================================================
-            -- SISTEM DUAL-TRIGGER NATIVE ENGINE (InputHoldBegin + fireproximityprompt + InputHoldEnd)
-            -- Memastikan lingkaran terisi penuh DI SCREEN dan paket C++ Triggered 100%
-            -- terkirim dan direplikasi ke SERVER Roblox!
+            -- SISTEM DUAL-TIER TRIGGER ENGINE (Tier 1: Instant Bypass + Tier 2: Natural Hold)
             -- =========================================================================
             if not gotSapling and prompt and prompt.Parent and prompt.Enabled then
-                local holdDur = (prompt.HoldDuration and prompt.HoldDuration > 0) and prompt.HoldDuration or 1.0
+                local origHold = prompt.HoldDuration or 1.0
+                local origDist = prompt.MaxActivationDistance or 10
 
-                for attempt = 1, 2 do
-                    if gotSapling then break end
-                    if not target.model:IsDescendantOf(workspace) 
-                        or target.model.Name == "_CarriedSaplingVisual" 
-                        or target.model:GetAttribute("Claimed") == true 
-                        or not prompt or not prompt.Parent or not prompt.Enabled then
-                        gotSapling = true
-                        break
-                    end
+                -- =====================================================================
+                -- TIER 1: INSTANT PROMPT BYPASS + DIRECT REMOTE TRIGGER
+                -- =====================================================================
+                fireSaplingPickupRemotes()
 
-                    -- Pastikan posisi tetap di depan anchor
+                if typeof(fireproximityprompt) == "function" then
+                    pcall(function() fireproximityprompt(prompt, 0, true) end)
+                    pcall(function() fireproximityprompt(prompt, 1, true) end)
+                    pcall(function() fireproximityprompt(prompt) end)
+                end
+
+                if typeof(firesignal) == "function" then
+                    pcall(function() firesignal(prompt.Triggered, LocalPlayer) end)
+                    pcall(function() firesignal(prompt.Triggered) end)
+                end
+
+                pcall(function() prompt:InputHoldBegin() end)
+                task.wait(0.06)
+                pcall(function() prompt:InputHoldEnd() end)
+
+                -- Pulsa visual key E
+                pcall(function()
+                    vim:SendKeyEvent(true, Enum.KeyCode.E, false, game)
+                    task.wait(0.06)
+                    vim:SendKeyEvent(false, Enum.KeyCode.E, false, game)
+                end)
+
+                task.wait(0.25)
+                if isPlayerCarryingSapling() 
+                    or target.model.Name == "_CarriedSaplingVisual" 
+                    or target.model:GetAttribute("Claimed") == true 
+                    or not target.model:IsDescendantOf(workspace) then
+                    gotSapling = true
+                end
+
+                -- =====================================================================
+                -- TIER 2: NATURAL TIMED HOLD (Presisi 1.25s Berdiri Kokoh di Depan Anchor)
+                -- =====================================================================
+                if not gotSapling and prompt and prompt.Parent and prompt.Enabled then
+                    local holdTime = (origHold > 0) and origHold or 1.0
                     pcall(function()
-                        root.CFrame = targetCF
-                        root.AssemblyLinearVelocity = Vector3.zero
-                        root.AssemblyAngularVelocity = Vector3.zero
+                        prompt.HoldDuration = holdTime
+                        prompt.MaxActivationDistance = 25
+                        prompt.RequiresLineOfSight = false
                     end)
 
-                    -- [A] TEKAN KEY E VIA VirtualInputManager (Memberi visual fill pada UI client)
+                    pcall(function() prompt:InputHoldBegin() end)
                     pcall(function() vim:SendKeyEvent(false, Enum.KeyCode.E, false, game) end)
                     task.wait(0.04)
                     pcall(function() vim:SendKeyEvent(true, Enum.KeyCode.E, false, game) end)
 
-                    -- [B] EKSEKUSI NATIVE C++ ENGINE (InputHoldBegin)
-                    pcall(function() prompt:InputHoldBegin() end)
-
-                    -- [C] JIKA EXECUTOR MEMILIKI fireproximityprompt, PANGGIL SECARA PARALEL ASYNC
                     if typeof(fireproximityprompt) == "function" then
                         task.spawn(function()
-                            pcall(function() fireproximityprompt(prompt, 1) end)
                             pcall(function() fireproximityprompt(prompt) end)
                         end)
                     end
 
-                    -- [D] TAHAN SELAMA DURASI PROMPT (+0.25 DETIK BUFFER)
-                    local holdStart = tick()
-                    local targetHoldTime = holdDur + 0.25
-                    while (tick() - holdStart) < targetHoldTime do
+                    local hStart = tick()
+                    local targetHoldTime = holdTime + 0.35
+                    while (tick() - hStart) < targetHoldTime do
                         task.wait(0.05)
-                        if root then
+                        pcall(function()
                             root.AssemblyLinearVelocity = Vector3.zero
                             root.AssemblyAngularVelocity = Vector3.zero
-                        end
+                            root.CFrame = targetCF
+                        end)
                         if isPlayerCarryingSapling() 
                             or target.model.Name == "_CarriedSaplingVisual" 
                             or target.model:GetAttribute("Claimed") == true 
@@ -1078,22 +1120,25 @@ local function runStealSaplingsCycle()
                         end
                     end
 
-                    -- [E] PANGGIL InputHoldEnd() & SendKeyEvent(false)!
-                    -- INILAH SAKELAR REPLIKASI C++ UTAMA:
-                    -- InputHoldEnd() mengecek apakah waktu tahan >= HoldDuration, lalu MENGIRIMKAN PAKET
-                    -- Triggered ke SERVER Roblox! Tanpa InputHoldEnd(), server tidak pernah menerima sinyal trigger!
-                    pcall(function() prompt:InputHoldEnd() end)
                     pcall(function() vim:SendKeyEvent(false, Enum.KeyCode.E, false, game) end)
+                    pcall(function() prompt:InputHoldEnd() end)
 
-                    -- [E2] TRIGGER ULANG VIA fireproximityprompt SETELAH DURASI TERCAPAI (JIKA EXECUTOR MENDUKUNG)
-                    if typeof(fireproximityprompt) == "function" and not gotSapling then
-                        pcall(function() fireproximityprompt(prompt, 1) end)
-                        pcall(function() fireproximityprompt(prompt) end)
+                    -- Post-hold trigger burst + remote call
+                    if not gotSapling then
+                        fireSaplingPickupRemotes()
+                        if typeof(fireproximityprompt) == "function" then
+                            pcall(function() fireproximityprompt(prompt, 0, true) end)
+                            pcall(function() fireproximityprompt(prompt, 1) end)
+                            pcall(function() fireproximityprompt(prompt) end)
+                        end
+                        if typeof(firesignal) == "function" then
+                            pcall(function() firesignal(prompt.Triggered, LocalPlayer) end)
+                            pcall(function() firesignal(prompt.Triggered) end)
+                        end
                     end
 
-                    -- [F] Jendela tunggu replikasi server (hingga 1.5 detik)
                     local waitStart = tick()
-                    while (tick() - waitStart) < 1.5 do
+                    while (tick() - waitStart) < 1.2 do
                         task.wait(0.1)
                         if isPlayerCarryingSapling() 
                             or target.model.Name == "_CarriedSaplingVisual" 
@@ -1111,10 +1156,6 @@ local function runStealSaplingsCycle()
                 vim:SendKeyEvent(false, Enum.KeyCode.E, false, game)
                 if root then root.Anchored = false end
             end)
-            pcall(function()
-                local pad = workspace:FindFirstChild("BH_SafeLandingPad")
-                if pad then pad:Destroy() end
-            end)
 
             if gotSapling then
                 recentlyTargetedSaplings[target.model] = tick() + 30.0
@@ -1129,9 +1170,9 @@ local function runStealSaplingsCycle()
                 end
             else
                 -- JIKA BELUM/GAGAL DIAMBIL: DILARANG KERAS MEMULANGKAN PEMAIN KE PLOT!
-                -- Beri cooldown 6 detik agar bergantian mencoba bibit berikutnya di arena
-                recentlyTargetedSaplings[target.model] = tick() + 6.0
-                task.wait(0.5)
+                -- Beri cooldown 4 detik agar bergantian mencoba bibit berikutnya di arena
+                recentlyTargetedSaplings[target.model] = tick() + 4.0
+                task.wait(0.3)
             end
         end)
         pcall(function()
