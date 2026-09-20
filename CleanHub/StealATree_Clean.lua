@@ -704,41 +704,28 @@ local function isPlayerCarryingSapling()
     local char = LocalPlayer.Character
     if not char then return false end
 
-    -- 1. INDIKATOR RESMI RESMI GAME STEAL A TREE: Tombol Drop di MainGuis
-    -- Di Steal A Tree, tombol Drop (TextButton) di MainGuis hanya Visible == true saat pemain sedang membawa bibit!
+    -- 1. INDIKATOR UTAMA RESMI STEAL A TREE: Model _CarriedSaplingVisual langsung di dalam Character
+    -- Saat pemain mengambil bibit, server game Steal A Tree mem-parent model _CarriedSaplingVisual ke dalam Character
+    if char:FindFirstChild("_CarriedSaplingVisual") then
+        return true
+    end
+
+    -- 2. Highlight resmi game di karakter saat membawa bibit: SaplingCarrierHighlight
+    if char:FindFirstChild("SaplingCarrierHighlight") then
+        return true
+    end
+
+    -- 3. Tombol Drop resmi di MainGuis (hanya Visible == true saat sedang menggendong bibit)
     local pGui = LocalPlayer:FindFirstChild("PlayerGui")
     if pGui then
-        local dropBtn = pGui:FindFirstChild("Drop", true)
-        if dropBtn and dropBtn:IsA("GuiObject") and dropBtn.Visible then
+        local mainGuis = pGui:FindFirstChild("MainGuis")
+        local dropBtn = mainGuis and mainGuis:FindFirstChild("Drop")
+        if dropBtn and dropBtn:IsA("GuiObject") and dropBtn.Visible and dropBtn.AbsoluteSize.Y > 5 then
             return true
         end
     end
 
-    -- 2. Cek visual sapling di dalam karakter ATAU di SpawnedSaplings dekat karakter
-    if char:FindFirstChild("_CarriedSaplingVisual", true) then return true end
-    for _, c in ipairs(char:GetChildren()) do
-        if c.Name == "_CarriedSaplingVisual" then return true end
-        local cName = c.Name:lower()
-        if string.find(cName, "sapling") and not string.find(cName, "uprooted") and not string.find(cName, "tree") then
-            return true
-        end
-    end
-    local wsSpawned = workspace:FindFirstChild("SpawnedSaplings")
-    if wsSpawned then
-        local r = getRoot(char)
-        if r then
-            for _, c in ipairs(wsSpawned:GetChildren()) do
-                if c.Name == "_CarriedSaplingVisual" then
-                    local piv = c:GetPivot()
-                    if piv and (piv.Position - r.Position).Magnitude < 12 then
-                        return true
-                    end
-                end
-            end
-        end
-    end
-
-    -- 3. Cek Tool di tangan karakter atau Backpack (Eksklusif Sapling, DILARANG mencocokkan Uprooted Tree!)
+    -- 4. Tool bibit di tangan karakter atau Backpack
     local tool = char:FindFirstChildWhichIsA("Tool")
     if tool then
         local tName = tool.Name:lower()
@@ -758,11 +745,11 @@ local function isPlayerCarryingSapling()
         end
     end
 
-    -- 4. Cek Attributes pada LocalPlayer & Character
-    if char:GetAttribute("CarriedSapling") or char:GetAttribute("HasSapling") or char:GetAttribute("Claimed") then
+    -- 5. Attributes spesifik bibit pada Character / Player (DILARANG mencocokkan "Claimed" karena itu milik Tycoon Plot!)
+    if char:GetAttribute("HoldingSapling") == true or char:GetAttribute("CarriedSapling") == true then
         return true
     end
-    if LocalPlayer:GetAttribute("CarriedSapling") or LocalPlayer:GetAttribute("HasSapling") or LocalPlayer:GetAttribute("HoldingSapling") then
+    if LocalPlayer:GetAttribute("HoldingSapling") == true or LocalPlayer:GetAttribute("CarriedSapling") == true then
         return true
     end
 
@@ -1023,11 +1010,11 @@ local function runStealSaplingsCycle()
     task.spawn(function()
         pcall(function()
             local anchorPos = target.pos
-            -- Berdiri tepat di depan bibit (2.5 studs) di ketinggian tanah yang pas menghadap ke bibit
-            local standPos = Vector3.new(anchorPos.X, anchorPos.Y + 0.5, anchorPos.Z + 2.5)
+            -- Berdiri tepat di depan bibit (2.0 studs) menapak tanah secara presisi
+            local standPos = Vector3.new(anchorPos.X, anchorPos.Y - 0.2, anchorPos.Z + 2.0)
             local standCF = CFrame.lookAt(standPos, anchorPos)
 
-            -- 1. Noclip karakter sementara & pastikan tangan kosong (unequip tool agar bisa menggendong bibit)
+            -- 1. Noclip karakter sementara selama terbang/teleport & pastikan tangan kosong
             pcall(function()
                 for _, part in ipairs(char:GetDescendants()) do
                     if part:IsA("BasePart") then
@@ -1039,29 +1026,39 @@ local function runStealSaplingsCycle()
                     hum.PlatformStand = false
                     hum.Sit = false
                     hum:UnequipTools()
-                    hum:ChangeState(Enum.HumanoidStateType.Running)
                 end
             end)
 
             -- 2. Teleportasi aman langsung ke depan bibit
             safeTeleport(standCF)
 
-            -- Kunci posisi menghadap bibit secara presisi
+            -- 3. KAKI MENAPAK TANAH & COLLISION PULIH (KRUSIAL UNTUK VALIDASI SERVER!)
             pcall(function()
                 root.AssemblyLinearVelocity = Vector3.zero
                 root.AssemblyAngularVelocity = Vector3.zero
                 root.Anchored = false
                 root.CFrame = standCF
+                for _, part in ipairs(char:GetDescendants()) do
+                    if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                        part.CanCollide = true
+                    end
+                end
+                local hum = char:FindFirstChildOfClass("Humanoid")
+                if hum then
+                    hum.PlatformStand = false
+                    hum.Sit = false
+                    hum:ChangeState(Enum.HumanoidStateType.Running)
+                end
             end)
 
-            -- Jeda 0.12 detik agar posisi client disinkronisasi server
-            task.wait(0.12)
+            -- Jeda 0.2 detik agar server mencatat posisi baru pemain di depan bibit
+            task.wait(0.2)
 
             -- Arahkan Camera langsung menghadap anchor bibit
             pcall(function()
                 local cam = workspace.CurrentCamera
                 if cam then
-                    cam.CFrame = CFrame.lookAt(standPos + Vector3.new(0, 2, 3), anchorPos)
+                    cam.CFrame = CFrame.lookAt(standPos + Vector3.new(0, 1.5, 2.0), anchorPos)
                 end
             end)
 
@@ -1069,27 +1066,22 @@ local function runStealSaplingsCycle()
             local vim = game:GetService("VirtualInputManager")
             local gotSapling = false
 
-            -- Cek status awal
-            if isPlayerCarryingSapling() 
-                or target.model.Name == "_CarriedSaplingVisual" 
-                or target.model:GetAttribute("Claimed") == true 
-                or not target.model:IsDescendantOf(workspace)
-                or not prompt.Parent
-                or not prompt.Enabled then
+            -- PERIKSA AWAL: Hanya true jika bibit BENAR-BENAR sudah ada di tangan pemain
+            if isPlayerCarryingSapling() then
                 gotSapling = true
             end
 
             -- =========================================================================
             -- 👑 BROTHER HUB — SEMI-AUTO ASSIST STEALING ENGINE
-            -- Karakter di-lock di depan pohon, kamera menghadap prompt.
-            -- Memberikan jendela leluasa 4.0 detik bagi user menahan [E] (atau trigger otomatis).
-            -- Begitu terambil, script SEKETIKA mengambil alih: pulang & menanam otomatis!
+            -- Karakter menapak tanah di depan pohon, collision aktif, kamera fokus.
+            -- Memberikan jendela leluasa 6.0 detik bagi user menahan [E] (atau trigger otomatis).
+            -- DILARANG PULANG PREMATUR: Hanya pulang jika bibit sudah 100% di tangan!
             -- =========================================================================
             local banner = nil
             if not gotSapling and prompt and prompt.Parent then
                 -- 1. Tampilkan banner visual & notifikasi instruksi
                 banner = showAssistBanner(target.treeInfo.displayName or target.treeInfo.name)
-                showNotification("🌲 TAHAN [E] 1 DETIK!", "👉 Tahan tombol [E] di keyboard selama 1 detik!\nBibit: " .. (target.treeInfo.displayName or target.treeInfo.name) .. "\n(Script otomatis pulang & menanam begitu terambil)", 4)
+                showNotification("🌲 TAHAN [E] 1 DETIK!", "👉 Tahan tombol [E] di keyboard selama 1 detik!\nBibit: " .. (target.treeInfo.displayName or target.treeInfo.name) .. "\n(Karakter diam di depan pohon menunggu bibit diambil)", 5)
                 
                 -- Audio penanda siap ambil
                 pcall(function()
@@ -1101,10 +1093,10 @@ local function runStealSaplingsCycle()
                     game:GetService("Debris"):AddItem(snd, 2)
                 end)
 
-                -- Pastikan parameter prompt aktif & jangkauan luas tanpa merusak HoldDuration!
+                -- Pastikan parameter prompt valid (jarak 12 studs, batas server 10 studs)
                 pcall(function()
                     prompt.HoldDuration = 1.0 -- Wajib 1.0s asli agar server menerima validasi hold!
-                    prompt.MaxActivationDistance = 25
+                    prompt.MaxActivationDistance = 12
                     prompt.RequiresLineOfSight = false
                     prompt.Enabled = true
                 end)
@@ -1131,26 +1123,20 @@ local function runStealSaplingsCycle()
                     end)
                 end
 
-                -- 4. Jendela interaksi aktif hingga 4.0 detik
+                -- 4. Jendela interaksi aktif hingga 6.0 detik (SABAR MENUNGGU, DILARANG PULANG PREMATUR!)
                 local assistStartTime = tick()
-                local assistDuration = 4.0
+                local assistDuration = 6.0
 
                 while (tick() - assistStartTime) < assistDuration do
-                    task.wait(0.05)
-                    -- Jaga posisi dan orientasi karakter tetap stabil menghadap bibit
+                    task.wait(0.08)
+                    -- Jaga karakter tetap stabil menapak tanah
                     pcall(function()
                         root.AssemblyLinearVelocity = Vector3.zero
                         root.AssemblyAngularVelocity = Vector3.zero
-                        root.CFrame = standCF
                     end)
 
                     -- Verifikasi seketika jika bibit sudah terambil
-                    if isPlayerCarryingSapling() 
-                        or target.model.Name == "_CarriedSaplingVisual" 
-                        or target.model:GetAttribute("Claimed") == true 
-                        or not target.model:IsDescendantOf(workspace)
-                        or not prompt.Parent
-                        or not prompt.Enabled then
+                    if isPlayerCarryingSapling() then
                         gotSapling = true
                         break
                     end
@@ -1208,9 +1194,10 @@ local function runStealSaplingsCycle()
                 end
             else
                 -- JIKA BELUM/GAGAL DIAMBIL: DILARANG KERAS MEMULANGKAN PEMAIN KE PLOT!
-                -- Beri cooldown 4 detik agar bergantian mencoba bibit berikutnya di arena
-                recentlyTargetedSaplings[target.model] = tick() + 4.0
-                task.wait(0.2)
+                -- Tetap berada di arena, beri cooldown 5 detik pada pohon ini agar mencoba pohon lain
+                recentlyTargetedSaplings[target.model] = tick() + 5.0
+                showNotification("🌲 BROTHER HUB", "⚠️ Belum terambil: " .. (target.treeInfo.displayName or target.model.Name) .. "\nMencoba bibit berikutnya di arena...", 3)
+                task.wait(0.3)
                 isStealingBusy = false
             end
         end)
