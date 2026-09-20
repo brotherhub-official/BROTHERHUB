@@ -191,7 +191,7 @@ local I18N = {
 
         -- Auto Steal Tab
         SecStealSapling      = "PENCURIAN BIBIT DI ARENA (WORLD CORRIDOR)",
-        AutoStealSaplings    = "Auto Curi Bibit di Seluruh Arena",
+        AutoStealSaplings    = "Auto Curi Bibit (Assist: Tahan E 1s ➔ Auto Tanam)",
         StealMethod          = "Metode Curi (Instant / Teleport)",
         TargetAreasDropdown  = "Pilih Area Bibit Target (Multi-Select)",
         SmartReturnPlot      = "Kembali ke Kebun Sendiri Setelah Curi",
@@ -288,7 +288,7 @@ local I18N = {
 
         -- Auto Steal Tab
         SecStealSapling      = "ARENA SAPLING HEIST (WORLD CORRIDOR)",
-        AutoStealSaplings    = "Auto Steal Arena Saplings (Bypass Prompt)",
+        AutoStealSaplings    = "Auto Steal Saplings (Assist: Hold E 1s ➔ Auto Plant)",
         StealMethod          = "Steal Mode (Instant / Teleport)",
         TargetAreasDropdown  = "Select Target Sapling Areas (Multi-Select)",
         SmartReturnPlot      = "Return to Own Farm After Stealing",
@@ -856,6 +856,68 @@ local function getAllSaplingModels()
     return models
 end
 
+-- Banner visual panduan semi-auto assist di layar pengguna
+local function showAssistBanner(treeName)
+    local pGui = LocalPlayer:FindFirstChild("PlayerGui")
+    if not pGui then return nil end
+    local existing = pGui:FindFirstChild("BH_AssistBanner")
+    if existing then pcall(function() existing:Destroy() end) end
+
+    local sg = Instance.new("ScreenGui")
+    sg.Name = "BH_AssistBanner"
+    sg.ResetOnSpawn = false
+    sg.DisplayOrder = 9999
+
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(0, 380, 0, 72)
+    frame.Position = UDim2.new(0.5, -190, 0.22, 0)
+    frame.BackgroundColor3 = Color3.fromRGB(15, 16, 26)
+    frame.BorderSizePixel = 0
+    frame.Parent = sg
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 12)
+    corner.Parent = frame
+
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = Color3.fromRGB(246, 185, 59)
+    stroke.Thickness = 2.5
+    stroke.Parent = frame
+
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(1, 0, 0, 32)
+    title.Position = UDim2.new(0, 0, 0, 6)
+    title.BackgroundTransparency = 1
+    title.Text = "👉 TAHAN [E] 1 DETIK! 👈"
+    title.TextColor3 = Color3.fromRGB(255, 220, 100)
+    title.Font = Enum.Font.GothamBold
+    title.TextSize = 19
+    title.Parent = frame
+
+    local sub = Instance.new("TextLabel")
+    sub.Size = UDim2.new(1, 0, 0, 24)
+    sub.Position = UDim2.new(0, 0, 0, 38)
+    sub.BackgroundTransparency = 1
+    sub.Text = "Ambil: " .. tostring(treeName or "Bibit") .. " (Auto Pulang & Tanam)"
+    sub.TextColor3 = Color3.fromRGB(200, 210, 240)
+    sub.Font = Enum.Font.Gotham
+    sub.TextSize = 13
+    sub.Parent = frame
+
+    pcall(function()
+        if typeof(syn) == "table" and syn.protect_gui then
+            syn.protect_gui(sg)
+            sg.Parent = pGui
+        elseif typeof(gethui) == "function" then
+            sg.Parent = gethui()
+        else
+            sg.Parent = pGui
+        end
+    end)
+
+    return sg
+end
+
 local isStealingBusy = false
 local function runStealSaplingsCycle()
     if not config.autoStealSaplings or isStealingBusy then return end
@@ -1018,11 +1080,27 @@ local function runStealSaplingsCycle()
             end
 
             -- =========================================================================
-            -- PURE NATURAL INTERACTION ENGINE (100% VALID SERVER REPLICATION)
-            -- Membiarkan HoldDuration asli (1.0s) & mengeksekusi penekanan tombol E 
-            -- secara native via VirtualInputManager selama 1.20s (1x tekan, 0% spam reset)
+            -- 👑 BROTHER HUB — SEMI-AUTO ASSIST STEALING ENGINE
+            -- Karakter di-lock di depan pohon, kamera menghadap prompt.
+            -- Memberikan jendela leluasa 4.0 detik bagi user menahan [E] (atau trigger otomatis).
+            -- Begitu terambil, script SEKETIKA mengambil alih: pulang & menanam otomatis!
             -- =========================================================================
+            local banner = nil
             if not gotSapling and prompt and prompt.Parent then
+                -- 1. Tampilkan banner visual & notifikasi instruksi
+                banner = showAssistBanner(target.treeInfo.displayName or target.treeInfo.name)
+                showNotification("🌲 TAHAN [E] 1 DETIK!", "👉 Tahan tombol [E] di keyboard selama 1 detik!\nBibit: " .. (target.treeInfo.displayName or target.treeInfo.name) .. "\n(Script otomatis pulang & menanam begitu terambil)", 4)
+                
+                -- Audio penanda siap ambil
+                pcall(function()
+                    local snd = Instance.new("Sound")
+                    snd.SoundId = "rbxassetid://9069609268"
+                    snd.Volume = 0.8
+                    snd.Parent = workspace
+                    snd:Play()
+                    game:GetService("Debris"):AddItem(snd, 2)
+                end)
+
                 -- Pastikan parameter prompt aktif & jangkauan luas tanpa merusak HoldDuration!
                 pcall(function()
                     prompt.HoldDuration = 1.0 -- Wajib 1.0s asli agar server menerima validasi hold!
@@ -1031,30 +1109,33 @@ local function runStealSaplingsCycle()
                     prompt.Enabled = true
                 end)
 
-                local pressedKey = false
-                -- 1. Native C++ Engine InputHoldBegin (Roblox Official Custom UI API)
+                -- 2. Jalankan percobaan trigger background (fireproximityprompt & remote fallback)
                 pcall(function()
-                    prompt:InputHoldBegin()
+                    if typeof(fireproximityprompt) == "function" then
+                        fireproximityprompt(prompt, 1.0)
+                    end
+                end)
+                pcall(function()
+                    local r = ReplicatedStorage:FindFirstChild("LocalSaplingPickupRequest")
+                    if r and r:IsA("RemoteEvent") then
+                        r:FireServer(target.model)
+                    end
                 end)
 
-                -- 2. VirtualInputManager KeyDown
+                -- 3. VirtualInputManager KeyDown (otomatis tekan E di background)
+                local pressedVim = false
                 if vim then
                     pcall(function()
                         vim:SendKeyEvent(true, Enum.KeyCode.E, false, game)
-                        pressedKey = true
+                        pressedVim = true
                     end)
                 end
 
-                -- 3. Executor fireproximityprompt dengan durasi 1.0s
-                if typeof(fireproximityprompt) == "function" then
-                    pcall(function() fireproximityprompt(prompt, 1.0) end)
-                end
+                -- 4. Jendela interaksi aktif hingga 4.0 detik
+                local assistStartTime = tick()
+                local assistDuration = 4.0
 
-                -- Tunggu hingga 1.15 detik (1.0s durasi asli + 0.15s toleransi jaringan)
-                local holdStartTime = tick()
-                local holdDuration = 1.15
-
-                while (tick() - holdStartTime) < holdDuration do
+                while (tick() - assistStartTime) < assistDuration do
                     task.wait(0.05)
                     -- Jaga posisi dan orientasi karakter tetap stabil menghadap bibit
                     pcall(function()
@@ -1075,34 +1156,17 @@ local function runStealSaplingsCycle()
                     end
                 end
 
-                -- Selesaikan sequence hold secara resmi
-                pcall(function()
-                    prompt:InputHoldEnd()
-                end)
-
-                -- Lepaskan tombol E native ke atas
-                if pressedKey and vim then
+                -- Lepaskan tombol E native jika sempat ditekan via VIM
+                if pressedVim and vim then
                     pcall(function()
                         vim:SendKeyEvent(false, Enum.KeyCode.E, false, game)
                     end)
                 end
+            end
 
-                -- Periode toleransi replikasi server (hingga 0.8s jika ada jeda ping)
-                if not gotSapling then
-                    local repStart = tick()
-                    while (tick() - repStart) < 0.8 do
-                        if isPlayerCarryingSapling() 
-                            or target.model.Name == "_CarriedSaplingVisual" 
-                            or target.model:GetAttribute("Claimed") == true 
-                            or not target.model:IsDescendantOf(workspace)
-                            or not prompt.Parent
-                            or not prompt.Enabled then
-                            gotSapling = true
-                            break
-                        end
-                        task.wait(0.08)
-                    end
-                end
+            -- Hapus banner assist setelah selesai interaksi
+            if banner then
+                pcall(function() banner:Destroy() end)
             end
 
             -- Pulihkan CanCollide karakter setelah interaksi selesai
@@ -1120,20 +1184,34 @@ local function runStealSaplingsCycle()
 
             if gotSapling then
                 recentlyTargetedSaplings[target.model] = tick() + 30.0
-                showNotification("🌲 BROTHER HUB", "Berhasil mengambil: " .. (target.treeInfo.displayName or target.model.Name), 3)
+                showNotification("🌲 BROTHER HUB", "✅ Berhasil mengambil: " .. (target.treeInfo.displayName or target.model.Name) .. "!\nPulang ke kebun & menanam...", 3)
+
+                -- Audio sukses
+                pcall(function()
+                    local snd = Instance.new("Sound")
+                    snd.SoundId = "rbxassetid://6028987187"
+                    snd.Volume = 1
+                    snd.Parent = workspace
+                    snd:Play()
+                    game:GetService("Debris"):AddItem(snd, 2)
+                end)
 
                 -- HANYA KEMBALI KE KEBUN JIKA BIBIT SUDAH BENAR-BENAR BERHASIL TERAMBIL!
                 if config.smartReturnPlot then
-                    task.wait(0.3)
+                    task.wait(0.25)
                     returnToOwnPlot()
-                    task.wait(0.5)
-                    pcall(runAutoPlantAndGarden)
+                    task.wait(0.4)
+                    isStealingBusy = false
+                    pcall(function() runAutoPlantAndGarden(true) end)
+                else
+                    isStealingBusy = false
                 end
             else
                 -- JIKA BELUM/GAGAL DIAMBIL: DILARANG KERAS MEMULANGKAN PEMAIN KE PLOT!
-                -- Beri cooldown 3 detik agar bergantian mencoba bibit berikutnya di arena
-                recentlyTargetedSaplings[target.model] = tick() + 3.0
+                -- Beri cooldown 4 detik agar bergantian mencoba bibit berikutnya di arena
+                recentlyTargetedSaplings[target.model] = tick() + 4.0
                 task.wait(0.2)
+                isStealingBusy = false
             end
         end)
         pcall(function()
@@ -1148,9 +1226,9 @@ local function runStealRivalTreesCycle()
 end
 
 -- [7] 🌱 AUTO PLANT & GARDEN FARMING (100% PANEN & TANAM OTOMATIS)
-local function runAutoPlantAndGarden()
+local function runAutoPlantAndGarden(ignoreStealingBusy)
     -- JIKA SEDANG DALAM PROSES MENCURI DI ARENA, DILARANG KERAS MEMULANGKAN/TELEPORTASI PEMAIN!
-    if isStealingBusy then return end
+    if isStealingBusy and not ignoreStealingBusy then return end
 
     local char = LocalPlayer.Character
     local root = getRoot(char)
