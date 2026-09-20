@@ -1002,9 +1002,9 @@ local function runStealSaplingsCycle()
         return
     end
 
-    -- Urutkan dari Z paling negatif (Pohon paling depan / terjauh di arena selalu diprioritaskan!)
+    -- Urutkan dari jarak terdekat ke terjauh (Pohon tier awal: Plains & Flowerfield diprioritaskan sesuai speed pemain!)
     table.sort(candidates, function(a, b)
-        return a.z < b.z
+        return a.dist < b.dist
     end)
 
     local target = candidates[1]
@@ -1053,6 +1053,11 @@ local function runStealSaplingsCycle()
             local pinConnection = nil
             pinConnection = RunService.RenderStepped:Connect(function()
                 pcall(function()
+                    local hum = char and char:FindFirstChildOfClass("Humanoid")
+                    if not hum or hum.Health <= 0 then
+                        if pinConnection then pinConnection:Disconnect() pinConnection = nil end
+                        return
+                    end
                     if root and root.Parent then
                         root.AssemblyLinearVelocity = Vector3.zero
                         root.AssemblyAngularVelocity = Vector3.zero
@@ -1061,11 +1066,13 @@ local function runStealSaplingsCycle()
                 end)
             end)
 
-            -- Arahkan Camera langsung menghadap anchor bibit
+            -- Arahkan Camera menghadap bibit secara non-destruktif
             pcall(function()
                 local cam = workspace.CurrentCamera
-                if cam then
-                    cam.CFrame = CFrame.lookAt(standPos + Vector3.new(0, 1.5, 2.0), anchorPos)
+                local hum = char:FindFirstChildOfClass("Humanoid")
+                if cam and hum then
+                    cam.CameraType = Enum.CameraType.Custom
+                    cam.CameraSubject = hum
                 end
             end)
 
@@ -1105,6 +1112,8 @@ local function runStealSaplingsCycle()
                 pcall(function()
                     if typeof(fireproximityprompt) == "function" then
                         fireproximityprompt(prompt, 1.0)
+                        task.wait(0.05)
+                        fireproximityprompt(prompt, 0)
                     end
                 end)
 
@@ -1123,6 +1132,12 @@ local function runStealSaplingsCycle()
 
                 while (tick() - assistStartTime) < assistDuration do
                     task.wait(0.1)
+
+                    -- Cek jika karakter mati/knockout
+                    local hum = char and char:FindFirstChildOfClass("Humanoid")
+                    if not hum or hum.Health <= 0 then
+                        break
+                    end
 
                     -- Verifikasi seketika jika bibit sudah terambil
                     if isPlayerCarryingSapling() then
@@ -1150,7 +1165,7 @@ local function runStealSaplingsCycle()
                 pcall(function() banner:Destroy() end)
             end
 
-            -- Pulihkan CanCollide karakter setelah interaksi selesai
+            -- Pulihkan CanCollide dan Camera karakter setelah interaksi selesai
             pcall(function()
                 for _, part in ipairs(char:GetDescendants()) do
                     if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
@@ -1161,6 +1176,12 @@ local function runStealSaplingsCycle()
                     vim:SendKeyEvent(false, Enum.KeyCode.E, false, game)
                 end
                 if root then root.Anchored = false end
+                local cam = workspace.CurrentCamera
+                local hum = char:FindFirstChildOfClass("Humanoid")
+                if cam and hum then
+                    cam.CameraType = Enum.CameraType.Custom
+                    cam.CameraSubject = hum
+                end
             end)
 
             if gotSapling then
