@@ -439,7 +439,18 @@ restoreAllRockCollisions()
 local lastSwingClock = 0
 local cachedTracks = {}
 
-local function executeToolSwing(toolType, targetPos)
+local function findTaggedAncestor(p1, p2)
+    local v1 = p1
+    while v1 and v1 ~= workspace do
+        if CollectionService:HasTag(v1, p2) then
+            return v1
+        end
+        v1 = v1.Parent
+    end
+    return nil
+end
+
+local function executeToolSwing(toolType, targetPos, targetInstance)
     local char = LocalPlayer.Character
     if not char then return end
     local root = char and char:FindFirstChild("HumanoidRootPart")
@@ -448,7 +459,7 @@ local function executeToolSwing(toolType, targetPos)
     -- Dynamic cadence matching weapon attack speed
     local equippedTool = char:FindFirstChildOfClass("Tool")
     local atkSpeed = (equippedTool and equippedTool:GetAttribute("AttackSpeed")) or 1.0
-    local swingInterval = math.clamp(1 / math.max(0.2, atkSpeed), 0.20, 0.8)
+    local swingInterval = math.clamp(1 / math.max(0.2, atkSpeed), 0.15, 0.6)
 
     if os.clock() - lastSwingClock < swingInterval then
         return
@@ -467,7 +478,20 @@ local function executeToolSwing(toolType, targetPos)
         end)
     end
 
-    -- 2. Visual Character Swing Animation (Jika Silent Damage mati)
+    -- 2. Resolve Target Entity / Tagged Ore for 100% Hit Delivery
+    local targetList = {}
+    if targetInstance then
+        local oreTarget = findTaggedAncestor(targetInstance, "Ore")
+            or findTaggedAncestor(targetInstance, "RockWall")
+            or (targetInstance:IsA("Model") and targetInstance)
+            or (targetInstance.Parent and targetInstance.Parent:IsA("Model") and targetInstance.Parent)
+            or targetInstance
+        if oreTarget then
+            table.insert(targetList, oreTarget)
+        end
+    end
+
+    -- 3. Visual Character Swing Animation (Jika Silent Damage mati)
     if not Flags.SilentDamage then
         pcall(function()
             local hum = char:FindFirstChildOfClass("Humanoid")
@@ -500,33 +524,39 @@ local function executeToolSwing(toolType, targetPos)
         end)
     end
 
-    -- 3. PUKUL BIASA METODE 1: ActiveTool:Swing() (Official Native Pickaxe / Sword Engine)
-    -- Ini memanggil fungsi :Swing() asli game (Pickaxe.lua / Sword.lua).
-    -- Game sendiri yang menghitung MeleeSwingBounds dan mendeteksi instans Ore / Musuh yang valid secara 100% native!
+    -- 4. PUKUL BIASA METODE 1: ActiveTool:Swing() & Direct ActiveTool.Execute
     pcall(function()
         local tc = Knit and Knit.GetController and Knit.GetController("ToolController")
         local active = tc and tc.ActiveTool
         if active then
-            if active.Range == nil or (typeof(active.Range) == "number" and active.Range <= 0) then
-                active.Range = (equippedTool and equippedTool:GetAttribute("Range")) or 25
+            if active.Range == nil or (typeof(active.Range) == "number" and active.Range < 50) then
+                active.Range = 50 -- Perluas jangkauan deteksi hitbox client agar tidak miss
             end
             if active.LastSwing then
-                active.LastSwing = 0 -- Reset cooldown agar ayunan langsung dieksekusi
+                active.LastSwing = 0 -- Reset cooldown ayunan agar langsung dieksekusi
             end
             if active.Swing then
                 active:Swing()
             end
+            if #targetList > 0 and active.Execute and active.Execute.Fire then
+                active.Execute:Fire({ "Swing", targetList })
+            end
         end
     end)
 
-    -- 4. PUKUL BIASA METODE 2: Tool:Activate() (Roblox Standard Tool Activation)
+    -- 5. PUKUL BIASA METODE 2: Direct ToolService Remote Signal (100% Guaranteed Hit Server-Side)
+    if #targetList > 0 then
+        sendToolServerUpdate({ "Swing", targetList })
+    end
+
+    -- 6. PUKUL BIASA METODE 3: Tool:Activate() (Roblox Standard Tool Activation)
     pcall(function()
         if equippedTool and equippedTool:IsA("Tool") then
             equippedTool:Activate()
         end
     end)
 
-    -- 5. PUKUL BIASA METODE 3: Virtual Input Mouse Click Simulation (Native Primary Attack)
+    -- 7. PUKUL BIASA METODE 4: Virtual Input Mouse Click Simulation (Native Primary Attack)
     -- Meniru klik mouse kiri (Left Click / Primary Attack) pemain secara presisi
     pcall(function()
         local vu = game:GetService("VirtualUser")
@@ -1803,7 +1833,7 @@ registerThread(function()
                     -- A. Hostile Enemy in range -> Fight with Sword (Pukul Biasa)
                     if Flags.AutoKillHostile and bestEnemy and bestPart and not isTeleporting then
                         equipToolByName("Sword")
-                        executeToolSwing("Sword", bestPart.Position)
+                        executeToolSwing("Sword", bestPart.Position, bestEnemy)
                     -- B. Mine Rocks/Ores -> Mine with Pickaxe (Pukul Biasa)
                     elseif Flags.AutoMineAura then
                         local targets = scanMinableTargets(Flags.MineRadius or 60)
@@ -1815,10 +1845,10 @@ registerThread(function()
                             local centerDist = (best.Position - root.Position).Magnitude
                             local surfaceDist = math.max(0, centerDist - (best.Radius or 3.5))
 
-                            -- Pickaxe melee reach extends up to 14 studs from surface or 18 studs from center
-                            if surfaceDist <= 14.0 or centerDist <= 18.0 then
+                            -- Pickaxe melee reach extends up to 18 studs from surface or 22 studs from center
+                            if surfaceDist <= 18.0 or centerDist <= 22.0 then
                                 equipToolByName("Pickaxe")
-                                executeToolSwing("Pickaxe", best.Position)
+                                executeToolSwing("Pickaxe", best.Position, best.Node or best.OrePart)
                             end
                         else
                             currentMineTarget = nil
