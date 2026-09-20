@@ -1369,13 +1369,52 @@ local KNOWN_FACTORIES = {
     { Key = "ButterFactory",  Name = "Pabrik Mentega", Input = "Susu",    Output = "Mentega" },
     { Key = "CheeseFactory",  Name = "Pabrik Keju",    Input = "Mentega", Output = "Keju" }
 }
-local FACTORY_TIERS = { "Default", "Gold", "Sakura", "Cosmic" }
+local FACTORY_TIERS = { "Cosmic", "Sakura", "Gold", "Default" }
 local ANIMAL_LIST = { "Chicken", "Sheep", "Pig", "Cow", "Chicken_Premium", "Sheep_Premium" }
+
+-- Factory Model & Unlocked Resolvers (Accurate Workspace.FactorySpawn Detection)
+local function getFactoryModel(factKey)
+    local factorySpawn = workspace:FindFirstChild("FactorySpawn") or workspace:FindFirstChild("Factory") or workspace:FindFirstChild("Factories")
+    if factorySpawn then
+        local m = factorySpawn:FindFirstChild(factKey)
+        if m then return m end
+    end
+    local direct = workspace:FindFirstChild(factKey)
+    if direct then return direct end
+    for _, obj in ipairs(workspace:GetChildren()) do
+        if obj.Name:lower() == factKey:lower() then
+            return obj
+        end
+    end
+    return nil
+end
+
+local function isFactoryUnlocked(factKey)
+    local m = getFactoryModel(factKey)
+    if not m then return false end
+    local imgPart = m:FindFirstChild("ImagePart")
+    if imgPart then
+        local prompt = imgPart:FindFirstChild("UnlockPrompt")
+        if prompt and prompt:IsA("ProximityPrompt") and prompt.Enabled then
+            return false -- Masih terkunci (butuh beli pabrik)
+        end
+    end
+    return true
+end
+
+local function getFactoryClaimPart(factModel)
+    if not factModel then return nil end
+    return factModel:FindFirstChild("RootPosition")
+        or factModel:FindFirstChild("Part")
+        or factModel.PrimaryPart
+        or factModel:FindFirstChildWhichIsA("BasePart")
+end
 
 -- Config State
 local state = {
-    -- Teleport Approach & New Features
+    -- Teleport Approach & Enhancements
     TeleportApproach    = true,
+    TeleportReturn      = true,
     WalkApproach        = true,
     TeleportClaim       = true,
     AutoClaimMegaMilestone = false,
@@ -1385,7 +1424,7 @@ local state = {
     AutoClaimProd       = false,
     AutoUpgradeFact     = false,
     AutoUnlockFact      = false,
-    ProdInterval        = 1.0,
+    ProdInterval        = 1.5,
 
     AutoCollectEggs     = false,
     EggCollectInterval  = 0.3,
@@ -1443,17 +1482,35 @@ createToggle(PageFactory, "AutoStartProd", "AutoStartDesc", state.AutoStartProd,
                 if RequestStartProduction then
                     for _, fact in ipairs(KNOWN_FACTORIES) do
                         if not state.AutoStartProd then break end
-                        for _, tier in ipairs(FACTORY_TIERS) do
-                            if not state.AutoStartProd then break end
-                            pcall(function() RequestStartProduction:InvokeServer(fact.Key, tier, 1) end)
-                            pcall(function() RequestStartProduction:InvokeServer(fact.Key, 1) end)
-                            pcall(function() RequestStartProduction:InvokeServer(fact.Key) end)
-                            pcall(function() RequestStartProduction:InvokeServer("Start", fact.Key, 1, tier) end)
-                            task.wait(0.04)
+                        -- Hanya jalankan produksi pada pabrik yang sudah dibuka pemain
+                        if isFactoryUnlocked(fact.Key) then
+                            for _, tier in ipairs(FACTORY_TIERS) do
+                                if not state.AutoStartProd then break end
+                                pcall(function() RequestStartProduction:InvokeServer(fact.Key, tier, 1) end)
+                                pcall(function() RequestStartProduction:InvokeServer(fact.Key, 1) end)
+                                pcall(function() RequestStartProduction:InvokeServer(fact.Key, tier) end)
+                                pcall(function() RequestStartProduction:InvokeServer(fact.Key) end)
+                                task.wait(0.04)
+                            end
+                            -- Trigger Start Button di GUI jika menu pabrik sedang terbuka
+                            pcall(function()
+                                local pGui = LocalPlayer:FindFirstChild("PlayerGui")
+                                local fGui = pGui and pGui:FindFirstChild("Factory")
+                                local fMain = fGui and fGui:FindFirstChild("Factory")
+                                local sBtn = fMain and fMain:FindFirstChild("MainContainer")
+                                    and fMain.MainContainer:FindFirstChild("ProductionFrame")
+                                    and fMain.MainContainer.ProductionFrame:FindFirstChild("ProductionInfoFrame")
+                                    and fMain.MainContainer.ProductionFrame.ProductionInfoFrame:FindFirstChild("ProductionButton")
+                                    and fMain.MainContainer.ProductionFrame.ProductionInfoFrame.ProductionButton:FindFirstChild("StartButton")
+                                if sBtn and sBtn.Visible and firesignal then
+                                    firesignal(sBtn.MouseButton1Click)
+                                end
+                            end)
                         end
+                        task.wait(0.06)
                     end
                 end
-                task.wait(state.ProdInterval)
+                task.wait(math.max(1.0, state.ProdInterval or 1.5))
             end
         end)
     end
@@ -1467,32 +1524,68 @@ createToggle(PageFactory, "AutoClaimProd", "AutoClaimDesc", state.AutoClaimProd,
                 if RequestClaimProduction then
                     local char = LocalPlayer.Character
                     local root = char and char:FindFirstChild("HumanoidRootPart")
+                    local originalCFrame = root and root.CFrame
+                    local didTeleport = false
 
                     for _, fact in ipairs(KNOWN_FACTORIES) do
                         if not state.AutoClaimProd then break end
-                        pcall(function()
-                            -- Teleport near factory claim area if enabled
-                            if state.TeleportClaim and root then
-                                local myPlot = getMyFarmPlot()
-                                local factFolder = workspace:FindFirstChild("Factory")
-                                local factModel = (myPlot and myPlot:FindFirstChild(fact.Key))
-                                    or (myPlot and myPlot:FindFirstChild("Factory") and myPlot.Factory:FindFirstChild(fact.Key))
-                                    or (factFolder and factFolder:FindFirstChild(fact.Key))
-                                    or workspace:FindFirstChild(fact.Key)
-                                if factModel then
-                                    local fPart = factModel:IsA("BasePart") and factModel or (factModel.PrimaryPart or factModel:FindFirstChildWhichIsA("BasePart"))
-                                    if fPart then
-                                        char:PivotTo(CFrame.new(fPart.Position + Vector3.new(0, 3.5, 0)))
-                                        task.wait(0.04)
-                                    end
+
+                        if isFactoryUnlocked(fact.Key) then
+                            local factModel = getFactoryModel(fact.Key)
+                            local cPart = getFactoryClaimPart(factModel)
+
+                            -- Teleport dekat stasiun pabrik jika toggle TeleportClaim aktif
+                            if state.TeleportClaim and root and cPart then
+                                local dist = (root.Position - cPart.Position).Magnitude
+                                if dist > 20 then
+                                    didTeleport = true
+                                    char:PivotTo(CFrame.new(cPart.Position + Vector3.new(0, 3.5, 0)))
+                                    task.wait(0.05)
+                                end
+                                -- Trigger proximity prompt jika ada
+                                local prompt = cPart:FindFirstChildWhichIsA("ProximityPrompt")
+                                    or (factModel and factModel:FindFirstChildWhichIsA("ProximityPrompt", true))
+                                if prompt and prompt.Enabled and prompt.Name ~= "UnlockPrompt" then
+                                    safeFirePrompt(prompt)
                                 end
                             end
-                            RequestClaimProduction:InvokeServer(fact.Key)
+
+                            -- Remote invoke klaim produk
+                            pcall(function() RequestClaimProduction:InvokeServer(fact.Key) end)
+                            pcall(function() RequestClaimProduction:InvokeServer(fact.Key, "All") end)
+                            pcall(function() RequestClaimProduction:InvokeServer(fact.Key, 1) end)
+
+                            -- Trigger tombol Ambil/Claim di GUI jika ada
+                            pcall(function()
+                                local pGui = LocalPlayer:FindFirstChild("PlayerGui")
+                                local fGui = pGui and pGui:FindFirstChild("Factory")
+                                local fMain = fGui and fGui:FindFirstChild("Factory")
+                                local cBtn = fMain and fMain:FindFirstChild("MainContainer")
+                                    and fMain.MainContainer:FindFirstChild("ProcessProduction")
+                                    and fMain.MainContainer.ProcessProduction:FindFirstChild("OutputFrame")
+                                    and fMain.MainContainer.ProcessProduction.OutputFrame:FindFirstChild("ClaimFrame")
+                                    and fMain.MainContainer.ProcessProduction.OutputFrame.ClaimFrame:FindFirstChild("ClaimButton")
+                                if cBtn and cBtn.Visible and firesignal then
+                                    firesignal(cBtn.MouseButton1Click)
+                                end
+                            end)
+
+                            task.wait(0.06)
+                        end
+                    end
+
+                    -- Panggilan klaim global (klaim semua pabrik sekaligus jika didukung game)
+                    pcall(function() RequestClaimProduction:InvokeServer() end)
+                    pcall(function() RequestClaimProduction:InvokeServer("All") end)
+
+                    -- Kembalikan posisi karakter ke lokasi semula setelah sweep selesai
+                    if state.TeleportClaim and state.TeleportReturn and didTeleport and originalCFrame and root then
+                        pcall(function()
+                            char:PivotTo(originalCFrame)
                         end)
-                        task.wait(0.06)
                     end
                 end
-                task.wait(state.ProdInterval)
+                task.wait(math.max(1.0, state.ProdInterval or 1.5))
             end
         end)
     end
@@ -1510,14 +1603,16 @@ createToggle(PageFactory, "AutoUpgradeFact", "AutoUpgradeDesc", state.AutoUpgrad
                 if RequestFactoryUpgrade then
                     for _, fact in ipairs(KNOWN_FACTORIES) do
                         if not state.AutoUpgradeFact then break end
-                        pcall(function()
-                            RequestFactoryUpgrade:InvokeServer(fact.Key, "Speed")
-                        end)
-                        task.wait(0.08)
-                        pcall(function()
-                            RequestFactoryUpgrade:InvokeServer(fact.Key, "Capacity")
-                        end)
-                        task.wait(0.08)
+                        if isFactoryUnlocked(fact.Key) then
+                            pcall(function()
+                                RequestFactoryUpgrade:InvokeServer(fact.Key, "Speed")
+                            end)
+                            task.wait(0.08)
+                            pcall(function()
+                                RequestFactoryUpgrade:InvokeServer(fact.Key, "Capacity")
+                            end)
+                            task.wait(0.08)
+                        end
                     end
                 end
                 task.wait(4.0)
@@ -1534,13 +1629,23 @@ createToggle(PageFactory, "AutoUnlockFact", "AutoUnlockDesc", state.AutoUnlockFa
                 if RequestUnlockFactory then
                     for _, fact in ipairs(KNOWN_FACTORIES) do
                         if not state.AutoUnlockFact then break end
-                        pcall(function()
-                            RequestUnlockFactory:InvokeServer(fact.Key)
-                        end)
-                        task.wait(0.15)
+                        if not isFactoryUnlocked(fact.Key) then
+                            local factModel = getFactoryModel(fact.Key)
+                            if factModel then
+                                local imgPart = factModel:FindFirstChild("ImagePart")
+                                local prompt = imgPart and imgPart:FindFirstChild("UnlockPrompt")
+                                if prompt and prompt.Enabled then
+                                    safeFirePrompt(prompt)
+                                end
+                            end
+                            pcall(function()
+                                RequestUnlockFactory:InvokeServer(fact.Key)
+                            end)
+                            task.wait(0.2)
+                        end
                     end
                 end
-                task.wait(6.0)
+                task.wait(5.0)
             end
         end)
     end
