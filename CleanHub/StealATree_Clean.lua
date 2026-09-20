@@ -1032,7 +1032,12 @@ local function runStealSaplingsCycle()
                 end)
 
                 local pressedKey = false
-                -- Tekan tombol E native ke bawah (1x SAJA)
+                -- 1. Native C++ Engine InputHoldBegin (Roblox Official Custom UI API)
+                pcall(function()
+                    prompt:InputHoldBegin()
+                end)
+
+                -- 2. VirtualInputManager KeyDown
                 if vim then
                     pcall(function()
                         vim:SendKeyEvent(true, Enum.KeyCode.E, false, game)
@@ -1040,17 +1045,14 @@ local function runStealSaplingsCycle()
                     end)
                 end
 
-                -- Dukung juga fireproximityprompt jika didukung oleh executor
+                -- 3. Executor fireproximityprompt dengan durasi 1.0s
                 if typeof(fireproximityprompt) == "function" then
-                    task.spawn(function()
-                        pcall(function() fireproximityprompt(prompt, 1.0) end)
-                        pcall(function() fireproximityprompt(prompt) end)
-                    end)
+                    pcall(function() fireproximityprompt(prompt, 1.0) end)
                 end
 
-                -- Tunggu hingga 1.20 detik (1.0s durasi asli + 0.2s toleransi jaringan)
+                -- Tunggu hingga 1.15 detik (1.0s durasi asli + 0.15s toleransi jaringan)
                 local holdStartTime = tick()
-                local holdDuration = 1.20
+                local holdDuration = 1.15
 
                 while (tick() - holdStartTime) < holdDuration do
                     task.wait(0.05)
@@ -1073,7 +1075,12 @@ local function runStealSaplingsCycle()
                     end
                 end
 
-                -- Lepaskan tombol E native ke atas (1x SAJA)
+                -- Selesaikan sequence hold secara resmi
+                pcall(function()
+                    prompt:InputHoldEnd()
+                end)
+
+                -- Lepaskan tombol E native ke atas
                 if pressedKey and vim then
                     pcall(function()
                         vim:SendKeyEvent(false, Enum.KeyCode.E, false, game)
