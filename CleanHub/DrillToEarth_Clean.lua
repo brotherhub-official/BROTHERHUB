@@ -501,9 +501,13 @@ local function executeToolSwing(toolType, targetPos, targetInstance)
     local targets = {}
     if toolType == "Pickaxe" then
         if targetInstance then
-            local oreTag = findTaggedAncestor(targetInstance, "Ore") or findTaggedAncestor(targetInstance, "RockWall")
-            if oreTag and not table.find(targets, oreTag) then
-                table.insert(targets, oreTag)
+            local oreCandidate = findTaggedAncestor(targetInstance, "Ore")
+                or findTaggedAncestor(targetInstance, "RockWall")
+                or (targetInstance:IsA("Model") and targetInstance)
+                or (targetInstance:IsA("BasePart") and (targetInstance.Parent:IsA("Model") and targetInstance.Parent or targetInstance))
+                or targetInstance
+            if oreCandidate and not table.find(targets, oreCandidate) then
+                table.insert(targets, oreCandidate)
             end
         end
 
@@ -512,12 +516,16 @@ local function executeToolSwing(toolType, targetPos, targetInstance)
             local v7 = OverlapParams.new()
             v7.FilterType = Enum.RaycastFilterType.Exclude
             v7.FilterDescendantsInstances = { char }
-            local hitParts = workspace:GetPartBoundsInBox(root.CFrame * CFrame.new(0, 0, -4), Vector3.new(20, 20, 20), v7)
+            local hitParts = workspace:GetPartBoundsInBox(root.CFrame * CFrame.new(0, 0, -4), Vector3.new(24, 24, 24), v7)
             for _, p in ipairs(hitParts) do
-                local oTag = findTaggedAncestor(p, "Ore") or findTaggedAncestor(p, "RockWall")
+                local oTag = findTaggedAncestor(p, "Ore")
+                    or findTaggedAncestor(p, "RockWall")
+                    or (p.Parent and (p.Parent.Name:find("Node") or p.Parent.Name:find("Ore") or p.Parent.Name:find("Rock")) and p.Parent)
+                    or (p:FindFirstChild("Health") and p)
+                    or (p.Parent and p.Parent:FindFirstChild("Health") and p.Parent)
                 if oTag and not table.find(targets, oTag) then
                     table.insert(targets, oTag)
-                    if #targets >= 10 then break end
+                    if #targets >= 12 then break end
                 end
             end
         end)
@@ -528,7 +536,7 @@ local function executeToolSwing(toolType, targetPos, targetInstance)
             if npcFolder then
                 for _, npc in ipairs(npcFolder:GetChildren()) do
                     if npc:IsA("Model") then
-                        local pp = npc.PrimaryPart or npc:FindFirstChildWhichIsA("BasePart")
+                        local pp = npc.PrimaryPart or npc:FindFirstChildWhichIsA("BasePart", true)
                         if pp and (pp.Position - root.Position).Magnitude <= 18 then
                             if not table.find(targets, npc) then
                                 table.insert(targets, npc)
@@ -540,8 +548,8 @@ local function executeToolSwing(toolType, targetPos, targetInstance)
         end)
     elseif toolType == "Sword" then
         if targetInstance then
-            local npcModel = targetInstance:IsA("Model") and targetInstance or targetInstance:FindFirstAncestorOfClass("Model")
-            if npcModel and npcModel.Parent == workspace:FindFirstChild("Npc") and not table.find(targets, npcModel) then
+            local npcModel = targetInstance:IsA("Model") and targetInstance or targetInstance:FindFirstAncestorOfClass("Model") or targetInstance
+            if npcModel and not table.find(targets, npcModel) then
                 table.insert(targets, npcModel)
             end
         end
@@ -551,8 +559,8 @@ local function executeToolSwing(toolType, targetPos, targetInstance)
             if npcFolder then
                 for _, npc in ipairs(npcFolder:GetChildren()) do
                     if npc:IsA("Model") then
-                        local pp = npc.PrimaryPart or npc:FindFirstChildWhichIsA("BasePart")
-                        if pp and (pp.Position - root.Position).Magnitude <= 22 then
+                        local pp = npc.PrimaryPart or npc:FindFirstChildWhichIsA("BasePart", true)
+                        if pp and (pp.Position - root.Position).Magnitude <= 24 then
                             if not table.find(targets, npc) then
                                 table.insert(targets, npc)
                             end
@@ -596,18 +604,15 @@ local function executeToolSwing(toolType, targetPos, targetInstance)
         end)
     end
 
-    -- Execute Swing: Use native ToolController ActiveTool if synchronized, or single clean server remote signal
-    local executed = false
-    pcall(function()
-        local tc = Knit and Knit.GetController and Knit.GetController("ToolController")
-        local active = tc and tc.ActiveTool
-        if active and active.Execute and active.Execute.Fire then
-            active.Execute:Fire({ "Swing", targets })
-            executed = true
-        end
-    end)
-
-    if not executed and #targets > 0 then
+    -- Execute Swing: Dual Fire to both Client ToolController ActiveTool and direct ToolService Remote
+    if #targets > 0 then
+        pcall(function()
+            local tc = Knit and Knit.GetController and Knit.GetController("ToolController")
+            local active = tc and tc.ActiveTool
+            if active and active.Execute and active.Execute.Fire then
+                active.Execute:Fire({ "Swing", targets })
+            end
+        end)
         sendToolServerUpdate({ "Swing", targets })
     end
 end
@@ -1149,7 +1154,13 @@ local function isScrap(name)
            nl:find("pipe") or nl:find("spring") or nl:find("junk") or nl:find("debris") or
            nl:find("part") or nl:find("ironbar") or nl:find("bar") or nl:find("wire") or
            nl:find("wrench") or nl:find("bolt") or nl:find("engine") or nl:find("fan") or
-           nl:find("mug") or nl:find("spoon")
+           nl:find("mug") or nl:find("spoon") or nl:find("plate") or nl:find("silver") or
+           nl:find("cup") or nl:find("pot") or nl:find("pan") or nl:find("bottle") or
+           nl:find("knife") or nl:find("fork") or nl:find("relic") or nl:find("tin") or
+           nl:find("gold") or nl:find("can") or nl:find("wheel") or nl:find("clock") or
+           nl:find("battery") or nl:find("circuit") or nl:find("chip") or nl:find("dish") or
+           nl:find("bowl") or nl:find("tray") or nl:find("pitcher") or nl:find("goblet") or
+           nl:find("kettle") or nl:find("silverware") or nl:find("candlestick") or nl:find("vase")
 end
 
 local function isMed(name)
@@ -1656,12 +1667,12 @@ registerThread(function()
                             end
                         end
 
-                        -- 2. Equip ItemBag (Sack) ONLY when player is not actively mining with Pickaxe or fighting!
+                        -- 2. Equip ItemBag (Sack) to ensure server registers player holding bag for pickup
                         if not Flags.AutoMineAura and not Flags.AutoKillHostile and not currentMineTarget and not currentCombatTarget then
                             equipToolByName("ItemBag")
                         end
 
-                        -- 3. Trigger Pickups via Server Remote & Client ToolController
+                        -- 3. Trigger Pickups via Server Remote, Client ToolController & Interaction
                         local tc = Knit and Knit.GetController and Knit.GetController("ToolController")
                         local activeTool = tc and tc.ActiveTool
                         for _, entry in ipairs(lootTargets) do
@@ -1670,6 +1681,12 @@ registerThread(function()
                             if activeTool and activeTool.Execute then
                                 pcall(function() activeTool.Execute:Fire({ "Pickup", item }) end)
                             end
+                            pcall(function()
+                                local isS = getKnitService("InteractionService")
+                                if isS and isS.Interact then
+                                    isS:Interact(item)
+                                end
+                            end)
                             local prompt = item:FindFirstChildWhichIsA("ProximityPrompt", true)
                             if prompt and prompt.Enabled and fireproximityprompt then
                                 fireproximityprompt(prompt, 0)
@@ -1958,25 +1975,47 @@ local cachedChestObjects = {}
 local lastChestScanClock = 0
 
 local function scanAllChests()
-    if os.clock() - lastChestScanClock < 1.5 then return cachedChestObjects end
+    if os.clock() - lastChestScanClock < 1.2 then return cachedChestObjects end
     lastChestScanClock = os.clock()
     local list = {}
     pcall(function()
+        -- 1. CollectionService official tags
+        for _, obj in ipairs(CollectionService:GetTagged("DungeonLootHighlightTarget")) do
+            if obj and obj.Parent and not table.find(list, obj) then
+                table.insert(list, obj)
+            end
+        end
+        for _, obj in ipairs(CollectionService:GetTagged("Chest")) do
+            if obj and obj.Parent and not table.find(list, obj) then
+                table.insert(list, obj)
+            end
+        end
+        for _, obj in ipairs(CollectionService:GetTagged("CommonChest")) do
+            if obj and obj.Parent and not table.find(list, obj) then
+                table.insert(list, obj)
+            end
+        end
+        -- 2. Workspace Descendants scanner
         for _, obj in ipairs(workspace:GetDescendants()) do
             if obj:IsA("Model") or obj:IsA("BasePart") then
                 local nl = obj.Name:lower()
-                if nl:find("chest") and not nl:find("node") and not nl:find("prompt") and not nl:find("piece") and not nl:find("step") and not nl:find("ui") and not nl:find("frame") and not nl:find("button") then
-                    table.insert(list, obj)
+                local isChest = nl:find("chest") or (obj:GetAttribute("RuntimeChestModel") == true)
+                if isChest and not nl:find("node") and not nl:find("prompt") and not nl:find("piece") and not nl:find("step") and not nl:find("ui") and not nl:find("frame") and not nl:find("button") then
+                    local targetModel = obj:IsA("Model") and obj or (obj.Parent and obj.Parent:IsA("Model") and obj.Parent or obj)
+                    if targetModel and not table.find(list, targetModel) then
+                        table.insert(list, targetModel)
+                    end
                 end
             end
         end
+        -- 3. ProximityPrompts for chests
         for _, prompt in ipairs(workspace:GetDescendants()) do
             if prompt:IsA("ProximityPrompt") then
                 local a = prompt.ActionText:lower()
                 local o = prompt.ObjectText:lower()
                 local pName = prompt.Parent and prompt.Parent.Name:lower() or ""
                 if a:find("open") or a:find("chest") or o:find("chest") or pName:find("chest") then
-                    local targetObj = prompt.Parent
+                    local targetObj = prompt.Parent and (prompt.Parent:IsA("Model") and prompt.Parent or (prompt.Parent.Parent and prompt.Parent.Parent:IsA("Model") and prompt.Parent.Parent or prompt.Parent))
                     if targetObj and not table.find(list, targetObj) then
                         table.insert(list, targetObj)
                     end
@@ -2192,11 +2231,18 @@ registerThread(function()
 end)
 
 -- 12. VISUAL RADAR & WALLHACK (ESP ENGINE)
+local function getEspContainer()
+    return (gethui and gethui()) or LocalPlayer:FindFirstChildOfClass("PlayerGui") or CoreGui
+end
+
 local function removeEspElement(obj)
     if activeEspElements[obj] then
         pcall(function()
             if activeEspElements[obj].Billboard then
                 activeEspElements[obj].Billboard:Destroy()
+            end
+            if activeEspElements[obj].Highlight then
+                activeEspElements[obj].Highlight:Destroy()
             end
         end)
         activeEspElements[obj] = nil
@@ -2238,7 +2284,7 @@ registerThread(function()
                                     bg.Size = UDim2.new(0, 160, 0, 36)
                                     bg.AlwaysOnTop = true
                                     bg.Adornee = part
-                                    bg.Parent = CoreGui
+                                    bg.Parent = getEspContainer()
 
                                     local lbl = Instance.new("TextLabel", bg)
                                     lbl.Size = UDim2.new(1, 0, 1, 0)
@@ -2275,7 +2321,7 @@ registerThread(function()
                             bg.Size = UDim2.new(0, 150, 0, 36)
                             bg.AlwaysOnTop = true
                             bg.Adornee = part
-                            bg.Parent = CoreGui
+                            bg.Parent = getEspContainer()
 
                             local lbl = Instance.new("TextLabel", bg)
                             lbl.Size = UDim2.new(1, 0, 1, 0)
@@ -2341,7 +2387,7 @@ registerThread(function()
                                         bg.Size = UDim2.new(0, 140, 0, 32)
                                         bg.AlwaysOnTop = true
                                         bg.Adornee = part
-                                        bg.Parent = CoreGui
+                                        bg.Parent = getEspContainer()
 
                                         local lbl = Instance.new("TextLabel", bg)
                                         lbl.Size = UDim2.new(1, 0, 1, 0)
@@ -2365,12 +2411,13 @@ registerThread(function()
                 end
             end
 
-            -- C2. DEDICATED CHEST ESP (GLOBAL WORKSPACE CHEST RADAR)
+            -- C2. DEDICATED CHEST ESP (GLOBAL WORKSPACE CHEST RADAR & 360 HIGHLIGHT)
             if Flags.ChestESP then
+                local espContainer = getEspContainer()
                 local chestPool = scanAllChests()
                 for _, chest in ipairs(chestPool) do
                     if chest and chest.Parent then
-                        local part = chest:IsA("BasePart") and chest or (chest:IsA("Model") and (chest.PrimaryPart or chest:FindFirstChildWhichIsA("BasePart")))
+                        local part = chest:IsA("BasePart") and chest or (chest:IsA("Model") and (chest.PrimaryPart or chest:FindFirstChildWhichIsA("BasePart", true)))
                         if part then
                             local dist = math.floor((part.Position - root.Position).Magnitude)
                             if dist <= maxDist then
@@ -2379,7 +2426,7 @@ registerThread(function()
                                 local nl = name:lower()
 
                                 local chestCol = THEME.Gold
-                                if nl:find("rusty") or nl:find("tutorial") then
+                                if nl:find("rusty") or nl:find("tutorial") or nl:find("common") then
                                     chestCol = Color3.fromRGB(205, 127, 50)
                                 elseif nl:find("steel") then
                                     chestCol = Color3.fromRGB(192, 192, 192)
@@ -2399,7 +2446,7 @@ registerThread(function()
                                     bg.Size = UDim2.new(0, 150, 0, 34)
                                     bg.AlwaysOnTop = true
                                     bg.Adornee = part
-                                    bg.Parent = CoreGui
+                                    bg.Parent = espContainer
 
                                     local lbl = Instance.new("TextLabel", bg)
                                     lbl.Size = UDim2.new(1, 0, 1, 0)
@@ -2410,12 +2457,25 @@ registerThread(function()
                                     lbl.TextStrokeTransparency = 0
                                     lbl.TextStrokeColor3 = Color3.fromRGB(10, 10, 15)
 
-                                    activeEspElements[chest] = { Billboard = bg, Label = lbl, Part = part }
+                                    local hl = Instance.new("Highlight")
+                                    hl.Name = "BH_ChestHL"
+                                    hl.Adornee = chest
+                                    hl.FillColor = chestCol
+                                    hl.OutlineColor = Color3.fromRGB(255, 255, 255)
+                                    hl.FillTransparency = 0.45
+                                    hl.OutlineTransparency = 0
+                                    hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+                                    hl.Parent = espContainer
+
+                                    activeEspElements[chest] = { Billboard = bg, Label = lbl, Highlight = hl, Part = part }
                                 end
 
                                 if activeEspElements[chest] then
                                     activeEspElements[chest].Label.Text = string.format("📦 %s\n[%dm]", name, dist)
                                     activeEspElements[chest].Label.TextColor3 = chestCol
+                                    if activeEspElements[chest].Highlight then
+                                        activeEspElements[chest].Highlight.FillColor = chestCol
+                                    end
                                 end
                             end
                         end
@@ -2440,7 +2500,7 @@ registerThread(function()
                                         bg.Size = UDim2.new(0, 140, 0, 32)
                                         bg.AlwaysOnTop = true
                                         bg.Adornee = part
-                                        bg.Parent = CoreGui
+                                        bg.Parent = getEspContainer()
 
                                         local lbl = Instance.new("TextLabel", bg)
                                         lbl.Size = UDim2.new(1, 0, 1, 0)
