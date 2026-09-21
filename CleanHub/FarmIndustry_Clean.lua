@@ -196,6 +196,10 @@ local STRINGS = {
         AutoUnlockFact      = "Auto Buka Pabrik Baru (Unlock)",
         AutoUnlockDesc      = "Membeli & membuka pabrik berikutnya saat syarat level tercapai",
         ProdInterval        = "Jeda Siklus Produksi (Detik)",
+        ProdBatchAmount     = "Jumlah Antrean Mesin (Bisa Lebih dari 1)",
+        ProdBatchAmountDesc = "Mengantrekan beberapa item sekaligus ke mesin pabrik sesuai kapasitas antrean",
+        TeleportProd        = "⚡ Teleport ke Pabrik saat Mulai Produksi",
+        TeleportProdDesc    = "Mendekati mesin pabrik seketika agar server memvalidasi mulai produksi",
         
         -- Livestock Tab
         SecLivestock        = "MANAJEMEN PETERNAKAN & TELUR",
@@ -236,8 +240,6 @@ local STRINGS = {
         AutoEquipDesc   = "Otomatis memakai gembor penyiram air tier tertinggi di tas",
         AutoHarvestCrops= "Auto Panen Sayur & Tanaman",
         AutoHarvestDesc = "Mengumpulkan hasil panen di ladang saat siap dipetik",
-        AutoChopTrees   = "Auto Tebang Pohon & Vacuum Kayu",
-        AutoChopTreesDesc = "Otomatis menebang pohon dan menyedot seluruh kayu drop ke tas",
         WaterSpeed      = "Jeda Loop Penyiraman (Detik)",
         
         -- Delivery & Market Tab
@@ -340,6 +342,10 @@ local STRINGS = {
         AutoUnlockFact      = "Auto Unlock Next Factory",
         AutoUnlockDesc      = "Purchases and unlocks new factories when level requirements are met",
         ProdInterval        = "Production Cycle Delay (Seconds)",
+        ProdBatchAmount     = "Machine Queue Batch Amount (>1 Multi-Queue)",
+        ProdBatchAmountDesc = "Queues multiple items into the factory machine at once according to queue capacity",
+        TeleportProd        = "⚡ Teleport to Factory on Start Production",
+        TeleportProdDesc    = "Blinks right next to factory machine so server validates production start",
         
         -- Livestock Tab
         SecLivestock        = "LIVESTOCK, EGGS & BARN MANAGEMENT",
@@ -380,8 +386,6 @@ local STRINGS = {
         AutoEquipDesc   = "Equips the highest tier watering can in inventory automatically",
         AutoHarvestCrops= "Auto Harvest Crops & Vegetables",
         AutoHarvestDesc = "Harvests ripe vegetables across plots when ready",
-        AutoChopTrees   = "Auto Chop Trees & Vacuum Wood",
-        AutoChopTreesDesc = "Automatically chops trees and vacuums all wood drops into backpack",
         WaterSpeed      = "Watering Interval (Seconds)",
         
         -- Delivery & Market Tab
@@ -1391,7 +1395,10 @@ end
 
 local function isFactoryUnlocked(factKey)
     local m = getFactoryModel(factKey)
-    if not m then return false end
+    if not m then
+        -- Jika belum di-stream oleh engine Roblox, anggap terbuka agar tidak diblokir
+        return true
+    end
     local imgPart = m:FindFirstChild("ImagePart")
     if imgPart then
         local prompt = imgPart:FindFirstChild("UnlockPrompt")
@@ -1417,6 +1424,8 @@ local state = {
     TeleportReturn      = true,
     WalkApproach        = true,
     TeleportClaim       = true,
+    TeleportProd        = true,
+    ProdBatchAmount     = 5,
     AutoClaimMegaMilestone = false,
     AutoBuyFarmMastery  = false,
     AutoBuyRebirthMastery = false,
@@ -1438,7 +1447,6 @@ local state = {
     AutoRefillWater     = true,
     AutoEquipCan        = false,
     AutoHarvestCrops    = false,
-    AutoChopTrees       = false,
     WaterInterval       = 0.5,
 
     AutoInstantSell     = false,
@@ -1479,41 +1487,149 @@ createToggle(PageFactory, "AutoStartProd", "AutoStartDesc", state.AutoStartProd,
     if val then
         task.spawn(function()
             while state.AutoStartProd and getgenv().BrotherHub_FarmIndustry_Loaded do
-                if RequestStartProduction then
-                    for _, fact in ipairs(KNOWN_FACTORIES) do
-                        if not state.AutoStartProd then break end
-                        -- Hanya jalankan produksi pada pabrik yang sudah dibuka pemain
-                        if isFactoryUnlocked(fact.Key) then
-                            for _, tier in ipairs(FACTORY_TIERS) do
-                                if not state.AutoStartProd then break end
-                                pcall(function() RequestStartProduction:InvokeServer(fact.Key, tier, 1) end)
-                                pcall(function() RequestStartProduction:InvokeServer(fact.Key, 1) end)
-                                pcall(function() RequestStartProduction:InvokeServer(fact.Key, tier) end)
-                                pcall(function() RequestStartProduction:InvokeServer(fact.Key) end)
-                                task.wait(0.04)
+                local char = LocalPlayer.Character
+                local root = char and char:FindFirstChild("HumanoidRootPart")
+                local originalCFrame = root and root.CFrame
+                local didTeleport = false
+
+                for _, fact in ipairs(KNOWN_FACTORIES) do
+                    if not state.AutoStartProd then break end
+                    -- Hanya jalankan produksi pada pabrik yang sudah dibuka pemain
+                    if isFactoryUnlocked(fact.Key) then
+                        local factModel = getFactoryModel(fact.Key)
+                        local cPart = getFactoryClaimPart(factModel)
+
+                        -- Teleport dekat stasiun pabrik jika toggle TeleportProd aktif
+                        if state.TeleportProd and root and cPart then
+                            local dist = (root.Position - cPart.Position).Magnitude
+                            if dist > 20 then
+                                didTeleport = true
+                                char:PivotTo(CFrame.new(cPart.Position + Vector3.new(0, 3.5, 0)))
+                                task.wait(0.08)
                             end
-                            -- Trigger Start Button di GUI jika menu pabrik sedang terbuka
-                            pcall(function()
-                                local pGui = LocalPlayer:FindFirstChild("PlayerGui")
-                                local fGui = pGui and pGui:FindFirstChild("Factory")
-                                local fMain = fGui and fGui:FindFirstChild("Factory")
-                                local sBtn = fMain and fMain:FindFirstChild("MainContainer")
-                                    and fMain.MainContainer:FindFirstChild("ProductionFrame")
-                                    and fMain.MainContainer.ProductionFrame:FindFirstChild("ProductionInfoFrame")
+                            -- Trigger proximity prompt buka pabrik
+                            local prompt = cPart:FindFirstChildWhichIsA("ProximityPrompt")
+                                or (factModel and factModel:FindFirstChildWhichIsA("ProximityPrompt", true))
+                            if prompt and prompt.Enabled and prompt.Name ~= "UnlockPrompt" then
+                                safeFirePrompt(prompt)
+                                task.wait(0.05)
+                            end
+                        end
+
+                        -- Pilih resep terbaik & antrekan batch di GUI jika menu pabrik terbuka
+                        pcall(function()
+                            local pGui = LocalPlayer:FindFirstChild("PlayerGui")
+                            local fGui = pGui and pGui:FindFirstChild("Factory")
+                            local fMain = fGui and fGui:FindFirstChild("Factory")
+                            if fMain and fMain.Visible then
+                                -- 1. Pilih bahan / resep terbaik jika opsi pilihan bahan ada
+                                local choseProduct = fMain:FindFirstChild("MainContainer") and fMain.MainContainer:FindFirstChild("ChoseProduct")
+                                local prodList = choseProduct and choseProduct:FindFirstChild("ProductList")
+                                local scroll = prodList and prodList:FindFirstChild("ScrollingFrame")
+                                if scroll then
+                                    local bestBtn = nil
+                                    for _, child in ipairs(scroll:GetChildren()) do
+                                        if child:IsA("GuiButton") or child:FindFirstChildWhichIsA("GuiButton") then
+                                            local btn = child:IsA("GuiButton") and child or child:FindFirstChildWhichIsA("GuiButton")
+                                            local pName = child:FindFirstChild("ProductName", true)
+                                            local txt = pName and pName.Text or child.Name
+                                            if txt:find("Cosmic") then
+                                                bestBtn = btn
+                                                break
+                                            elseif txt:find("Sakura") and not (bestBtn and bestBtn.Name:find("Cosmic")) then
+                                                bestBtn = btn
+                                            elseif (txt:find("Emas") or txt:find("Gold")) and not (bestBtn and (bestBtn.Name:find("Cosmic") or bestBtn.Name:find("Sakura"))) then
+                                                bestBtn = btn
+                                            elseif not bestBtn then
+                                                bestBtn = btn
+                                            end
+                                        end
+                                    end
+                                    if bestBtn and firesignal then
+                                        firesignal(bestBtn.MouseButton1Click)
+                                        task.wait(0.03)
+                                    end
+                                end
+
+                                -- 2. Set batch multiplier jika ada opsi multiplier
+                                local prodAmount = fMain.MainContainer:FindFirstChild("ProductionFrame")
+                                    and fMain.MainContainer.ProductionFrame:FindFirstChild("ProduceAmount")
+                                local multiScroll = prodAmount and prodAmount:FindFirstChild("ProduceMultiplier")
+                                    and prodAmount.ProduceMultiplier:FindFirstChild("ScrollingFrame")
+                                if multiScroll and firesignal then
+                                    for _, tChild in ipairs(multiScroll:GetChildren()) do
+                                        local tBtn = tChild:IsA("GuiButton") and tChild or tChild:FindFirstChildWhichIsA("GuiButton")
+                                        local mLabel = tChild:FindFirstChild("MultiAmount", true)
+                                        local mVal = mLabel and tonumber(mLabel.Text:match("%d+"))
+                                        if mVal and mVal <= (state.ProdBatchAmount or 5) and tBtn then
+                                            firesignal(tBtn.MouseButton1Click)
+                                            break
+                                        end
+                                    end
+                                end
+
+                                -- 3. Klik StartButton sesuai jumlah antrean batch yang diinginkan user
+                                local sBtn = fMain.MainContainer.ProductionFrame:FindFirstChild("ProductionInfoFrame")
                                     and fMain.MainContainer.ProductionFrame.ProductionInfoFrame:FindFirstChild("ProductionButton")
                                     and fMain.MainContainer.ProductionFrame.ProductionInfoFrame.ProductionButton:FindFirstChild("StartButton")
                                 if sBtn and sBtn.Visible and firesignal then
-                                    firesignal(sBtn.MouseButton1Click)
+                                    local batchCount = math.clamp(state.ProdBatchAmount or 1, 1, 10)
+                                    for _ = 1, batchCount do
+                                        firesignal(sBtn.MouseButton1Click)
+                                        task.wait(0.02)
+                                    end
                                 end
-                            end)
+                            end
+                        end)
+
+                        -- Remote Invocations: Panggilan remote komprehensif ke server dengan nama resep nyata & batch amount
+                        if RequestStartProduction then
+                            local batchAmount = state.ProdBatchAmount or 5
+                            local recipes = {
+                                fact.Output .. " Cosmic",
+                                fact.Output .. " Sakura",
+                                fact.Output .. " Emas",
+                                fact.Output,
+                                "Cosmic",
+                                "Sakura",
+                                "Emas",
+                                "Gold",
+                                "Default"
+                            }
+                            for _, recipe in ipairs(recipes) do
+                                if not state.AutoStartProd then break end
+                                pcall(function() RequestStartProduction:InvokeServer(fact.Key, recipe, batchAmount) end)
+                                pcall(function() RequestStartProduction:InvokeServer(fact.Key, recipe, 1) end)
+                                pcall(function() RequestStartProduction:InvokeServer(fact.Key, batchAmount) end)
+                                pcall(function() RequestStartProduction:InvokeServer(fact.Key, recipe) end)
+                                task.wait(0.02)
+                            end
+                            pcall(function() RequestStartProduction:InvokeServer(fact.Key) end)
                         end
+
                         task.wait(0.06)
                     end
                 end
+
+                -- Kembalikan posisi karakter ke lokasi semula setelah sweep produksi selesai
+                if state.TeleportProd and state.TeleportReturn and didTeleport and originalCFrame and root then
+                    pcall(function()
+                        char:PivotTo(originalCFrame)
+                    end)
+                end
+
                 task.wait(math.max(1.0, state.ProdInterval or 1.5))
             end
         end)
     end
+end)
+
+createToggle(PageFactory, "TeleportProd", "TeleportProdDesc", state.TeleportProd, function(val)
+    state.TeleportProd = val
+end)
+
+createSlider(PageFactory, "ProdBatchAmount", 1, 30, state.ProdBatchAmount, function(val)
+    state.ProdBatchAmount = math.floor(val)
 end)
 
 createToggle(PageFactory, "AutoClaimProd", "AutoClaimDesc", state.AutoClaimProd, function(val)
@@ -2121,85 +2237,6 @@ createToggle(PageFarming, "AutoHarvestCrops", "AutoHarvestDesc", state.AutoHarve
                     end
                 end)
                 task.wait(2.5)
-            end
-        end)
-    end
-end)
-
-createToggle(PageFarming, "AutoChopTrees", "AutoChopTreesDesc", state.AutoChopTrees, function(val)
-    state.AutoChopTrees = val
-    if val then
-        task.spawn(function()
-            while state.AutoChopTrees and getgenv().BrotherHub_FarmIndustry_Loaded do
-                pcall(function()
-                    local char = LocalPlayer.Character
-                    local root = char and char:FindFirstChild("HumanoidRootPart")
-                    if not root then return end
-
-                    -- Equip tool if available
-                    for _, item in ipairs(LocalPlayer.Backpack:GetChildren()) do
-                        if item:IsA("Tool") and (item.Name:lower():find("axe") or item.Name:lower():find("shears") or item.Name:lower():find("kapak") or item.Name:lower():find("gunting")) then
-                            item.Parent = char
-                            break
-                        end
-                    end
-
-                    -- Search trees in workspace.Pohon or myPlot
-                    local trees = {}
-                    local pFolder = workspace:FindFirstChild("Pohon")
-                    if pFolder then
-                        for _, c in ipairs(pFolder:GetDescendants()) do
-                            if c:IsA("BasePart") or (c:IsA("Model") and c.PrimaryPart) then
-                                table.insert(trees, c)
-                            end
-                        end
-                    end
-                    local myPlot = getMyFarmPlot()
-                    if myPlot then
-                        for _, c in ipairs(myPlot:GetDescendants()) do
-                            if (c.Name:lower():find("pohon") or c.Name:lower():find("tree") or c.Name:lower():find("wood")) and (c:IsA("BasePart") or (c:IsA("Model") and c.PrimaryPart)) then
-                                table.insert(trees, c)
-                            end
-                        end
-                    end
-
-                    for _, t in ipairs(trees) do
-                        if not state.AutoChopTrees then break end
-                        local tPart = t:IsA("BasePart") and t or t.PrimaryPart
-                        if tPart and tPart.Parent then
-                            local dist = (tPart.Position - root.Position).Magnitude
-                            if dist <= 120 then
-                                char:PivotTo(CFrame.new(tPart.Position + Vector3.new(0, 2.5, 3)))
-                                task.wait(0.05)
-
-                                local prompt = t:FindFirstChildOfClass("ProximityPrompt") or t:FindFirstChild("ProximityPrompt", true)
-                                if prompt and prompt.Enabled then
-                                    prompt.HoldDuration = 0
-                                    prompt.MaxActivationDistance = 999999
-                                    prompt.RequiresLineOfSight = false
-                                    if fireproximityprompt then fireproximityprompt(prompt, 0) end
-                                end
-
-                                local eq = char:FindFirstChildOfClass("Tool")
-                                if eq then eq:Activate() end
-                            end
-                        end
-                    end
-
-                    -- Vacuum Wood / Drop Kayu
-                    for _, obj in ipairs(workspace:GetDescendants()) do
-                        if not state.AutoChopTrees then break end
-                        if obj:IsA("BasePart") and (obj.Name:lower() == "wood" or obj.Name:lower():find("kayu")) and not obj.Anchored then
-                            obj.CFrame = root.CFrame
-                            local p = obj:FindFirstChildOfClass("ProximityPrompt")
-                            if p and p.Enabled then
-                                p.HoldDuration = 0
-                                if fireproximityprompt then fireproximityprompt(p, 0) end
-                            end
-                        end
-                    end
-                end)
-                task.wait(1.5)
             end
         end)
     end
