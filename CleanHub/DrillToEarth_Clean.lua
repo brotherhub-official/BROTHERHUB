@@ -442,18 +442,6 @@ restoreAllRockCollisions()
 -- ⚔️ MASTER PUKUL BIASA / NORMAL SWING EXECUTOR (ZERO CUSTOM INSTANCES)
 -- ====================================================================
 local lastSwingClock = 0
-local cachedTracks = {}
-
-local function findTaggedAncestor(p1, p2)
-    local v1 = p1
-    while v1 and v1 ~= workspace do
-        if CollectionService:HasTag(v1, p2) then
-            return v1
-        end
-        v1 = v1.Parent
-    end
-    return nil
-end
 
 local function executeToolSwing(toolType, targetPos, targetInstance)
     local char = LocalPlayer.Character
@@ -479,7 +467,7 @@ local function executeToolSwing(toolType, targetPos, targetInstance)
 
     -- Dynamic cadence matching weapon attack speed (Respect server RateLimiter)
     local atkSpeed = (equippedTool and equippedTool:GetAttribute("AttackSpeed")) or 1.0
-    local swingInterval = math.clamp(1 / math.max(0.2, atkSpeed), 0.22, 0.45)
+    local swingInterval = math.clamp(1 / math.max(0.2, atkSpeed), 0.18, 0.40)
 
     if os.clock() - lastSwingClock < swingInterval then
         return
@@ -492,129 +480,48 @@ local function executeToolSwing(toolType, targetPos, targetInstance)
             local curPos = root.Position
             local lookPos = Vector3.new(targetPos.X, curPos.Y, targetPos.Z)
             if (lookPos - curPos).Magnitude > 0.1 then
-                root.CFrame = CFrame.new(curPos, lookPos)
+                root.CFrame = CFrame.lookAt(curPos, lookPos)
             end
         end)
     end
 
-    -- Build strictly valid target models (Tagged Ore Models/Wall Models for Pickaxe, Npc Models for Sword)
-    local targets = {}
-    if toolType == "Pickaxe" then
-        if targetInstance then
-            local oreCandidate = findTaggedAncestor(targetInstance, "Ore")
-                or findTaggedAncestor(targetInstance, "RockWall")
-                or (targetInstance:IsA("Model") and targetInstance)
-                or (targetInstance:IsA("BasePart") and (targetInstance.Parent:IsA("Model") and targetInstance.Parent or targetInstance))
-                or targetInstance
-            if oreCandidate and not table.find(targets, oreCandidate) then
-                table.insert(targets, oreCandidate)
-            end
+    -- ====================================================================
+    -- ⚔️ PUKUL BIASA NORMAL (100% NATIVE GAME HIT — ZERO CUSTOM INSTANCES)
+    -- ====================================================================
+    -- 1. Call game's native ActiveTool:Swing() directly (Pickaxe / Sword class)
+    pcall(function()
+        local tc = Knit and Knit.GetController and Knit.GetController("ToolController")
+        local active = tc and tc.ActiveTool
+        if active and type(active.Swing) == "function" then
+            active:Swing()
         end
+    end)
 
-        -- Sweep nearby ores in radius (matching native Pickaxe.lua GetPartBoundsInBox)
-        pcall(function()
-            local v7 = OverlapParams.new()
-            v7.FilterType = Enum.RaycastFilterType.Exclude
-            v7.FilterDescendantsInstances = { char }
-            local hitParts = workspace:GetPartBoundsInBox(root.CFrame * CFrame.new(0, 0, -4), Vector3.new(24, 24, 24), v7)
-            for _, p in ipairs(hitParts) do
-                local oTag = findTaggedAncestor(p, "Ore")
-                    or findTaggedAncestor(p, "RockWall")
-                    or (p.Parent and (p.Parent.Name:find("Node") or p.Parent.Name:find("Ore") or p.Parent.Name:find("Rock")) and p.Parent)
-                    or (p:FindFirstChild("Health") and p)
-                    or (p.Parent and p.Parent:FindFirstChild("Health") and p.Parent)
-                if oTag and not table.find(targets, oTag) then
-                    table.insert(targets, oTag)
-                    if #targets >= 12 then break end
-                end
-            end
-        end)
-
-        -- Also sweep hostile Npc models if nearby
-        pcall(function()
-            local npcFolder = workspace:FindFirstChild("Npc")
-            if npcFolder then
-                for _, npc in ipairs(npcFolder:GetChildren()) do
-                    if npc:IsA("Model") then
-                        local pp = npc.PrimaryPart or npc:FindFirstChildWhichIsA("BasePart", true)
-                        if pp and (pp.Position - root.Position).Magnitude <= 18 then
-                            if not table.find(targets, npc) then
-                                table.insert(targets, npc)
-                            end
-                        end
-                    end
-                end
-            end
-        end)
-    elseif toolType == "Sword" then
-        if targetInstance then
-            local npcModel = targetInstance:IsA("Model") and targetInstance or targetInstance:FindFirstAncestorOfClass("Model") or targetInstance
-            if npcModel and not table.find(targets, npcModel) then
-                table.insert(targets, npcModel)
-            end
+    -- 2. Trigger standard Roblox Tool:Activate()
+    pcall(function()
+        if equippedTool and equippedTool:IsA("Tool") then
+            equippedTool:Activate()
         end
-        -- Sweep nearby hostile NPC models in swing bounds
-        pcall(function()
-            local npcFolder = workspace:FindFirstChild("Npc")
-            if npcFolder then
-                for _, npc in ipairs(npcFolder:GetChildren()) do
-                    if npc:IsA("Model") then
-                        local pp = npc.PrimaryPart or npc:FindFirstChildWhichIsA("BasePart", true)
-                        if pp and (pp.Position - root.Position).Magnitude <= 24 then
-                            if not table.find(targets, npc) then
-                                table.insert(targets, npc)
-                            end
-                        end
-                    end
-                end
-            end
-        end)
-    end
+    end)
 
-    -- Visual Character Swing Animation
-    if not Flags.SilentDamage then
-        pcall(function()
-            local hum = char:FindFirstChildOfClass("Humanoid")
-            local animator = hum and (hum:FindFirstChildOfClass("Animator") or hum)
-            if animator then
-                local animName = (toolType == "Pickaxe") and "Pickaxe_Swing1" or "Sword_Attack1"
-                local animObj = ReplicatedStorage:FindFirstChild("Assets")
-                    and ReplicatedStorage.Assets:FindFirstChild("Animations")
-                    and (ReplicatedStorage.Assets.Animations:FindFirstChild(animName) or ReplicatedStorage.Assets.Animations:FindFirstChild("ToolSwing"))
-                if animObj then
-                    local track = cachedTracks[animName]
-                    if not track or track.Parent ~= animator then
-                        track = animator:LoadAnimation(animObj)
-                        track.Priority = Enum.AnimationPriority.Action
-                        track.Looped = false
-                        cachedTracks[animName] = track
-                    end
-                    if track and not track.IsPlaying then
-                        track:Play(0.1, 1, 1.0)
-                    end
-                end
-            end
-        end)
-
-        pcall(function()
-            local sc = Knit and Knit.GetController and Knit.GetController("SoundController")
-            if sc and sc.PlaySound then
-                sc:PlaySound(toolType == "Pickaxe" and "Pickaxe_Equip" or "SwordSteel_Equip")
-            end
-        end)
-    end
-
-    -- Execute Swing: Dual Fire to both Client ToolController ActiveTool and direct ToolService Remote
-    if #targets > 0 then
-        pcall(function()
-            local tc = Knit and Knit.GetController and Knit.GetController("ToolController")
-            local active = tc and tc.ActiveTool
-            if active and active.Execute and active.Execute.Fire then
-                active.Execute:Fire({ "Swing", targets })
-            end
-        end)
-        sendToolServerUpdate({ "Swing", targets })
-    end
+    -- 3. Trigger Roblox UserInput / Virtual Input (Normal Mouse Click / Touch Tap)
+    pcall(function()
+        local vim = game:GetService("VirtualInputManager")
+        if vim then
+            vim:SendMouseButtonEvent(0, 0, 0, true, game, 0)
+            task.delay(0.04, function()
+                pcall(function()
+                    vim:SendMouseButtonEvent(0, 0, 0, false, game, 0)
+                end)
+            end)
+        end
+    end)
+    pcall(function()
+        if VirtualUser then
+            VirtualUser:CaptureController()
+            VirtualUser:ClickButton1(Vector2.new(999, 999))
+        end
+    end)
 end
 
 -- [3] CONFIGURATION FILE SYSTEM (FLOWER SHOP MASTER STANDARD)
@@ -973,7 +880,7 @@ local Flags = {
     -- Combat & Mining
     AutoMineAura    = false,
     AutoApproachOre = true,
-    SilentDamage    = true, -- Default: Diam tapi nge-damage (tanpa ayunan liar di rekaman)
+    SilentDamage    = false,
     AutoKillHostile = false,
     StanceMode      = "Behind Enemy", -- "Behind Enemy", "Above Enemy", "Ground Orbit", "Off"
     StanceDistance  = 3.5,
@@ -993,7 +900,7 @@ local Flags = {
     GemsESP         = false,
     DrillESP        = false,
     HostileESP      = false,
-    MaxEspDistance  = 350,
+    MaxEspDistance  = 1500,
 
     -- Movement
     WalkSpeedOn     = false,
@@ -2411,7 +2318,7 @@ registerThread(function()
                 end
             end
 
-            -- C2. DEDICATED CHEST ESP (GLOBAL WORKSPACE CHEST RADAR & 360 HIGHLIGHT)
+            -- C2. DEDICATED CHEST ESP (GLOBAL WORKSPACE CHEST RADAR & 360 HIGHLIGHT — INFINITE RANGE)
             if Flags.ChestESP then
                 local espContainer = getEspContainer()
                 local chestPool = scanAllChests()
@@ -2420,62 +2327,64 @@ registerThread(function()
                         local part = chest:IsA("BasePart") and chest or (chest:IsA("Model") and (chest.PrimaryPart or chest:FindFirstChildWhichIsA("BasePart", true)))
                         if part then
                             local dist = math.floor((part.Position - root.Position).Magnitude)
-                            if dist <= maxDist then
-                                currentSeen[chest] = true
-                                local name = chest.Name
-                                local nl = name:lower()
+                            -- Global Chest Radar: visible from anywhere across dungeons & corridors without close-range cull
+                            currentSeen[chest] = true
+                            local name = chest.Name
+                            local nl = name:lower()
 
-                                local chestCol = THEME.Gold
-                                if nl:find("rusty") or nl:find("tutorial") or nl:find("common") then
-                                    chestCol = Color3.fromRGB(205, 127, 50)
-                                elseif nl:find("steel") then
-                                    chestCol = Color3.fromRGB(192, 192, 192)
-                                elseif nl:find("gold") then
-                                    chestCol = Color3.fromRGB(255, 215, 0)
-                                elseif nl:find("diamond") then
-                                    chestCol = Color3.fromRGB(0, 229, 255)
-                                elseif nl:find("void") then
-                                    chestCol = Color3.fromRGB(191, 0, 255)
-                                elseif nl:find("phoenix") then
-                                    chestCol = Color3.fromRGB(255, 69, 0)
-                                end
+                            local chestCol = THEME.Gold
+                            if nl:find("rusty") or nl:find("tutorial") or nl:find("common") then
+                                chestCol = Color3.fromRGB(205, 127, 50)
+                            elseif nl:find("steel") then
+                                chestCol = Color3.fromRGB(192, 192, 192)
+                            elseif nl:find("gold") then
+                                chestCol = Color3.fromRGB(255, 215, 0)
+                            elseif nl:find("diamond") then
+                                chestCol = Color3.fromRGB(0, 229, 255)
+                            elseif nl:find("void") then
+                                chestCol = Color3.fromRGB(191, 0, 255)
+                            elseif nl:find("phoenix") then
+                                chestCol = Color3.fromRGB(255, 69, 0)
+                            end
 
-                                if not activeEspElements[chest] then
-                                    local bg = Instance.new("BillboardGui")
-                                    bg.Name = "BH_ChestESP"
-                                    bg.Size = UDim2.new(0, 150, 0, 34)
-                                    bg.AlwaysOnTop = true
-                                    bg.Adornee = part
-                                    bg.Parent = espContainer
+                            if not activeEspElements[chest] then
+                                local bg = Instance.new("BillboardGui")
+                                bg.Name = "BH_ChestESP"
+                                bg.Size = UDim2.new(0, 160, 0, 36)
+                                bg.AlwaysOnTop = true
+                                bg.MaxDistance = 100000
+                                bg.LightInfluence = 0
+                                bg.StudsOffset = Vector3.new(0, 3, 0)
+                                bg.Adornee = part
+                                bg.Parent = espContainer
 
-                                    local lbl = Instance.new("TextLabel", bg)
-                                    lbl.Size = UDim2.new(1, 0, 1, 0)
-                                    lbl.BackgroundTransparency = 1
-                                    lbl.Font = Enum.Font.GothamBold
-                                    lbl.TextSize = 12
-                                    lbl.TextColor3 = chestCol
-                                    lbl.TextStrokeTransparency = 0
-                                    lbl.TextStrokeColor3 = Color3.fromRGB(10, 10, 15)
+                                local lbl = Instance.new("TextLabel", bg)
+                                lbl.Size = UDim2.new(1, 0, 1, 0)
+                                lbl.BackgroundTransparency = 1
+                                lbl.Font = Enum.Font.GothamBold
+                                lbl.TextSize = 13
+                                lbl.TextColor3 = chestCol
+                                lbl.TextStrokeTransparency = 0
+                                lbl.TextStrokeColor3 = Color3.fromRGB(10, 10, 15)
 
-                                    local hl = Instance.new("Highlight")
-                                    hl.Name = "BH_ChestHL"
-                                    hl.Adornee = chest
-                                    hl.FillColor = chestCol
-                                    hl.OutlineColor = Color3.fromRGB(255, 255, 255)
-                                    hl.FillTransparency = 0.45
-                                    hl.OutlineTransparency = 0
-                                    hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-                                    hl.Parent = espContainer
+                                local hl = Instance.new("Highlight")
+                                hl.Name = "BH_ChestHL"
+                                hl.Adornee = chest
+                                hl.FillColor = chestCol
+                                hl.OutlineColor = Color3.fromRGB(255, 255, 255)
+                                hl.FillTransparency = 0.45
+                                hl.OutlineTransparency = 0
+                                hl.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+                                hl.Parent = espContainer
 
-                                    activeEspElements[chest] = { Billboard = bg, Label = lbl, Highlight = hl, Part = part }
-                                end
+                                activeEspElements[chest] = { Billboard = bg, Label = lbl, Highlight = hl, Part = part }
+                            end
 
-                                if activeEspElements[chest] then
-                                    activeEspElements[chest].Label.Text = string.format("📦 %s\n[%dm]", name, dist)
-                                    activeEspElements[chest].Label.TextColor3 = chestCol
-                                    if activeEspElements[chest].Highlight then
-                                        activeEspElements[chest].Highlight.FillColor = chestCol
-                                    end
+                            if activeEspElements[chest] then
+                                activeEspElements[chest].Label.Text = string.format("📦 %s\n[%dm]", name, dist)
+                                activeEspElements[chest].Label.TextColor3 = chestCol
+                                if activeEspElements[chest].Highlight then
+                                    activeEspElements[chest].Highlight.FillColor = chestCol
                                 end
                             end
                         end
@@ -3717,7 +3626,7 @@ createToggle(PageESP, "GemsESP", "GemsESP", "GemsESP")
 createToggle(PageESP, "DrillESP", "DrillESP", "DrillESP")
 createToggle(PageESP, "HostileESP", "HostileESP", "HostileESP")
 
-createSlider(PageESP, T("EspDistLabel"), 100, 1000, Flags.MaxEspDistance, function(v)
+createSlider(PageESP, T("EspDistLabel"), 100, 5000, Flags.MaxEspDistance, function(v)
     Flags.MaxEspDistance = v
 end)
 
