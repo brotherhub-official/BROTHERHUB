@@ -27,8 +27,9 @@ ACTION_BUTTONS_CONFIG = [
     {"id_key": "casino_player", "name": "🎰 Casino Player", "color": 0xF1C40F, "emoji": "🎰", "style": discord.ButtonStyle.secondary, "row": 1},
 ]
 
-# 2. Supported Games Config (Row 2: Dropdown Select Menu up to 25 games)
+# 2. Supported Games Config (Row 2 & Row 3: Dropdown Select Menus)
 GAMES_CONFIG = [
+    {"id_key": "deep_fishing", "name": "🌊 Deep Fishing", "color": 0x00D2FF, "emoji": "🌊", "desc": "Auto cast & reel, rhythm solver, sell, rod & bait shop, enchant altar"},
     {"id_key": "steal_a_seed", "name": "🌱 Steal A Seed", "color": 0x2ECC71, "emoji": "🌱", "desc": "Auto steal 0s bypass, plant & harvest, sell, seed & pack shop, pet hatch"},
     {"id_key": "fish_on", "name": "🎣 Fish On", "color": 0x00BFFF, "emoji": "🎣", "desc": "Auto cast & reel, instant catch, sell, rod & bait shop, boats & islands"},
     {"id_key": "flower_shop", "name": "🌸 My Flower Shop", "color": 0xFFB6C1, "emoji": "🌸", "desc": "Auto craft, sell bouquets, planter & garden"},
@@ -36,7 +37,7 @@ GAMES_CONFIG = [
     {"id_key": "sell_ores", "name": "💎 Sell Ores", "color": 0x1ABC9C, "emoji": "💎", "desc": "Smart auto drill, fuser, roll ore & teleport"},
     {"id_key": "fish_anime", "name": "🎣 Fish an Anime", "color": 0x3498DB, "emoji": "🎣", "desc": "Auto cast & reel, RNG rolls, sell & island TP"},
     {"id_key": "the_mimic", "name": "👹 The Mimic", "color": 0x9B59B6, "emoji": "👹", "desc": "Full chapter helper, monster ESP & night vision"},
-    {"id_key": "farm_industry", "name": "🌾 Farm Industry", "color": 0x2ECC71, "emoji": "🌾", "desc": "Auto harvest, sell crops, factory & tractor"},
+    {"id_key": "farm_industry", "name": "🌾 Farm Industry", "color": 0x2ECC71, "emoji": "🌾", "desc": "Auto claim & collect (TP/Fly/Walk), harvest, factories & deliveries"},
     {"id_key": "poly_loot", "name": "⚔️ Poly Loot", "color": 0xE74C3C, "emoji": "⚔️", "desc": "Kill aura, safe stance, auto loot & chests"},
     {"id_key": "dungeon_lootr", "name": "⚔️ Dungeon Lootr", "color": 0x9B59B6, "emoji": "⚔️", "desc": "M1 kill aura, spam skills, safe stance & TP"},
     {"id_key": "dungeon_quest", "name": "🏰 Dungeon Quest Reborn", "color": 0x3498DB, "emoji": "🏰", "desc": "Auto dungeon clear, boss farm & skill spam"},
@@ -127,9 +128,9 @@ class SelfRoleButton(discord.ui.Button):
 
 
 class SelfRoleGameSelect(discord.ui.Select):
-    def __init__(self):
+    def __init__(self, games_subset, placeholder, custom_id, row):
         options = []
-        for g in GAMES_CONFIG:
+        for g in games_subset:
             full_name = g["name"]
             emoji = g.get("emoji")
             clean_label = full_name
@@ -146,14 +147,14 @@ class SelfRoleGameSelect(discord.ui.Select):
             )
 
         super().__init__(
-            placeholder="🎮 Pilih Game Favorit Anda (Klik untuk Ambil / Lepas Role)",
+            placeholder=placeholder,
             min_values=1,
             max_values=1,
             options=options,
-            custom_id="bh_selfrole_games_dropdown",
-            row=2
+            custom_id=custom_id,
+            row=row
         )
-        self.games_by_key = {g["id_key"]: g["name"] for g in GAMES_CONFIG}
+        self.games_by_key = {g["id_key"]: g["name"] for g in games_subset}
 
     async def callback(self, interaction: discord.Interaction):
         key = self.values[0]
@@ -193,8 +194,12 @@ class SelfRolesView(discord.ui.View):
         # Action Buttons (Row 0 & Row 1)
         for item in ACTION_BUTTONS_CONFIG:
             self.add_item(SelfRoleButton(item))
-        # Row 2: Unified Dropdown for all 23 games
-        self.add_item(SelfRoleGameSelect())
+        # Row 2 & Row 3: Two Dropdowns to support 26 games seamlessly
+        half = (len(GAMES_CONFIG) + 1) // 2
+        games_p1 = GAMES_CONFIG[:half]
+        games_p2 = GAMES_CONFIG[half:]
+        self.add_item(SelfRoleGameSelect(games_p1, f"🎮 Pilih Game Favorit - Menu 1 ({len(games_p1)} Game)", "bh_selfrole_games_drop1", 2))
+        self.add_item(SelfRoleGameSelect(games_p2, f"🎮 Pilih Game Favorit - Menu 2 ({len(games_p2)} Game)", "bh_selfrole_games_drop2", 3))
 
 
 # Backward-compatibility wrappers
@@ -217,20 +222,20 @@ def create_roles_embed() -> discord.Embed:
             "• `🎁 Giveaway Ping` : Peringatan saat ada event giveaway berhadiah.\n"
             "• `🎰 Casino Player` : Notifikasi event jackpot & update kasino di `#🎰・casino`.\n"
             "• `💻 PC Player` | `📱 Mobile Player` : Tipe perangkat bermain Anda.\n\n"
-            "🎮 **25 SUPPORTED GAMES LIST (PILIH LEWAT DROPDOWN DI BAWAH)**\n"
-            "• `🌱 Steal A Seed` • `🎣 Fish On` • `🌸 My Flower Shop`\n"
-            "• `⛏️ Dig Into Secrets` • `💎 Sell Ores` • `🎣 Fish an Anime`\n"
-            "• `👹 The Mimic` • `🌾 Farm Industry` • `⚔️ Poly Loot`\n"
-            "• `⚔️ Dungeon Lootr` • `🏰 Dungeon Quest Reborn` • `🕵️ Idle Mafia`\n"
-            "• `📦 Storage Hunters` • `🌍 Drill to Earth` • `💥 Defeat Anime RNG`\n"
-            "• `🐉 Catch Dragons` • `🫧 Pop Bubbles` • `🎣 Heavyweight Fishing`\n"
-            "• `⚔️ Shogun's Reign` • `🖱️ Clicker Simulator` • `💎 Loot Up`\n"
-            "• `🃏 Pack A Brainrot Card` • `⛏️ Mine It` • `🏰 Dungeons Tower`\n"
-            "• `🐾 Pets Universe`\n\n"
+            "🎮 **26 SUPPORTED GAMES LIST (PILIH LEWAT DROPDOWN DI BAWAH)**\n"
+            "• `🌊 Deep Fishing` • `🌱 Steal A Seed` • `🎣 Fish On`\n"
+            "• `🌸 My Flower Shop` • `⛏️ Dig Into Secrets` • `💎 Sell Ores`\n"
+            "• `🎣 Fish an Anime` • `👹 The Mimic` • `🌾 Farm Industry`\n"
+            "• `⚔️ Poly Loot` • `⚔️ Dungeon Lootr` • `🏰 Dungeon Quest Reborn`\n"
+            "• `🕵️ Idle Mafia` • `📦 Storage Hunters` • `🌍 Drill to Earth`\n"
+            "• `💥 Defeat Anime RNG` • `🐉 Catch Dragons` • `🫧 Pop Bubbles`\n"
+            "• `🎣 Heavyweight Fishing` • `⚔️ Shogun's Reign` • `🖱️ Clicker Simulator`\n"
+            "• `💎 Loot Up` • `🃏 Pack A Brainrot Card` • `⛏️ Mine It`\n"
+            "• `🏰 Dungeons Tower` • `🐾 Pets Universe`\n\n"
             "────────────────────────────────────────\n"
             "💡 **CARA PENGGUNAAN:**\n"
             "1. Klik tombol **Pings / Community / Device** di atas untuk toggle instan.\n"
-            "2. Klik menu dropdown **'🎮 Pilih Game Favorit Anda'** di bawah untuk memilih game yang Anda mainkan.\n"
+            "2. Klik menu dropdown **'🎮 Pilih Game Favorit'** (Menu 1 / Menu 2) di bawah untuk memilih game yang Anda mainkan.\n"
             "3. Memilih game yang sama untuk kedua kalinya otomatis **melepas** role tersebut."
         ),
         color=0x00E5FF
@@ -245,3 +250,4 @@ def create_roles_embed_part1() -> discord.Embed:
 
 def create_roles_embed_part2() -> discord.Embed:
     return create_roles_embed()
+
