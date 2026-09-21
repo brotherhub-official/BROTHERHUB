@@ -458,7 +458,7 @@ end
 local function executeToolSwing(toolType, targetPos, targetInstance)
     local char = LocalPlayer.Character
     if not char then return end
-    local root = char and char:FindFirstChild("HumanoidRootPart")
+    local root = char:FindFirstChild("HumanoidRootPart")
     if not root then return end
 
     local equippedTool = char:FindFirstChildOfClass("Tool")
@@ -477,59 +477,93 @@ local function executeToolSwing(toolType, targetPos, targetInstance)
         end
     end
 
-    -- Dynamic cadence matching weapon attack speed
+    -- Dynamic cadence matching weapon attack speed (Respect server RateLimiter)
     local atkSpeed = (equippedTool and equippedTool:GetAttribute("AttackSpeed")) or 1.0
-    local swingInterval = math.clamp(1 / math.max(0.2, atkSpeed), 0.12, 0.5)
+    local swingInterval = math.clamp(1 / math.max(0.2, atkSpeed), 0.22, 0.45)
 
     if os.clock() - lastSwingClock < swingInterval then
         return
     end
     lastSwingClock = os.clock()
 
-    -- 1. Collision-Safe Face Direction & Horizontal Alignment
+    -- Collision-Safe Face Direction without resetting physics velocity
     if targetPos then
         pcall(function()
             local curPos = root.Position
             local lookPos = Vector3.new(targetPos.X, curPos.Y, targetPos.Z)
-            if (lookPos - curPos).Magnitude > 0.05 then
-                root.CFrame = CFrame.lookAt(curPos, lookPos)
+            if (lookPos - curPos).Magnitude > 0.1 then
+                root.CFrame = CFrame.new(curPos, lookPos)
             end
         end)
     end
 
-    -- 2. Resolve Target Entity / Tagged Ore for 100% Hit Delivery
-    local targetList = {}
-    if targetInstance then
-        local oreTarget = findTaggedAncestor(targetInstance, "Ore")
-            or findTaggedAncestor(targetInstance, "RockWall")
-            or (targetInstance:IsA("Model") and targetInstance)
-            or (targetInstance.Parent and targetInstance.Parent:IsA("Model") and targetInstance.Parent)
-            or targetInstance
-        if oreTarget and not table.find(targetList, oreTarget) then
-            table.insert(targetList, oreTarget)
-        end
-        if targetInstance:IsA("BasePart") and not table.find(targetList, targetInstance) then
-            table.insert(targetList, targetInstance)
-        end
-    end
-
-    -- Hitbox Sweep (Matching native Pickaxe logic): scan nearby ore parts tagged "Ore" or "RockWall"
+    -- Build strictly valid target models (Tagged Ore Models/Wall Models for Pickaxe, Npc Models for Sword)
+    local targets = {}
     if toolType == "Pickaxe" then
+        if targetInstance then
+            local oreTag = findTaggedAncestor(targetInstance, "Ore") or findTaggedAncestor(targetInstance, "RockWall")
+            if oreTag and not table.find(targets, oreTag) then
+                table.insert(targets, oreTag)
+            end
+        end
+
+        -- Sweep nearby ores in radius (matching native Pickaxe.lua GetPartBoundsInBox)
         pcall(function()
             local v7 = OverlapParams.new()
             v7.FilterType = Enum.RaycastFilterType.Exclude
             v7.FilterDescendantsInstances = { char }
-            local hitParts = workspace:GetPartBoundsInBox(root.CFrame * CFrame.new(0, 0, -5), Vector3.new(20, 20, 20), v7)
+            local hitParts = workspace:GetPartBoundsInBox(root.CFrame * CFrame.new(0, 0, -4), Vector3.new(20, 20, 20), v7)
             for _, p in ipairs(hitParts) do
                 local oTag = findTaggedAncestor(p, "Ore") or findTaggedAncestor(p, "RockWall")
-                if oTag and not table.find(targetList, oTag) then
-                    table.insert(targetList, oTag)
+                if oTag and not table.find(targets, oTag) then
+                    table.insert(targets, oTag)
+                    if #targets >= 10 then break end
+                end
+            end
+        end)
+
+        -- Also sweep hostile Npc models if nearby
+        pcall(function()
+            local npcFolder = workspace:FindFirstChild("Npc")
+            if npcFolder then
+                for _, npc in ipairs(npcFolder:GetChildren()) do
+                    if npc:IsA("Model") then
+                        local pp = npc.PrimaryPart or npc:FindFirstChildWhichIsA("BasePart")
+                        if pp and (pp.Position - root.Position).Magnitude <= 18 then
+                            if not table.find(targets, npc) then
+                                table.insert(targets, npc)
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+    elseif toolType == "Sword" then
+        if targetInstance then
+            local npcModel = targetInstance:IsA("Model") and targetInstance or targetInstance:FindFirstAncestorOfClass("Model")
+            if npcModel and npcModel.Parent == workspace:FindFirstChild("Npc") and not table.find(targets, npcModel) then
+                table.insert(targets, npcModel)
+            end
+        end
+        -- Sweep nearby hostile NPC models in swing bounds
+        pcall(function()
+            local npcFolder = workspace:FindFirstChild("Npc")
+            if npcFolder then
+                for _, npc in ipairs(npcFolder:GetChildren()) do
+                    if npc:IsA("Model") then
+                        local pp = npc.PrimaryPart or npc:FindFirstChildWhichIsA("BasePart")
+                        if pp and (pp.Position - root.Position).Magnitude <= 22 then
+                            if not table.find(targets, npc) then
+                                table.insert(targets, npc)
+                            end
+                        end
+                    end
                 end
             end
         end)
     end
 
-    -- 3. Visual Character Swing Animation (Jika Silent Damage mati)
+    -- Visual Character Swing Animation
     if not Flags.SilentDamage then
         pcall(function()
             local hum = char:FindFirstChildOfClass("Humanoid")
@@ -562,55 +596,20 @@ local function executeToolSwing(toolType, targetPos, targetInstance)
         end)
     end
 
-    -- 4. PUKUL BIASA METODE 1: ActiveTool:Swing() & Direct ActiveTool.Execute
+    -- Execute Swing: Use native ToolController ActiveTool if synchronized, or single clean server remote signal
+    local executed = false
     pcall(function()
         local tc = Knit and Knit.GetController and Knit.GetController("ToolController")
         local active = tc and tc.ActiveTool
-        if active then
-            if active.Range == nil or (typeof(active.Range) == "number" and active.Range < 60) then
-                active.Range = 60 -- Perluas jangkauan deteksi hitbox client agar tidak miss
-            end
-            if active.LastSwing then
-                active.LastSwing = 0 -- Reset cooldown ayunan agar langsung dieksekusi
-            end
-            if active.Swing then
-                active:Swing()
-            end
-            if #targetList > 0 and active.Execute and active.Execute.Fire then
-                active.Execute:Fire({ "Swing", targetList })
-            end
+        if active and active.Execute and active.Execute.Fire then
+            active.Execute:Fire({ "Swing", targets })
+            executed = true
         end
     end)
 
-    -- 5. PUKUL BIASA METODE 2: Direct ToolService Remote Signal (100% Guaranteed Hit Server-Side)
-    if #targetList > 0 then
-        sendToolServerUpdate({ "Swing", targetList })
+    if not executed and #targets > 0 then
+        sendToolServerUpdate({ "Swing", targets })
     end
-
-    -- 6. PUKUL BIASA METODE 3: Tool:Activate() (Roblox Standard Tool Activation)
-    pcall(function()
-        if equippedTool and equippedTool:IsA("Tool") then
-            equippedTool:Activate()
-        end
-    end)
-
-    -- 7. PUKUL BIASA METODE 4: Virtual Input Mouse Click Simulation (Native Primary Attack)
-    pcall(function()
-        local vu = game:GetService("VirtualUser")
-        if vu then
-            vu:Button1Down(Vector2.new(0, 0))
-            task.wait(0.01)
-            vu:Button1Up(Vector2.new(0, 0))
-        end
-    end)
-    pcall(function()
-        local vim = game:GetService("VirtualInputManager")
-        if vim then
-            vim:SendMouseButtonEvent(0, 0, 0, true, game, 0)
-            task.wait(0.01)
-            vim:SendMouseButtonEvent(0, 0, 0, false, game, 0)
-        end
-    end)
 end
 
 -- [3] CONFIGURATION FILE SYSTEM (FLOWER SHOP MASTER STANDARD)
@@ -707,6 +706,8 @@ local STRINGS = {
         AutoOpenChestD  = "Membuka seluruh peti harta di sekitar secara instan tanpa perlu menahan tombol",
         InstantPrompt   = "Instant Proximity Prompt (0 Detik)",
         InstantPromptD  = "Menghilangkan delay tahan tombol interaksi pada seluruh peti dan objek di game",
+        AutoDropAll     = "Auto Kosongkan Isi Karung (Auto Drop All)",
+        AutoDropAllD    = "Otomatis membuang semua isi karung tas saat penuh atau berkala",
         BtnDumpAll      = "Buang Semua Isi Karung (Drop All)",
 
         -- Combat Tab
@@ -840,6 +841,8 @@ local STRINGS = {
         AutoOpenChestD  = "Automatically opens all chests in radius without holding prompt",
         InstantPrompt   = "Instant Proximity Prompt (0s)",
         InstantPromptD  = "Removes hold duration for all proximity prompts in the game",
+        AutoDropAll     = "Auto Dump All Sack Items",
+        AutoDropAllD    = "Automatically dumps all sack items periodically or when full",
         BtnDumpAll      = "Dump All Sack Items (Drop All)",
 
         -- Combat Tab
@@ -978,6 +981,7 @@ local Flags = {
     -- ESP
     BossWallESP     = false,
     ChestESP        = false,
+    AutoDropAll     = false,
     LootESP         = false,
     SackESP         = false,
     CrateESP        = false,
@@ -1916,6 +1920,74 @@ registerThread(function()
     end
 end)
 
+local function dumpAllSack()
+    pcall(function()
+        equipToolByName("ItemBag")
+        task.wait(0.04)
+        local ts = getKnitService("ToolService")
+        local dropRF = ReplicatedStorage:FindFirstChild("ToolService")
+            and ReplicatedStorage.ToolService:FindFirstChild("RF")
+            and ReplicatedStorage.ToolService.RF:FindFirstChild("Drop")
+        
+        for i = 1, 8 do
+            if ts and ts.Drop then
+                pcall(function() ts:Drop() end)
+            end
+            if dropRF and dropRF:IsA("RemoteFunction") then
+                pcall(function() dropRF:InvokeServer() end)
+            end
+            sendToolServerUpdate({ "DropAll" })
+            sendToolServerUpdate({ "Drop" })
+            task.wait(0.02)
+        end
+    end)
+end
+
+-- Periodic Auto Dump Sack Handler
+task.spawn(function()
+    while true do
+        task.wait(2.5)
+        if Flags.AutoDropAll then
+            dumpAllSack()
+        end
+    end
+end)
+
+-- Global Deep Chest Scanner (Caches all chests anywhere in workspace)
+local cachedChestObjects = {}
+local lastChestScanClock = 0
+
+local function scanAllChests()
+    if os.clock() - lastChestScanClock < 1.5 then return cachedChestObjects end
+    lastChestScanClock = os.clock()
+    local list = {}
+    pcall(function()
+        for _, obj in ipairs(workspace:GetDescendants()) do
+            if obj:IsA("Model") or obj:IsA("BasePart") then
+                local nl = obj.Name:lower()
+                if nl:find("chest") and not nl:find("node") and not nl:find("prompt") and not nl:find("piece") and not nl:find("step") and not nl:find("ui") and not nl:find("frame") and not nl:find("button") then
+                    table.insert(list, obj)
+                end
+            end
+        end
+        for _, prompt in ipairs(workspace:GetDescendants()) do
+            if prompt:IsA("ProximityPrompt") then
+                local a = prompt.ActionText:lower()
+                local o = prompt.ObjectText:lower()
+                local pName = prompt.Parent and prompt.Parent.Name:lower() or ""
+                if a:find("open") or a:find("chest") or o:find("chest") or pName:find("chest") then
+                    local targetObj = prompt.Parent
+                    if targetObj and not table.find(list, targetObj) then
+                        table.insert(list, targetObj)
+                    end
+                end
+            end
+        end
+    end)
+    cachedChestObjects = list
+    return cachedChestObjects
+end
+
 -- 8B. AUTO OPEN CHEST & INSTANT PROXIMITY PROMPT SYSTEM (0-SECOND PROMPTS)
 local function applyInstantPrompt(prompt)
     if not prompt or not prompt:IsA("ProximityPrompt") then return end
@@ -1962,34 +2034,7 @@ registerThread(function()
                 local char = LocalPlayer.Character
                 local root = char and char:FindFirstChild("HumanoidRootPart")
                 if root then
-                    local chestList = {}
-                    local cn = workspace:FindFirstChild("ChestNodes")
-                    if cn then
-                        for _, obj in ipairs(cn:GetDescendants()) do
-                            if obj:IsA("Model") or obj:IsA("BasePart") then
-                                local nl = obj.Name:lower()
-                                if nl:find("chest") and not nl:find("prompt") then
-                                    table.insert(chestList, obj)
-                                end
-                            end
-                        end
-                    end
-                    for _, obj in ipairs(workspace:GetChildren()) do
-                        local nl = obj.Name:lower()
-                        if nl:find("chest") then
-                            table.insert(chestList, obj)
-                        end
-                    end
-                    local itemsFolder = workspace:FindFirstChild("Items")
-                    if itemsFolder then
-                        for _, obj in ipairs(itemsFolder:GetChildren()) do
-                            local nl = obj.Name:lower()
-                            if nl:find("chest") then
-                                table.insert(chestList, obj)
-                            end
-                        end
-                    end
-
+                    local chestList = scanAllChests()
                     for _, chest in ipairs(chestList) do
                         local part = chest:IsA("BasePart") and chest or (chest:IsA("Model") and (chest.PrimaryPart or chest:FindFirstChildWhichIsA("BasePart")))
                         if part then
@@ -2320,36 +2365,9 @@ registerThread(function()
                 end
             end
 
-            -- C2. DEDICATED CHEST ESP (ALL CHESTS IN WORKSPACE & CHESTNODES)
+            -- C2. DEDICATED CHEST ESP (GLOBAL WORKSPACE CHEST RADAR)
             if Flags.ChestESP then
-                local chestPool = {}
-                local cn = workspace:FindFirstChild("ChestNodes")
-                if cn then
-                    for _, obj in ipairs(cn:GetDescendants()) do
-                        if obj:IsA("Model") or obj:IsA("BasePart") then
-                            local nl = obj.Name:lower()
-                            if nl:find("chest") and not nl:find("prompt") then
-                                table.insert(chestPool, obj)
-                            end
-                        end
-                    end
-                end
-                for _, obj in ipairs(workspace:GetChildren()) do
-                    local nl = obj.Name:lower()
-                    if nl:find("chest") then
-                        table.insert(chestPool, obj)
-                    end
-                end
-                local itemsFolder = workspace:FindFirstChild("Items")
-                if itemsFolder then
-                    for _, obj in ipairs(itemsFolder:GetChildren()) do
-                        local nl = obj.Name:lower()
-                        if nl:find("chest") then
-                            table.insert(chestPool, obj)
-                        end
-                    end
-                end
-
+                local chestPool = scanAllChests()
                 for _, chest in ipairs(chestPool) do
                     if chest and chest.Parent then
                         local part = chest:IsA("BasePart") and chest or (chest:IsA("Model") and (chest.PrimaryPart or chest:FindFirstChildWhichIsA("BasePart")))
@@ -3492,6 +3510,12 @@ createToggle(PageUpgrade, "ClaimFreeClass", "ClaimFreeClass", "ClaimFreeClassD")
 
 -- 3. Loot & Sacks
 createSection(PageLoot, "SecLoot")
+createActionButton(PageLoot, "🗑️ " .. T("BtnDumpAll"), THEME.Red, function()
+    dumpAllSack()
+end)
+createToggle(PageLoot, "AutoDropAll", "AutoDropAll", "AutoDropAllD")
+createToggle(PageLoot, "AutoOpenChest", "AutoOpenChest", "AutoOpenChestD")
+createToggle(PageLoot, "InstantPrompt", "InstantPrompt", "InstantPromptD")
 createToggle(PageLoot, "AutoLootSack", "AutoLootSack", "AutoLootSackDesc")
 createToggle(PageLoot, "IgnoreMonsterDrops", "IgnoreMonsterDrops", "IgnoreMonsterDropsD")
 
@@ -3547,27 +3571,7 @@ end)
 
 createToggle(PageLoot, "AutoSack", "AutoSack", "AutoSackDesc")
 createToggle(PageLoot, "AutoCrate", "AutoCrate", "AutoCrateDesc")
-createToggle(PageLoot, "AutoOpenChest", "AutoOpenChest", "AutoOpenChestD")
-createToggle(PageLoot, "InstantPrompt", "InstantPrompt", "InstantPromptD")
 createToggle(PageLoot, "AutoFuelLeech", "AutoFuelLeech", "AutoFuelLeechD")
-
-createActionButton(PageLoot, T("BtnDumpAll"), THEME.Red, function()
-    pcall(function()
-        equipToolByName("ItemBag")
-        task.wait(0.05)
-        sendToolServerUpdate({ "DropAll" })
-        local tc = Knit and Knit.GetController and Knit.GetController("ToolController")
-        if tc and tc.ActiveTool and tc.ActiveTool.Execute then
-            pcall(function() tc.ActiveTool.Execute:Fire({ "DropAll" }) end)
-        end
-        pcall(function()
-            local ts = getKnitService("ToolService")
-            if ts and ts.Drop then
-                ts:Drop()
-            end
-        end)
-    end)
-end)
 
 -- 4. Mining & Combat (Rock Mining Aura & Poly Loot Standard Safe Stance)
 createSection(PageCombat, "SecCombat")
