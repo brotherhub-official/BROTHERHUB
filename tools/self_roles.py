@@ -52,6 +52,7 @@ GAMES_CONFIG = [
     {"id_key": "loot_up", "name": "💎 Loot Up", "color": 0x00FFC8, "emoji": "💎", "desc": "Kill aura, safe stance, auto rolls, dungeon & tower"},
     {"id_key": "pack_brainrot", "name": "🃏 Pack A Brainrot Card", "color": 0xFF007F, "emoji": "🃏", "desc": "Auto buy packs, base slots, sell filters & rebirth"},
     {"id_key": "mine_it", "name": "⛏️ Mine It", "color": 0xF39C12, "emoji": "⛏️", "desc": "Auto mine ores, multi-select, stance offset, shop & teleports"},
+    {"id_key": "dungeons_tower", "name": "🏰 Dungeons Tower", "color": 0x9B59B6, "emoji": "🏰", "desc": "Auto solo party, kill aura, safe stance, drop vacuum & chests"},
 ]
 
 ALL_CONFIGS = ACTION_BUTTONS_CONFIG + GAMES_CONFIG
@@ -215,7 +216,7 @@ def create_roles_embed() -> discord.Embed:
             "• `🎁 Giveaway Ping` : Peringatan saat ada event giveaway berhadiah.\n"
             "• `🎰 Casino Player` : Notifikasi event jackpot & update kasino di `#🎰・casino`.\n"
             "• `💻 PC Player` | `📱 Mobile Player` : Tipe perangkat bermain Anda.\n\n"
-            "🎮 **23 SUPPORTED GAMES LIST (PILIH LEWAT DROPDOWN DI BAWAH)**\n"
+            "🎮 **24 SUPPORTED GAMES LIST (PILIH LEWAT DROPDOWN DI BAWAH)**\n"
             "• `🌱 Steal A Seed` • `🎣 Fish On` • `🌸 My Flower Shop`\n"
             "• `⛏️ Dig Into Secrets` • `💎 Sell Ores` • `🎣 Fish an Anime`\n"
             "• `👹 The Mimic` • `🌾 Farm Industry` • `⚔️ Poly Loot`\n"
@@ -223,7 +224,7 @@ def create_roles_embed() -> discord.Embed:
             "• `📦 Storage Hunters` • `🌍 Drill to Earth` • `💥 Defeat Anime RNG`\n"
             "• `🐉 Catch Dragons` • `🫧 Pop Bubbles` • `🎣 Heavyweight Fishing`\n"
             "• `⚔️ Shogun's Reign` • `🖱️ Clicker Simulator` • `💎 Loot Up`\n"
-            "• `🃏 Pack A Brainrot Card` • `⛏️ Mine It`\n\n"
+            "• `🃏 Pack A Brainrot Card` • `⛏️ Mine It` • `🏰 Dungeons Tower`\n\n"
             "────────────────────────────────────────\n"
             "💡 **CARA PENGGUNAAN:**\n"
             "1. Klik tombol **Pings / Community / Device** di atas untuk toggle instan.\n"
