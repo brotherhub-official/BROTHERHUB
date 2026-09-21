@@ -368,6 +368,20 @@ local HUB_ROUTER = {
         end,
         GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/MineIt_BROTHERHUB.lua",
     },
+    {
+        Name = "Dungeons Tower",
+        Match = function(pid, gid, gname)
+            if pid == 130406461202376 then return true end
+            if string.find(gname, "dungeons tower") or string.find(gname, "dungeon tower") then return true end
+            local rs = game:GetService("ReplicatedStorage")
+            local ws = game:GetService("Workspace")
+            if ws:FindFirstChild("Dungeon") and (ws:FindFirstChild("Mobs") or ws:FindFirstChild("Boss")) then return true end
+            if rs:FindFirstChild("Packages") and rs.Packages:FindFirstChild("_Index") and (rs:FindFirstChild("DodgerGhostEvent") or rs:FindFirstChild("PositionSync") or rs:FindFirstChild("Root_Attack")) then return true end
+            if rs:FindFirstChild("Assets") and rs.Assets:FindFirstChild("SpecialAOE") then return true end
+            return false
+        end,
+        GitHubUrl = "https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/DungeonsTower_BROTHERHUB.lua",
+    },
 }
 
 local selectedGame = nil
