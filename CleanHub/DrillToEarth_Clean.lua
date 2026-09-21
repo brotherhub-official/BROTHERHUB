@@ -352,15 +352,20 @@ local function equipToolByName(keyword)
     ensureToolRange(tool)
 
     local hbc = Knit and Knit.GetController and Knit.GetController("HotbarController")
-    local isHandMatch = (tool.Parent == char) or (hbc and hbc.CurrentTool == tool)
 
-    -- If already active tool in hand and matched, do not redundantly invoke remotes
-    if currentEquippedKeyword == keyword and isHandMatch then
+    -- If already actively held in hand, no need to re-equip
+    if tool.Parent == char and currentEquippedKeyword == keyword then
         return true
     end
 
+    -- If switching to pickaxe, ensure any currently held sword or bag is unequipped first
+    local curTool = char:FindFirstChildOfClass("Tool")
+    if keyword:lower():find("pick") and curTool and not curTool.Name:lower():find("pick") then
+        if hum then pcall(function() hum:UnequipTools() end) end
+    end
+
     -- Allow immediate equip if switching keywords (e.g. ItemBag -> Pickaxe)
-    if currentEquippedKeyword == keyword and (os.clock() - lastEquipTime < 0.1) then
+    if currentEquippedKeyword == keyword and tool.Parent == char and (os.clock() - lastEquipTime < 0.1) then
         return false
     end
     lastEquipTime = os.clock()
@@ -456,10 +461,25 @@ local function executeToolSwing(toolType, targetPos, targetInstance)
     local root = char and char:FindFirstChild("HumanoidRootPart")
     if not root then return end
 
-    -- Dynamic cadence matching weapon attack speed
     local equippedTool = char:FindFirstChildOfClass("Tool")
+    -- Strict Tool Validation: If mining, MUST hold pickaxe (NEVER swing sword at ore!)
+    if toolType == "Pickaxe" then
+        local isPick = equippedTool and (equippedTool.Name:lower():find("pick") or tostring(equippedTool:GetAttribute("Class") or ""):lower():find("pick"))
+        if not isPick then
+            equipToolByName("Pickaxe")
+            return
+        end
+    elseif toolType == "Sword" then
+        local isSword = equippedTool and (equippedTool.Name:lower():find("sword") or equippedTool.Name:lower():find("blade") or tostring(equippedTool:GetAttribute("Class") or ""):lower():find("sword"))
+        if not isSword then
+            equipToolByName("Sword")
+            return
+        end
+    end
+
+    -- Dynamic cadence matching weapon attack speed
     local atkSpeed = (equippedTool and equippedTool:GetAttribute("AttackSpeed")) or 1.0
-    local swingInterval = math.clamp(1 / math.max(0.2, atkSpeed), 0.15, 0.6)
+    local swingInterval = math.clamp(1 / math.max(0.2, atkSpeed), 0.12, 0.5)
 
     if os.clock() - lastSwingClock < swingInterval then
         return
@@ -467,7 +487,6 @@ local function executeToolSwing(toolType, targetPos, targetInstance)
     lastSwingClock = os.clock()
 
     -- 1. Collision-Safe Face Direction & Horizontal Alignment
-    -- Karakter menghadap langsung ke batu/musuh sehingga kerucut MeleeSwingBounds mengarah tepat ke target
     if targetPos then
         pcall(function()
             local curPos = root.Position
@@ -486,9 +505,28 @@ local function executeToolSwing(toolType, targetPos, targetInstance)
             or (targetInstance:IsA("Model") and targetInstance)
             or (targetInstance.Parent and targetInstance.Parent:IsA("Model") and targetInstance.Parent)
             or targetInstance
-        if oreTarget then
+        if oreTarget and not table.find(targetList, oreTarget) then
             table.insert(targetList, oreTarget)
         end
+        if targetInstance:IsA("BasePart") and not table.find(targetList, targetInstance) then
+            table.insert(targetList, targetInstance)
+        end
+    end
+
+    -- Hitbox Sweep (Matching native Pickaxe logic): scan nearby ore parts tagged "Ore" or "RockWall"
+    if toolType == "Pickaxe" then
+        pcall(function()
+            local v7 = OverlapParams.new()
+            v7.FilterType = Enum.RaycastFilterType.Exclude
+            v7.FilterDescendantsInstances = { char }
+            local hitParts = workspace:GetPartBoundsInBox(root.CFrame * CFrame.new(0, 0, -5), Vector3.new(20, 20, 20), v7)
+            for _, p in ipairs(hitParts) do
+                local oTag = findTaggedAncestor(p, "Ore") or findTaggedAncestor(p, "RockWall")
+                if oTag and not table.find(targetList, oTag) then
+                    table.insert(targetList, oTag)
+                end
+            end
+        end)
     end
 
     -- 3. Visual Character Swing Animation (Jika Silent Damage mati)
@@ -529,8 +567,8 @@ local function executeToolSwing(toolType, targetPos, targetInstance)
         local tc = Knit and Knit.GetController and Knit.GetController("ToolController")
         local active = tc and tc.ActiveTool
         if active then
-            if active.Range == nil or (typeof(active.Range) == "number" and active.Range < 50) then
-                active.Range = 50 -- Perluas jangkauan deteksi hitbox client agar tidak miss
+            if active.Range == nil or (typeof(active.Range) == "number" and active.Range < 60) then
+                active.Range = 60 -- Perluas jangkauan deteksi hitbox client agar tidak miss
             end
             if active.LastSwing then
                 active.LastSwing = 0 -- Reset cooldown ayunan agar langsung dieksekusi
@@ -557,7 +595,6 @@ local function executeToolSwing(toolType, targetPos, targetInstance)
     end)
 
     -- 7. PUKUL BIASA METODE 4: Virtual Input Mouse Click Simulation (Native Primary Attack)
-    -- Meniru klik mouse kiri (Left Click / Primary Attack) pemain secara presisi
     pcall(function()
         local vu = game:GetService("VirtualUser")
         if vu then
@@ -666,6 +703,10 @@ local STRINGS = {
         AutoCrateDesc   = "Membuka dan mengambil crate material tanpa perlu menahan tombol",
         AutoFuelLeech   = "Auto Ambil Orb Bahan Bakar (Fuel)",
         AutoFuelLeechD  = "Menghisap orb bahan bakar di sekitar bor agar bensin tidak habis",
+        AutoOpenChest   = "Auto Buka Peti Harta (Auto Chest)",
+        AutoOpenChestD  = "Membuka seluruh peti harta di sekitar secara instan tanpa perlu menahan tombol",
+        InstantPrompt   = "Instant Proximity Prompt (0 Detik)",
+        InstantPromptD  = "Menghilangkan delay tahan tombol interaksi pada seluruh peti dan objek di game",
         BtnDumpAll      = "Buang Semua Isi Karung (Drop All)",
 
         -- Combat Tab
@@ -693,6 +734,8 @@ local STRINGS = {
         SecESP          = "RADAR VISUAL TEMBUS PANDANG (ESP)",
         BossWallESP     = "Door Boss / Boss Wall ESP (Merah Neon)",
         BossWallESPDesc = "Menandai pintu gerbang dungeon & bos tembus dinding tebal",
+        ChestESP        = "ESP Peti Harta Karun (Chests Radar)",
+        ChestESPDesc    = "Menampilkan radar peti harta (Rusty, Gold, Diamond, Void, Phoenix)",
         LootESP         = "Loot & Dropped Ores ESP (Radar Loot)",
         LootESPDesc     = "Menampilkan posisi seluruh ore, permata, karung, & peti jatuh",
         SackESP         = "ESP Karung Uang Saja (Emas)",
@@ -793,6 +836,10 @@ local STRINGS = {
         AutoCrateDesc   = "Opens and collects material crates without holding button",
         AutoFuelLeech   = "Auto Collect Fuel Orbs",
         AutoFuelLeechD  = "Pulls fuel orbs from killed leeches to keep the drill tank full",
+        AutoOpenChest   = "Auto Open Chests",
+        AutoOpenChestD  = "Automatically opens all chests in radius without holding prompt",
+        InstantPrompt   = "Instant Proximity Prompt (0s)",
+        InstantPromptD  = "Removes hold duration for all proximity prompts in the game",
         BtnDumpAll      = "Dump All Sack Items (Drop All)",
 
         -- Combat Tab
@@ -820,6 +867,8 @@ local STRINGS = {
         SecESP          = "VISUAL WALLHACK & RADAR (ESP)",
         BossWallESP     = "Door Boss / Boss Wall ESP (Neon Red)",
         BossWallESPDesc = "Highlights dungeon gates and boss walls through dense ground",
+        ChestESP        = "Chest ESP (Rarity Color)",
+        ChestESPDesc    = "Highlights all chests with distance and rarity colors (Gold, Diamond, Void)",
         LootESP         = "Loot & Dropped Ores ESP",
         LootESPDesc     = "Displays markers for dropped ores, gems, sacks, and chests",
         SackESP         = "Money Sacks Only (Gold)",
@@ -910,6 +959,8 @@ local Flags = {
     AutoSack        = false,
     AutoCrate       = false,
     AutoFuelLeech   = false,
+    AutoOpenChest   = false,
+    InstantPrompt   = true,
 
     -- Combat & Mining
     AutoMineAura    = false,
@@ -926,6 +977,7 @@ local Flags = {
 
     -- ESP
     BossWallESP     = false,
+    ChestESP        = false,
     LootESP         = false,
     SackESP         = false,
     CrateESP        = false,
@@ -1830,11 +1882,11 @@ registerThread(function()
                         currentCombatTarget = nil
                     end
 
-                    -- A. Hostile Enemy in range -> Fight with Sword (Pukul Biasa)
-                    if Flags.AutoKillHostile and bestEnemy and bestPart and not isTeleporting then
+                    -- A. Hostile Enemy in close range -> Fight with Sword
+                    if Flags.AutoKillHostile and bestEnemy and bestPart and not isTeleporting and (not Flags.AutoMineAura or (bestPart.Position - root.Position).Magnitude <= 18) then
                         equipToolByName("Sword")
                         executeToolSwing("Sword", bestPart.Position, bestEnemy)
-                    -- B. Mine Rocks/Ores -> Mine with Pickaxe (Pukul Biasa)
+                    -- B. Mine Rocks/Ores -> Mine with Pickaxe (Guaranteed Pickaxe Damage)
                     elseif Flags.AutoMineAura then
                         local targets = scanMinableTargets(Flags.MineRadius or 60)
                         if #targets > 0 then
@@ -1845,19 +1897,129 @@ registerThread(function()
                             local centerDist = (best.Position - root.Position).Magnitude
                             local surfaceDist = math.max(0, centerDist - (best.Radius or 3.5))
 
-                            -- Pickaxe melee reach extends up to 18 studs from surface or 22 studs from center
-                            if surfaceDist <= 18.0 or centerDist <= 22.0 then
+                            -- Pickaxe melee reach extends up to 22 studs from surface or 26 studs from center
+                            if surfaceDist <= 22.0 or centerDist <= 26.0 then
                                 equipToolByName("Pickaxe")
                                 executeToolSwing("Pickaxe", best.Position, best.Node or best.OrePart)
                             end
                         else
                             currentMineTarget = nil
                         end
+                    elseif Flags.AutoKillHostile and bestEnemy and bestPart and not isTeleporting then
+                        equipToolByName("Sword")
+                        executeToolSwing("Sword", bestPart.Position, bestEnemy)
                     end
                 end
             end)
         end
         task.wait(0.18)
+    end
+end)
+
+-- 8B. AUTO OPEN CHEST & INSTANT PROXIMITY PROMPT SYSTEM (0-SECOND PROMPTS)
+local function applyInstantPrompt(prompt)
+    if not prompt or not prompt:IsA("ProximityPrompt") then return end
+    pcall(function()
+        prompt.HoldDuration = 0
+        if prompt.MaxActivationDistance < 35 then
+            prompt.MaxActivationDistance = 35
+        end
+        prompt.RequiresLineOfSight = false
+    end)
+end
+
+pcall(function()
+    local pps = game:GetService("ProximityPromptService")
+    if pps and pps.PromptShown then
+        registerConnection(pps.PromptShown:Connect(function(prompt)
+            if Flags.InstantPrompt or Flags.AutoOpenChest then
+                applyInstantPrompt(prompt)
+            end
+        end))
+    end
+end)
+
+registerConnection(workspace.DescendantAdded:Connect(function(desc)
+    if (Flags.InstantPrompt or Flags.AutoOpenChest) and desc:IsA("ProximityPrompt") then
+        applyInstantPrompt(desc)
+    end
+end))
+
+registerThread(function()
+    while true do
+        if Flags.InstantPrompt then
+            pcall(function()
+                for _, prompt in ipairs(workspace:GetDescendants()) do
+                    if prompt:IsA("ProximityPrompt") and prompt.HoldDuration > 0 then
+                        applyInstantPrompt(prompt)
+                    end
+                end
+            end)
+        end
+
+        if Flags.AutoOpenChest then
+            pcall(function()
+                local char = LocalPlayer.Character
+                local root = char and char:FindFirstChild("HumanoidRootPart")
+                if root then
+                    local chestList = {}
+                    local cn = workspace:FindFirstChild("ChestNodes")
+                    if cn then
+                        for _, obj in ipairs(cn:GetDescendants()) do
+                            if obj:IsA("Model") or obj:IsA("BasePart") then
+                                local nl = obj.Name:lower()
+                                if nl:find("chest") and not nl:find("prompt") then
+                                    table.insert(chestList, obj)
+                                end
+                            end
+                        end
+                    end
+                    for _, obj in ipairs(workspace:GetChildren()) do
+                        local nl = obj.Name:lower()
+                        if nl:find("chest") then
+                            table.insert(chestList, obj)
+                        end
+                    end
+                    local itemsFolder = workspace:FindFirstChild("Items")
+                    if itemsFolder then
+                        for _, obj in ipairs(itemsFolder:GetChildren()) do
+                            local nl = obj.Name:lower()
+                            if nl:find("chest") then
+                                table.insert(chestList, obj)
+                            end
+                        end
+                    end
+
+                    for _, chest in ipairs(chestList) do
+                        local part = chest:IsA("BasePart") and chest or (chest:IsA("Model") and (chest.PrimaryPart or chest:FindFirstChildWhichIsA("BasePart")))
+                        if part then
+                            local dist = (part.Position - root.Position).Magnitude
+                            if dist <= 45 then
+                                local prompt = chest:FindFirstChildWhichIsA("ProximityPrompt", true)
+                                if prompt and prompt.Enabled and fireproximityprompt then
+                                    applyInstantPrompt(prompt)
+                                    fireproximityprompt(prompt, 0)
+                                end
+                                pcall(function()
+                                    local acs = getKnitService("ArmoryChestService")
+                                    if acs and acs.OpenChest then
+                                        acs:OpenChest(chest)
+                                    else
+                                        local rf = ReplicatedStorage:FindFirstChild("ArmoryChestService", true)
+                                            and ReplicatedStorage.ArmoryChestService:FindFirstChild("RF")
+                                            and ReplicatedStorage.ArmoryChestService.RF:FindFirstChild("OpenChest")
+                                        if rf and rf:IsA("RemoteFunction") then
+                                            rf:InvokeServer(chest)
+                                        end
+                                    end
+                                end)
+                            end
+                        end
+                    end
+                end
+            end)
+        end
+        task.wait(0.3)
     end
 end)
 
@@ -2151,6 +2313,91 @@ registerThread(function()
                                     if activeEspElements[item] then
                                         activeEspElements[item].Label.Text = string.format("💎 %s\n[%dm]", name, dist)
                                     end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+
+            -- C2. DEDICATED CHEST ESP (ALL CHESTS IN WORKSPACE & CHESTNODES)
+            if Flags.ChestESP then
+                local chestPool = {}
+                local cn = workspace:FindFirstChild("ChestNodes")
+                if cn then
+                    for _, obj in ipairs(cn:GetDescendants()) do
+                        if obj:IsA("Model") or obj:IsA("BasePart") then
+                            local nl = obj.Name:lower()
+                            if nl:find("chest") and not nl:find("prompt") then
+                                table.insert(chestPool, obj)
+                            end
+                        end
+                    end
+                end
+                for _, obj in ipairs(workspace:GetChildren()) do
+                    local nl = obj.Name:lower()
+                    if nl:find("chest") then
+                        table.insert(chestPool, obj)
+                    end
+                end
+                local itemsFolder = workspace:FindFirstChild("Items")
+                if itemsFolder then
+                    for _, obj in ipairs(itemsFolder:GetChildren()) do
+                        local nl = obj.Name:lower()
+                        if nl:find("chest") then
+                            table.insert(chestPool, obj)
+                        end
+                    end
+                end
+
+                for _, chest in ipairs(chestPool) do
+                    if chest and chest.Parent then
+                        local part = chest:IsA("BasePart") and chest or (chest:IsA("Model") and (chest.PrimaryPart or chest:FindFirstChildWhichIsA("BasePart")))
+                        if part then
+                            local dist = math.floor((part.Position - root.Position).Magnitude)
+                            if dist <= maxDist then
+                                currentSeen[chest] = true
+                                local name = chest.Name
+                                local nl = name:lower()
+
+                                local chestCol = THEME.Gold
+                                if nl:find("rusty") or nl:find("tutorial") then
+                                    chestCol = Color3.fromRGB(205, 127, 50)
+                                elseif nl:find("steel") then
+                                    chestCol = Color3.fromRGB(192, 192, 192)
+                                elseif nl:find("gold") then
+                                    chestCol = Color3.fromRGB(255, 215, 0)
+                                elseif nl:find("diamond") then
+                                    chestCol = Color3.fromRGB(0, 229, 255)
+                                elseif nl:find("void") then
+                                    chestCol = Color3.fromRGB(191, 0, 255)
+                                elseif nl:find("phoenix") then
+                                    chestCol = Color3.fromRGB(255, 69, 0)
+                                end
+
+                                if not activeEspElements[chest] then
+                                    local bg = Instance.new("BillboardGui")
+                                    bg.Name = "BH_ChestESP"
+                                    bg.Size = UDim2.new(0, 150, 0, 34)
+                                    bg.AlwaysOnTop = true
+                                    bg.Adornee = part
+                                    bg.Parent = CoreGui
+
+                                    local lbl = Instance.new("TextLabel", bg)
+                                    lbl.Size = UDim2.new(1, 0, 1, 0)
+                                    lbl.BackgroundTransparency = 1
+                                    lbl.Font = Enum.Font.GothamBold
+                                    lbl.TextSize = 12
+                                    lbl.TextColor3 = chestCol
+                                    lbl.TextStrokeTransparency = 0
+                                    lbl.TextStrokeColor3 = Color3.fromRGB(10, 10, 15)
+
+                                    activeEspElements[chest] = { Billboard = bg, Label = lbl, Part = part }
+                                end
+
+                                if activeEspElements[chest] then
+                                    activeEspElements[chest].Label.Text = string.format("📦 %s\n[%dm]", name, dist)
+                                    activeEspElements[chest].Label.TextColor3 = chestCol
                                 end
                             end
                         end
@@ -3300,10 +3547,26 @@ end)
 
 createToggle(PageLoot, "AutoSack", "AutoSack", "AutoSackDesc")
 createToggle(PageLoot, "AutoCrate", "AutoCrate", "AutoCrateDesc")
+createToggle(PageLoot, "AutoOpenChest", "AutoOpenChest", "AutoOpenChestD")
+createToggle(PageLoot, "InstantPrompt", "InstantPrompt", "InstantPromptD")
 createToggle(PageLoot, "AutoFuelLeech", "AutoFuelLeech", "AutoFuelLeechD")
 
 createActionButton(PageLoot, T("BtnDumpAll"), THEME.Red, function()
-    sendToolServerUpdate({ "DropAll" })
+    pcall(function()
+        equipToolByName("ItemBag")
+        task.wait(0.05)
+        sendToolServerUpdate({ "DropAll" })
+        local tc = Knit and Knit.GetController and Knit.GetController("ToolController")
+        if tc and tc.ActiveTool and tc.ActiveTool.Execute then
+            pcall(function() tc.ActiveTool.Execute:Fire({ "DropAll" }) end)
+        end
+        pcall(function()
+            local ts = getKnitService("ToolService")
+            if ts and ts.Drop then
+                ts:Drop()
+            end
+        end)
+    end)
 end)
 
 -- 4. Mining & Combat (Rock Mining Aura & Poly Loot Standard Safe Stance)
@@ -3382,6 +3645,7 @@ createToggle(PageQuests, "AutoGroupVIP", "AutoGroupVIP", "AutoGroupVIPD")
 -- 6. ESP Radar
 createSection(PageESP, "SecESP")
 createToggle(PageESP, "BossWallESP", "BossWallESP", "BossWallESPDesc")
+createToggle(PageESP, "ChestESP", "ChestESP", "ChestESPDesc")
 createToggle(PageESP, "LootESP", "LootESP", "LootESPDesc")
 createToggle(PageESP, "SackESP", "SackESP", "SackESP")
 createToggle(PageESP, "CrateESP", "CrateESP", "CrateESP")
