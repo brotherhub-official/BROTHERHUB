@@ -200,6 +200,17 @@ local STRINGS = {
         ProdBatchAmountDesc = "Mengantrekan beberapa item sekaligus ke mesin pabrik sesuai kapasitas antrean",
         TeleportProd        = "⚡ Teleport ke Pabrik saat Mulai Produksi",
         TeleportProdDesc    = "Mendekati mesin pabrik seketika agar server memvalidasi mulai produksi",
+        SecFactorySelect    = "TARGET FOKUS PABRIK",
+        SelectFactoryDesc   = "Pilih satu pabrik spesifik agar bot fokus penuh (contoh: Pabrik Keju) atau semua pabrik",
+        FocusAllFact        = "🌐 Semua Pabrik (Siklus Berkeliling)",
+        FocusCheeseFact     = "🧀 Pabrik Keju (Cheese Factory - Fokus @Lugft)",
+        FocusButterFact     = "🧈 Pabrik Mentega (Butter Factory)",
+        FocusHotdogFact     = "🌭 Pabrik Hotdog (Hotdog Factory)",
+        FocusSausageFact    = "🍖 Pabrik Sosis (Sausage Factory)",
+        FocusSweaterFact    = "👕 Pabrik Sweater (Sweater Factory)",
+        FocusYarnFact       = "🧶 Pabrik Benang (Yarn Factory)",
+        FocusBreadFact      = "🍞 Pabrik Roti (Bread Factory)",
+        FocusFlourFact      = "🌾 Pabrik Tepung (Flour Factory)",
         
         -- Livestock Tab
         SecLivestock        = "MANAJEMEN PETERNAKAN & TELUR",
@@ -346,6 +357,17 @@ local STRINGS = {
         ProdBatchAmountDesc = "Queues multiple items into the factory machine at once according to queue capacity",
         TeleportProd        = "⚡ Teleport to Factory on Start Production",
         TeleportProdDesc    = "Blinks right next to factory machine so server validates production start",
+        SecFactorySelect    = "TARGET FACTORY FOCUS",
+        SelectFactoryDesc   = "Select a specific factory to dedicate bot farm (e.g. Cheese Factory) or cycle all",
+        FocusAllFact        = "🌐 All Factories (Cycle Map)",
+        FocusCheeseFact     = "🧀 Cheese Factory (Focus @Lugft)",
+        FocusButterFact     = "🧈 Butter Factory",
+        FocusHotdogFact     = "🌭 Hotdog Factory",
+        FocusSausageFact    = "🍖 Sausage Factory",
+        FocusSweaterFact    = "👕 Sweater Factory",
+        FocusYarnFact       = "🧶 Yarn Factory",
+        FocusBreadFact      = "🍞 Bread Factory",
+        FocusFlourFact      = "🌾 Flour Factory",
         
         -- Livestock Tab
         SecLivestock        = "LIVESTOCK, EGGS & BARN MANAGEMENT",
@@ -551,19 +573,33 @@ end
 local function safeFirePrompt(prompt)
     if not prompt or not prompt.Parent then return false end
     
-    -- 1. MUTLAK TOLAK jika terindikasi prompt Curi/Steal/Robux/Buy/Purchase
     local act = (prompt.ActionText or ""):lower()
     local obj = (prompt.ObjectText or ""):lower()
     local pName = (prompt.Name or ""):lower()
-    if act:find("steal") or act:find("curi") or act:find("robux") or act:find("buy") or act:find("beli") or act:find("purchase") or
-       obj:find("steal") or obj:find("curi") or obj:find("robux") or obj:find("buy") or obj:find("beli") or obj:find("purchase") or
-       pName:find("steal") or pName:find("robux") or pName:find("curi") or pName:find("purchase") then
+
+    local isFactoryPrompt = prompt.Name == "UnlockPrompt"
+        or (prompt.Parent and (prompt:IsDescendantOf(workspace:FindFirstChild("FactorySpawn") or workspace) or prompt:IsDescendantOf(workspace:FindFirstChild("Factory") or workspace)))
+        or (obj:find("pabrik") or obj:find("factory"))
+
+    -- 1. MUTLAK TOLAK jika terindikasi prompt Curi/Steal/Robux
+    if act:find("steal") or act:find("curi") or act:find("robux") or
+       obj:find("steal") or obj:find("curi") or obj:find("robux") or
+       pName:find("steal") or pName:find("robux") or pName:find("curi") then
         return false
     end
 
-    -- 2. CRITICAL ANTI-ROBUX CHECK: Wajib berada di plot sendiri! (Kecuali drop serigala)
+    -- Non-factory prompts: tolak beli/purchase luar plot sendiri
+    if not isFactoryPrompt then
+        if act:find("buy") or act:find("beli") or act:find("purchase") or
+           obj:find("buy") or obj:find("beli") or obj:find("purchase") or
+           pName:find("purchase") then
+            return false
+        end
+    end
+
+    -- 2. CRITICAL ANTI-ROBUX CHECK: Wajib berada di plot sendiri! (Kecuali drop serigala & stasiun pabrik resmi)
     local isWolfDrop = (prompt.Parent and (prompt.Parent.Name:lower():find("serigala") or prompt.Parent.Name:lower():find("wolf")))
-    if not isWolfDrop and not isMyFarm(prompt) then return false end
+    if not isWolfDrop and not isFactoryPrompt and not isMyFarm(prompt) then return false end
 
     pcall(function()
         prompt.MaxActivationDistance = 999999
@@ -1399,14 +1435,57 @@ local function isFactoryUnlocked(factKey)
         -- Jika belum di-stream oleh engine Roblox, anggap terbuka agar tidak diblokir
         return true
     end
-    local imgPart = m:FindFirstChild("ImagePart")
-    if imgPart then
-        local prompt = imgPart:FindFirstChild("UnlockPrompt")
-        if prompt and prompt:IsA("ProximityPrompt") and prompt.Enabled then
-            return false -- Masih terkunci (butuh beli pabrik)
-        end
+    -- Periksa ProximityPrompt UnlockPrompt secara rekursif
+    local prompt = m:FindFirstChild("UnlockPrompt", true)
+    if prompt and prompt:IsA("ProximityPrompt") and prompt.Enabled then
+        return false -- Masih terkunci (butuh beli pabrik)
+    end
+    -- Periksa juga SurfaceGui LockedFrame
+    local lockedFrame = m:FindFirstChild("LockedFrame", true)
+    if lockedFrame and lockedFrame:IsA("GuiObject") and lockedFrame.Visible then
+        return false
     end
     return true
+end
+
+-- Helper Klik Universal UI Button (Multi-Signal & VirtualInputManager Fallback)
+local function clickGuiButton(btn)
+    if not btn then return false end
+    local clicked = false
+    pcall(function()
+        if firesignal then
+            firesignal(btn.MouseButton1Click)
+            firesignal(btn.Activated)
+            clicked = true
+        end
+    end)
+    pcall(function()
+        local vim = game:GetService("VirtualInputManager")
+        if vim and btn.AbsolutePosition and btn.AbsoluteSize then
+            local x = btn.AbsolutePosition.X + btn.AbsoluteSize.X / 2
+            local y = btn.AbsolutePosition.Y + btn.AbsoluteSize.Y / 2 + 36
+            vim:SendMouseButtonEvent(x, y, 0, true, game, 0)
+            task.wait(0.01)
+            vim:SendMouseButtonEvent(x, y, 0, false, game, 0)
+            clicked = true
+        end
+    end)
+    return clicked
+end
+
+-- Helper Dapatkan Container Utama UI Pabrik (ScreenGui.Factory.MainContainer)
+local function getFactoryMainContainer()
+    local pGui = LocalPlayer:FindFirstChild("PlayerGui")
+    if not pGui then return nil end
+    local fGui = pGui:FindFirstChild("Factory")
+    if not fGui then return nil end
+    if fGui:IsA("ScreenGui") and not fGui.Enabled then
+        return nil
+    end
+    local mContainer = fGui:FindFirstChild("MainContainer")
+        or (fGui:FindFirstChild("Factory") and fGui.Factory:FindFirstChild("MainContainer"))
+        or fGui:FindFirstChildWhichIsA("Frame")
+    return mContainer
 end
 
 local function getFactoryClaimPart(factModel)
@@ -1419,6 +1498,8 @@ end
 
 -- Config State
 local state = {
+    -- Factory Target & Automation
+    SelectedFactory     = "All", -- "All" atau spesifik e.g. "CheeseFactory", "ButterFactory", dll
     -- Teleport Approach & Enhancements
     TeleportApproach    = true,
     TeleportReturn      = true,
@@ -1478,8 +1559,148 @@ local state = {
 }
 
 -- ============================================================
--- [TAB 1] FACTORY AUTOMATION
+-- [TAB 1] FACTORY AUTOMATION & TARGET SELECTION
 -- ============================================================
+
+-- Active Factory ScreenGui Monitor & Auto-Clicker Daemon
+task.spawn(function()
+    while getgenv().BrotherHub_FarmIndustry_Loaded do
+        if state.AutoStartProd or state.AutoClaimProd then
+            pcall(function()
+                local mContainer = getFactoryMainContainer()
+                if mContainer then
+                    -- 1. Auto Claim Button if products are ready
+                    if state.AutoClaimProd then
+                        local pProd = mContainer:FindFirstChild("ProcessProduction")
+                        local outFrame = pProd and pProd:FindFirstChild("OutputFrame")
+                        local cFrame = outFrame and outFrame:FindFirstChild("ClaimFrame")
+                        local cBtn = cFrame and cFrame:FindFirstChild("ClaimButton")
+                        if cBtn and cBtn.Visible then
+                            clickGuiButton(cBtn)
+                        end
+                    end
+
+                    -- 2. Auto Start Production if AutoStartProd is active
+                    if state.AutoStartProd then
+                        -- Pilih resep terbaik jika ChoseProduct terbuka
+                        local choseProduct = mContainer:FindFirstChild("ChoseProduct")
+                        local prodList = choseProduct and choseProduct:FindFirstChild("ProductList")
+                        local scroll = prodList and prodList:FindFirstChild("ScrollingFrame")
+                        if scroll and scroll.Visible then
+                            local bestBtn = nil
+                            for _, child in ipairs(scroll:GetChildren()) do
+                                if child:IsA("GuiButton") or child:FindFirstChildWhichIsA("GuiButton") then
+                                    local btn = child:IsA("GuiButton") and child or child:FindFirstChildWhichIsA("GuiButton")
+                                    local pName = child:FindFirstChild("ProductName", true)
+                                    local txt = pName and pName.Text or child.Name
+                                    if txt:find("Cosmic") then
+                                        bestBtn = btn
+                                        break
+                                    elseif txt:find("Sakura") and not (bestBtn and bestBtn.Name:find("Cosmic")) then
+                                        bestBtn = btn
+                                    elseif (txt:find("Emas") or txt:find("Gold")) and not (bestBtn and (bestBtn.Name:find("Cosmic") or bestBtn.Name:find("Sakura"))) then
+                                        bestBtn = btn
+                                    elseif not bestBtn then
+                                        bestBtn = btn
+                                    end
+                                end
+                            end
+                            if bestBtn then
+                                clickGuiButton(bestBtn)
+                            end
+                        end
+
+                        -- Set Multiplier jika ProduceAmount terbuka
+                        local prodFrame = mContainer:FindFirstChild("ProductionFrame")
+                        local prodAmount = prodFrame and prodFrame:FindFirstChild("ProduceAmount")
+                        local multiScroll = prodAmount and prodAmount:FindFirstChild("ProduceMultiplier")
+                            and prodAmount.ProduceMultiplier:FindFirstChild("ScrollingFrame")
+                        if multiScroll and multiScroll.Visible then
+                            for _, tChild in ipairs(multiScroll:GetChildren()) do
+                                local tBtn = tChild:IsA("GuiButton") and tChild or tChild:FindFirstChildWhichIsA("GuiButton")
+                                local mLabel = tChild:FindFirstChild("MultiAmount", true)
+                                local mVal = mLabel and tonumber(mLabel.Text:match("%d+"))
+                                if mVal and mVal <= (state.ProdBatchAmount or 5) and tBtn then
+                                    clickGuiButton(tBtn)
+                                    break
+                                end
+                            end
+                        end
+
+                        -- Klik StartButton
+                        local pInfo = prodFrame and prodFrame:FindFirstChild("ProductionInfoFrame")
+                        local pBtnFrame = pInfo and pInfo:FindFirstChild("ProductionButton")
+                        local sBtn = pBtnFrame and pBtnFrame:FindFirstChild("StartButton")
+                        if sBtn and sBtn.Visible then
+                            local count = math.clamp(state.ProdBatchAmount or 1, 1, 10)
+                            for _ = 1, count do
+                                clickGuiButton(sBtn)
+                                task.wait(0.03)
+                            end
+                        end
+                    end
+                end
+            end)
+        end
+        task.wait(0.12)
+    end
+end)
+
+-- [SECTION 1] TARGET FACTORY SELECTION
+createSection(PageFactory, "SecFactorySelect")
+
+local currentFocusLabel = Instance.new("TextLabel", PageFactory)
+currentFocusLabel.Size = UDim2.new(1, 0, 0, 36)
+currentFocusLabel.BackgroundColor3 = THEME.Panel
+currentFocusLabel.TextColor3 = THEME.Accent
+currentFocusLabel.Font = Enum.Font.GothamBold
+currentFocusLabel.TextSize = 13
+currentFocusLabel.Text = "🎯 Target: " .. (state.SelectedFactory == "All" and "Semua Pabrik (Cycle Map)" or state.SelectedFactory)
+corner(currentFocusLabel, 8)
+stroke(currentFocusLabel, THEME.Border, 1)
+
+local function setFactoryFocus(key, labelName)
+    state.SelectedFactory = key
+    currentFocusLabel.Text = "🎯 Target: " .. labelName
+end
+
+createActionButton(PageFactory, "🧀 " .. T("FocusCheeseFact"), THEME.Accent, function()
+    setFactoryFocus("CheeseFactory", "Pabrik Keju (Cheese)")
+end)
+
+createActionButton(PageFactory, "🌐 " .. T("FocusAllFact"), THEME.Blue, function()
+    setFactoryFocus("All", "Semua Pabrik (Cycle Map)")
+end)
+
+createActionButton(PageFactory, "🧈 " .. T("FocusButterFact"), THEME.Panel, function()
+    setFactoryFocus("ButterFactory", "Pabrik Mentega (Butter)")
+end)
+
+createActionButton(PageFactory, "🌭 " .. T("FocusHotdogFact"), THEME.Panel, function()
+    setFactoryFocus("HotdogFactory", "Pabrik Hotdog")
+end)
+
+createActionButton(PageFactory, "🍖 " .. T("FocusSausageFact"), THEME.Panel, function()
+    setFactoryFocus("SausageFactory", "Pabrik Sosis (Sausage)")
+end)
+
+createActionButton(PageFactory, "👕 " .. T("FocusSweaterFact"), THEME.Panel, function()
+    setFactoryFocus("SweaterFactory", "Pabrik Sweater")
+end)
+
+createActionButton(PageFactory, "🧶 " .. T("FocusYarnFact"), THEME.Panel, function()
+    setFactoryFocus("YarnFactory", "Pabrik Benang (Yarn)")
+end)
+
+createActionButton(PageFactory, "🍞 " .. T("FocusBreadFact"), THEME.Panel, function()
+    setFactoryFocus("BreadFactory", "Pabrik Roti (Bread)")
+end)
+
+createActionButton(PageFactory, "🌾 " .. T("FocusFlourFact"), THEME.Panel, function()
+    setFactoryFocus("FlourFactory", "Pabrik Tepung (Flour)")
+end)
+
+-- [SECTION 2] FACTORY AUTOMATION CONTROLS
 createSection(PageFactory, "SecFactoryProd")
 
 createToggle(PageFactory, "AutoStartProd", "AutoStartDesc", state.AutoStartProd, function(val)
@@ -1492,8 +1713,23 @@ createToggle(PageFactory, "AutoStartProd", "AutoStartDesc", state.AutoStartProd,
                 local originalCFrame = root and root.CFrame
                 local didTeleport = false
 
-                for _, fact in ipairs(KNOWN_FACTORIES) do
+                -- Filter target pabrik berdasarkan pilihan user
+                local targetList = {}
+                if state.SelectedFactory and state.SelectedFactory ~= "All" then
+                    for _, f in ipairs(KNOWN_FACTORIES) do
+                        if f.Key == state.SelectedFactory then
+                            table.insert(targetList, f)
+                            break
+                        end
+                    end
+                end
+                if #targetList == 0 then
+                    targetList = KNOWN_FACTORIES
+                end
+
+                for _, fact in ipairs(targetList) do
                     if not state.AutoStartProd then break end
+
                     -- Hanya jalankan produksi pada pabrik yang sudah dibuka pemain
                     if isFactoryUnlocked(fact.Key) then
                         local factModel = getFactoryModel(fact.Key)
@@ -1502,28 +1738,47 @@ createToggle(PageFactory, "AutoStartProd", "AutoStartDesc", state.AutoStartProd,
                         -- Teleport dekat stasiun pabrik jika toggle TeleportProd aktif
                         if state.TeleportProd and root and cPart then
                             local dist = (root.Position - cPart.Position).Magnitude
-                            if dist > 20 then
+                            if dist > 8 then
                                 didTeleport = true
-                                char:PivotTo(CFrame.new(cPart.Position + Vector3.new(0, 3.5, 0)))
-                                task.wait(0.08)
+                                char:PivotTo(CFrame.new(cPart.Position + Vector3.new(0, 3.2, 0)))
                             end
-                            -- Trigger proximity prompt buka pabrik
+                            -- Sentuhkan karakter ke cPart agar server memvalidasi zona pemain
+                            pcall(function()
+                                if firetouchinterest then
+                                    firetouchinterest(root, cPart, 0)
+                                    task.wait(0.02)
+                                    firetouchinterest(root, cPart, 1)
+                                end
+                            end)
+                            -- Dwell time agar engine mereplikasi interaksi
+                            if #targetList == 1 then
+                                task.wait(0.35)
+                            else
+                                task.wait(0.85)
+                            end
+
+                            -- Trigger proximity prompt buka pabrik jika ada
                             local prompt = cPart:FindFirstChildWhichIsA("ProximityPrompt")
                                 or (factModel and factModel:FindFirstChildWhichIsA("ProximityPrompt", true))
                             if prompt and prompt.Enabled and prompt.Name ~= "UnlockPrompt" then
                                 safeFirePrompt(prompt)
-                                task.wait(0.05)
+                                task.wait(0.04)
                             end
+                            -- Request buka UI via RemoteEvent jika didukung
+                            pcall(function()
+                                local openEv = Remotes and Remotes:FindFirstChild("OpenFactoryUI")
+                                if openEv and openEv:IsA("RemoteEvent") then
+                                    openEv:FireServer(fact.Key)
+                                end
+                            end)
                         end
 
-                        -- Pilih resep terbaik & antrekan batch di GUI jika menu pabrik terbuka
+                        -- Trigger eksekusi langsung pada GUI Pabrik jika UI terbuka
                         pcall(function()
-                            local pGui = LocalPlayer:FindFirstChild("PlayerGui")
-                            local fGui = pGui and pGui:FindFirstChild("Factory")
-                            local fMain = fGui and fGui:FindFirstChild("Factory")
-                            if fMain and fMain.Visible then
+                            local mContainer = getFactoryMainContainer()
+                            if mContainer then
                                 -- 1. Pilih bahan / resep terbaik jika opsi pilihan bahan ada
-                                local choseProduct = fMain:FindFirstChild("MainContainer") and fMain.MainContainer:FindFirstChild("ChoseProduct")
+                                local choseProduct = mContainer:FindFirstChild("ChoseProduct")
                                 local prodList = choseProduct and choseProduct:FindFirstChild("ProductList")
                                 local scroll = prodList and prodList:FindFirstChild("ScrollingFrame")
                                 if scroll then
@@ -1545,37 +1800,37 @@ createToggle(PageFactory, "AutoStartProd", "AutoStartDesc", state.AutoStartProd,
                                             end
                                         end
                                     end
-                                    if bestBtn and firesignal then
-                                        firesignal(bestBtn.MouseButton1Click)
+                                    if bestBtn then
+                                        clickGuiButton(bestBtn)
                                         task.wait(0.03)
                                     end
                                 end
 
                                 -- 2. Set batch multiplier jika ada opsi multiplier
-                                local prodAmount = fMain.MainContainer:FindFirstChild("ProductionFrame")
-                                    and fMain.MainContainer.ProductionFrame:FindFirstChild("ProduceAmount")
+                                local prodFrame = mContainer:FindFirstChild("ProductionFrame")
+                                local prodAmount = prodFrame and prodFrame:FindFirstChild("ProduceAmount")
                                 local multiScroll = prodAmount and prodAmount:FindFirstChild("ProduceMultiplier")
                                     and prodAmount.ProduceMultiplier:FindFirstChild("ScrollingFrame")
-                                if multiScroll and firesignal then
+                                if multiScroll then
                                     for _, tChild in ipairs(multiScroll:GetChildren()) do
                                         local tBtn = tChild:IsA("GuiButton") and tChild or tChild:FindFirstChildWhichIsA("GuiButton")
                                         local mLabel = tChild:FindFirstChild("MultiAmount", true)
                                         local mVal = mLabel and tonumber(mLabel.Text:match("%d+"))
                                         if mVal and mVal <= (state.ProdBatchAmount or 5) and tBtn then
-                                            firesignal(tBtn.MouseButton1Click)
+                                            clickGuiButton(tBtn)
                                             break
                                         end
                                     end
                                 end
 
                                 -- 3. Klik StartButton sesuai jumlah antrean batch yang diinginkan user
-                                local sBtn = fMain.MainContainer.ProductionFrame:FindFirstChild("ProductionInfoFrame")
-                                    and fMain.MainContainer.ProductionFrame.ProductionInfoFrame:FindFirstChild("ProductionButton")
-                                    and fMain.MainContainer.ProductionFrame.ProductionInfoFrame.ProductionButton:FindFirstChild("StartButton")
-                                if sBtn and sBtn.Visible and firesignal then
+                                local pInfo = prodFrame and prodFrame:FindFirstChild("ProductionInfoFrame")
+                                local pBtnFrame = pInfo and pInfo:FindFirstChild("ProductionButton")
+                                local sBtn = pBtnFrame and pBtnFrame:FindFirstChild("StartButton")
+                                if sBtn and sBtn.Visible then
                                     local batchCount = math.clamp(state.ProdBatchAmount or 1, 1, 10)
                                     for _ = 1, batchCount do
-                                        firesignal(sBtn.MouseButton1Click)
+                                        clickGuiButton(sBtn)
                                         task.wait(0.02)
                                     end
                                 end
@@ -1589,6 +1844,7 @@ createToggle(PageFactory, "AutoStartProd", "AutoStartDesc", state.AutoStartProd,
                                 fact.Output .. " Cosmic",
                                 fact.Output .. " Sakura",
                                 fact.Output .. " Emas",
+                                fact.Output .. " Gold",
                                 fact.Output,
                                 "Cosmic",
                                 "Sakura",
@@ -1600,25 +1856,36 @@ createToggle(PageFactory, "AutoStartProd", "AutoStartDesc", state.AutoStartProd,
                                 if not state.AutoStartProd then break end
                                 pcall(function() RequestStartProduction:InvokeServer(fact.Key, recipe, batchAmount) end)
                                 pcall(function() RequestStartProduction:InvokeServer(fact.Key, recipe, 1) end)
-                                pcall(function() RequestStartProduction:InvokeServer(fact.Key, batchAmount) end)
                                 pcall(function() RequestStartProduction:InvokeServer(fact.Key, recipe) end)
-                                task.wait(0.02)
                             end
+                            pcall(function() RequestStartProduction:InvokeServer(fact.Key, batchAmount) end)
+                            pcall(function() RequestStartProduction:InvokeServer(fact.Key, 1) end)
                             pcall(function() RequestStartProduction:InvokeServer(fact.Key) end)
+                            pcall(function() RequestStartProduction:InvokeServer(fact.Output, batchAmount) end)
+                            pcall(function() RequestStartProduction:InvokeServer(fact.Output) end)
                         end
 
-                        task.wait(0.06)
+                        -- Klaim produk yang sudah selesai secara paralel
+                        if RequestClaimProduction then
+                            pcall(function() RequestClaimProduction:InvokeServer(fact.Key) end)
+                            pcall(function() RequestClaimProduction:InvokeServer(fact.Key, "All") end)
+                            pcall(function() RequestClaimProduction:InvokeServer(fact.Output) end)
+                        end
+
+                        if #targetList > 1 then
+                            task.wait(0.2)
+                        end
                     end
                 end
 
-                -- Kembalikan posisi karakter ke lokasi semula setelah sweep produksi selesai
-                if state.TeleportProd and state.TeleportReturn and didTeleport and originalCFrame and root then
+                -- Kembalikan posisi karakter ke lokasi semula setelah sweep produksi selesai jika mode All
+                if state.TeleportProd and state.TeleportReturn and didTeleport and originalCFrame and root and (#targetList > 1) then
                     pcall(function()
                         char:PivotTo(originalCFrame)
                     end)
                 end
 
-                task.wait(math.max(1.0, state.ProdInterval or 1.5))
+                task.wait(math.max(0.6, state.ProdInterval or 1.5))
             end
         end)
     end
@@ -1643,7 +1910,21 @@ createToggle(PageFactory, "AutoClaimProd", "AutoClaimDesc", state.AutoClaimProd,
                     local originalCFrame = root and root.CFrame
                     local didTeleport = false
 
-                    for _, fact in ipairs(KNOWN_FACTORIES) do
+                    -- Filter target pabrik
+                    local targetList = {}
+                    if state.SelectedFactory and state.SelectedFactory ~= "All" then
+                        for _, f in ipairs(KNOWN_FACTORIES) do
+                            if f.Key == state.SelectedFactory then
+                                table.insert(targetList, f)
+                                break
+                            end
+                        end
+                    end
+                    if #targetList == 0 then
+                        targetList = KNOWN_FACTORIES
+                    end
+
+                    for _, fact in ipairs(targetList) do
                         if not state.AutoClaimProd then break end
 
                         if isFactoryUnlocked(fact.Key) then
@@ -1653,11 +1934,23 @@ createToggle(PageFactory, "AutoClaimProd", "AutoClaimDesc", state.AutoClaimProd,
                             -- Teleport dekat stasiun pabrik jika toggle TeleportClaim aktif
                             if state.TeleportClaim and root and cPart then
                                 local dist = (root.Position - cPart.Position).Magnitude
-                                if dist > 20 then
+                                if dist > 8 then
                                     didTeleport = true
-                                    char:PivotTo(CFrame.new(cPart.Position + Vector3.new(0, 3.5, 0)))
-                                    task.wait(0.05)
+                                    char:PivotTo(CFrame.new(cPart.Position + Vector3.new(0, 3.2, 0)))
                                 end
+                                pcall(function()
+                                    if firetouchinterest then
+                                        firetouchinterest(root, cPart, 0)
+                                        task.wait(0.02)
+                                        firetouchinterest(root, cPart, 1)
+                                    end
+                                end)
+                                if #targetList == 1 then
+                                    task.wait(0.35)
+                                else
+                                    task.wait(0.75)
+                                end
+
                                 -- Trigger proximity prompt jika ada
                                 local prompt = cPart:FindFirstChildWhichIsA("ProximityPrompt")
                                     or (factModel and factModel:FindFirstChildWhichIsA("ProximityPrompt", true))
@@ -1670,23 +1963,25 @@ createToggle(PageFactory, "AutoClaimProd", "AutoClaimDesc", state.AutoClaimProd,
                             pcall(function() RequestClaimProduction:InvokeServer(fact.Key) end)
                             pcall(function() RequestClaimProduction:InvokeServer(fact.Key, "All") end)
                             pcall(function() RequestClaimProduction:InvokeServer(fact.Key, 1) end)
+                            pcall(function() RequestClaimProduction:InvokeServer(fact.Output) end)
 
                             -- Trigger tombol Ambil/Claim di GUI jika ada
                             pcall(function()
-                                local pGui = LocalPlayer:FindFirstChild("PlayerGui")
-                                local fGui = pGui and pGui:FindFirstChild("Factory")
-                                local fMain = fGui and fGui:FindFirstChild("Factory")
-                                local cBtn = fMain and fMain:FindFirstChild("MainContainer")
-                                    and fMain.MainContainer:FindFirstChild("ProcessProduction")
-                                    and fMain.MainContainer.ProcessProduction:FindFirstChild("OutputFrame")
-                                    and fMain.MainContainer.ProcessProduction.OutputFrame:FindFirstChild("ClaimFrame")
-                                    and fMain.MainContainer.ProcessProduction.OutputFrame.ClaimFrame:FindFirstChild("ClaimButton")
-                                if cBtn and cBtn.Visible and firesignal then
-                                    firesignal(cBtn.MouseButton1Click)
+                                local mContainer = getFactoryMainContainer()
+                                if mContainer then
+                                    local pProd = mContainer:FindFirstChild("ProcessProduction")
+                                    local outFrame = pProd and pProd:FindFirstChild("OutputFrame")
+                                    local cFrame = outFrame and outFrame:FindFirstChild("ClaimFrame")
+                                    local cBtn = cFrame and cFrame:FindFirstChild("ClaimButton")
+                                    if cBtn and cBtn.Visible then
+                                        clickGuiButton(cBtn)
+                                    end
                                 end
                             end)
 
-                            task.wait(0.06)
+                            if #targetList > 1 then
+                                task.wait(0.15)
+                            end
                         end
                     end
 
@@ -1694,14 +1989,14 @@ createToggle(PageFactory, "AutoClaimProd", "AutoClaimDesc", state.AutoClaimProd,
                     pcall(function() RequestClaimProduction:InvokeServer() end)
                     pcall(function() RequestClaimProduction:InvokeServer("All") end)
 
-                    -- Kembalikan posisi karakter ke lokasi semula setelah sweep selesai
-                    if state.TeleportClaim and state.TeleportReturn and didTeleport and originalCFrame and root then
+                    -- Kembalikan posisi karakter ke lokasi semula setelah sweep selesai jika mode All
+                    if state.TeleportClaim and state.TeleportReturn and didTeleport and originalCFrame and root and (#targetList > 1) then
                         pcall(function()
                             char:PivotTo(originalCFrame)
                         end)
                     end
                 end
-                task.wait(math.max(1.0, state.ProdInterval or 1.5))
+                task.wait(math.max(0.8, state.ProdInterval or 1.5))
             end
         end)
     end
@@ -1748,8 +2043,7 @@ createToggle(PageFactory, "AutoUnlockFact", "AutoUnlockDesc", state.AutoUnlockFa
                         if not isFactoryUnlocked(fact.Key) then
                             local factModel = getFactoryModel(fact.Key)
                             if factModel then
-                                local imgPart = factModel:FindFirstChild("ImagePart")
-                                local prompt = imgPart and imgPart:FindFirstChild("UnlockPrompt")
+                                local prompt = factModel:FindFirstChild("UnlockPrompt", true)
                                 if prompt and prompt.Enabled then
                                     safeFirePrompt(prompt)
                                 end
