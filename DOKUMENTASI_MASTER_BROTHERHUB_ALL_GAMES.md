@@ -494,5 +494,18 @@ Setiap perubahan pada kode game mengikuti protokol ketat:
   * **Solusi**: Mengganti teks menjadi `X Reset` berbasis karakter ASCII standar yang 100% kompatibel dan bersih di seluruh executor dan resolusi layar.
 
 ---
+
+### 7.6 Deteksi Logo Rebirth & Target Otomatis Peti Misi Rebirth
+* **Deteksi RebirthRequirementBadge (Logo Rebirth)**:
+  * Pada conveyor, peti yang menjadi syarat Rebirth aktif pemain dipasangi badge dinamis oleh client game: `RebirthRequirementBadge` (Asset `rbxassetid://84343300633559`).
+  * Script Brother Hub mendeteksi badge tersebut secara visual di `BillboardGui` dan secara data melalui pencocokan template `part:GetAttribute("CrateTemplateName")` terhadap tabel `RebirthConfig.Requirements`.
+* **Kategori & Opsi Dropdown Rebirth**:
+  * Ditambahkan opsi Rarity: `"🔄 Misi Rebirth (Logo Rebirth)"`.
+  * Ditambahkan opsi teratas dinamis: `"🔄 [Misi Aktif] Crate Misi Rebirth Saat Ini (Logo Rebirth)"`.
+  * Seluruh 16 peti syarat Rebirth (Rebirth 1 - 16) ditandai dengan label `[🔄 Rebirth #X]` dari *Slime Crate* (Rare) hingga *Net Squishy Crate* (Celestial).
+* **Toggle Otomatis**:
+  * `"🔄 Auto Target Crate Misi Rebirth (Logo Rebirth)"`: Memprioritaskan pembelian seketika pada peti manapun yang memiliki logo Rebirth saat melintas di conveyor pemain.
+
+---
 *Dokumen ini diperbarui secara otomatis dan merupakan panduan teknis resmi Brother Hub Ecosystem.*
 
