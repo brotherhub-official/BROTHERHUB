@@ -506,6 +506,36 @@ Setiap perubahan pada kode game mengikuti protokol ketat:
 * **Toggle Otomatis**:
   * `"🔄 Auto Target Crate Misi Rebirth (Logo Rebirth)"`: Memprioritaskan pembelian seketika pada peti manapun yang memiliki logo Rebirth saat melintas di conveyor pemain.
 
+### 7.7 Super Treehouse Tycoon 2: Arsitektur 1:1 My Flower Shop & Overhaul Auto Capture Bees
+* **Metadata Game & Place ID**:
+  * **Game**: Super Treehouse Tycoon 2
+  * **Place ID**: `8034718511`
+  * **Role Discord**: `🌳 Super Treehouse Tycoon 2` (`1553381125244846180`)
+* **Standardisasi Baku GUI (1:1 My Flower Shop)**:
+  * Frame Utama 660 x 440 dengan sudut 14px dan border **`neonStroke(inst, thickness)` 360° Rotating RGB Neon** (Biru Tua `#0028FF` -> Merah `#FF192D` -> Hijau `#14FF50` -> Biru Tua `#0028FF`). Dilarang keras menggunakan stroke kuning/emas statis!
+  * Header 52px dengan gradien ungu-ke-biru (`gradient(Header, THEME.Purple, THEME.Blue, 0)`), `HeaderSquareFix` 14px, judul centered `Enum.Font.GothamBlack`, tombol minimize kuning `–` dan tombol tutup merah `X`.
+  * Horizontal Scrolling TabBar (X-axis, scrollbar emas 3px) dengan tab button aktif emas (`THEME.Title`) dan inaktif slot (`THEME.Slot`).
+  * Floating MinCircle 80x80 dengan `neonStroke(MinCircle, 2)`, mahkota emas `👑` dan label `BH`, draggable bebas ke mana saja, dan restore frame utama dengan animasi bounce.
+  * Modal Konfirmasi Tutup (`CloseModal`) 360x200 dengan `neonStroke` dan tombol Yes / Cancel.
+* **Overhaul Total Auto Capture Bees (Fix Bug Laporan Member Lugft)**:
+  * **Akar Masalah Sebelumnya**:
+    1. Loop lama mencari `bee:IsA("BasePart") and bee.Name:lower():find("bee")`. Padahal seluruh lebah di `Workspace.NPC_BEES` adalah **Model** (misal: `Orange Striped Bee`, `Purple Striped Bee`, `Navy Blue Striped Bee`), dan parts di dalamnya bernama `PrimaryBody`, `SecondaryBody`, `LeftWing`, dsb., sehingga tidak ada part yang pernah tersentuh!
+    2. Player tidak melakukan equip tool `Capture_Net` secara otomatis, dan tidak melakukan teleport ke dekat lebah sehingga physics touch Roblox menolak interaksi jarak jauh.
+  * **Solusi & Mekanisme Baru (100% Fixed)**:
+    1. **Auto Equip Net**: Fungsi `ensureNetEquipped()` otomatis mendeteksi dan meng-equip tool `Capture_Net` atau `Super Capture Net` dari Backpack ke Character.
+    2. **Multi-Part Touch & Tool Swing**: Saat berada di posisi lebah, script memicu `tool:Activate()`, serta melakukan `firetouchinterest` antara net mesh part (`Net` / `Handle`) dan seluruh bagian tubuh lebah (`PrimaryBody`, `SecondaryBody`, `HumanoidRootPart`) serta HRP pemain.
+    3. **Safe Stance Anti-Jitter**: Karakter melayang presisi di samping lebah (`CFrame.new(pos + Vector3.new(0, 0.5, 2.5), pos)`) dengan linear & angular velocity di-reset ke nol untuk mencegah mental atau jatuh.
+    4. **Endless Sweep Loop & Return to Base**: Script memindai seluruh lebah hidup di `Workspace.NPC_BEES` (melewati yang `IsBeingCaptured.Value == true`), menyapu satu per satu secara berurutan, dan otomatis kembali ke base Tycoon setelah map bersih menunggu respawn lebah baru.
+    5. **ESP Bees**: Visual BillboardGui berwarna kuning neon menandai posisi seluruh lebah aktif di map secara real-time.
+
 ---
+
+### 7.8 Perbaikan Rendering Tab Unbox ASMR (Tab Blank / Missing Fix)
+* **Akar Masalah**: Panggilan fungsi `addToggle` yang tidak terdefinisi (seharusnya `makeToggle`) pada tombol filter blacklist dan auto target rebirth crate di Tab 1 menyebabkan eksekusi script terhenti di tengah jalan (*attempt to call a nil value*), sehingga seluruh tab berikutnya tampak kosong/hitam.
+* **Solusi**: Memperbaiki pemanggilan menjadi `makeToggle` standar dengan parameter yang sesuai. Seluruh 8 tab Unbox ASMR kini dirender 100% sempurna tanpa error.
+
+---
+
 *Dokumen ini diperbarui secara otomatis dan merupakan panduan teknis resmi Brother Hub Ecosystem.*
+
 
