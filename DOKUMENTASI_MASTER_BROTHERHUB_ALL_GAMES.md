@@ -541,3 +541,25 @@ Setiap perubahan pada kode game mengikuti protokol ketat:
 *Dokumen ini diperbarui secara otomatis dan merupakan panduan teknis resmi Brother Hub Ecosystem.*
 
 
+
+## 7.9 Steal Underwater Eggs: Overhaul Auto Steal, Fast Renang Booster & 1:1 My Flower Shop UI
+* **Place ID**: `96364555828035`
+* **Latar Belakang & Masukan Member ! BOS**:
+  - Member `! BOS` melaporkan: *"Bg butuh dibenerin di autosteal nya, soalnya pas di nyalain autosteal nya gabisa ambill eggs nya. Sama esp fast renang nya ga berfungsi"*.
+* **Akar Masalah Teknis Hasil Dump Analisis**:
+  1. *Faux Egg Holding Detection*:
+     - Kode lama memeriksa `item.Name:lower():find("ei") or item.Name:lower():find("egg")` pada seluruh anak Character.
+     - Di engine Roblox dengan karakter terlokalisasi/bahasa Jerman, nama kaki adalah `"LinkesBein"` dan `"RechtesBein"`, keduanya mengandung substring `"ei"`. Akibatnya, `isHoldingEgg()` **selalu bernilai true secara permanen** sejak detik pertama!
+     - Efeknya, script selalu mengira pemain sedang membawa telur dan terus-menerus menteleportasikan pemain ke Aquarium markas, sehingga pemain tidak pernah menteleport ke sarang telur untuk mencuri!
+     - *Solusi*: Berdasarkan kode decompile resmi `EiHandClient.lua`, model resmi yang dimunculkan game saat membawa telur adalah `char:FindFirstChild("GetragenesEi")` dan Tool dengan atribut `EiVorlage`. Pemeriksaan diperbaiki 100% presisi.
+  2. *Fast Renang Booster Mati*:
+     - Kode lama menembakkan remote `SetSpeed:FireServer(75)` yang ternyata tidak digunakan oleh client script manapun.
+     - Dari analisis decompile `SchwimmScript.lua`, script fisika renang resmi memeriksa atribut bawaan `LocalPlayer:GetAttribute("AdminTempo")`.
+     - *Solusi*: Fast Renang diintegrasikan langsung dengan menyetel `LocalPlayer:SetAttribute("AdminTempo", config.swimSpeed or 80)` dan `Humanoid.WalkSpeed`, sehingga karakter melesat cepat dengan fisika renang resmi tanpa tersendat.
+  3. *ESP Telur Tidak Muncul*:
+     - Kode lama hanya memindai telur pada biome yang dicentang di filter Auto Steal. Jika pemain berada di zona lain yang tidak dicentang, ESP tidak memunculkan telur sama sekali.
+     - *Solusi*: ESP diubah memindai seluruh sarang telur secara global di seluruh map dan menampilkan penanda BillboardGui dengan nama telur serta jarak meter waktu-nyata.
+  4. *Standarisasi 1:1 My Flower Shop UI*:
+     - Menerapkan `neonStroke(inst, 2)` berotasi 360° RGB Neon pada `MainFrame`, `MinCircle` (80x80), dan `CloseModal` (360x200).
+     - Header ungu-biru 52px dengan `HeaderSquareFix`, centered title font GothamBlack, tombol minimize kuning `–` dan tutup merah `X`.
+     - Horizontal Scrolling TabBar melintang sumbu X dengan scrollbar emas 3px.
