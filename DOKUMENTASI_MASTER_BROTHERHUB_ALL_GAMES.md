@@ -563,3 +563,27 @@ Setiap perubahan pada kode game mengikuti protokol ketat:
      - Menerapkan `neonStroke(inst, 2)` berotasi 360° RGB Neon pada `MainFrame`, `MinCircle` (80x80), dan `CloseModal` (360x200).
      - Header ungu-biru 52px dengan `HeaderSquareFix`, centered title font GothamBlack, tombol minimize kuning `–` dan tutup merah `X`.
      - Horizontal Scrolling TabBar melintang sumbu X dengan scrollbar emas 3px.
+
+## 7.10 Steal Underwater Eggs: Solusi Tuntas Card Collapsing / Blank Features & Penambahan Fitur Eksploit Lengkap
+* **Place ID**: `96364555828035`
+* **Latar Belakang Laporan Lanjutan Member ! BOS**:
+  - Member `! BOS` melaporkan: *"Malah gaada fitur fitur nya bg"*.
+* **Akar Masalah Teknis Hasil Audit UI**:
+  - Pada implementasi awal `makeCard`, elemen kartu konten menggunakan `AutomaticSize = Enum.AutomaticSize.Y` dan di dalamnya dipasang `cLayout = Instance.new("UIListLayout", card)`.
+  - Di dalam `card`, elemen vertikal neon `bar` memiliki ukuran `UDim2.new(0, 4, 1, -10)` (Scale Y = 1).
+  - Di engine Roblox, sebuah elemen dengan nilai Scale > 0 pada sumbu `AutomaticSize` yang berada di dalam `UIListLayout` memicu *cyclic dependency / recursive size solver failure*.
+  - Akibatnya, engine layout Roblox otomatis menggugurkan perhitungan tinggi kartu menjadi 0 pixel (`AbsoluteSize.Y = 0`). Seluruh card di seluruh tab menjadi ciut (tersembunyi/tidak tampak), sehingga pemain hanya melihat frame kosong tanpa tombol/toggle satupun!
+* **Solusi Baku 1:1 My Flower Shop Holder Pattern**:
+  - Mengadopsi arsitektur resmi `FlowerShop_Clean.lua`: `makeCard(titleText, accent, parentOverride)` membuat Frame kartu luar dan sebuah wadah anak bernama `holder` (`Size = UDim2.new(1, -28, 0, 0)`, `AutomaticSize = Enum.AutomaticSize.Y`).
+  - `UIListLayout` dan `UIPadding` hanya dipasang di dalam `holder`.
+  - `bar` dipasang di kartu luar independen dari list layout.
+  - `makeCard` mengembalikan objek `holder`. Seluruh kontrol (`makeToggle`, `makeSlider`, `makeButton`) otomatis terpasang di dalam `holder` tanpa konflik perhitungan ukuran. Seluruh kartu dan fitur kini tampil 100% sempurna!
+* **Penambahan Fitur Eksploit Baru Berdasarkan Decompile ReplicatedStorage & StarterGui**:
+  1. *Trident Combat & Boss Farm*: Menembakkan remote resmi `DreizackSchlag:FireServer()` untuk spam serangan cepat melee dan auto farm Underwater Boss.
+  2. *Auto Equip Best Pets*: Memanggil remote fungsi resmi `PetAktion:InvokeServer("best")` untuk memakai pet dengan multiplier tertinggi secara instan.
+  3. *Unequip All Pets*: `PetAktion:InvokeServer("alleab")` untuk melepas seluruh pet dengan 1 klik.
+  4. *Auto Tank Capacity Upgrade*: Menembakkan `TankUpgradeEvent:FireServer(1, "geld")` otomatis menggunakan koin in-game.
+  5. *Auto Buy Fins (Flossen)*: Memanggil `FlossenAktion:InvokeServer("Kaufen")` untuk auto beli sirip renang tier berikutnya.
+  6. *Auto Redeem Codes*: Memanggil `CodeEinloesen:InvokeServer(code)` untuk klaim promo code game otomatis.
+  7. *1-Click Biome & Base Teleports*: Teleport instan ke 8 Biome (*Coral Reef, Kelp Forest, Claw Canyon, Ship Graveyard, Lava Fortress, Jungle Temple, Frost Abyss, Atlantis*) dan Markas Aquarium.
+
