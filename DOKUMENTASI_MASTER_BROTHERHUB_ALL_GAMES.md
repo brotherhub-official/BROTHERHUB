@@ -351,17 +351,19 @@ Tabel di bawah adalah **Sumber Kebenaran Tunggal (Single Source of Truth)** untu
   2. *Layer 2*: USSI Hook in-memory melewati class `CharacterMesh`.
   3. *Layer 3*: Post-save file regex patcher membersihkan tag XML konflik secara otomatis.
 
-### 5.6 Aturan 10: Standarisasi Baku Arsitektur GUI (1:1 My Flower Shop)
-1. **MainFrame**: 660 x 440 (atau 640 x 420 untuk game inventory lebar), sleek dark `#0F1118`, sudut membulat 14px, dan **Stroke Neon RGB yang berputar 360° mulus**.
-2. **Horizontal Scrolling TabBar**: Scroll arah X (`ScrollingDirection.X`), `AutomaticCanvasSize.X`, scrollbar gold 3px.
-3. **Floating MinCircle 80x80**:
-   * **Hukum Parenting UIScale**: `MainScale` WAJIB SELALU di-parent ke `mainFrame` (`Instance.new("UIScale", mainFrame)`), **DILARANG KERAS** di-parent ke `screenGui`! Jika di-parent ke `screenGui`, saat `doMinimize` mentween `Scale = 0`, seluruh `screenGui` beserta `MinCircle` ikut mengecil ke 0 (menghilang total dan tidak ada bulatan).
-   * Tombol minimize memunculkan bulatan **80x80** berlogo **BH** dan Mahkota `👑`.
-   * Border neon stroke 360°, draggable di PC dan mobile.
-4. **Modal Dialog Konfirmasi 'X'**: Pop-up konfirmasi "Yes" (Hijau) dan "Cancel" (Merah). Tombol "Yes" melakukan **Sterilisasi Total** (disconnect event, matikan thread, reset walkspeed/jumppower, hancurkan GUI).
-5. **Multi-Instance Cleanup Guard**: Guard pembersihan instance lama di baris pertama (`_G.BH_<GAME>_CLEANUP = function() ... end`).
-6. **Full-Row Clickable Toggles**: Seluruh baris wadah toggle 100% hitbox dapat diklik untuk ON/OFF.
-7. **Direct Input Number Slider**: Slider dilengkapi text box yang bisa diketik angka langsung oleh user selain ditarik barnya.
+### 5.6 Aturan 10: Standarisasi Baku Arsitektur GUI (100% Wajib 1:1 My Flower Shop Tanpa Kompromi)
+* **Hukum Mutlak Founder**: Seluruh script Brother Hub (baik 34 game saat ini maupun game baru di masa depan) **WAJIB 100% MENGADOPSI ARSITEKTUR MY FLOWER SHOP**.
+* **Border Stroke**: **WAJIB `neonStroke(inst, thickness)` berotasi 360° secara mulus**. DILARANG KERAS menggunakan warna kuning/emas solid (`stroke(mainFrame, THEME.Title)`) atau gradien 2-warna statis!
+* **Header**: Tinggi 52px bergradien ungu-biru (`gradient(Header, THEME.Purple, THEME.Blue, 0)`), `HeaderSquareFix` 14px, judul centered GothamBlack `"👑 BROTHER HUB — <NAMA GAME>"`, tombol minimize kuning `–` (32x32) dan tutup merah `X` (32x32).
+* **TabBar**: Horizontal scrolling sumbu X (`ScrollingDirection.X`, `AutomaticCanvasSize.X`), scrollbar gold 3px.
+* **Floating MinCircle 80x80**:
+  * **Hukum Parenting UIScale**: `MainScale` WAJIB SELALU di-parent ke `mainFrame` (`Instance.new("UIScale", mainFrame)`), **DILARANG KERAS** di-parent ke `screenGui`!
+  * Lingkaran 80x80 berlogo Mahkota Emas `👑` dan `BH`, berborder `neonStroke(MinCircle, 2)` (RGB 360°), draggable di PC dan mobile, restore dengan animasi bounce.
+* **Modal Dialog Konfirmasi Tutup 'X' (`CloseModal` 360x200)**: Pop-up konfirmasi berborder neonStroke dengan 2 tombol: "Yes" (Hijau) dan "Cancel" (Merah). Tombol "Yes" melakukan **Sterilisasi Total** (disconnect connection, task.cancel, reset walkspeed/jumppower, destroy GUI).
+* **Multi-Instance Cleanup Guard**: Guard di baris pertama script (`_G.BH_<GAME>_CLEANUP = function() ... end`).
+* **Full-Row Clickable Toggles**: Seluruh baris wadah toggle 100% hitbox dapat diklik untuk ON/OFF, dan revert nilai asli saat OFF.
+* **Direct Input Number Slider**: Slider wajib dilengkapi text box angka yang bisa diketik langsung oleh user.
+* **Dropdown**: Mendukung Single-Select (`makeDropdown`) dan Multi-Select dengan checkbox (`makeMultiSelectDropdown`).
 
 ### 5.7 Aturan 11: Resolusi Pukulan & Mining (No Client Hijacking)
 * Dilarang melakukan loop equip konstan yang membajak controller Roblox client (klik mouse/touch tetap normal).
