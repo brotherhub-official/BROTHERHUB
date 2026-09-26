@@ -272,9 +272,9 @@ Daftar lengkap 67 peti dari `ReplicatedStorage.ProductCatalogConfig` & `EventPro
 
 ---
 
-# BAGIAN IV: MASTER ROSTER 31 GAME RESMI BROTHER HUB
+# BAGIAN IV: MASTER ROSTER 34 GAME RESMI BROTHER HUB
 
-Tabel di bawah adalah **Sumber Kebenaran Tunggal (Single Source of Truth)** untuk 31 game resmi yang didukung penuh oleh Brother Hub:
+Tabel di bawah adalah **Sumber Kebenaran Tunggal (Single Source of Truth)** untuk 34 game resmi yang didukung penuh oleh Brother Hub:
 
 | No | Game Name | Script File (`CleanHub/`) | Build File (`/` & `ObfuscateHub/`) | Official Role Discord | Discord Role ID | Status |
 |---|---|---|---|---|---|---|
@@ -309,6 +309,9 @@ Tabel di bawah adalah **Sumber Kebenaran Tunggal (Single Source of Truth)** untu
 | 29 | **Steal From The Rich** | `StealFromTheRich_Clean.lua` | `StealFromTheRich_BROTHERHUB.lua` | 💰 Steal From The Rich | `1552346210969587824` | ✅ AKTIF |
 | 30 | **Unbox ASMR** | `UnboxASMR_Clean.lua` | `UnboxASMR_BROTHERHUB.lua` | 📦 Unbox ASMR | `1552346213397831732` | ✅ AKTIF |
 | 31 | **Mine Antarctica** | `MineAntarctica_Clean.lua` | `MineAntarctica_BROTHERHUB.lua` | ❄️ Mine Antarctica | `1552346215469813895` | ✅ AKTIF |
+| 32 | **Clone to Steal Eggs** | `CloneToStealEggs_Clean.lua` | `CloneToStealEggs_BROTHERHUB.lua` | 🥚 Clone to Steal Eggs | `1553381123118211122` | ✅ AKTIF |
+| 33 | **Super Treehouse Tycoon 2** | `SuperTreehouseTycoon2_Clean.lua` | `SuperTreehouseTycoon2_BROTHERHUB.lua` | 🌳 Super Treehouse Tycoon 2 | `1553381125244846180` | ✅ AKTIF |
+| 34 | **Steal Underwater Eggs** | `StealUnderwaterEggs_Clean.lua` | `StealUnderwaterEggs_BROTHERHUB.lua` | 🌊 Steal Underwater Eggs | `1553381127119573065` | ✅ AKTIF |
 
 ### 4.2 Role Notifikasi Master Server
 * **⚡ Script Update Ping**: `1548208954163724299`
@@ -332,7 +335,7 @@ Tabel di bawah adalah **Sumber Kebenaran Tunggal (Single Source of Truth)** untu
 
 ### 5.2 Aturan 5B: Game Terlarang Permanen (Steal An Egg & Steal A Tree)
 * Game `Steal An Egg` (lama) dan `Steal A Tree` telah **DIHAPUS TOTAL DAN DILARANG SELAMANYA**.
-* Total game resmi Brother Hub adalah **TEPAT 31 GAME** (Game #27 adalah `Steal An Anime Egg`).
+* Total game resmi Brother Hub adalah **TEPAT 34 GAME** (Game #27 adalah `Steal An Anime Egg`, Game #32 adalah `Clone to Steal Eggs`, Game #33 adalah `Super Treehouse Tycoon 2`, Game #34 adalah `Steal Underwater Eggs`).
 
 ### 5.3 Aturan 5C: 100% Obfuscated Builds di GitHub (Anti-Pencurian Kode)
 * Folder `CleanHub/`, `Clean/`, dan berkas `*_Clean.lua` **100% LOKAL EXCLUSIVE** di PC pengguna dan terdaftar di `.gitignore`.
@@ -400,4 +403,96 @@ Setiap perubahan pada kode game mengikuti protokol ketat:
    *Sebelum push, verifikasi `git status` memastikan `CleanHub/` tidak tersentuh!*
 
 ---
+
+# BAGIAN VII: DETAIL ARSITEKTUR & FITUR 3 GAME BARU & UPDATE UNBOX ASMR
+
+### 7.1 Laporan Audit & Recovery Insiden Mati Lampu Kalimantan (Zero Data Loss)
+* **Status Audit Sistem**: Seluruh riwayat komit sebelumnya (`f472d56` - sinkronisasi 31 game) telah diaudit secara menyeluruh. Tidak ada kode, dump, modul, atau konfigurasi yang rusak atau hilang selama insiden pemadaman listrik.
+* **Master State Synchronization**: Seluruh 34 game resmi tercatat dengan struktur file ganda (`CleanHub/<Game>_Clean.lua` lokal eksklusif & `<Game>_BROTHERHUB.lua` / `ObfuscateHub/<Game>_BROTHERHUB.lua` terenkripsi di GitHub).
+* **Discord Roles Integrity**: Seluruh role discord terdaftar di `tools/discord_roles_map.json` dengan ID statis yang terverifikasi via API Discord.
+
+---
+
+### 7.2 Game #32: Clone to Steal Eggs (`76943966208523`)
+* **Arsitektur Remote & Knit Services**:
+  * Menggunakan framework Knit: `ReplicatedStorage.Packages._Index["sleitnick_knit@1.7.0"].knit.Services`
+  * Layanan Utama:
+    * `AreaService.RF.PickupEgg`: Pengambilan telur dari sarang.
+    * `EggService.RF.PlaceEgg`: Menempatkan telur yang dicuri ke sarang plot pribadi.
+    * `EggService.RF.HatchEgg`: Menetaskan telur di plot menjadi peliharaan/clone.
+    * `InventoryService.RF.SellAll`: Menjual seluruh clone/item inventaris untuk koin.
+    * `PlotService.RF.TeleportToPlot`: Teleportasi instan langsung ke sarang plot sendiri.
+    * `UpgradesService.RF.PromptSpeedTier`: Pembelian peningkatan speed tier clone.
+    * `RebirthService.RF.Rebirth`: Melakukan rebirth otomatis saat syarat level/koin tercapai.
+    * `PlaytimeRewardService.RF.ClaimGift`: Mengklaim seluruh bundle hadiah waktu bermain.
+* **Hierarki Telur & Dynamic PickablePrompt**:
+  * Induk sarang: `Workspace.SpawnedBases` -> `base_<AreaName>_<Id>` -> `Hen_<Type>` -> `<EggName>_egg`
+  * Koordinat telur tidak statis (berpindah posisi spawn). Script menggunakan scanner dinamis rekursif yang mendeteksi setiap `ProximityPrompt` bernama `PickablePrompt` (`MaxActivationDistance = 32`, `HoldDuration = 0`).
+* **Multi-Area Dropdown**:
+  * 8 Area Resmi: `Green`, `Desert`, `Winter`, `Jurassic`, `Ocean`, `Volcano`, `Galaxy`, `Spirit Blossom`.
+  * Verifikasi spasial: bounding box part `Workspace.Areas[AreaName]` dan nama model telur sesuai konfigurasi `AreasConfig`.
+* **Safe Stance Anti-Jitter**: Karakter melayang 4 studs di atas telur dengan velocity dinolkan (`AssemblyLinearVelocity = Vector3.zero`).
+
+---
+
+### 7.3 Game #33: Super Treehouse Tycoon 2 (`8034718511`)
+* **Arsitektur Tycoon & Honey Harvester**:
+  * Deteksi Plot Tycoon: `Workspace.Treehouses` -> `th.Owner.Value == LocalPlayer`
+  * Honey Collector Pad: `th.Essentials.Giver.Button.Head`
+    * Script memicu `firetouchinterest` secara berkala ke part kepala tombol giver madu untuk menarik 100% simpanan madu sarang lebah tanpa bergerak manual.
+  * Smart Tycoon Buttons:
+    * Folder tombol: `th.Buttons:GetChildren()`
+    * Setiap tombol memiliki atribut/child: `Price` (Int/NumberValue) dan `Head` (BasePart).
+    * Algoritma "Cheapest First": Script mengurutkan seluruh tombol berdasarkan harga terendah ke tertinggi, mencocokkan dengan saldo `leaderstats["🍯Honey"]`, lalu memicu `firetouchinterest` pada tombol yang terjangkau secara berurutan.
+* **Bee Hunting & Capture Automation**:
+  * Folder lebah map: `Workspace.NPC_BEES`
+  * Atribut lebah: `IsBeingCaptured` (boolean)
+  * Script otomatis terbang dan menempel pada lebah liar yang belum ditangkap hingga timer capture selesai.
+* **Egg Hatch & Codes**:
+  * Remote: `ReplicatedStorage.Remotes.BuyEgg`
+  * Kode promosi: `ReplicatedStorage.Remotes.ActivateCode`
+
+---
+
+### 7.4 Game #34: Steal Underwater Eggs (`96364555828035`)
+* **Arsitektur Jerman (German Engine Core)**:
+  * 8 Biome Resmi (`BiomWerte.BIOME`):
+    1. `Coral Reef` (Stage 1)
+    2. `Kelp Forest` (Stage 2)
+    3. `Claw Canyon` (Stage 3)
+    4. `Ship Graveyard` (Stage 4)
+    5. `Lava Fortress` (Stage 5)
+    6. `Jungle Temple` (Stage 6)
+    7. `Frost Abyss` (Stage 7)
+    8. `Atlantis` (Stage 8)
+* **Hierarki Sarang Telur Bawah Laut**:
+  * Folder sarang: `Workspace.NestPlaetze.Stage1` hingga `Stage8`
+  * Telur: Model dengan `Root` part dan child `ProximityPrompt` bernama `EiAufheben`.
+  * Bypass Hold Time: Durasi default `1.2s` diubah menjadi `0s` untuk pencurian instan tanpa jeda.
+* **Aquarium & Pet Management**:
+  * Folder akuarium: `Workspace.Aquarien` (mencocokkan `Owner.Value == LocalPlayer`)
+  * Sarang tetas: Tombol `Brutknopf` dan prompt `EiAusbrueten`
+  * Remote Server:
+    * `AquariumPlatzieren`: Menaruh telur curian ke sarang akuarium.
+    * `AquariumEiKnacken`: Memecahkan cangkang telur setelah durasi inkubasi selesai.
+    * `AquariumOeffnen`: Mengambil isi peliharaan akuarium.
+    * `PetVerkaufen`: Menjual pet yang tidak diinginkan untuk koin laut.
+    * `TankUpgradeEvent`: Meningkatkan kapasitas tampung tangki akuarium.
+    * `FlossenAktion` / `SetSpeed`: Mengaktifkan dorongan kecepatan renang sirip.
+
+---
+
+### 7.5 Pembaruan Unbox ASMR: Dual-Filter Mode & Perbaikan Font Glyph
+* **Dual-Filter Mode (Whitelist vs Blacklist)**:
+  * **Mode Whitelist (Target)**: Hanya membeli/menargetkan peti/rarity yang dicentang.
+  * **Mode Blacklist (Lewati yang Dicentang)**:
+    * Contoh: Pemain mencentang *Epic* dan *Mythic*.
+    * Hasil: Seluruh peti *Common, Uncommon, Rare, Legendary, Divine, Secret, Exotic, Ancient, Cosmic, Celestial* akan otomatis menjadi target pembelian.
+    * Peti *Epic* dan *Mythic* otomatis dilewati (*skipped*) di konveyor.
+* **Perbaikan Font Glyph Tombol Reset**:
+  * **Akar Masalah**: Teks tombol menggunakan karakter unicode `✕` (`\u2715`) yang tidak memiliki representasi glyph pada font `GothamBold` Roblox di banyak platform (terutama mobile/Android), sehingga dirender sebagai kotak tak dikenal `□`.
+  * **Solusi**: Mengganti teks menjadi `X Reset` berbasis karakter ASCII standar yang 100% kompatibel dan bersih di seluruh executor dan resolusi layar.
+
+---
 *Dokumen ini diperbarui secara otomatis dan merupakan panduan teknis resmi Brother Hub Ecosystem.*
+
