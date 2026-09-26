@@ -29,6 +29,8 @@ Procfile
 discloud.config
 main.py
 *.vbs
+saveinstance.luau
+UniversalSynSaveInstance.luau
 
 # 🚫 PROPRIETARY OBFUSCATOR & BUILD SCRIPTS
 obfuscate.py
