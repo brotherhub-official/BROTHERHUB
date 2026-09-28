@@ -270,11 +270,32 @@ Daftar lengkap 67 peti dari `ReplicatedStorage.ProductCatalogConfig` & `EventPro
   * `Lucky Spin Wheel`: Roda keberuntungan harian (Koin, Gems, Multiplier Boost).
   * `Quests Board`: Misi harian dan mingguan otomatis.
 
+
+### 3.5 Pembaruan Unbox ASMR v2.0 (Infinite Camera Zoom, Base ASMR Level Upgrades & Event Rarities)
+* **Buka Batas Kamera (Infinite Zoom Out)**:
+  * Mengatasi keterbatasan kamera bawaan Roblox/Game yang membatasi jarak pandang pemain di sekitar conveyor.
+  * Mengatur `LocalPlayer.CameraMaxZoomDistance` hingga 3,000 studs (default 1,000 studs) dengan event listener protektif yang menjaga zoom tidak di-reset oleh skrip client game.
+* **Auto Upgrade Level Mainan ASMR di Plot (Tombol Kuning Lvl Up)**:
+  * Menyelesaikan kebutuhan upgrade level station/mainan ASMR di meja (`▲ $11.1B Lvl 32 > Lvl 33`, `▲ $11.6B Lvl 84 > Lvl 85`, `▲ $34.2B Lvl 11 > Lvl 12`).
+  * Menggunakan remote `ReplicatedStorage.ASMRRewardRemotes.RequestUpgrade:FireServer(model)` dengan parameter model mainan ASMR milik LocalPlayer (`desc:GetAttribute("OwnerUserId") == LocalPlayer.UserId`).
+  * Dilengkapi fitur loop otomatis (`config.autoUpgradePlacedASMR`) dan tombol instan sekali klik (`▲ Upgrade Semua Level Mainan ASMR Sekali Klik`).
+* **Klasifikasi Resmi Rarity Event (Index 54/130)**:
+  * Berdasarkan arsitektur internal `ProductCatalogConfig` v9, item-item berkategori:
+    1. `Cosmic` (`cosmicEventProduct`)
+    2. `Fire & Ice` (`fireIceEventProduct`)
+    3. `Nature` (`natureEventProduct`)
+    4. `Music` (`musicEventProduct`)
+    5. `Sea` (`seaEventProduct`)
+    6. `Candy` (`CandyEventConfig`)
+    7. `Honey` (`honeyEventProduct`)
+    adalah **100% PRODUK EKSKLUSIF EVENT** (`EventExclusive = true`, `NoCrate = true`).
+  * Rarity tersebut diperoleh khusus dari peti event live map (Galaxy Crates, Fire & Ice Crates, Nature Crates, Sea Crates, Music Crates, Candy Crates) dan telah diintegrasikan ke Multi-Select Rarity dropdown Brother Hub.
+
 ---
 
-# BAGIAN IV: MASTER ROSTER 34 GAME RESMI BROTHER HUB
+# BAGIAN IV: MASTER ROSTER 33 GAME RESMI BROTHER HUB
 
-Tabel di bawah adalah **Sumber Kebenaran Tunggal (Single Source of Truth)** untuk 34 game resmi yang didukung penuh oleh Brother Hub:
+Tabel di bawah adalah **Sumber Kebenaran Tunggal (Single Source of Truth)** untuk 33 game resmi yang didukung penuh oleh Brother Hub:
 
 | No | Game Name | Script File (`CleanHub/`) | Build File (`/` & `ObfuscateHub/`) | Official Role Discord | Discord Role ID | Status |
 |---|---|---|---|---|---|---|
