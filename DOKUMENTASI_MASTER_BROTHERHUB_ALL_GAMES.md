@@ -690,10 +690,49 @@ eonStroke(minCircle, 2)).
   4. *Git Commit & Push*:
      Commit cef5f0f (ix(poly-loot): resolve blank UI with 1:1 Flower Shop architecture, holder pattern & add Enchants update support) berhasil di-push ke GitHub origin/main. Repositori publik 100% steril dari kode mentah CleanHub/.
 * **Pengumuman Resmi Discord (Rule 12, 12B, 12C)**:
-  - Menggunakan modul pengirim resmi 	ools/discord_announcer.py dengan live API query verifikasi role:
+  - Menggunakan modul pengirim resmi tools/discord_announcer.py dengan live API query verifikasi role:
     - Game Role Ping: <@&1549290685645983764> (⚔️ Poly Loot)
     - Update Ping: <@&1548208954163724299> (⚡ Script Update Ping)
     - Member Ping: <@&1547960141263929366> (🎮 Brother Member)
   - Pesan Pengumuman terkirim ke #📢・announcements (Message ID: 1554046914196934669).
   - Pesan Changelog terkirim ke #📜・changelogs (Message ID: 1554046917845975051).
   - 100% steril dari box kode loadstring dan Catbox, mengarahkan member langsung ke #⚡・script-panel (1547960154228793424).
+
+---
+
+### 7.6 Resolusi Presisi Tempur Poly Loot: Filter NPC Ramah, Auto-Equip Swing & Safe Stance Behind (Rule 11)
+* **Akar Masalah yang Dilaporkan Pengguna**:
+  1. *Salah Target NPC Ramah*: Karakter melayang / berdiri di belakang NPC desa non-monster (seperti Hero Nay, quest givers, atau merchant) alih-alih monster liar yang sesungguhnya.
+  2. *Tidak Ada Animasi Swing & Damage Tidak Masuk*: Karakter tidak memegang senjata atau tangan kosong, tidak ada ayunan tebasan senjata (swing animation/trail), serta damage melee tidak terdaftar di server karena jarak melayang terlalu jauh.
+* **Solusi & Rekayasa Teknis Mandiri**:
+  1. **Deklarasi Koleksi Layanan (CollectionService)**:
+     - Menambahkan deklarasi eksplisit `local CollectionService = game:GetService("CollectionService")` di baris atas skrip guna mencegah kegagalan runtime saat melakukan query tag.
+  2. **Filter 7-Lapisan 100% Anti-Target NPC Ramah (`isValidCombatTarget`)**:
+     - *Layer 1 (CollectionService Exclusion)*: Mengabaikan instans bertag `QuestGiver`, `DisplayNPC`, `StagedNPC`, `Companion`, `Merchant`, `Shop`, `Villager`, dan `NPC`.
+     - *Layer 2 (Child Data Heuristics)*: Mengabaikan model yang memiliki folder/objek `Dialogue`, `QuestData`, `Givers`, `OfferScenes`, `Billboard`, atau `ProximityPrompt` interaktif (bicara/toko).
+     - *Layer 3 (Peaceful Name Exclusion)*: Mengabaikan nama model yang mengandung kata ramah: `npc`, `villag`, `citizen`, `guard`, `merchant`, `trainer`, `vendor`, `hero`, `quest`, `elder`, `innkeeper`, `blacksmith`.
+     - *Layer 4 (Life Check)*: Mengabaikan entitas dengan atribut `_Dying == true`, `Health <= 0`, atau `Humanoid.Health <= 0`.
+     - *Layer 5 (Root Part Verifier)*: Wajib memiliki `HumanoidRootPart`, `PrimaryPart`, atau `BasePart`.
+     - *Layer 6 (Hostile Tag Matcher)*: Memverifikasi tag resmi `Mob`, `Combatant`, `Knight`, `Boss` atau atribut `MobType` / `IsMob`.
+     - *Layer 7 (Hostile Name Keyword Matcher)*: Mencocokkan nama monster liar: `wolf`, `bear`, `boar`, `spider`, `cobra`, `knight`, `warden`, `alder`, `skeleton`, `zombie`, `bandit`, `goblin`, `slime`, `animal`, `mob`.
+  3. **Auto-Equip Senjata & Animasi Swing (`tool:Activate()`)**:
+     - Menambahkan fungsi pembantu `ensureEquippedWeapon()`: Memeriksa apakah karakter sudah memegang Tool. Jika tangan kosong, otomatis mencari senjata di Backpack dan mengequipnya via `Humanoid:EquipTool()`.
+     - Memanggil `tool:Activate()` di setiap siklus serangan untuk memicu animasi tebasan klien, efek suara tebasan, dan weapon trail.
+  4. **Safe Stance Mode Default: BEHIND (Di Belakang Punggung Musuh)**:
+     - Sesuai instruksi Founder, konfigurasi bawaan `Flags.SafeStanceMode` diatur ke `"Behind"`.
+     - Posisi dihitung dari LookVector target: `safePos = tgtPos - (look * dist) + Vector3.new(0, 0.6, 0)`.
+     - Karakter diposisikan tepat menghadap punggung musuh (`CFrame.new(safePos, tgtPos)`).
+     - Jarak diatur presisi di radius melee (3–5 studs) dengan linear/angular velocity dinolkan (`Vector3.zero`) sesuai **Rule 11** agar pukulan senjata masuk 100% konsisten ke server.
+     - Perhitungan `aimDir` serangan diselaraskan menggunakan `(tgt.Part.Position - hrp.Position).Unit`.
+     - Pada boss hunt Warden Alder, karakter otomatis melayang di belakang punggung bos saat mode Behind aktif.
+* **Build & Deployment Publik (Rule 5C)**:
+  - Validasi sintaks Luau: `tools/luau-compile.exe --only-parse CleanHub/PolyLoot_Clean.lua` 👉 **Exit Code 0**.
+  - Obfuskasi: `python obfuscate.py -i CleanHub/PolyLoot_Clean.lua -o PolyLoot_BROTHERHUB.lua` 👉 **Passed**.
+  - Mirroring: `Copy-Item PolyLoot_BROTHERHUB.lua ObfuscateHub/PolyLoot_BROTHERHUB.lua -Force`.
+  - Git Commit & Push: Commit `ed7e23e` berhasil di-push ke branch `main`.
+* **Pengumuman Resmi Discord (Rule 12, 12B, 12C)**:
+  - Role Mentions Terverifikasi: `<@&1549290685645983764>` (`⚔️ Poly Loot`), `<@&1548208954163724299>` (`⚡ Script Update Ping`), `<@&1547960141263929366>` (`🎮 Brother Member`).
+  - Channel Pengumuman (`#📢・announcements`): Pesan ID `1554052672913408064`.
+  - Channel Changelog (`#📜・changelogs`): Pesan ID `1554052675488714766`.
+  - 100% steril dari loadstring mentah dan Catbox, mengarahkan pemain ke `#⚡・script-panel` (`1547960154228793424`).
+
