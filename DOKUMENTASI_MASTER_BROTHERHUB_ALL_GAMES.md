@@ -770,4 +770,50 @@ eonStroke(minCircle, 2)).
   - Pesan Changelog: Terkirim ke `#📜・changelogs` (Message ID: `1554057825641041991`).
   - 100% bebas dari loadstring mentah dan Catbox, mengarahkan member langsung ke `#⚡・script-panel` (`1547960154228793424`).
 
+---
+
+### 7.8 Pembaruan Besar Poly Loot v2.3: Perbaikan Tree Chop, Ore Mine, WorldBits Vacuum Rarity & Auto Walk (Resolusi Lengkap Feedback Prone)
+* **Latar Belakang & Masukan Lanjutan Member**:
+  Member Discord `Prone` melaporkan hasil pengujian mendalam (Poly Loot):
+  1. *Bug / Issue*: Auto chop tree / mine ore tidak bekerja.
+  2. *Bug / Issue*: Auto pick up drop (loot sweeper) tidak bekerja.
+  3. *Bug / Issue*: Saat Kill Aura dinyalakan lalu memilih mob tertentu (misal Tiger), Kill Aura tidak merespon.
+  4. *Missed Feature*: Auto walk ke selected mobs (pilihan mode berjalan mendekati mob).
+  5. *Missed Feature*: Pick up filter rarity (filter drop rarity hingga Secret).
+  6. *Missed Feature*: Auto TP ke Ore / Tree secara instan tanpa harus menggunakan tween lambat.
+* **Investigasi Mendalam Struktur Dump `.rbxmx` Poly Loot**:
+  1. **Akar Masalah Target Mob Tertentu (Tiger, dll)**:
+     - Di dump Poly Loot, sistem hewan menggunakan modul `ReplicatedStorage.Animal_Engine.AnimalIdentity`. Identitas spesies monster tidak hanya tersimpan di `model.Name`, melainkan di atribut resmi `model:GetAttribute("Animal")`!
+     - Filter lama gagal karena `isHostileName` hanya memuat daftar statis terbatas yang belum menyertakan `tiger`, `lion`, `croc`, `shark`, `bat`, `rex`, `dino`, dll.
+     - Perbaikan: `isValidCombatTarget` diperbarui membaca atribut `Animal`, `Species`, `Display`, dan `Name` secara dua arah (bidirectional match), sehingga target spesifik apapun (seperti Tiger) langsung 100% terkunci dan diserang.
+  2. **Akar Masalah Auto Pick Up Drop (Loot Sweeper)**:
+     - Skrip lama mencari folder `Workspace.Animal_LocalDrops` yang tidak ada.
+     - Dari dump `Animal_Engine.DropIdentity`, folder resmi tempat seluruh item drop berada adalah `Workspace.WorldBits` (dengan atribut `wbId` dan `ProximityPrompt`).
+     - Perbaikan: Loot Sweeper kini terhubung langsung ke `Workspace.WorldBits`. Drop item di-vacuum ke posisi karakter, dan `ProximityPrompt` dipicu secara instan (`HoldDuration = 0`, `fireproximityprompt(prompt, 0)`).
+     - Ditambahkan **Pick Up Filter Rarity**: Membaca rarity dari `ItemRegistry[wbId].Rarity` dengan filter pilihan: `All Rarities`, `Common+`, `Rare+`, `Epic+`, `Legendary+`, `Godly+`, `Secret Only`.
+  3. **Akar Masalah Auto Chop Tree & Auto Mine Ore**:
+     - Skrip lama hanya menembakkan remote `WeaponAttack` ke arah depan secara buta tanpa menargetkan objek ataupun memegang alat kerja.
+     - Dari dump `TreeChop_Engine.Config`, pohon ditandai tag `ChoppableTree` dan memiliki part `Trunk`. Penebangan pohon hanya valid jika pemain memegang senjata jenis Kapak (`Axe`, `GreatAxe`, `TwinbladeAxe`).
+     - Dari dump `Workspace`, ore berada di folder `Workspace.Ore_Live` (`Gold Ore Node`, `Iron Ore Node`, dll) dengan atribut `Health` dan `_OreBroken`. Penambangan ore hanya valid jika pemain memegang Beliung (`Pickaxe`).
+     - Perbaikan:
+       * Dibuat helper `ensureEquippedAxe()` dan `ensureEquippedPickaxe()` yang otomatis mengequip kapak/beliung dari Backpack.
+       * Dibuat modul pelacak `getNearestTree()` dan `getNearestOre()`.
+       * Ditambahkan toggle **Auto TP to Tree (Instant CFrame)** dan **Auto TP to Ore (Instant CFrame)**: Karakter otomatis teleport instan tepat di depan batang pohon atau bongkahan ore (jarak 3.2 studs), menghadap objek, mengayunkan alat, dan menambang/menebang hingga hancur.
+  4. **Pilihan Pergerakan Auto Walk to Selected Mobs**:
+     - Pada kartu `Auto Farm Mobs`, ditambahkan dropdown pilihan `Farm Movement Mode`:
+       * `Behind Teleport` (Default: Langsung teleport instan ke belakang punggung target).
+       * `Auto Walk` (Menggunakan `Humanoid:MoveTo` untuk berjalan alami mendekati mob terpilih hingga jangkauan melee).
+       * `Hybrid` (Teleport jika jarak sangat jauh > 35 studs, lalu berjalan mendekat saat sudah dekat).
+* **Verifikasi, Kompilasi & Obfuskasi (Rule 5C)**:
+  - *Luau Parse Validation*: `tools/luau-compile.exe --only-parse CleanHub/PolyLoot_Clean.lua` 👉 **Exit Code 0 (Passed)**.
+  - *Brother Guard Multi-Layer Encryption*: `python obfuscate.py -i CleanHub/PolyLoot_Clean.lua -o PolyLoot_BROTHERHUB.lua` 👉 **Passed & Validated**.
+  - *Mirroring*: `Copy-Item PolyLoot_BROTHERHUB.lua ObfuscateHub/PolyLoot_BROTHERHUB.lua -Force`.
+  - *Git Push*: Commit `1fca57f` berhasil di-push ke branch `main`. Repositori publik 100% aman dan terenkripsi.
+* **Pengumuman Resmi Discord (Rule 12, 12B, 12C)**:
+  - Role Mentions Terverifikasi: `<@&1549290685645983764>` (`⚔️ Poly Loot`), `<@&1548208954163724299>` (`⚡ Script Update Ping`), `<@&1547960141263929366>` (`🎮 Brother Member`).
+  - Pesan Pengumuman: Terkirim ke `#📢・announcements` (Message ID: `1554071663635865691`).
+  - Pesan Changelog: Terkirim ke `#📜・changelogs` (Message ID: `1554071666030813230`).
+  - 100% bebas dari loadstring mentah dan Catbox, mengarahkan member langsung ke `#⚡・script-panel` (`1547960154228793424`).
+
+
 
