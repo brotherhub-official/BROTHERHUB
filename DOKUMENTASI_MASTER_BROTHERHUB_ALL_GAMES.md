@@ -333,9 +333,9 @@ Tabel di bawah adalah **Sumber Kebenaran Tunggal (Single Source of Truth)** untu
   loadstring(game:HttpGet("https://raw.githubusercontent.com/brotherhub-official/BROTHERHUB/main/BrotherHub.lua?t=" .. tostring(os.time())))()
   ```
 
-### 5.2 Aturan 5B: Game Terlarang Permanen (Steal An Egg & Steal A Tree)
+### 5.2 Aturan 5B: Game Terlarang Permanen (Steal An Egg, Steal A Tree & Steal Underwater Eggs)
 * Game `Steal An Egg` (lama) dan `Steal A Tree` telah **DIHAPUS TOTAL DAN DILARANG SELAMANYA**.
-* Total game resmi Brother Hub adalah **TEPAT 34 GAME** (Game #27 adalah `Steal An Anime Egg`, Game #32 adalah `Clone to Steal Eggs`, Game #33 adalah `Super Treehouse Tycoon 2`, Game #34 adalah `Steal Underwater Eggs`).
+* Total game resmi Brother Hub adalah **TEPAT 33 GAME** (Game #27 adalah Steal An Anime Egg, Game #32 adalah Clone to Steal Eggs, Game #33 adalah Super Treehouse Tycoon 2).
 
 ### 5.3 Aturan 5C: 100% Obfuscated Builds di GitHub (Anti-Pencurian Kode)
 * Folder `CleanHub/`, `Clean/`, dan berkas `*_Clean.lua` **100% LOKAL EXCLUSIVE** di PC pengguna dan terdaftar di `.gitignore`.
@@ -817,3 +817,18 @@ eonStroke(minCircle, 2)).
 
 
 
+
+
+---
+
+## 7.11 Penarikan Permanen Steal Underwater Eggs & Penegakan Keamanan 33 Game Resmi
+* **Tanggal Penarikan**: 28 September 2026.
+* **Insiden Pemicu**: Terjadi penangguhan akun pemain (*Error Code 267 - Permanently suspended for repeated cheating*) akibat deteksi server-side pada game Steal Underwater Eggs (96364555828035).
+* **Langkah Keamanan Founder & Brother Hub**:
+  1. *Pencabutan Seketika*: Seluruh modul dan skrip StealUnderwaterEggs_Clean.lua, StealUnderwaterEggs_BROTHERHUB.lua, dan folder dump Steal Underwater Eggs/ dihapus total dari komputer pengembangan dan repositori publik GitHub.
+  2. *Universal Loader Synchronization*: Router HUB_ROUTER di BrotherHub_Clean.lua dan build terenkripsi BrotherHub.lua diperbarui untuk menolak eksekusi pada Place ID 96364555828035 dan memperbarui counter menjadi **33 OFFICIAL GAMES**.
+  3. *Sterilisasi Discord Server*:
+     - Role Discord 🌊 Steal Underwater Eggs (ID: 1553381127119573065) dihapus permanen via Discord API.
+     - Pesan katalog resmi di #📱・supported-games (ID: 1547960239465177159) di-patch untuk menghapus entri Steal Underwater Eggs dan mengubah hitungan menjadi **33 Game Aktif**.
+     - Pengumuman darurat keselamatan akun disiarkan di #📢・announcements (Message ID: 1554077630368714803) dan #📜・changelogs (Message ID: 1554077633640144908).
+  4. *Status Ekosistem*: Jumlah total game resmi aktif Brother Hub adalah **TEPAT 33 GAME**. Game terlarang selamanya bertambah menjadi 3: Steal An Egg, Steal A Tree, dan Steal Underwater Eggs.
