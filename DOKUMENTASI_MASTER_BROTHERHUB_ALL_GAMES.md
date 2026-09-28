@@ -587,3 +587,40 @@ Setiap perubahan pada kode game mengikuti protokol ketat:
   6. *Auto Redeem Codes*: Memanggil `CodeEinloesen:InvokeServer(code)` untuk klaim promo code game otomatis.
   7. *1-Click Biome & Base Teleports*: Teleport instan ke 8 Biome (*Coral Reef, Kelp Forest, Claw Canyon, Ship Graveyard, Lava Fortress, Jungle Temple, Frost Abyss, Atlantis*) dan Markas Aquarium.
 
+---
+
+## 7.11 Save Instance Suite Overhaul: Auto-Split .RBXMX Suite Folder Engine (.rbxl Binary & .rbxlx XML)
+* **File Target**: `CleanHub/BrotherHub.txt` & `CleanHub/BrotherHub_original.lua` (Tab `💾 Save Instance`)
+* **Latar Belakang & Permintaan Founder**:
+  Founder menginginkan fitur Save Instance mutakhir yang secara otomatis mengekspor seluruh service dan kontainer game menjadi berkas model `.rbxmx` terpisah di dalam sebuah folder khusus bernama game dan PlaceId (`<Nama Game> [<PlaceId>]/`). File master game tetap ada di dalam folder tersebut, dan setiap berkas `.rbxmx` memiliki penamaan terpadu: `<Container> <Nama Game>.rbxmx`. Opsi lama di Card 6 (`💾 SAVE FULL` dan `🗺 WORKSPACE`) tetap 100% utuh tanpa diubah.
+* **Rincian Komponen 12 Berkas .rbxmx Yang Diekspor**:
+  1. `Workspace <Nama Game>.rbxmx`
+  2. `NilInstances <Nama Game>.rbxmx` (menangkap executor `getnilinstances()`)
+  3. `Players <Nama Game>.rbxmx`
+  4. `Backpack <Nama Game>.rbxmx` (menangkap Backpack LocalPlayer & alat pemain)
+  5. `Lighting <Nama Game>.rbxmx`
+  6. `ReplicatedFirst <Nama Game>.rbxmx`
+  7. `ReplicatedStorage <Nama Game>.rbxmx`
+  8. `StarterGui <Nama Game>.rbxmx`
+  9. `StarterPack <Nama Game>.rbxmx`
+  10. `StarterPlayer <Nama Game>.rbxmx`
+  11. `StarterCharacterScripts <Nama Game>.rbxmx`
+  12. `StarterPlayerScripts <Nama Game>.rbxmx`
+  * Serta 1 berkas Master Full Place di dalam folder yang sama: `<Nama Game>.rbxl` (untuk Card 7) ATAU `<Nama Game>.rbxlx` (untuk Card 8).
+* **Arsitektur Dual Suite Cards di Tab Save Instance**:
+  1. **Card 7: 📦 AUTO-SPLIT .RBXMX SUITE (.RBXL BINARY)** (Warna Aksen: `THEME.Cyan`):
+     - Menghasilkan 12 berkas `.rbxmx` + 1 berkas master `.rbxl` (Binary, format sangat cepat dan hemat ukuran memori).
+     - Tombol eksekusi: `[ 📦 AUTO DUMP ALL (.rbxl + 12x .rbxmx Folder) ]`
+  2. **Card 8: 📜 AUTO-SPLIT .RBXMX SUITE (.RBXLX XML) (BARU)** (Warna Aksen: `THEME.Orange`):
+     - Menghasilkan 12 berkas `.rbxmx` + 1 berkas master `.rbxlx` (XML, format teks transparan yang mudah dibaca/ditelusuri).
+     - Tombol eksekusi: `[ 📜 AUTO DUMP ALL (.rbxlx + 12x .rbxmx Folder) ]`
+     - Dilengkapi **Triple-Layer CharacterMesh Auto-Patcher** (Rule 8) yang otomatis membersihkan tag konflik `MeshContent` & `OverlayTextureContent` saat proses saving selesai, menjamin berkas `.rbxlx` 100% bebas dari error assertion saat dibuka di Roblox Studio.
+* **Resolusi Bug Teknis & Mojibake Encoding**:
+  1. *Fix Error BackgroundColor3 (Nil Assignment)*:
+     - Tombol `suiteBtn` sebelumnya merujuk ke `THEME.Accent` yang belum ada di tabel tema sehingga bernilai `nil`.
+     - *Solusi*: Menambahkan `Accent = Color3.fromRGB(50, 220, 255)` ke tabel `THEME` dan menyetel warna tombol secara eksplisit ke `THEME.Cyan` dan `THEME.Orange`.
+  2. *Pembersihan Mojibake Emoji Windows (âœ¨ dan âš”ï¸ )*:
+     - *Penyebab*: Nama game di Roblox sering memuat emoji multi-byte UTF-8 (seperti `[✨ENCHANTS] Poly Loot⚔️`). Saat diproses di Windows, API executor (`makefolder` / `saveinstance`) menggunakan ANSI (CP-1252), sehingga byte UTF-8 `✨` (`0xE2 0x9C 0xA8`) terbaca sebagai `âœ¨`, dan `⚔️` terbaca sebagai `âš”ï¸ `.
+     - *Solusi Permanen*: Fungsi `sanitizeName()` ditingkatkan dengan filter byte ASCII (`string.byte(str, i) >= 32 and string.byte(str, i) <= 126`), secara otomatis membersihkan seluruh emoji dan karakter non-ASCII sebelum nama folder dan file dibuat. Nama folder dan file dihasilkan 100% rapi dan steril: `[ENCHANTS] Poly Loot [124032631078772]`.
+
+
