@@ -736,3 +736,38 @@ eonStroke(minCircle, 2)).
   - Channel Changelog (`#📜・changelogs`): Pesan ID `1554052675488714766`.
   - 100% steril dari loadstring mentah dan Catbox, mengarahkan pemain ke `#⚡・script-panel` (`1547960154228793424`).
 
+---
+
+### 7.7 Pembaruan Mob Target Selector & Auto Farm Mobs Engine Poly Loot (Tanggapan Feedback Prone)
+* **Latar Belakang & Masukan Member**:
+  Member Discord `Prone` memberikan masukan penting: *"att nya gabisa select mobs nya ya cuman kill aura aja"*. Di mana pemain membutuhkan opsi untuk memilih tipe mob spesifik yang ingin diserang, memfilter jenis mob tertentu, serta automasi Auto Farm yang mengejar dan memburu mob terpilih secara otomatis di belakang punggungnya.
+* **Pembedahan Dump Hewan & Monster Poly Loot**:
+  - Ditemukan konfigurasi mob di `ReplicatedStorage.Animal_Engine.Config` / `AnimalNames()` yang mencakup lebih dari 60 jenis mob/monster: `Wolf`, `Bear`, `Polar Bear`, `Boar`, `Spider`, `Cobra`, `TripleCobra`, `Skeleton`, `Gargoyle`, `Knight`, `Gorilla`, `Bat`, `Crocodile`, `Shark`, `Lion`, `Tiger`, `Triceratops`, `Ankylosaurus`, `Velicoraptor`, `Spinosaurus`, `King Chicken`, `Redstone Rex`, `Warden Alder`, dan varian lainnya.
+  - Skrip dilengkapi `DEFAULT_MOBS` cadangan dan modul runtime scanner yang memindai mob hidup secara berkala di workspace.
+* **Fitur Baru & Rekayasa Arsitektur Tab ⚔️ Combat**:
+  1. **Scrollable Dropdown Modern (`makeDropdown`)**:
+     - Dilengkapi container `ScrollingFrame` berukuran adaptif (maksimal tinggi 160px) dengan scrollbar Gold 3px, mencegah elemen dropdown meluber atau merusak tata letak kartu pada resolusi layar mobile/PC.
+     - Single-Select: Pilihan `"All Mobs"` (default) atau target spesifik satu jenis mob tertentu.
+  2. **Multi-Select Mob Filter Checkbox (`makeMultiSelectDropdown`)**:
+     - Dilengkapi tombol praktis `"Select All"` dan `"Clear"`.
+     - Checkbox interaktif di setiap nama mob dengan counter status dinamis (misal: `3/60 Selected`).
+     - Toggle pendukung `Filter by Selected Mobs`: Membatasi target serangan hanya pada mob yang diberi tanda centang.
+  3. **Auto Farm Selected Mobs Engine (Otomasi Penuh Pemburu Mob)**:
+     - **Toggle Auto Farm Mobs**: Karakter otomatis memindai mob target di sekitar dalam radius yang dapat disesuaikan.
+     - **Farm Scan Radius Slider**: Jangkauan radar pemindaian dari 100 hingga 2000 studs.
+     - **Farm Stance Distance Slider**: Jarak melee presisi di belakang target (3–5 studs) dengan linear/angular velocity dinolkan (`Vector3.zero`) sesuai **Rule 11**.
+     - **Auto-Approach & Teleport Behind Target**: Memposisikan karakter tepat di belakang punggung mob target (`safePos = tgtPos - (look * dist) + Vector3.new(0, 0.6, 0)`).
+     - **Auto-Equip & Swing Damage**: Otomatis mengequip senjata terbaik di Backpack, memicu `tool:Activate()`, dan menembakkan remote `WeaponAttack` hingga mob terkalahkan.
+     - **Auto Vacuum Drops**: Setelah mob terbunuh, drop item otomatis disedot langsung ke inventory karakter.
+* **Verifikasi, Kompilasi & Obfuskasi (Rule 5C)**:
+  - *Luau Parse Validation*: `tools/luau-compile.exe --only-parse CleanHub/PolyLoot_Clean.lua` 👉 **Exit Code 0 (Passed)**.
+  - *Brother Guard Multi-Layer Encryption*: `python obfuscate.py -i CleanHub/PolyLoot_Clean.lua -o PolyLoot_BROTHERHUB.lua` 👉 **Passed & Validated**.
+  - *Mirroring*: `Copy-Item PolyLoot_BROTHERHUB.lua ObfuscateHub/PolyLoot_BROTHERHUB.lua -Force`.
+  - *Git Push*: Commit `9b7070e` berhasil di-push ke GitHub `origin/main` (Repositori publik 100% steril dari CleanHub/).
+* **Pengumuman Resmi Discord (Rule 12, 12B, 12C)**:
+  - Role Mentions Terverifikasi: `<@&1549290685645983764>` (`⚔️ Poly Loot`), `<@&1548208954163724299>` (`⚡ Script Update Ping`), `<@&1547960141263929366>` (`🎮 Brother Member`).
+  - Pesan Pengumuman: Terkirim ke `#📢・announcements` (Message ID: `1554057822872936482`).
+  - Pesan Changelog: Terkirim ke `#📜・changelogs` (Message ID: `1554057825641041991`).
+  - 100% bebas dari loadstring mentah dan Catbox, mengarahkan member langsung ke `#⚡・script-panel` (`1547960154228793424`).
+
+
