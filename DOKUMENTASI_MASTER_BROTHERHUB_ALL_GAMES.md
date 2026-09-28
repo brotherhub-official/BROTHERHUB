@@ -291,7 +291,19 @@ Daftar lengkap 67 peti dari `ReplicatedStorage.ProductCatalogConfig` & `EventPro
     adalah **100% PRODUK EKSKLUSIF EVENT** (`EventExclusive = true`, `NoCrate = true`).
   * Rarity tersebut diperoleh khusus dari peti event live map (Galaxy Crates, Fire & Ice Crates, Nature Crates, Sea Crates, Music Crates, Candy Crates) dan telah diintegrasikan ke Multi-Select Rarity dropdown Brother Hub.
 
+### 3.6 Pembaruan Unbox ASMR v2.5 (Selective ASMR Level Upgrade, Droplist Target & Cash-Safe Engine)
+* **Latar Belakang & Kebutuhan Pemain**:
+  * Pemain memasang berbagai macam mainan hasil buka peti di base/plot mereka (*Squishy Dumpling*, *Chroma Keyboard*, *Wax Soap*, *Fluffy Pancakes*, dll.) dengan tingkatan level dan biaya upgrade yang berbeda (`$11.1B`, `$34.2B`, `$48B`, `$60.2B`).
+  * Fitur lama menaikkan semua mainan secara massal, mengakibatkan pemborosan saldo Cash pada mainan yang tidak diinginkan. Pemain menginginkan fleksibilitas untuk memilih mainan mana yang ingin dinaikkan levelnya via dropdown, berapa level kenaikannya (+1, +2, +3, +4, +5, +6, +10, +25, +50, atau Max), serta proteksi bahwa proses tidak akan berjalan jika Cash tidak cukup.
+* **Solusi Arsitektur Brother Hub v2.5**:
+  1. *Dynamic Plot Scanner & Tagging (`getPlacedASMRToys`)*: Memindai seluruh model mainan aktif di plot base pemain, menghasilkan tag terstruktur lengkap dengan slot, nama resmi, level aktif, dan biaya: `[#1] Squishy Dumpling (Lvl 11 | $34.2B)`.
+  2. *Live Dropdown & Auto-Reselect*: Menyediakan dropdown pilihan `🌟 Semua Mainan di Base (All Placed)` dan mainan individual, tombol refresh real-time, serta sistem pelacakan indeks yang cerdas agar pilihan tidak hilang saat level berubah.
+  3. *Multi-Step & Max Upgrade Selector*: Pilihan kenaikan level bertingkat `+1 Level` s/d `+50 Level` dan `⚡ Max Level (Upgrade Maksimal Sesuai Cash)`, serta Slider Kustom (1 - 50) dengan input langsung.
+  4. *Pre-Flight Cash-Safe Engine*: Membaca saldo Cash pemain via `leaderstats.Cash`, atribut `Cash`, dan HUD, mem-parse teks denominasi biaya (`parseCurrency`), serta memvalidasi `if playerCash < cost then abort` sebelum setiap panggilan remote `RequestUpgrade:FireServer(model)`. Mencegah saldo minus, kegagalan eksekusi, atau error spam.
+  5. *Dual Execution Mode*: Tombol eksekusi manual seketika (`▲ Jalankan Upgrade Sekarang`) dan toggle latar belakang (`Auto Upgrade Level (Background Loop)`).
+
 ---
+
 
 # BAGIAN IV: MASTER ROSTER 33 GAME RESMI BROTHER HUB
 
