@@ -624,3 +624,76 @@ Setiap perubahan pada kode game mengikuti protokol ketat:
      - *Solusi Permanen*: Fungsi `sanitizeName()` ditingkatkan dengan filter byte ASCII (`string.byte(str, i) >= 32 and string.byte(str, i) <= 126`), secara otomatis membersihkan seluruh emoji dan karakter non-ASCII sebelum nama folder dan file dibuat. Nama folder dan file dihasilkan 100% rapi dan steril: `[ENCHANTS] Poly Loot [124032631078772]`.
 
 
+
+## 7.12 Poly Loot: Resolusi Tuntas Blank UI Mobile, Standardisasi Penuh Arsitektur 1:1 My Flower Shop & Integrasi Pembaruan Game [ENCHANTS]
+* **File Target**: CleanHub/PolyLoot_Clean.lua, PolyLoot_BROTHERHUB.lua, ObfuscateHub/PolyLoot_BROTHERHUB.lua
+* **Identitas Game**:
+  - Nama Resmi: **Poly Loot** (PlaceId: 124032631078772)
+  - Status: ✅ AKTIF
+  - Role Discord Resmi: ⚔️ Poly Loot (Role ID: 1549290685645983764)
+* **Latar Belakang Permintaan & Masalah**:
+  - Member Discord Prone melaporkan bug antarmuka di mana GUI script Poly Loot terbuka dengan header tetapi area badan (tab dan controls) di bawahnya blank hitam kosong pada perangkat mobile (Delta Executor).
+  - Founder menginstruksikan pemeriksaan dump save instances terbaru berlabel [ENCHANTS] Poly Loot (12 berkas .rbxmx hasil Card 8 XML suite).
+* **Investigasi Mendalam Akar Masalah (Root Cause)**:
+  1. *AutomaticSize Layout Collapse pada Mobile*:
+     - Skrip lama mengonfigurasi tombol tab dengan Size = UDim2.new(0, 0, 0, 28) dan AutomaticSize = Enum.AutomaticSize.X di dalam ScrollingFrame ber-AutomaticCanvasSize = Enum.AutomaticSize.X.
+     - Pada mobile executors (Delta, Codex, Vega X), engine kalkulasi font text bounds sering menghasilkan nilai 0 atau tertunda saat frame dimunculkan, sehingga seluruh tombol tab menyusut ke lebar 0 (hilang dari pandangan).
+  2. *Absennya Card Holder Pattern (Rule 10)*:
+     - Elemen toggle, slider, dan section ditempelkan langsung pada ScrollingFrame tanpa pembungkus kartu ber-AutomaticSize = Y. Hierarki UIListLayout mengalami kegagalan perhitungan tinggi kanvas sehingga seluruh isi halaman tidak dapat di-render.
+  3. *Main-Thread Require Halt*:
+     - Logika inisialisasi tombol tab diletakkan di bagian paling akhir skrip (baris 1000+) setelah pemanggilan modul eksternal seperti CutsceneManager dan BowClient. Saat game di-update developer dan struktur internal berubah, require yang gagal menghentikan main thread sebelum tab sempat dibangun.
+* **Rincian Implementasi Standardisasi 1:1 My Flower Shop (Rule 10)**:
+  1. **Top Header Bar 52px**:
+     - Gradien ungu-ke-biru mulus (THEME.Purple ke THEME.Blue) dengan HeaderSquareFix (14px) di bagian dasar header agar menyatu rapi dengan badan frame.
+     - Judul di tengah (Centered Alignment), font Enum.Font.GothamBlack, ukuran 17: "👑 BROTHER HUB — Poly Loot".
+     - Tombol Minimize ('–'): Ukuran 32x32, latar Kuning Terang (THEME.Yellow), teks hitam pekat, font GothamBlack.
+     - Tombol Tutup ('X'): Ukuran 32x32, latar Merah Tegas (THEME.Off), teks putih, font GothamBlack.
+  2. **Floating MinCircle 80x80**:
+     - Tombol lingkaran floating 80x80 berlogo Mahkota Emas 👑 dan teks bold BH, border **360° Rotating Neon Stroke RGB** (
+eonStroke(minCircle, 2)).
+     - Dapat digeser/di-drag bebas ke mana saja di layar (mouse & touch) dan diklik untuk me-restore frame utama dengan animasi bounce.
+  3. **Hukum Parenting UIScale**:
+     - mainScale wajib di-parent ke mainFrame (Instance.new("UIScale", mainFrame)), BUKAN ke screenGui! Ini menjamin tombol MinCircle tetap tampil 100% saat frame utama di-minimize (Scale = 0).
+  4. **Close Modal 360x200**:
+     - Dialog konfirmasi penutupan modern 360x200 dengan border neon RGB dan 2 tombol: "Yes" (Hijau) dan "Cancel" (Merah).
+     - Menekan "Yes" menjalankan sterilisasi total: memutus seluruh connection (Disconnect()), membatalkan thread task (	ask.cancel), menghapus highlight ESP, mereset physics karakter, dan menghancurkan GUI (Destroy()).
+  5. **Horizontal Scrolling TabBar Anti-Collapse**:
+     - Navigasi tab geser sumbu-X (ScrollingDirection = X, AutomaticCanvasSize = X) dengan scrollbar Gold 3px.
+     - Setiap tombol tab memiliki dimensi tetap (UDim2.new(0, 115, 1, -4)), aktif berwarna Gold (THEME.Title) teks hitam, nonaktif berwarna Slot (THEME.Slot) teks putih/abu-abu.
+  6. **Card Holder Pattern**:
+     - Seluruh tab page dibangun menggunakan fungsi baku makeCard(titleText, accent) yang mengembalikan wadah holder Frame (Size = UDim2.new(1, -28, 0, 0), AutomaticSize = Enum.AutomaticSize.Y) dengan padding 8px dan UIListLayout berurut, menjamin kanvas tidak pernah runtuh ke tinggi 0.
+  7. **Full-Row Clickable Toggles & Direct Input Number Slider**:
+     - Seluruh baris toggle (100% area klik) dapat ditekan untuk ON/OFF.
+     - Slider dilengkapi bar visual dan kotak input angka langsung yang dapat diketik secara presisi oleh user.
+* **Integrasi Pembaruan Game [ENCHANTS]**:
+  - Ditemukan penambahan modul baru Enchant_Engine di ReplicatedStorage hasil inspeksi berkas dump ReplicatedStorage [ENCHANTS] Poly Loot.rbxmx.
+  - **Tab Baru ✨ Enchants**:
+    - Card Otomasi Stasiun Enchantment.
+    - Tombol pemicu otomatis ProximityPrompt stasiun enchant di area desa jungle.
+    - Tombol Quick Enchant yang mengirim sinyal remote Enchant_Engine.Remotes.EnchantRequest untuk memperkuat senjata yang sedang dipegang.
+  - Optimalisasi fitur lainnya:
+    - *⚔️ Combat*: M1 Rapid Kill Aura dengan combo looping 1-4 dan Safe Stance (Above, Behind, Orbit) anti-jitter.
+    - *🏹 Bow & Skills*: Rapid Bow Auto-Fire machine gun tanpa jeda.
+    - *👑 Bosses*: Warden Alder Annihilator (melayang 16 studs di atas bos), Auto Skip Cutscenes kamera bos, dan teleport arena.
+    - *📦 Loot & Farm*: Instant Loot Sweeper (vacuum drop ke tas pemain) dan Auto Chop Trees & Mine Ores.
+    - *👁️ Visuals*: ESP Monster/Hewan, ESP Bos Warden Alder, dan ESP Dropped Items/Loot.
+    - *🏃 Movement*: WalkSpeed Boost, JumpPower Boost, Penetration Noclip, Infinite Jump, Fullbright (Night Vision), dan 24/7 Anti-AFK.
+    - *🌐 Teleport*: Hub teleportasi Jungle Spawn, Arena Warden Alder, Merchant & Shop, dan Deep Forest.
+    - *⚙️ Settings*: Profil Founder, Salin Discord Link, Tombol Donasi Saweria & SociaBuzz, Rejoin Server, Server Hop, dan Unload.
+* **Verifikasi, Kompilasi & Obfuskasi (Rule 5C)**:
+  1. *Luau Parse Validation*:
+     	ools/luau-compile.exe --only-parse CleanHub/PolyLoot_Clean.lua 👉 **Exit Code 0 (Passed)**.
+  2. *Brother Guard Multi-Layer Encryption*:
+     python obfuscate.py -i CleanHub/PolyLoot_Clean.lua -o PolyLoot_BROTHERHUB.lua 👉 **Sukses & Validated**.
+  3. *Mirroring*:
+     Copy-Item PolyLoot_BROTHERHUB.lua ObfuscateHub/PolyLoot_BROTHERHUB.lua -Force.
+  4. *Git Commit & Push*:
+     Commit cef5f0f (ix(poly-loot): resolve blank UI with 1:1 Flower Shop architecture, holder pattern & add Enchants update support) berhasil di-push ke GitHub origin/main. Repositori publik 100% steril dari kode mentah CleanHub/.
+* **Pengumuman Resmi Discord (Rule 12, 12B, 12C)**:
+  - Menggunakan modul pengirim resmi 	ools/discord_announcer.py dengan live API query verifikasi role:
+    - Game Role Ping: <@&1549290685645983764> (⚔️ Poly Loot)
+    - Update Ping: <@&1548208954163724299> (⚡ Script Update Ping)
+    - Member Ping: <@&1547960141263929366> (🎮 Brother Member)
+  - Pesan Pengumuman terkirim ke #📢・announcements (Message ID: 1554046914196934669).
+  - Pesan Changelog terkirim ke #📜・changelogs (Message ID: 1554046917845975051).
+  - 100% steril dari box kode loadstring dan Catbox, mengarahkan member langsung ke #⚡・script-panel (1547960154228793424).
