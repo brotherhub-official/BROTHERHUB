@@ -853,3 +853,61 @@ eonStroke(minCircle, 2)).
      - Pesan katalog resmi di #📱・supported-games (ID: 1547960239465177159) di-patch untuk menghapus entri Steal Underwater Eggs dan mengubah hitungan menjadi **33 Game Aktif**.
      - Pengumuman darurat keselamatan akun disiarkan di #📢・announcements (Message ID: 1554077630368714803) dan #📜・changelogs (Message ID: 1554077633640144908).
   4. *Status Ekosistem*: Jumlah total game resmi aktif Brother Hub adalah **TEPAT 33 GAME**. Game terlarang selamanya bertambah menjadi 3: Steal An Egg, Steal A Tree, dan Steal Underwater Eggs.
+
+
+---
+
+## 7.12 Rilis Akbar Unbox ASMR v2.0 & Integrasi Sistem Tiket Discord
+* **Tanggal Pembaruan**: 28 September 2026.
+* **Game Target**: Unbox ASMR (Place ID: `112233638491976`).
+* **Kebutuhan & Feedback Komunitas**:
+  1. *Limitasi Zoom Kamera*: Pemain merasa kamera tidak bisa di-zoom out jauh untuk melihat pabrik, conveyor, dan peti event yang tersebar di map.
+  2. *Upgrade Level Stasiun/Base*: Pemain meminta otomatisasi untuk tombol level up kuning mengambang di meja/stasiun mainan ASMR (`▲ $11.1B Lvl 32 > Lvl 33`, `▲ $11.6B Lvl 84 > Lvl 85`, `▲ $34.2B Lvl 11 > Lvl 12`).
+  3. *Verifikasi Event Rarities*: Pertanyaan apakah kategori pada antarmuka Index (`Cosmic`, `Fire & Ice`, `Nature`, `Music`, `Sea`) termasuk kategori event.
+  4. *Kemudahan Penutupan Tiket Discord*: Penambahan kata perintah chat `closeticket` / `closetiket` tanpa harus selalu mengklik tombol UI.
+  5. *Investigasi Menu Slash Command Discord*: Menjelaskan akar masalah munculnya menu perintah slash di profil bot `Brother Music 10`.
+
+* **Pembedahan Teknis & Solusi Terapan**:
+  1. **Infinite Camera Zoom Unlocker**:
+     - *Akar Masalah*: Client Roblox atau skrip game mengunci properti `LocalPlayer.CameraMaxZoomDistance` di jarak terbatas (128 studs atau kurang).
+     - *Solusi*: Diimplementasikan modul `enforceMaxZoom()` yang memaksa `LocalPlayer.CameraMaxZoomDistance = math.max(LocalPlayer.CameraMaxZoomDistance, config.maxZoomDistance or 1000)` dan `LocalPlayer.CameraMinZoomDistance = 0.5`.
+     - *Anti-Override Guard*: Memasang connection listener pada `LocalPlayer:GetPropertyChangedSignal("CameraMaxZoomDistance")` sehingga jika game mencoba mengembalikan zoom ke 128 studs, skrip langsung memulihkannya kembali secara instan.
+     - *UI Controls*: Toggle `🔓 Buka Batas Kamera (Infinite Zoom Out)` di Tab Karakter (Default: ON) dan Slider `Jarak Maksimal Zoom Kamera` (128 s/d 3,000 studs).
+
+  2. **Auto Upgrade Level Mainan ASMR di Base/Plot (Foto 1 & 2)**:
+     - *Akar Masalah*: Tombol kuning `▲ $11.1B Lvl 32 > Lvl 33` berada di atas model mainan ASMR yang telah diletakkan di base.
+     - *Decompile Client `wireUpgradeButton`*: Tombol tersebut mendeteksi klik pemain dan mengeksekusi `ReplicatedStorage.ASMRRewardRemotes.RequestUpgrade:FireServer(placedASMRModel)`.
+     - *Solusi*: Dibuat fungsi `upgradeAllPlacedASMR()` yang memindai seluruh model di `Workspace` dengan filter kepemilikan `desc:GetAttribute("OwnerUserId") == LocalPlayer.UserId` dan validasi `desc:GetAttribute("ASMRTemplateName")` atau tombol anak `Upgrade`. Skrip menembakkan remote `RequestUpgrade` langsung ke server untuk semua mainan ASMR di plot pemain.
+     - *UI Controls*: Toggle `Auto Upgrade Level Mainan ASMR (Tombol Lvl Kuning)` di Tab Pabrik (berjalan otomatis di background) dan tombol `▲ Upgrade Semua Level Mainan ASMR Sekali Klik` untuk eksekusi manual seketika.
+
+  3. **Konfirmasi & Integrasi Resmi Event Rarities (Index 54/130)**:
+     - *Pembedahan `ProductCatalogConfig` v9*:
+       * `Cosmic`: Constructor `cosmicEventProduct()` (`EventKind = "Cosmic"`, `Rarity = "Cosmic"`, `EventExclusive = true`, `NoCrate = true`).
+       * `Fire & Ice`: Constructor `fireIceEventProduct()` (`EventKind = "FireIce"`, `Rarity = "Fire & Ice"`, `EventExclusive = true`, `NoCrate = true`).
+       * `Nature`: Constructor `natureEventProduct()` (`EventKind = "Nature"`, `Rarity = "Nature"`, `EventExclusive = true`, `NoCrate = true`).
+       * `Music`: Constructor `musicEventProduct()` (`EventKind = "Music"`, `Rarity = "Music"`, `EventExclusive = true`, `NoCrate = true`).
+       * `Sea`: Constructor `seaEventProduct()` (`EventKind = "Sea"`, `Rarity = "Sea"`, `EventExclusive = true`, `NoCrate = true`).
+       * `Candy` & `Honey`: Constructor event masing-masing.
+     - *Kesimpulan*: Seluruhnya adalah **100% PRODUK EKSKLUSIF EVENT** yang didapatkan dari Peti Event Live Map (bukan dari pembelian conveyor biasa).
+     - *Integrasi UI*: Seluruh kelangkaan event dimasukkan ke dalam `RARITIES_LIST` di dropdown Multi-Select Rarity Brother Hub (`Cosmic (Event)`, `Fire & Ice (Event)`, dll).
+
+  4. **Perintah Chat Penutupan Tiket Discord (`closeticket`)**:
+     - *Berkas Dimodifikasi*: `tools/brother_bot.py` dan `tools/ticket_system.py`.
+     - *Mekanisme*: Menambahkan alias `closeticket`, `closetiket`, `close-ticket` pada `@bot.command` serta menambahkan listener `on_message` yang mendeteksi pesan `closeticket` / `closetiket` secara langsung di dalam channel tiket.
+     - *Embed Update*: Pesan panduan pembuatan tiket diperbarui: *"Gunakan tombol di bawah atau ketik `closeticket` untuk menutup tiket"*.
+
+  5. **Analisis Menu Slash Command Discord (Brother Music 10 vs Brother Hub)**:
+     - *Penyebab Muncul di Brother Music 10*: Di Discord API, Slash Command terikat pada Application ID. Pendaftaran command moderasi sebelumnya menggunakan Client ID milik bot `Brother Music 10`.
+     - *Status Operasional*: Perintah moderasi di bot musik tidak beroperasi optimal karena bot musik dikhususkan untuk audio voice channel.
+     - *Solusi Permanen*: Seluruh slash command moderasi & tiket dapat didaftarkan secara resmi ke Application ID Bot Utama Brother Hub (`1547955104051765258`), dan dihapus dari bot musik.
+
+* **Build Pipeline & Verifikasi (Rule 5C)**:
+  - *Luau Parse Validation*: `tools/luau-compile.exe --only-parse CleanHub/UnboxASMR_Clean.lua` 👉 **Passed (Exit Code 0)**.
+  - *Brother Guard Encryption*: `python obfuscate.py -i CleanHub/UnboxASMR_Clean.lua -o UnboxASMR_BROTHERHUB.lua` 👉 **Passed**.
+  - *Mirroring*: Disalin ke `ObfuscateHub/UnboxASMR_BROTHERHUB.lua`.
+  - *Git Push*: Commit [`be402fb`](https://github.com/brotherhub-official/BROTHERHUB/commit/be402fb) berhasil di-push ke branch `origin/main`.
+* **Pengumuman Resmi Discord (Rule 12, 12B, 12C)**:
+  - Role Mentions Terverifikasi: `<@&1552346213397831732>` (`📦 Unbox ASMR`), `<@&1548208954163724299>` (`⚡ Script Update Ping`), `<@&1547960141263929366>` (`🎮 Brother Member`).
+  - Pengumuman: `#📢・announcements` (Message ID: `1554105652727648257`).
+  - Changelog: `#📜・changelogs` (Message ID: `1554105656624283714`).
+  - Mengarahkan member mengambil script resmi di `#⚡・script-panel` (`1547960154228793424`).
