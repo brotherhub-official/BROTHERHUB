@@ -1339,3 +1339,70 @@ Game tidak menggunakan RemoteEvent konvensional melainkan ByteNet Packet Objects
   * `#📢・announcements`: Pesan ID `1554512005040443535`
   * `#📝・changelogs`: Pesan ID `1554512091312947201`
   * Role Pings: `<@&1548208954163724299>` (Script Update Ping), `<@&1554442318101225472>` (Blue Lock Farm), `<@&1554442371947708579>` (Race Horses).
+
+
+---
+
+### 11D. 🛑 HUKUM MUTLAK ANTI-UNKNOWN ID (VERIFIKASI WAJIB ROLE & CHANNEL DISCORD SEBELUM POSTING)
+- **FAKTA & KESALAHAN FATAL (POST-MORTEM @unknown-role & #unknown)**:
+  * **Insiden**: Pada postingan pengumuman update di `#📢・announcements` dan `#📝・changelogs`, muncul tampilan cacat:
+    - `@unknown-role` (karena Role ID Race Horses keliru ditulis `1554442371947708579` alih-alih `1554500930651693158`).
+    - `#unknown` (karena Channel ID script-panel keliru ditulis `1547960176437628998` alih-alih `1547960154228793424`).
+  * **Akar Masalah**: ID di-hardcode berdasarkan asumsi/ingatan tanpa melakukan verifikasi query langsung ke Discord REST API (`/guilds/{id}/roles` dan `/guilds/{id}/channels`).
+- **HUKUM BAKU ANTI-UNKNOWN (DILARANG MENEBAK ID)**:
+  1. **DILARANG MENEBAK SNOWFLAKE ID**: Setiap kali menyebut mention Role (`<@&ID>`) atau Channel (`<#ID>`) di Discord API, **WAJIB 100% MENCOCOKKAN KE TABEL RESMI TERVERIFIKASI DI BAWAH INI**.
+  2. **GUILD ID RESMI BROTHER HUB**: `1547929421284114453` (`BROTHER HUB | OFFICIAL`).
+  3. **SALURAN RESMI LOADSTRING PANEL**: Channel `#⚡・script-panel` adalah **`1547960154228793424`** (Format Mention: `<#1547960154228793424>`). DILARANG menggunakan ID lain!
+  4. **DAFTAR SNOWFLAKE ID 36 GAME RESMI (TERVERIFIKASI DISCORD API)**:
+     - 1. `Deep Fishing`: `<@&1551587483320459344>`
+     - 2. `Pets Universe`: `<@&1551531361582714892>`
+     - 3. `Dungeons Tower`: `<@&1551509714968256552>`
+     - 4. `Steal A Seed`: `<@&1550416813861642300>`
+     - 5. `Fish On`: `<@&1550403712017633280>`
+     - 6. `Mine It`: `<@&1550349404198932501>`
+     - 7. `Pack A Brainrot Card`: `<@&1550180103089295401>`
+     - 8. `Loot Up`: `<@&1550176741702770799>`
+     - 9. `Clicker Simulator`: `<@&1550133314613026856>`
+     - 10. `Shogun's Reign`: `<@&1550077004747899013>`
+     - 11. `Heavyweight Fishing`: `<@&1550069397664571503>`
+     - 12. `Pop Bubbles`: `<@&1550065206145581106>`
+     - 13. `Catch Dragons To Defend`: `<@&1550061654383792250>`
+     - 14. `Farm Industry`: `<@&1549290683628527618>`
+     - 15. `Poly Loot`: `<@&1549290685645983764>`
+     - 16. `Storage Hunters`: `<@&1549290694143778886>`
+     - 17. `Defeat Anime RNG`: `<@&1549290698464034816>`
+     - 18. `Drill to Earth's Core`: `<@&1549290696320491561>`
+     - 19. `Idle Mafia Game`: `<@&1549290691992223844>`
+     - 20. `Dungeon Lootr`: `<@&1549290687382552669>`
+     - 21. `Dungeon Quest Reborn`: `<@&1549290689639088150>`
+     - 22. `+1 Dig Into Secrets!`: `<@&1548208960258052236>`
+     - 23. `My Flower Shop`: `<@&1548208958102048840>`
+     - 24. `Sell Ores`: `<@&1548208962170785852>`
+     - 25. `Fish an Anime RNG`: `<@&1548208963819012189>`
+     - 26. `The Mimic`: `<@&1548208966511763506>`
+     - 27. `Steal An Anime Egg`: `<@&1552346205483307223>`
+     - 28. `Mrbeast Island Escape`: `<@&1552346208037642371>`
+     - 29. `Steal From The Rich`: `<@&1552346210969587824>`
+     - 30. `Unbox ASMR`: `<@&1552346213397831732>`
+     - 31. `Mine Antarctica`: `<@&1552346215469813895>`
+     - 32. `Clone to Steal Eggs`: `<@&1553381123118211122>`
+     - 33. `Super Treehouse Tycoon 2`: `<@&1553381125244846180>`
+     - 34. `Blue Lock Farm`: `<@&1554442318101225472>`
+     - 35. `Pull A Sword`: `<@&1554481560252850317>`
+     - 36. `Race Horses`: `<@&1554500930651693158>` *(PERHATIAN: BUKAN 1554442371947708579!)*
+  5. **ROLE NOTIFIKASI UMUM**:
+     - `⚡ Script Update Ping`: `<@&1548208954163724299>`
+     - `📢 Announcement Ping`: `<@&1548208952267903016>`
+     - `🎁 Giveaway Ping`: `<@&1548208956243972228>`
+     - `💻 PC Player`: `<@&1548208968017518622>`
+     - `📱 Mobile Player`: `<@&1548208969384988774>`
+     - `🎰 Casino Player`: `<@&1550710101898166283>`
+  6. **CHANNEL UTAMA DISCORD**:
+     - `#📢・announcements`: `<#1547960148599775262>`
+     - `#📝・changelogs`: `<#1547960156417949726>`
+     - `#⚡・script-panel`: `<#1547960154228793424>`
+     - `#📱・supported-games`: `<#1547960163489546291>`
+     - `#🎭・roles`: `<#1547960169206644838>`
+     - `#🎮・new-games`: `<#1547960158456643598>`
+     - `#📖・game-features`: `<#1548053432089190442>`
+     - `#📜・rules`: `<#1547960146423058493>`
