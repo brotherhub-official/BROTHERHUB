@@ -993,6 +993,12 @@ eonStroke(minCircle, 2)).
 * **Official Discord Role**: `⚽ Blue Lock Farm` (ID: `1554442318101225472`)
 * **Arsitektur GUI**: 1:1 My Flower Shop Exact Standard (640 x 420 base) dengan Bottom-Right Resizable Grip `◢`, Horizontal Scrolling TabBar X, RGB 360° Neon Stroke (`neonStroke`), Floating 80x80 MinCircle (`👑 BH`), dan 360x200 CloseModal.
 
+
+### 3.6 Catatan Khusus Hotfix v1.0.1 (Anti-Cyclic Dependency & Mobile Scaling)
+* **Pelajaran Penting Arsitektur UI**: DILARANG KERAS menggunakan `Scale > 0` pada sumbu Y untuk child instance di dalam frame yang memiliki `AutomaticSize = Enum.AutomaticSize.Y`.
+* **Standar Layout Baku**: Seluruh komponen otomasi (`addToggle`, `addSlider`, `addMultiSelectDropdown`, `addButton`) wajib diparentkan langsung ke `ScrollingFrame` halaman (`page`), bukan dibungkus dalam nested frame `AutomaticSize`.
+* **Mobile Scaler**: Wajib menyertakan `guiScale` pada `ScreenGui` (clamped 0.55 – 1.0) untuk mendeteksi layar HP/mobile agar frame utama pas di segala resolusi.
+
 ### 3.5 Remote Server & Services Analysis (Dari SaveInstances Dump)
 Seluruh remote game berlokasi di `ReplicatedStorage.Remotes`:
 1. **Conveyor & Rolling Remotes**:
