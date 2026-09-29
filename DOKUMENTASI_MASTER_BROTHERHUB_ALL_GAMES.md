@@ -1,4 +1,4 @@
-# 👑 BROTHER HUB — ENSIKLOPEDIA & DOKUMENTASI TEKNIS LENGKAP MASTER ECOSYSTEM (36 GAMES)
+# 👑 BROTHER HUB — ENSIKLOPEDIA & DOKUMENTASI TEKNIS LENGKAP MASTER ECOSYSTEM (37 GAMES)
 
 Dokumen ini adalah **catatan teknis master 100% lengkap dan menyeluruh** untuk seluruh ekosistem **Brother Hub**. Dokumen ini mencatat setiap data, hasil dump saveinstances, arsitektur skrip, mekanisme remote server, formula kecepatan, ID role Discord, peraturan Founder, hingga konfigurasi internal untuk semua game yang didukung.
 
@@ -1390,6 +1390,7 @@ Game tidak menggunakan RemoteEvent konvensional melainkan ByteNet Packet Objects
      - 34. `Blue Lock Farm`: `<@&1554442318101225472>`
      - 35. `Pull A Sword`: `<@&1554481560252850317>`
      - 36. `Race Horses`: `<@&1554500930651693158>` *(PERHATIAN: BUKAN 1554442371947708579!)*
+     - 37. `Sword Hunter`: *(Role Baru: `⚔️ Sword Hunter`)*
   5. **ROLE NOTIFIKASI UMUM**:
      - `⚡ Script Update Ping`: `<@&1548208954163724299>`
      - `📢 Announcement Ping`: `<@&1548208952267903016>`
@@ -1406,3 +1407,47 @@ Game tidak menggunakan RemoteEvent konvensional melainkan ByteNet Packet Objects
      - `#🎮・new-games`: `<#1547960158456643598>`
      - `#📖・game-features`: `<#1548053432089190442>`
      - `#📜・rules`: `<#1547960146423058493>`
+
+---
+
+# BAGIAN VII: DEEP DIVE TEKNIS SWORD HUNTER (GAME #37)
+
+### 7.1 Metadata & Place Information
+* **Game Title**: Sword Hunter
+* **Roblox URL**: `https://www.roblox.com/games/124641526243488/Sword-Hunter`
+* **Place ID**: `124641526243488`
+* **Framework Engine**: Unified `MessageBus` Event Architecture (`ReplicatedStorage.Remotes.MessageBus`)
+* **Standard Visual**: 100% 1:1 My Flower Shop Architecture with Bottom-Right Corner Resize Grip (`ResizeGrip`), Floating 80x80 `MinCircle` (RGB Neon 360°), and Modal Close Confirmation.
+
+### 7.2 Remote & Network Architecture
+* **Single Unified Remote**: `ReplicatedStorage.Remotes.MessageBus` (RemoteEvent)
+* **Client Sender**: `MessageBus:FireServer(messageName, payload)` atau `_G.ClientNet.send(messageName, payload)`
+* **Combat & Attacks**:
+  * `BladePlayerAttack`: Serangan instan multi-target `{ monsters = { uid1, uid2, ... }, attackIndex = 1 }`
+  * `BladeAutoAttack_SetEnabled`: Toggle bawaan game `{ enabled = bool }`
+  * `PlayerSkill_CastRequest`: Cast skill equipped slot 1, 2, atau 3 `{ slot = number }`
+* **Sword Progression & Merging**:
+  * `BladeBuyWeapon_Request`: Beli pedang `{ offerKey = "BuyWeapon1" (5, 10, 1000, 10000, 100000), placeIndex = myPlaceIndex }`
+  * `BladeMergeSword_Request`: Merge pedang di base `{ placeIndex = myPlaceIndex }`
+  * `BladeMergeSword_CinematicDone`: Skip animasi merger `{}` untuk merger kilat tanpa jeda
+  * `BladeBuyTier_Upgrade`: Upgrade tier pedang yang bisa dibeli `{}`
+  * `EquipSword` & `EquipSwordSkin`: Pasang pedang / skin `{ swordId = id }`
+* **Smelter & Base Upgrades**:
+  * `BladeSmelter_Transfer`: Transfer gold ke smelter `{ placeIndex = myPlaceIndex }`
+  * `BladeSmelter_Upgrade`: Upgrade level smelter `{ placeIndex = myPlaceIndex }`
+  * `BladeSmelter_Extract`: Ambil uang / cash dari smelter `{ placeIndex = myPlaceIndex }`
+  * `CoinUpgrade_Request`: Upgrade stat `{ upgradeType = "Cash" | "LootStorage" | "WalkSpeed" }`
+  * `BladeMonsterCap_Upgrade` & `BladeMonsterLevelRange_Upgrade`: Upgrade kapasitas monster `{}`
+* **Drops & Chests**:
+  * `BladeDrop_Pickup`: Ambil drop `{ dropId1, dropId2, ... }`
+  * `BladeWeaponChest_Open`: Buka peti senjata `{}`
+  * `AutoCollectGold_Toggle` & `AutoCollectMoney_Toggle`: Auto collect remote `{ enabled = true }`
+* **Pets & Mounts**:
+  * `EquipBestPets`: `{}`
+  * `HatchEgg`: `{ hatchIdx = 1, eggId = name, count = 1 or 3 }`
+  * `PetGrade_Roll`: Roll grade pet `{ petUId = uid, payType = "Coin" }`
+  * `ToggleMountRide`: Tunggangi mount `{}`
+* **Exchange Shop (100% Free)**:
+  * `ExchangeShop_Buy`: Beli item exchange shop `{ itemKey = key }`
+* **Free Gifts & Rewards**:
+  * `AdminFreeGift_Claim`, `AdminAbuse_Claim`, `OnlineReward_Claim`, `SignBonus_Claim`, `OfflineReward_Claim`, `GroupReward_Claim`, `Discord_Claim`, `Raid_ClaimDailyEntryTokens`, `LeavePanel_ClaimFirst`, `DoSpin`, `RedeemCode`.

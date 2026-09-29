@@ -1,6 +1,6 @@
 # VERIFIED ROLES & CHANNELS MAPPING TABLE
 
-## 1. 36 SUPPORTED GAMES ROLES
+## 1. 37 SUPPORTED GAMES ROLES
 
 - **Deep Fishing**: `1551587483320459344` (Role Name: `🌊 Deep Fishing`)
 - **Pets Universe**: `1551531361582714892` (Role Name: `🐾 Pets Universe`)
@@ -38,6 +38,7 @@
 - **Blue Lock Farm**: `1554442318101225472` (Role Name: `⚽ Blue Lock Farm`)
 - **Pull A Sword**: `1554481560252850317` (Role Name: `🗡️ Pull A Sword`)
 - **Race Horses**: `1554500930651693158` (Role Name: `🏇 Race Horses`)
+- **Sword Hunter**: *(Role Baru: `⚔️ Sword Hunter`)*
 
 ## 2. NOTIFICATION & SYSTEM ROLES
 
