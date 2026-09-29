@@ -1,4 +1,4 @@
-# 👑 BROTHER HUB — ENSIKLOPEDIA & DOKUMENTASI TEKNIS LENGKAP MASTER ECOSYSTEM (31 GAMES)
+# 👑 BROTHER HUB — ENSIKLOPEDIA & DOKUMENTASI TEKNIS LENGKAP MASTER ECOSYSTEM (34 GAMES)
 
 Dokumen ini adalah **catatan teknis master 100% lengkap dan menyeluruh** untuk seluruh ekosistem **Brother Hub**. Dokumen ini mencatat setiap data, hasil dump saveinstances, arsitektur skrip, mekanisme remote server, formula kecepatan, ID role Discord, peraturan Founder, hingga konfigurasi internal untuk semua game yang didukung.
 
@@ -362,7 +362,7 @@ Daftar lengkap 67 peti dari `ReplicatedStorage.ProductCatalogConfig` & `EventPro
 ---
 
 
-# BAGIAN IV: MASTER ROSTER 33 GAME RESMI BROTHER HUB
+# BAGIAN IV: MASTER ROSTER 34 GAME RESMI BROTHER HUB
 
 Tabel di bawah adalah **Sumber Kebenaran Tunggal (Single Source of Truth)** untuk 33 game resmi yang didukung penuh oleh Brother Hub:
 
@@ -401,6 +401,7 @@ Tabel di bawah adalah **Sumber Kebenaran Tunggal (Single Source of Truth)** untu
 | 31 | **Mine Antarctica** | `MineAntarctica_Clean.lua` | `MineAntarctica_BROTHERHUB.lua` | ❄️ Mine Antarctica | `1552346215469813895` | ✅ AKTIF |
 | 32 | **Clone to Steal Eggs** | `CloneToStealEggs_Clean.lua` | `CloneToStealEggs_BROTHERHUB.lua` | 🥚 Clone to Steal Eggs | `1553381123118211122` | ✅ AKTIF |
 | 33 | **Super Treehouse Tycoon 2** | `SuperTreehouseTycoon2_Clean.lua` | `SuperTreehouseTycoon2_BROTHERHUB.lua` | 🌳 Super Treehouse Tycoon 2 | `1553381125244846180` | ✅ AKTIF |
+| 34 | **Blue Lock Farm** | `BlueLockFarm_Clean.lua` | `BlueLockFarm_BROTHERHUB.lua` | ⚽ Blue Lock Farm | `1554442318101225472` | ✅ AKTIF |
 
 ### 4.2 Role Notifikasi Master Server
 * **⚡ Script Update Ping**: `1548208954163724299`
@@ -979,3 +980,42 @@ eonStroke(minCircle, 2)).
   - Pengumuman: `#📢・announcements` (Message ID: `1554105652727648257`).
   - Changelog: `#📜・changelogs` (Message ID: `1554105656624283714`).
   - Mengarahkan member mengambil script resmi di `#⚡・script-panel` (`1547960154228793424`).
+
+
+---
+
+# BAGIAN III.B: DEEP DIVE TEKNIS BLUE LOCK FARM
+
+### 3.4 Metadata Game & Tempat (Place Information)
+* **Game Title**: Blue Lock Farm
+* **Place ID**: `132767904294856`
+* **Game Link**: https://www.roblox.com/games/132767904294856/Blue-Lock-Farm
+* **Official Discord Role**: `⚽ Blue Lock Farm` (ID: `1554442318101225472`)
+* **Arsitektur GUI**: 1:1 My Flower Shop Exact Standard (640 x 420 base) dengan Bottom-Right Resizable Grip `◢`, Horizontal Scrolling TabBar X, RGB 360° Neon Stroke (`neonStroke`), Floating 80x80 MinCircle (`👑 BH`), dan 360x200 CloseModal.
+
+### 3.5 Remote Server & Services Analysis (Dari SaveInstances Dump)
+Seluruh remote game berlokasi di `ReplicatedStorage.Remotes`:
+1. **Conveyor & Rolling Remotes**:
+   - `RequestConveyorRoll`: Memutar roll conveyor secara berkala.
+   - `PurchaseConveyorRoll(BoxName, Variant)`: Membeli roll spesifik locker/box dan variant mutasi menggunakan in-game cash (100% Free / Zero Robux).
+2. **Dropper & Locker Placement**:
+   - `PlaceBoxOnDropper(dropperPart, BoxName, Variant)`: Meletakkan locker terpilih ke atas dropper base part (`DropperBasePart`).
+   - `OpenBoxOnDropper:InvokeServer(dropperPart)`: Membuka locker box yang telah matang/siap dibuka.
+   - `SkipBoxOnDropper:FireServer(dropperPart)`: Melewati (skip) locker jika tidak terjangkau atau tidak diinginkan.
+3. **Player Unit & Auto Equip / Upgrade**:
+   - `EquipBestPlayerUnits:FireServer()`: Otomatis memakai unit pemain terkuat.
+   - `RequestPlayerUnitLevelUp:FireServer(dropperPart)`: Meng-upgrade level player unit yang ditempatkan pada dropper (`Type == "PlayerUnit"`).
+4. **Crate Carrying, Selling & Polishing**:
+   - `PickupCrateBox(cratePart)`: Mengambil crate hasil produksi bola dari conveyor (`ConveyorCollectPart`).
+   - `SellCrate:FireServer(crateGuid)`: Menjual crate ke SellNPC secara instan untuk mendapatkan Cash masif.
+   - `DepositCrate(polisherPart)` & `CollectPolisherCrate(polisherPart)`: Memasukkan dan mengambil crate dari mesin Crate Polisher.
+5. **Shop & Upgrades (100% Free / In-Game Cash Only)**:
+   - `PurchaseUpgrade(upgradeName)`: Membeli upgrade fasilitas (`ConveyorLuck`, `WalkSpeed`, `LuckBoost`, `OpenTimeBoost`, `BaseExpansion`, `CratePolisherUnlock`, `CrateCashBoost`) tanpa pop-up Robux.
+6. **Infinity Tower Battle**:
+   - `StartInfinityTowerBattle:InvokeServer(floor, unitList)`: Menjalankan pertempuran tower dengan 10 unit terkuat secara otomatis.
+   - `SetInfinityTowerAutoBattle:FireServer(towerName, bool)`: Mengaktifkan mode pertempuran otomatis bawaan game.
+7. **Drop Stuff & Collectables Vacuum**:
+   - `CollectCollectableObject(node)` & `CollectVariantTokenSpawn(node)`: Menyedot seluruh node token mutasi dan barang drop di Workspace secara instan.
+8. **Rewards & AFK Engine**:
+   - `ClaimAllIndexRewards()`, `ClaimDailyReward()`, `ClaimPlaytimeReward(idx)`, `ClaimOfflineEarnings()`, `ClaimObbyBonus(part)`, `JackpotSpin()`, `RedeemCode(code)`.
+   - Anti-AFK VirtualUser menjaga koneksi tetap aktif 24/7 tanpa disconnect 20 menit.
