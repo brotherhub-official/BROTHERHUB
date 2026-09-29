@@ -1272,3 +1272,70 @@ Game tidak menggunakan RemoteEvent konvensional melainkan ByteNet Packet Objects
     * Question 3: Notifikasi ping (Announcement, Script Update, Giveaway).
     Telah tersimpan sempurna di backend Discord.
   - Seluruh member baru dan lama tetap bisa memilih role mereka kapan saja dengan leluasa melalui channel **`#🎭・roles`**!
+
+
+---
+
+### 11C. 🌐 HUKUM MUTLAK PENGUMUMAN UPDATE DWIBAHASA (BILINGUAL: INDONESIA & ENGLISH)
+- **KEBIJAKAN KETAT FOUNDER (STANDAR GLOBAL BROTHER HUB)**:
+  Setiap rilis update skrip, perbaikan bug (hotfix), penambahan fitur baru, pengumuman darurat, dan catatan perubahan (changelogs) di Discord (`#📢・announcements` & `#📝・changelogs`) **WAJIB 100% SELALU MENYERTAKAN VERSI BAHASA INDONESIA DAN BAHASA INGGRIS SECARA BERDAMPINGAN/LENGKAP**.
+- **LARANGAN KERAS**:
+  * **DILARANG KERAS** memposting pengumuman hanya dalam Bahasa Indonesia saja atau hanya dalam Bahasa Inggris saja!
+  * Anggota Brother Hub berasal dari berbagai negara; format dwibahasa menjamin seluruh member memahami pembaruan secara transparan dan profesional.
+- **STRUKTUR BAKU ANNOUNCEMENT EMBED DWIBAHASA**:
+  1. **Judul & Deskripsi**: Teks sambutan / status pembaruan dalam Bahasa Indonesia diikuti terjemahan Bahasa Inggris.
+  2. **Field Game / Fitur**:
+     - Field versi Bahasa Indonesia (contoh: `⚽ [BLUE LOCK FARM v1.0.4] — PERBAIKAN AUTO DROPS (INDONESIA)`).
+     - Field versi Bahasa Inggris (contoh: `⚽ [BLUE LOCK FARM v1.0.4] — AUTO DROPS FIX (ENGLISH)`).
+  3. **Field Cara Update (How to Update)**:
+     - Instruksi 🇮🇩: Re-execute Brother Hub Master Loadstring (tersedia di `#⚡・script-panel`).
+     - Instruksi 🇬🇧: Re-execute Brother Hub Master Loadstring (available in `#⚡・script-panel`).
+  4. **Role Mentions**: Selalu sertakan mention role game terkait dan role update ping (`⚡ Script Update Ping`).
+
+---
+
+### 15. DOKUMENTASI LENGKAP TUGAS & INSIDEN HARI INI (29 SEPTEMBER 2026)
+
+#### A. INSIDEN KEAMANAN RACE HORSES & PENCEGAHAN ANTI-CHEAT BAN (v1.0.2)
+- **Laporan Member**: Member Zetsu melaporkan terkena sanksi ban di game Race Horses setelah menyalakan fitur `Auto Harvest Apple Trees`.
+- **Investigasi Akar Masalah**:
+  Developer game Race Horses telah menanam jebakan telemetri / server-side anti-cheat heuristik pada model pohon apel (`Trees` / `AppleTree`) dan proximity prompt-nya. Script yang memicu `sendAction("Interact", tree)` atau memanggil proximity prompt secara berulang/rapid langsung dideteksi oleh server sebagai aktivitas ilegal.
+- **Solusi Tegas & Permanen**:
+  - Founder menginstruksikan penghapusan total fitur Auto Harvest.
+  - Seluruh kode `getAppleTrees()`, `harvestAllTrees()`, state `autoHarvestFruits`, toggle UI harvest, dan tombol manual harvest telah **DIHAPUS BERSIH** dari `CleanHub/RaceHorses_Clean.lua`.
+  - Hanya fitur-fitur aman yang dipertahankan: Auto Train, Auto Race, Auto Care & Feed Horses (di kandang sendiri), Auto Buy & Hatch Eggs, Auto Rebirth, dan Passive Rewards.
+  - Kode telah diverifikasi sintaks, diobfukasi ke `RaceHorses_BROTHERHUB.lua` dan `ObfuscateHub/RaceHorses_BROTHERHUB.lua`, lalu di-push ke GitHub main.
+
+#### B. HOTFIX TUNTAS AUTO DROPS BLUE LOCK FARM (v1.0.4)
+- **Laporan Member**: Member BOS melaporkan: *"Masih bug bang, Ga ke ambil, Jadi pas ada drop item tuh cuma tp doang tpi ga ke ambil"*.
+- **Investigasi Mendalam pada Dump Instance (`Blue Lock Farm [132767904294856]` & Scripts)**:
+  1. *Penyebab False Teleport*: Spawner drop di `workspace.Systems.CollectableObjects` dan `VariantTokenSpawns` memiliki attribute `Occupied`. Jika drop belum muncul, `Occupied == false`. Kondisi kode lama salah memeriksa fallback child sehingga spawner kosong dianggap aktif, memicu teleport ke tempat hampa.
+  2. *Penyebab Tidak Terambil (Cuma TP Doang)*:
+     - Kode lama menggunakan flash-teleport: berpindah ke drop, tunggu 0.06s, kirim remote, tunggu 0.04s, langsung kembali ke posisi lama (`oldCFrame`) (total durasi cuma 0.10 detik!).
+     - Karena latensi jaringan (ping), saat server game memvalidasi event `CollectCollectableObject` / `CollectVariantTokenSpawn` dengan syarat `(player.Position - node.Position).Magnitude <= 5`, server mendeteksi karakter pemain sudah berada di posisi lama (di luar batas 5 studs). Server langsung **MENOLAK PENGAMBILAN DROP**.
+     - Di script asli game (`CollectableObjectClient` / `VariantTokenSpawnClient`), pengecekan proximity `_checkProximity` berjalan dalam loop `task.wait(0.2)`. Flash-teleport 0.10s terlalu singkat untuk sinkronisasi internal klien dan server.
+- **Solusi & Rekayasa Presisi v1.0.4**:
+  1. *Filter Valid*: Hanya memasukkan drop yang memiliki `node:GetAttribute("Occupied") == true`.
+  2. *Position Lock*: Karakter diposisikan tepat pada koordinat drop (`CFrame.new(drop.pos + Vector3.new(0, 1, 0))`) dengan magnitude <= 1 stud.
+  3. *Proximity Hold Loop*: Membuat loop penahanan posisi hingga 0.45s yang memantau attribute `Occupied`. Selama `Occupied == true`, script terus mempertahankan posisi, menembakkan remote `CollectCollectableObject` / `CollectVariantTokenSpawn`, dan memicu `firetouchinterest`.
+  4. *Konfirmasi Sukses Instan*: Segera setelah atribut `Occupied` berubah menjadi tidak true (drop berhasil diserap masuk ke inventori), loop langsung selesai dan karakter baru dikembalikan ke posisi asal (`oldCFrame`).
+  5. *Pengujian & Rilis*: Lolos verifikasi luau-compile, diobfukasi, disalin ke mirror ObfuscateHub, dan di-push ke GitHub main.
+
+#### C. OVERHAUL DISCORD SELF-ROLES 36 GAME & CONTAINER PACKAGING
+- **Dropdown Roles API Patch**: Memperbarui pesan interaktif `1551596940683247697` di `#🎭・roles` (`1547960169206644838`) menjadi 2 Select Menu bertingkat yang menampung tepat 36 game Brother Hub (Menu 1: 18 game, Menu 2: 18 game) + 6 tombol aksi pings.
+- **Bot Synchronization**: File `tools/self_roles.py` diselaraskan dengan seluruh 36 Game ID dan Role ID Discord.
+- **Yupra Deployment Package**: File zip `BrotherHub_Yupra_AllInOne.zip` (3.95 MB) diperbarui dan siap di-deploy kapan saja.
+
+#### D. KEBIJAKAN & ARSITEKTUR ONBOARDING DISCORD
+- **Hasil Audit**: Fitur Community Onboarding Discord tetap dinonaktifkan secara sengaja karena Discord mewajibkan minimal 1 channel default yang dapat dikirimi pesan oleh `@everyone`. Kebijakan Brother Hub mengharuskan seluruh channel publik read-only demi menjaga fungsi verification gate `#✅・verify` dan mencegah spam bot.
+
+#### E. PENAMBAHAN GAME KE-35 & KE-36
+- **Pull A Sword (Game #35)**: Dibuat dengan arsitektur visual 1:1 My Flower Shop, fitur Auto Pull, Auto Train, Auto Hatch, Auto Rebirth, dan Game Passes bypass.
+- **Race Horses (Game #36)**: Dibuat dengan arsitektur visual 1:1 My Flower Shop, fitur Auto Train, Auto Race, Auto Care & Feed, Auto Buy & Hatch Eggs, dan passives.
+- **Universal SaveInstance Engine**: Ditambahkan pemisahan otomatis folder dump: `.rbxl` ke `Rbxl/` dan `.rbxlx` ke `Rbxlx/` di `CleanHub/BrotherHub.txt` dan `BrotherHub_original.lua`.
+
+#### F. BROADCAST PENGUMUMAN DISCORD RESMI
+- **Pengumuman Dwibahasa Terkirim**:
+  * `#📢・announcements`: Pesan ID `1554512005040443535`
+  * `#📝・changelogs`: Pesan ID `1554512091312947201`
+  * Role Pings: `<@&1548208954163724299>` (Script Update Ping), `<@&1554442318101225472>` (Blue Lock Farm), `<@&1554442371947708579>` (Race Horses).
