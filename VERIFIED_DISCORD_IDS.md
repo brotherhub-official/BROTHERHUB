@@ -131,6 +131,8 @@
 
 ### A. Format Wajib Pelaporan Bug (`#🐛・bug-reports` - `1547960201511047219`)
 *Pinned Message ID: `1554558540864168000`*
+
+#### 🇮🇩 Versi Bahasa Indonesia:
 ```text
 Nama Game:
 Link Map:
@@ -143,8 +145,23 @@ Keluhan Bug jelaskan secara terperinci dan detail banget, (karena saya tidak mem
 5. dll (tuliskan sejelas mungkin bagaimana bug terjadi)
 ```
 
+#### 🇬🇧 English Version:
+```text
+Game Name:
+Map Link:
+Last Game Update Date:
+Bug Details (Please explain thoroughly and in full detail):
+1. Bug A (e.g., character shakes/freezes when collecting items)
+2. Bug B (e.g., character only teleports but server remote doesn't trigger)
+3. Bug C (e.g., toggle is turned ON but has no effect in-game)
+4. Bug D (e.g., error occurs / disconnected from the server)
+5. etc. (explain clearly what happens and how to reproduce it)
+```
+
 ### B. Format Wajib Pengajuan Saran / Fitur Baru (`#⭐・suggestions` - `1547960198776225833`)
 *Pinned Message ID: `1554558549827518555`*
+
+#### 🇮🇩 Versi Bahasa Indonesia:
 ```text
 Nama Game:
 Link Map:
@@ -157,7 +174,21 @@ Saran / Fitur yang Diinginkan jelaskan secara terperinci dan detail banget:
 5. dll (jelaskan fungsi fitur dan alur kerjanya sejelas mungkin)
 ```
 
+#### 🇬🇧 English Version:
+```text
+Game Name:
+Map Link:
+Last Game Update Date:
+Suggested Feature Details (Please explain thoroughly and in full detail):
+1. Feature A (e.g., auto sell / harvest when bag/inventory is full)
+2. Feature B (e.g., add movement speed slider & smooth teleport options)
+3. Feature C (e.g., dropdown filter to select rare items only)
+4. Feature D (e.g., auto claim daily rewards & battle pass)
+5. etc. (explain the feature functionality and workflow as clearly as possible)
+```
+
 ### C. Pengumuman Resmi Format Laporan (`#📢・announcements` - `1547960148599775262`)
 *Announcement Message ID: `1554558559046471703`*
-Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100% Rich Discord Embed resmi.
+Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100% Rich Discord Embed resmi (Dwi-bahasa 🇮🇩 ID & 🇬🇧 EN berdampingan).
+
 
