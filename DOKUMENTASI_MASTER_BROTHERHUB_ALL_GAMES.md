@@ -441,6 +441,18 @@ Tabel di bawah adalah **Sumber Kebenaran Tunggal (Single Source of Truth)** untu
   2. *Layer 2*: USSI Hook in-memory melewati class `CharacterMesh`.
   3. *Layer 3*: Post-save file regex patcher membersihkan tag XML konflik secara otomatis.
 
+
+### 5.7 Aturan 10B: Analisis & Penanggulangan Komprehensif Bug UI Kosong (Zero-Blank Frame Directive)
+* **Latar Belakang & Masalah Berulang**: Sering kali frame utama dan top bar berhasil tampil, namun area isi tab kosong melompong (hitam pekat) dan member melaporkan *"Gaada fiturnya"*.
+* **Akar Masalah Teknis Utama (Roblox Engine Cyclic Dependency)**:
+  1. Jika parent container memiliki `AutomaticSize = Enum.AutomaticSize.Y`, lalu child-nya memiliki `Scale > 0` pada sumbu Y (misal bar aksen `UDim2.new(0, 4, 1, 0)`), engine Roblox mendeteksi dependensi melingkar.
+  2. Engine Roblox secara diam-diam mereset tinggi parent menjadi 0 pixel (`AbsoluteSize.Y == 0`). Akibatnya seluruh konten di dalam parent kolaps dan lenyap dari layar.
+* **4 Standar Pencegahan Mutlak Brother Hub**:
+  1. **Direct Page Item Placement**: Dilarang membungkus kontrol ke dalam frame kartu `AutomaticSize` yang memiliki child berskala Y. Seluruh kontrol (`addToggle`, `addSlider`, `addMultiSelectDropdown`, `addButton`) wajib diparentkan langsung ke `ScrollingFrame` halaman (`page`).
+  2. **Inisialisasi CanvasSize**: Seluruh `ScrollingFrame` (TabBar dan Page) wajib menetapkan `CanvasSize = UDim2.new(0, 0, 0, 0)` agar tidak memakai default 200% tinggi container yang merusak rendering teks tombol.
+  3. **Aktivasi Tab Awal Eksplisit**: Tab pertama wajib diaktifkan secara deklaratif seketika selesai dibuat (`tabPages[defaultTab].Visible = true`).
+  4. **Mobile Viewport Scaler**: `ScreenGui` wajib memiliki `UIScale` responsif (0.55 – 1.0) agar ukuran frame pas di segala jenis smartphone Android dan iOS.
+
 ### 5.6 Aturan 10: Standarisasi Baku Arsitektur GUI (100% Wajib 1:1 My Flower Shop Tanpa Kompromi)
 * **Hukum Mutlak Founder**: Seluruh script Brother Hub (baik 34 game saat ini maupun game baru di masa depan) **WAJIB 100% MENGADOPSI ARSITEKTUR MY FLOWER SHOP**.
 * **Border Stroke**: **WAJIB `neonStroke(inst, thickness)` berotasi 360° secara mulus**. DILARANG KERAS menggunakan warna kuning/emas solid (`stroke(mainFrame, THEME.Title)`) atau gradien 2-warna statis!
