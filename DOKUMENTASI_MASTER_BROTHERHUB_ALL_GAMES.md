@@ -8,7 +8,7 @@ Dokumen ini adalah **catatan teknis master 100% lengkap dan menyeluruh** untuk s
 1. [Bagian I: Deep Dive Teknis Drill to Earth's Core (New Dumps & In-Earth Save)](#bagian-i-deep-dive-teknis-drill-to-earths-core)
 2. [Bagian II: Deep Dive Teknis Mrbeast Island Escape (Workspace & Vacuum System)](#bagian-ii-deep-dive-teknis-mrbeast-island-escape)
 3. [Bagian III: Deep Dive Teknis Unbox ASMR (67 Crates, 12 Rarities & Rebirths)](#bagian-iii-deep-dive-teknis-unbox-asmr)
-4. [Bagian IV: Master Roster 31 Game Resmi Brother Hub (Role ID & Mekanisme)](#bagian-iv-master-roster-31-game-resmi-brother-hub)
+4. [Bagian IV: Master Roster 35 Game Resmi Brother Hub (Role ID & Mekanisme)](#bagian-iv-master-roster-35-game-resmi-brother-hub)
 5. [Bagian V: Hukum Mutlak & Standarisasi Desain Brother Hub (Rules 1 - 12E)](#bagian-v-hukum-mutlak--standarisasi-desain-brother-hub)
 6. [Bagian VI: Pipeline Kompilasi, Obfuskasi & Build System](#bagian-vi-pipeline-kompilasi-obfuskasi--build-system)
 
@@ -362,9 +362,9 @@ Daftar lengkap 67 peti dari `ReplicatedStorage.ProductCatalogConfig` & `EventPro
 ---
 
 
-# BAGIAN IV: MASTER ROSTER 34 GAME RESMI BROTHER HUB
+# BAGIAN IV: MASTER ROSTER 35 GAME RESMI BROTHER HUB
 
-Tabel di bawah adalah **Sumber Kebenaran Tunggal (Single Source of Truth)** untuk 33 game resmi yang didukung penuh oleh Brother Hub:
+Tabel di bawah adalah **Sumber Kebenaran Tunggal (Single Source of Truth)** untuk 35 game resmi yang didukung penuh oleh Brother Hub:
 
 | No | Game Name | Script File (`CleanHub/`) | Build File (`/` & `ObfuscateHub/`) | Official Role Discord | Discord Role ID | Status |
 |---|---|---|---|---|---|---|
@@ -402,6 +402,7 @@ Tabel di bawah adalah **Sumber Kebenaran Tunggal (Single Source of Truth)** untu
 | 32 | **Clone to Steal Eggs** | `CloneToStealEggs_Clean.lua` | `CloneToStealEggs_BROTHERHUB.lua` | 🥚 Clone to Steal Eggs | `1553381123118211122` | ✅ AKTIF |
 | 33 | **Super Treehouse Tycoon 2** | `SuperTreehouseTycoon2_Clean.lua` | `SuperTreehouseTycoon2_BROTHERHUB.lua` | 🌳 Super Treehouse Tycoon 2 | `1553381125244846180` | ✅ AKTIF |
 | 34 | **Blue Lock Farm** | `BlueLockFarm_Clean.lua` | `BlueLockFarm_BROTHERHUB.lua` | ⚽ Blue Lock Farm | `1554442318101225472` | ✅ AKTIF |
+| 35 | **[MIDAS] Pull A Sword** | `PullASword_Clean.lua` | `PullASword_BROTHERHUB.lua` | 🗡️ Pull A Sword | `1554481560252850317` | ✅ AKTIF |
 
 ### 4.2 Role Notifikasi Master Server
 * **⚡ Script Update Ping**: `1548208954163724299`
