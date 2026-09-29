@@ -60,6 +60,8 @@
 - **#roles**: `1547960169206644838` (Channel Name: `🎭・roles`)
 - **#announcements**: `1547966799948025956` (Channel Name: `📌・staff-announcements`)
 - **#game-features**: `1548053432089190442` (Channel Name: `📖・game-features`)
+- **#suggestions**: `1547960198776225833` (Channel Name: `⭐・suggestions`)
+- **#bug-reports**: `1547960201511047219` (Channel Name: `🐛・bug-reports`)
 
 ## 4. STANDAR BAKU TEMPLATE PENGUMUMAN & CHANGELOGS (100% RICH DISCORD EMBED)
 
@@ -121,4 +123,41 @@
     }
   ]
 }
-```
+```
+
+## 5. STANDAR BAKU FORMAT LAPORAN BUG & PENGAJUAN FITUR BARU
+
+> ⚠️ **HUKUM MUTLAK**: Developer tidak memainkan seluruh game yang ada di Roblox. Setiap laporan bug dan saran fitur dari member **WAJIB 100% MENGIKUTI FORMAT BAKU LENGKAP**. Laporan tanpa format detail tidak akan diproses!
+
+### A. Format Wajib Pelaporan Bug (`#🐛・bug-reports` - `1547960201511047219`)
+*Pinned Message ID: `1554558540864168000`*
+```text
+Nama Game:
+Link Map:
+Update tanggal terakhir tanggal berapa:
+Keluhan Bug jelaskan secara terperinci dan detail banget, (karena saya tidak memainkan game yang di Request): 
+1. Bug A (misal: pas ngambil item karakter malah geter / macet)
+2. Bug B (misal: cuma teleport doang tapi remote server gak jalan)
+3. Bug C (misal: fitur toggle nyala tapi gak ada efek apa-apa)
+4. Bug D (misal: terjadi error / terputus dari server)
+5. dll (tuliskan sejelas mungkin bagaimana bug terjadi)
+```
+
+### B. Format Wajib Pengajuan Saran / Fitur Baru (`#⭐・suggestions` - `1547960198776225833`)
+*Pinned Message ID: `1554558549827518555`*
+```text
+Nama Game:
+Link Map:
+Update tanggal terakhir tanggal berapa:
+Saran / Fitur yang Diinginkan jelaskan secara terperinci dan detail banget:
+1. Fitur A (misal: buatkan auto sell otomatis saat tas/inventori penuh)
+2. Fitur B (misal: tambahkan slider kecepatan gerak dan opsi teleport halus)
+3. Fitur C (misal: sediakan dropdown filter pemilihan item langka saja)
+4. Fitur D (misal: auto claim reward harian dan battle pass)
+5. dll (jelaskan fungsi fitur dan alur kerjanya sejelas mungkin)
+```
+
+### C. Pengumuman Resmi Format Laporan (`#📢・announcements` - `1547960148599775262`)
+*Announcement Message ID: `1554558559046471703`*
+Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100% Rich Discord Embed resmi.
+
