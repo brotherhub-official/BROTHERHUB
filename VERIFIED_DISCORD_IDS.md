@@ -38,7 +38,7 @@
 - **Blue Lock Farm**: `1554442318101225472` (Role Name: `⚽ Blue Lock Farm`)
 - **Pull A Sword**: `1554481560252850317` (Role Name: `🗡️ Pull A Sword`)
 - **Race Horses**: `1554500930651693158` (Role Name: `🏇 Race Horses`)
-- **Sword Hunter**: *(Role Baru: `⚔️ Sword Hunter`)*
+- **Sword Hunter**: `1554522896418869311` (Role Name: `⚔️ Sword Hunter`)
 
 ## 2. NOTIFICATION & SYSTEM ROLES
 
