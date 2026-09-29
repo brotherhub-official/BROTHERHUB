@@ -1,4 +1,4 @@
-# 👑 BROTHER HUB — ENSIKLOPEDIA & DOKUMENTASI TEKNIS LENGKAP MASTER ECOSYSTEM (34 GAMES)
+# 👑 BROTHER HUB — ENSIKLOPEDIA & DOKUMENTASI TEKNIS LENGKAP MASTER ECOSYSTEM (35 GAMES)
 
 Dokumen ini adalah **catatan teknis master 100% lengkap dan menyeluruh** untuk seluruh ekosistem **Brother Hub**. Dokumen ini mencatat setiap data, hasil dump saveinstances, arsitektur skrip, mekanisme remote server, formula kecepatan, ID role Discord, peraturan Founder, hingga konfigurasi internal untuk semua game yang didukung.
 
@@ -1046,11 +1046,65 @@ Seluruh remote game berlokasi di `ReplicatedStorage.Remotes`:
    - `DepositCrate(polisherPart)` & `CollectPolisherCrate(polisherPart)`: Memasukkan dan mengambil crate dari mesin Crate Polisher.
 5. **Shop & Upgrades (100% Free / In-Game Cash Only)**:
    - `PurchaseUpgrade(upgradeName)`: Membeli upgrade fasilitas (`ConveyorLuck`, `WalkSpeed`, `LuckBoost`, `OpenTimeBoost`, `BaseExpansion`, `CratePolisherUnlock`, `CrateCashBoost`) tanpa pop-up Robux.
-6. **Infinity Tower Battle**:
-   - `StartInfinityTowerBattle:InvokeServer(floor, unitList)`: Menjalankan pertempuran tower dengan 10 unit terkuat secara otomatis.
-   - `SetInfinityTowerAutoBattle:FireServer(towerName, bool)`: Mengaktifkan mode pertempuran otomatis bawaan game.
+6. **Infinity Tower Battle (Hotfix v1.0.2 - Fixed Remote & Best Units Algorithm)**:
+   - `GetInfinityTowerBattleState:InvokeServer()`: Memeriksa state pertempuran tower aktif.
+   - `StartInfinityTowerBattle:InvokeServer(floorKey, bestUnits)`: Menjalankan pertempuran tower. `floorKey` berupa string map (diambil dari `InfinityTowerFloorsLibrary`, default `"CityMap"`), bukan integer.
+   - `PlayerUnitService.GetAllPlayerUnits(LocalPlayer)`: Di-parse secara kamus (dictionary pairs / unit UUID keys), diurutkan berdasarkan `DamageBasis x HealthBasis`, dan dibatasi tepat pada `InfinityTowerUnitSlots = 4` slots (bukan 10).
+   - `SetInfinityTowerAutoBattle:FireServer(towerName, true)`: Mengaktifkan mode auto battle resmi game menggunakan `towerName` dari hasil return `battleState.TowerName`.
+   - `ExitInfinityTowerBattle:FireServer(towerName)`: Keluar dari pertempuran tower dengan aman.
 7. **Drop Stuff & Collectables Vacuum**:
    - `CollectCollectableObject(node)` & `CollectVariantTokenSpawn(node)`: Menyedot seluruh node token mutasi dan barang drop di Workspace secara instan.
 8. **Rewards & AFK Engine**:
    - `ClaimAllIndexRewards()`, `ClaimDailyReward()`, `ClaimPlaytimeReward(idx)`, `ClaimOfflineEarnings()`, `ClaimObbyBonus(part)`, `JackpotSpin()`, `RedeemCode(code)`.
    - Anti-AFK VirtualUser menjaga koneksi tetap aktif 24/7 tanpa disconnect 20 menit.
+
+---
+
+# BAGIAN III.C: DEEP DIVE TEKNIS [MIDAS] PULL A SWORD (35TH GAME)
+
+### 3.7 Metadata Game & Tempat (Place Information)
+* **Game Title**: [MIDAS] Pull A Sword
+* **Place ID**: `102255204927572`
+* **Game Link**: https://www.roblox.com/games/102255204927572/Pull-A-Sword
+* **Networking Framework**: **ByteNet** Networking Engine under namespace `"PullABlade"` (`ReplicatedStorage.Networking.ByteNet.Packets.GamePackets`).
+* **Arsitektur GUI**: 1:1 My Flower Shop Exact Standard (660 x 440 base) dengan Bottom-Right Resizable Grip `◢`, Horizontal Scrolling TabBar X, RGB 360° Neon Stroke (`neonStroke`), Floating 80x80 MinCircle (`👑 BH`), dan 360x200 CloseModal.
+* **Kebijakan Pembayaran**: 100% Free / In-Game Cash & Strength Only (Zero Robux buy popups per Founder rule).
+
+### 3.8 Analisis Berkas Dump SaveInstances (`[MIDAS] Pull A Sword [102255204927572]/`)
+Dump saveinstance memuat seluruh berkas komponen game:
+* `Workspace [MIDAS] Pull A Sword.rbxmx` (44.4 MB):
+  - `Map.Plots`: Masing-masing plot memiliki `TrainingDummy`, `RevealRock` (pull rock), `Slots` (`Slot 1`..`Slot 4`), `DummyUpgradeSignSpawn`, `PlotUpgradeSignSpawn`.
+  - Area Dunia: `Zone1` s/d `Zone26`, `SafeZoneFloor1` s/d `SafeZoneFloor8`, `BossArea`, `BossPortal`.
+* `ReplicatedStorage`:
+  - `Networking.ByteNet.Packets.GamePackets`: Definisi seluruh paket ByteNet game.
+  - `Modules.Shared`: `DummyLevels`, `Gloves`, `Rebirths`, `Rarities`, `AuraProducts`, `SwordStats`, `Titles`.
+
+### 3.9 Packet Networking & Automation Engine
+Game tidak menggunakan RemoteEvent konvensional melainkan ByteNet Packet Objects dengan method `.send(...)`:
+1. **Auto Train Dummy**:
+   - Packet: `GamePackets.M1.send(nil)` (Loop cepat 0.08s).
+   - Dilengkapi toggle opsional teleport/stand otomatis di dummy plot sendiri.
+2. **Auto Pull Sword**:
+   - Packet: `GamePackets.Pull.send(nil)` (Loop 0.06s saat berada di `RevealRock`).
+   - Dilengkapi toggle opsional teleport/stand otomatis di reveal rock plot sendiri.
+3. **Auto Equip Best & Inventory**:
+   - Packet: `GamePackets.EquipBest.send()` & `GamePackets.DropCarried.send()`.
+   - Sortir inventaris: `GamePackets.InventorySort.send({ Mode = "Strength" / "Rarity" })`.
+4. **Auto Rebirth**:
+   - Packet: `GamePackets.Rebirth.send()` (Murni menggunakan Strength gratis, bukan skip robux).
+5. **Auto Upgrades (100% Free / In-Game Cash Only)**:
+   - Dummy Upgrade: `GamePackets.DummyPurchase.send({ Method = "Money" })`.
+   - Plot Upgrade: `GamePackets.PlotPurchase.send({ Method = "Money" })`.
+   - Sword Upgrade: `GamePackets.SwordUpgradeBuy.send({ Method = "Money" })`.
+   - Skip Animasi Upgrade: `GamePackets.SwordUpgradeSkip.send()`.
+6. **Gloves & Aura Automation**:
+   - Glove Actions: `GamePackets.GloveAction.send({ Key = gloveKey, Action = "Craft" / "Equip" })`.
+   - Aura Actions: `GamePackets.AuraAction.send({ Aura = auraKey, Action = "Buy" / "Equip" })`.
+7. **Rewards & Codes**:
+   - Offline Gifts: `GamePackets.OfflineRewardsReady.send()`.
+   - Streak Gifts: `GamePackets.StreakRewardsReady.send()`.
+   - Redeem Codes: `GamePackets.RedeemCode.send({ Code = code })`.
+8. **Teleports**:
+   - Plot Teleports: Plot Center, Training Dummy, Reveal Rock, Dummy Sign, Plot Sign.
+   - World Teleports: Boss Area, Boss Portal, Zones 1-26, Safe Zones 1-8.
+
