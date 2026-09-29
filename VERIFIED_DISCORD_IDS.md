@@ -191,4 +191,71 @@ Suggested Feature Details (Please explain thoroughly and in full detail):
 *Announcement Message ID: `1554558559046471703`*
 Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100% Rich Discord Embed resmi (Dwi-bahasa 🇮🇩 ID & 🇬🇧 EN berdampingan).
 
+## 6. UNIVERSAL BILINGUAL ENGINE ARCHITECTURE (37 GAMES, LOADER & DISCORD)
+
+### A. Mekanisme Deteksi Cerdas Wilayah & Bahasa (Smart Country/Locale Detection)
+1. **Universal Master Loader (`BrotherHub.lua` / `BrotherHub_Clean.lua`)**:
+   - Mendeteksi wilayah IP pemain menggunakan `LocalizationService:GetCountryRegionForPlayerAsync(LocalPlayer)`.
+   - Mendeteksi locale klien melalui `LocalizationService.RobloxLocaleId`.
+   - Jika `reg == "ID"` atau string `RobloxLocaleId` memuat `"id"`/`"indonesia"`, maka `isIndo = true`, sebaliknya jika pemain asing/luar negeri maka `isIndo = false`.
+   - Loader menetapkan variabel global runtime: `_G.BROTHERHUB_LANG = isIndo and "ID" or "EN"`.
+   - Seluruh notifikasi loading dan error ditampilkan sesuai bahasa deteksi:
+     * `notify("👑 BROTHER HUB", L("Mendeteksi game...", "Detecting game..."), 4)`
+     * `notify("👑 BROTHER HUB", L("Memuat: ", "Loading: ") .. selectedGame.Name .. "...", 6)`
+     * `notify("❌ Script Error", L("Gagal memproses script: ", "Failed to compile script: ") .. tostring(err), 8)`
+     * `notify("❌ Download Error", L("Gagal mengunduh script dari GitHub!", "Failed to download script from GitHub!"), 8)`
+     * `notify("⚠️ BROTHER HUB", L("Game ini belum didukung!\nPlaceId: ", "This game is not yet supported!\nPlaceId: ") .. tostring(placeId), 8)`
+
+2. **Seluruh 37 Script Game Resmi (`CleanHub/*_Clean.lua` & `*_BROTHERHUB.lua`)**:
+   - Menerima `_G.BROTHERHUB_LANG` dari loader (prioritas utama).
+   - Memiliki fallback mandiri bila script dieksekusi terpisah tanpa loader:
+     ```lua
+     local isIndo = false
+     pcall(function()
+         if _G.BROTHERHUB_LANG then
+             isIndo = (_G.BROTHERHUB_LANG == "ID")
+             return
+         end
+         local loc = game:GetService("LocalizationService")
+         local reg = loc:GetCountryRegionForPlayerAsync(LocalPlayer)
+         local lang = string.lower(loc.RobloxLocaleId or "")
+         if reg == "ID" or string.find(lang, "id") or string.find(lang, "indonesia") then
+             isIndo = true
+         end
+     end)
+     local function L(idText, enText)
+         return isIndo and idText or enText
+     end
+     ```
+   - Modal Konfirmasi Tutup Script (Close Modal) 100% bilingual:
+     * `modalTitle.Text = L("👑 Konfirmasi Tutup Script", "👑 Exit Script Confirmation")`
+     * `modalDesc.Text = L("Apakah Anda yakin ingin menutup dan menghentikan Brother Hub?", "Are you sure you want to stop and clean up Brother Hub?")`
+     * `btnCancel.Text = L("Batal", "Cancel")`
+     * `btnYes.Text = L("Ya, Tutup", "Yes, Close")`
+
+### B. Audit & Sinkronisasi Lengkap Panel Discord Server (100% Bilingual ID & EN)
+- **#📱・supported-games** (`1547960163489546291` / Msg ID: `1547960239465177159`):
+  Menyajikan 37 katalog game aktif secara dwi-bahasa (ID & EN berdampingan).
+- **#⚡・script-panel** (`1547960154228793424` / Msg ID: `1549384215873851423`):
+  Instruksi loadstring permanen universal, tombol Mobile/PC Copy, dan tautan 37 game resmi (Bilingual ID / EN).
+- **#🎭・roles** (`1547960169206644838` / Msg ID: `1551596940683247697`):
+  Daftar lengkap 37 role game dan panduan mandiri pengambilan role onboarding (Bilingual ID / EN).
+- **#📩・open-ticket** (`1548183127699226735` / Msg ID: `1548262371087228930`):
+  Penjelasan 4 kategori tiket (General Support, Middleman/Rekber, Founder Store & VIP, Bug Report) dalam Bahasa Indonesia dan English.
+- **#🔗・invite-link** (`1549011153223421972` / Msg ID: `1549011158248333353`):
+  Pesan dan embed undangan resmi permanen `https://discord.gg/szYbZCqHKS` dalam ID & EN.
+- **#💳・donate-link** (`1549182222676787260` / Msgs: `1549190928999121009`, `1549190933009010809`):
+  Portal donasi resmi SociaBuzz & Saweria serta Hall of Fame dalam ID & EN.
+- **#👑・founder-profile** (`1548262122570649620` / Msg ID: `1548264231013716019`):
+  Profil Founder & PT Orion Tech Indonesia dengan ringkasan profesional English.
+- **#📜・ketentuan-dan-garansi** (`1548262161271361589` / Msg ID: `1548262164932861995`):
+  SOP transaksi, metode pembayaran bank/QRIS/kartu, garansi, dan 4 langkah pemesanan dwi-bahasa.
+- **Server Onboarding Prompts**:
+  * Prompt 1: `🎮 Game Roblox Favoritmu? / What is your favorite Roblox game?`
+  * Prompt 2: `💻📱 Perangkat Bermain? / What device do you play on?` (PC Player: `Bermain di Laptop / PC Computer`, Mobile Player: `Bermain di HP (Android / iOS)`)
+  * Prompt 3: `🔔 Notifikasi apa yang diinginkan? / What notifications do you want?` (Announcement, Script Update, Giveaway)
+- **Live Discord Announcement**: `#📢・announcements` (`1554575152312754280`)
+- **Live Discord Changelog**: `#📝・changelogs` (`1554575164216185013`)
+- **#🔐・founder-vault** (`1547986862470205521`): Tepat 37 pesan murni clean source code terbaru berfitur bilingual, 0 duplikat, akses terisolasi 100% khusus Founder.
+
 
