@@ -160,6 +160,42 @@ Daftar item yang didukung oleh sistem vakum:
 * **Boat Construct (Kapal Pelarian MrBeast)**: `Vector3.new(-25.0, 9.0, -715.87)`
 * **Mekanisme Anti-Jitter**: Saat mendekati objek atau monster, script menggunakan `smoothApproach` dengan offset `Vector3.new(2.8, 0.4, 2.8)` dan mereset `AssemblyLinearVelocity = Vector3.zero` serta `AssemblyAngularVelocity = Vector3.zero` agar karakter tidak mantul atau terlempar.
 
+### 2.6 Overhaul Teknis v2.4 (Dedicated Tree & Ore Navigation, Harvest Isolation & Fresh Dump Sync)
+1. **Penyebab Saling Memicu Antara Tebang Pohon & Tambang Batu/Besi**:
+   * **Model Mandarin `dashu` (大树)**: Terdapat 644 model pohon bernama `dashu` di Workspace hasil dump, selain `Coconut Tree`, `Elf Tree`, dan `Bush`. Filter lama belum membedakan objek secara *mutually exclusive* sehingga pencarian target sempat menganggap resource batu sebagai pohon atau sebaliknya.
+   * **Double Firing Event Listener**: Listener tombol UI sempat menghubungkan `HitButton.Activated` dan `MouseButton1Click` secara bersamaan, memicu aktivasi ganda pada toggle farming.
+   * **Isolasi 100%**: Logika `isTreeModel` dan `isRockModel` dipisah total tanpa overlapping.
+2. **Dedicated Teleport Navigation**:
+   * Menambahkan sistem navigasi teleport instan langsung ke pohon terdekat saat Auto Tebang Pohon aktif.
+   * Menambahkan navigasi teleport instan langsung ke deposit batu / iron ore terdekat saat Auto Tambang Batu aktif.
+3. **Fresh Dump & Remote Synchronization**:
+   * Penyelarasan remote event berdasarkan file `.rbxmx` hasil saveinstance terbaru di `Mrbeast Island Escape/` (`ReplicatedStorage`, `Workspace`, `Backpack`, `StarterGui`).
+   * Eliminasi loop mouse hijacking client (`VirtualUser`) agar input pemain tetap lancar tanpa macet (Sesuai Aturan Rule 11).
+
+### 2.7 Overhaul Teknis v2.5 (Mob Hunt Selector, 4 Combat Stances, Walk vs Teleport, Auto Self-Defense & Spam Fix)
+1. **Solusi Anti-Stuck Mayat Monster & Fitur Auto Self-Defense saat Farming**:
+   * **Akar Masalah Stuck**: Fungsi pengecekan monster sebelumnya memverifikasi nama (seperti `bear`, `wolf`, `boar`) terlebih dahulu dan langsung menghasilkan `true` sebelum memeriksa apakah monster tersebut masih hidup (`Humanoid.Health > 0`). Akibatnya, monster yang sudah mati/ragdoll tetap dianggap target nomor satu (karena jaraknya 0 stud di kaki pemain), menyebabkan karakter terus memukul mayat dan stuck.
+   * **Sterilisasi Mayat**: Wajib validasi `Humanoid.Health > 0` dan atribut kematian (`dead`, `isDead`). Mayat monster 100% diabaikan seketika.
+   * **Auto Self-Defense (`autoDefendWhileFarming`)**: Saat pemain menebang pohon atau menambang batu/iron, jika ada monster predator agresif mendekat dalam radius 15–20 studs, script otomatis menghentikan sementara farming dan memprioritaskan membunuh predator tersebut. Begitu predator mati, script langsung melanjutkan (*seamless resume*) tebang pohon atau tambang batu kembali tanpa terjebak di mayat.
+2. **Perbaikan Throttle Spam Notifikasi "Auto Sedot / Vacuum Drops"**:
+   * **Penyebab**: Loop pengambilan drop memicu broadcast notifikasi UI setiap tick pemindaian (`takeoutFoodRemote` / collect listener), menghasilkan rentetan teks spam yang memenuhi layar.
+   * **Solusi**: Diberlakukan throttle debouncer cerdas sehingga notifikasi hanya muncul secara terukur saat item baru berhasil tersedot, membersihkan layar dari spam.
+3. **Mob Target Selector (Dropdown Filter Pemilihan Monster)**:
+   * Menghadirkan dropdown filter target buruan di Tab Combat / Farm: opsi `All Mobs` atau spesifik per ras monster (`Wolf`, `Bear`, `Boar`, `Spider`, `Goblin`, `Boss / Giant`).
+   * Pemain dapat memilih jenis monster yang ingin diburu tanpa terdistraksi monster lain.
+4. **Movement Mode Selector (Walk/Tween vs Instant Teleport)**:
+   * Selector metode pergerakan dengan 2 opsi fleksibel:
+     * **`Walk / Tween`**: Karakter bergerak alami menggunakan pathing humanoid / safe tweening (tampak realistis bagi pemain lain).
+     * **`Teleport`**: Karakter berpindah posisi seketika (CFrame teleport) ke target berikutnya untuk efisiensi farming maksimal.
+   * Berlaku sinkron untuk Auto Tree Chop, Auto Ore Mine, dan Auto Hunt.
+5. **4 Pilihan Combat Stance (Posisi Tempur Mengunci Target)**:
+   * Menghadirkan dropdown **Combat Stance** untuk mengunci posisi relatif karakter terhadap monster selama Kill Aura / pertempuran:
+     * 🔼 **`Atas (Above)`**: Karakter melayang tepat 5.5 studs di atas kepala monster menghadap ke bawah (aman dari serangan balik monster darat).
+     * ◀️ **`Belakang (Behind)`**: Karakter mengunci posisi tepat di belakang punggung monster (`targetPart.CFrame * Vector3.new(0, 0.5, 3.8)`), monster tidak dapat memukul balik.
+     * ▶️ **`Depan (Front)`**: Karakter berhadapan langsung di depan wajah target.
+     * 🔽 **`Bawah (Below)`**: Karakter memposisikan diri tepat di bawah kaki target.
+   * Posisi distabilkan anti-jitter dengan `AssemblyLinearVelocity = Vector3.zero` dan `AssemblyAngularVelocity = Vector3.zero` hingga target mati.
+
 ---
 
 # BAGIAN III: DEEP DIVE TEKNIS UNBOX ASMR
