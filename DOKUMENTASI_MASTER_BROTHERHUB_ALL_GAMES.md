@@ -1,4 +1,4 @@
-# 👑 BROTHER HUB — ENSIKLOPEDIA & DOKUMENTASI TEKNIS LENGKAP MASTER ECOSYSTEM (35 GAMES)
+# 👑 BROTHER HUB — ENSIKLOPEDIA & DOKUMENTASI TEKNIS LENGKAP MASTER ECOSYSTEM (36 GAMES)
 
 Dokumen ini adalah **catatan teknis master 100% lengkap dan menyeluruh** untuk seluruh ekosistem **Brother Hub**. Dokumen ini mencatat setiap data, hasil dump saveinstances, arsitektur skrip, mekanisme remote server, formula kecepatan, ID role Discord, peraturan Founder, hingga konfigurasi internal untuk semua game yang didukung.
 
@@ -403,6 +403,7 @@ Tabel di bawah adalah **Sumber Kebenaran Tunggal (Single Source of Truth)** untu
 | 33 | **Super Treehouse Tycoon 2** | `SuperTreehouseTycoon2_Clean.lua` | `SuperTreehouseTycoon2_BROTHERHUB.lua` | 🌳 Super Treehouse Tycoon 2 | `1553381125244846180` | ✅ AKTIF |
 | 34 | **Blue Lock Farm** | `BlueLockFarm_Clean.lua` | `BlueLockFarm_BROTHERHUB.lua` | ⚽ Blue Lock Farm | `1554442318101225472` | ✅ AKTIF |
 | 35 | **[MIDAS] Pull A Sword** | `PullASword_Clean.lua` | `PullASword_BROTHERHUB.lua` | 🗡️ Pull A Sword | `1554481560252850317` | ✅ AKTIF |
+| 36 | **Race Horses** | `RaceHorses_Clean.lua` | `RaceHorses_BROTHERHUB.lua` | 🏇 Race Horses | `1554500930651693158` | ✅ AKTIF |
 
 ### 4.2 Role Notifikasi Master Server
 * **⚡ Script Update Ping**: `1548208954163724299`
@@ -1108,4 +1109,82 @@ Game tidak menggunakan RemoteEvent konvensional melainkan ByteNet Packet Objects
 8. **Teleports**:
    - Plot Teleports: Plot Center, Training Dummy, Reveal Rock, Dummy Sign, Plot Sign.
    - World Teleports: Boss Area, Boss Portal, Zones 1-26, Safe Zones 1-8.
+
+---
+
+# BAGIAN III.D: DEEP DIVE TEKNIS RACE HORSES (36TH GAME)
+
+### 3.10 Metadata Game & Tempat (Place Information)
+* **Game Title**: Race Horses
+* **Place ID**: `79475945127283`
+* **Game Link**: https://www.roblox.com/games/79475945127283/Race-Horses
+* **Official Discord Role**: `🏇 Race Horses` (ID: `1554500930651693158`)
+* **Networking Framework**: **MailService** Engine (`ReplicatedStorage.Modules.Core.MailService`) yang membungkus `NetworkRemotes.Fire` (RemoteEvent) dan `NetworkRemotes.ClientCall` (RemoteFunction).
+* **Arsitektur GUI**: 1:1 My Flower Shop Exact Standard (660 x 440 base) dengan Bottom-Right Resizable Grip `◢` (min 560x380, max 1000x750), Horizontal Scrolling TabBar X, RGB 360° Neon Stroke (`neonStroke`), Floating 80x80 MinCircle (`👑 BH`), dan 360x200 CloseModal.
+* **Kebijakan Pembayaran**: 100% Free / In-Game Cash & Coins Only (Zero Robux buy popups per Founder rule).
+
+### 3.11 Remote Actions & Remotes Architecture
+1. **Auto Race & Speed**:
+   - `sendAction("RequestSignup")`: Mendaftar antrian balapan seketika terbuka.
+   - `sendAction("RequestAutoRace")` & `callAction("RequestToggleAutoRace")`: Mengaktifkan mode balapan tanpa henti.
+   - `sendAction("ClickBoost")` & `sendAction("TrainClick")`: Mempercepat laju kuda saat balapan atau latihan.
+   - `callAction("UseBestHorses")`: Memakai kuda tercepat dengan stat terbaik.
+   - `sendAction("RideHorse")` & `sendAction("RideDismount")`: Naik/turun dari kuda.
+   - `sendAction("RideGait", gait)`: Mengatur ritme lari kuda ("Walk", "Trot", "Canter", "Gallop").
+2. **Shop & Eggs (100% Free / In-Game Cash Only)**:
+   - Pembelian Telur: `callAction("PurchaseItem", "Eggs", eggName)` dengan Multi-Select Dropdown lengkap (Common, Rare, Epic, Legendary, Mythic, Golden, Royal, Dark, Cyber, Crystal).
+   - Auto Hatch Telur Kandang: `sendAction("Interact", eggModel)` saat model memiliki atribut `Ready == true`.
+   - Pembelian Pakan & Buah: `callAction("PurchaseItem", "Fruit", fruitName)` (Apple, Carrot, Golden Apple, Sugar Cube, Berry, dll).
+   - Pembelian Pelana & Perlengkapan: `callAction("PurchaseItem", "Equipment", equipName)`.
+3. **Stables & Care**:
+   - Upgrade Kandang: `callAction("StableUpgrade")` untuk memperluas kapasitas dan efisiensi kandang.
+   - Rawat & Beri Makan Kuda: Menembakkan `sendAction("Interact", trough)` atau `fireproximityprompt` pada palung makanan kuda.
+   - Trait Rolling & Rebirth: `callAction("RollTrait")`.
+4. **Rewards & Codes**:
+   - Offline Earnings: `sendAction("ClaimOfflineEarnings")`.
+   - Hadiah Grup: `callAction("RequestGroupReward")`.
+   - Hadiah Waktu Bermain: `callAction("ClaimGift", idx)` (Gifts 1 - 12).
+   - Kode Promo: `callAction("RedeemPromoCode", code)` (Termasuk tombol "Redeem All Popular Codes").
+5. **Teleports**:
+   - Lokasi Resmi: Spawn, Race Track, Stables / Barn, Shop.
+6. **Player Cheats & ESP**:
+   - Custom WalkSpeed (16-250), JumpPower (50-300), Noclip, Infinite Jump, Fly Mode (10-200 speed), ESP Horses, ESP Players.
+
+---
+
+# BAGIAN III.B.1: HOTFIX BLUE LOCK FARM v1.0.3 (RAPID PROXIMITY SWEEP ENGINE)
+
+### 3.12 Laporan Masalah Member & Pembedahan Akar Masalah
+* **Laporan Masalah**: Member `BOS` melaporkan di Discord: *"Auto take drop stuff ga work"*.
+* **Akar Masalah Teknis**:
+  - Pada module `CollectableObjectClient` dan `VariantTokenSpawnClient`, server game Roblox memvalidasi jarak fisik pemain terhadap objek drop:
+    `if (HumanoidRootPart.Position - node.Position).Magnitude > 10 then return end`
+  - Kode Brother Hub v1.0.0 sebelumnya menembakkan `CollectCollectableObject(node)` dan `CollectVariantTokenSpawn(node)` saat pemain sedang berdiri diam di plot conveyor mereka (puluhan hingga ratusan studs dari lokasi drop).
+  - Akibatnya, server menolak permintaan pengumpulan drop secara diam-diam (*silent rejection*) tanpa ada error di konsol client.
+* **Solusi: Rapid Proximity Sweep Engine**:
+  - Diterapkan fungsi `sweepDropsNow()`:
+    1. Memindai seluruh instance aktif ber-tag `CollectableObject` (LuckPotion, CashPotion, GradeToken, TraitToken) dan `VariantTokenSpawn` (Shadow, Predator, FlowState, Unknown, Admin).
+    2. Menyimpan CFrame asli pemain (`oldCFrame = hrp.CFrame`).
+    3. Secara kilat menteleportasikan karakter ke titik CFrame tiap drop (`node.CFrame + Vector3.new(0, 2.5, 0)`), menunggu 0.06s untuk registrasi server physics tick, menembakkan remote `CollectCollectableObject` / `CollectVariantTokenSpawn`, dan menunggu 0.04s.
+    4. Setelah seluruh drop tersapu bersih, karakter secara mulus dikembalikan ke posisi plot semula (`hrp.CFrame = oldCFrame`) tanpa mengganggu proses farming ball crate.
+  - Ditambahkan tombol aksi manual di Tab Rewards: `⚡ Sweep & Collect All Drops Now`.
+  - Loop background `Auto Collect Drop Stuff` kini memanggil `sweepDropsNow()` setiap 2.5 detik saat toggle aktif.
+
+---
+
+# BAGIAN 7.13: SAVE INSTANCE SUBFOLDER ENGINE (.RBXL & .RBXLX SEPARATION)
+
+### 3.13 Latar Belakang & Solusi Folder Collision
+* **Permintaan Founder**:
+  Founder menginginkan agar hasil decompile/save instances game dipisahkan secara rapi ke dalam 2 subfolder terpisah di bawah folder game utama:
+  - `<Game Name> [<PlaceId>]/Rbxl/`: Untuk hasil save binary (`.rbxl` + 12 berkas `.rbxmx`).
+  - `<Game Name> [<PlaceId>]/Rbxlx/`: Untuk hasil save XML (`.rbxlx` + 12 berkas `.rbxmx`).
+* **Implementasi di `CleanHub/BrotherHub.txt` & `CleanHub/BrotherHub_original.lua`**:
+  ```lua
+  local subFolder = useRbxlx and "Rbxlx" or "Rbxl"
+  local targetFolder = folderName .. "/" .. subFolder
+  makefolder(targetFolder)
+  ```
+  Seluruh 12 berkas container `.rbxmx` dan berkas full place (`.rbxl` atau `.rbxlx`) kini langsung tersimpan ke `targetFolder` masing-masing, menjamin 0% risiko file bentrok atau tertimpa saat mengeksekusi kedua opsi save.
+
 
