@@ -1188,3 +1188,87 @@ Game tidak menggunakan RemoteEvent konvensional melainkan ByteNet Packet Objects
   Seluruh 12 berkas container `.rbxmx` dan berkas full place (`.rbxl` atau `.rbxlx`) kini langsung tersimpan ke `targetFolder` masing-masing, menjamin 0% risiko file bentrok atau tertimpa saat mengeksekusi kedua opsi save.
 
 
+
+
+---
+
+# BAGIAN 3.14: UPDATE RESMI RACE HORSES v1.0.1 (APPLE TREE HARVESTING & HORSE FEEDING)
+
+### 3.14.1 Latar Belakang & Permintaan Member Komunitas
+* **Member Pelapor**: `Zetsu` (Discord Member) mengirim pesan ke Founder Wira:
+  - *"auto ambil buahnya nda ada ya mas wir"*
+  - Founder Wira: *"buah dari pohon?"*
+  - Zetsu: *"iya mas"*
+* **Temuan Hasil Dump SaveInstance (`[NEW EGG] Race Horses [79475945127283]` / `Rbxlx/`)**:
+  1. Di dalam `Workspace`: Terdapat folder `Workspace.Trees` yang memuat model-model `AppleTree` berulang.
+  2. Atribut Model `AppleTree`:
+     - `InteractType = "Tree"`
+     - `FruitType = "Apple"`
+     - `Fruit`: Integer dinamis yang menunjukkan jumlah buah apel siap petik (misal 6).
+     - `MaxFruit`: Integer kapasitas maksimal buah pohon (6).
+     - `ActionText = "Pick"`
+     - `HoldDuration = 0`
+     - Child `BillboardGui` bernama `FruitCounter` dengan `Label.Text` (contoh `"6/6"` atau `"0/6"`).
+     - Child `ProximityPrompt` yang bisa dipicu via `fireproximityprompt`.
+  3. Mekanisme Remote Server (`dump_FeedFly.lua` / `ReplicatedStorage.Modules.Core.MailService`):
+     - Saat prompt dipicu atau pemain memetik pohon apel, client menembakkan remote:
+       `MailService:FireServer("Interact", appleTreeInstance)`
+     - Saat memberi makan kuda (Horse Care / Feeding):
+       `MailService:FireServer("Interact", horseInstance)` pada instance bertag `HorseAI` (`CollectionService:GetTagged("HorseAI")`) atau palung pakan (`FeedPrompt` / `Trough`).
+     - Kegunaan Buah Apel: Setiap apel yang diberikan ke kuda meningkatkan exp level kuda. Setiap level menaikkan multiplier hadiah dan kecepatan saat balapan.
+
+### 3.14.2 Implementasi Teknis di CleanHub/RaceHorses_Clean.lua (v1.0.1)
+* **Fungsi `getAppleTrees()`**:
+  Memindai seluruh instance `AppleTree` baik yang berada di dalam `Workspace.Trees` maupun di seluruh cabang `Workspace`.
+* **Fungsi `harvestAllTrees()`**:
+  - Beriterasi pada seluruh pohon apel yang memiliki atribut `Fruit > 0` atau memiliki `ProximityPrompt`.
+  - Menembakkan remote instan `sendAction("Interact", tree)` dan memicu `fireproximityprompt(prompt, 0)`.
+  - Menerapkan mekanisme **Proximity Bypass Safety**: Jika server memeriksa jarak fisik, karakter secara kilat diposisikan ke dekat pohon (`tree.PrimaryPart.CFrame + Vector3.new(0, 1, 2)`), menembakkan interaksi, dan melanjutkan ke pohon berikutnya.
+* **Fungsi `feedAllHorses()`**:
+  - Mengambil seluruh instance kuda milik pemain (`horse:GetAttribute("HorseOwner") == LocalPlayer.UserId`) dari tag `HorseAI` serta objek palung (`Trough` / `FeedPrompt`).
+  - Menembakkan `sendAction("Interact", horse)` dan memicu `ProximityPrompt` secara otomatis.
+* **Komponen Antarmuka GUI (Tab Auto Farm)**:
+  - Header: `addSectionHeader(pRace, "🍎 APPLE TREES & FRUIT HARVESTING", THEME.Yellow)`
+  - Toggle 1: `Auto Harvest Apple Trees (Pohon Apel)` -> `state.autoHarvestFruits`
+  - Toggle 2: `Auto Feed Fruits to Horses (Level Up)` -> `state.autoFeedFruits`
+  - Tombol 1: `🍎 Harvest All Apple Trees Now` -> mengeksekusi `harvestAllTrees()`
+  - Tombol 2: `🥕 Feed All Fruits to Horses Now` -> mengeksekusi `feedAllHorses()`
+* **Background Worker Thread (Loop 6)**:
+  Loop independen berulang setiap 2 detik yang memproses panen pohon apel dan pemberian makan kuda saat masing-masing toggle diaktifkan.
+
+---
+
+# BAGIAN 3.15: DISCORD #ROLES 36 GAMES INTERACTIVE DROPDOWN OVERHAUL
+
+### 3.15.1 Latar Belakang & Analisis Masalah
+* **Gejala**: Tampilan embed teks di `#🎭・roles` telah mencantumkan 36 game, namun komponen interaktif Discord dropdown di bawahnya masih bertuliskan:
+  - `🎮 Pilih Game Favorit - Menu 1 (13 Game)`
+  - `🎮 Pilih Game Favorit - Menu 2 (13 Game)`
+  Total baru 26 game, menyisakan 10 game baru yang belum bisa dipilih lewat dropdown.
+* **Solusi & Eksekusi API Langsung (`tools/deploy_roles_36_direct.py`)**:
+  - Pesan Discord `1551596940683247697` di channel `#🎭・roles` (`1547960169206644838`) di-PATCH langsung via Bot Token:
+    * **Row 0**: 5 Action Buttons (Announcement Ping, Script Update Ping, Giveaway Ping, PC Player, Mobile Player).
+    * **Row 1**: 1 Action Button (Casino Player).
+    * **Row 2**: Select Menu 1 -> `🎮 Pilih Game Favorit - Menu 1 (18 Game)` (Game 1 s/d 18).
+    * **Row 3**: Select Menu 2 -> `🎮 Pilih Game Favorit - Menu 2 (18 Game)` (Game 19 s/d 36).
+  - File `tools/self_roles.py` diperbarui dengan seluruh 36 konfigurasi game lengkap.
+  - Container deploy Yupra `BrotherHub_Yupra_AllInOne.zip` (3.95 MB) dibangun ulang dan siap pakai.
+
+---
+
+# BAGIAN 3.16: KLARIFIKASI DISCORD COMMUNITY ONBOARDING & VERIFICATION GATE
+
+### 3.16.1 Analisis Status "Onboarding is Disabled (OFF)"
+* **Pertanyaan Founder**: *"apakah on boarding tetap berjalan saat pertama orang masuk?"*
+* **Fakta Teknis Sistem Discord**:
+  - **TIDAK BERJALAN OTOMATIS** jika toggle di menu Server Settings masih bertuliskan **"Onboarding is Disabled" (OFF)**. Member baru yang bergabung tidak akan melihat kuesioner pop-up layar penuh dan akan langsung mendarat di channel default.
+* **Penyebab Status Disabled**:
+  - Discord Community mewajibkan minimal **1 Default Channel di mana role `@everyone` (member tanpa verifikasi) memiliki izin mengetik (`Send Messages = True`)**.
+  - Server Brother Hub saat ini menerapkan **Verification Gate (`#✅・verify`)** yang sangat aman, di mana seluruh channel default (`#rules`, `#announcements`, `#verify`, `#roles`) sengaja diatur **Read-Only** untuk mencegah serbuan bot/spammer liar.
+* **Status Keamanan Data**:
+  - Seluruh data pertanyaan Onboarding:
+    * Question 1: **36 of 50** game resmi Brother Hub (lengkap).
+    * Question 2: Perangkat bermain (PC & Mobile Player).
+    * Question 3: Notifikasi ping (Announcement, Script Update, Giveaway).
+    Telah tersimpan sempurna di backend Discord.
+  - Seluruh member baru dan lama tetap bisa memilih role mereka kapan saja dengan leluasa melalui channel **`#🎭・roles`**!
