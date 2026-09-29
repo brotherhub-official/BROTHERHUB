@@ -442,16 +442,33 @@ Tabel di bawah adalah **Sumber Kebenaran Tunggal (Single Source of Truth)** untu
   3. *Layer 3*: Post-save file regex patcher membersihkan tag XML konflik secara otomatis.
 
 
-### 5.7 Aturan 10B: Analisis & Penanggulangan Komprehensif Bug UI Kosong (Zero-Blank Frame Directive)
-* **Latar Belakang & Masalah Berulang**: Sering kali frame utama dan top bar berhasil tampil, namun area isi tab kosong melompong (hitam pekat) dan member melaporkan *"Gaada fiturnya"*.
-* **Akar Masalah Teknis Utama (Roblox Engine Cyclic Dependency)**:
-  1. Jika parent container memiliki `AutomaticSize = Enum.AutomaticSize.Y`, lalu child-nya memiliki `Scale > 0` pada sumbu Y (misal bar aksen `UDim2.new(0, 4, 1, 0)`), engine Roblox mendeteksi dependensi melingkar.
-  2. Engine Roblox secara diam-diam mereset tinggi parent menjadi 0 pixel (`AbsoluteSize.Y == 0`). Akibatnya seluruh konten di dalam parent kolaps dan lenyap dari layar.
-* **4 Standar Pencegahan Mutlak Brother Hub**:
-  1. **Direct Page Item Placement**: Dilarang membungkus kontrol ke dalam frame kartu `AutomaticSize` yang memiliki child berskala Y. Seluruh kontrol (`addToggle`, `addSlider`, `addMultiSelectDropdown`, `addButton`) wajib diparentkan langsung ke `ScrollingFrame` halaman (`page`).
-  2. **Inisialisasi CanvasSize**: Seluruh `ScrollingFrame` (TabBar dan Page) wajib menetapkan `CanvasSize = UDim2.new(0, 0, 0, 0)` agar tidak memakai default 200% tinggi container yang merusak rendering teks tombol.
-  3. **Aktivasi Tab Awal Eksplisit**: Tab pertama wajib diaktifkan secara deklaratif seketika selesai dibuat (`tabPages[defaultTab].Visible = true`).
-  4. **Mobile Viewport Scaler**: `ScreenGui` wajib memiliki `UIScale` responsif (0.55 – 1.0) agar ukuran frame pas di segala jenis smartphone Android dan iOS.
+### 5.7 Aturan 10B: Analisis & Penanggulangan Komprehensif Bug UI Kosong & UI Crash (Zero-Blank & Zero-Crash Directive)
+* **Latar Belakang & Keluhan Pengguna**: Seringkali terjadi 2 insiden cacat visual pada script baru:
+  1. Frame utama dan top bar muncul, tetapi area isi tab kosong melompong (hitam pekat) dan member melapor *"Gaada fiturnya"*.
+  2. Script dieksekusi tetapi antarmuka sama sekali tidak muncul di layar dan tester melapor *"Skrng malah ga muncul ui nya"*.
+* **Pembedahan Forensik 11 Faktor Kegagalan (Roblox Engine & Luau Runtime)**:
+  1. **Kategori A ("Gaada Fiturnya" / Isi Halaman Hitam Kosong Melompong)**:
+     - **Faktor A1 (Cyclic Dependency AutomaticSize)**: Parent container memiliki `AutomaticSize = Enum.AutomaticSize.Y`, sedangkan child memiliki `Size.Y.Scale > 0` (misal aksen bar `UDim2.new(0, 4, 1, 0)`). Engine Roblox mendeteksi dependensi melingkar tak berujung dan secara diam-diam mereset tinggi parent ke 0 pixel (`AbsoluteSize.Y == 0`) tanpa error di konsol! Seluruh toggle, slider, dan dropdown di dalam card otomatis terhimpit ke 0 pixel.
+       * *Solusi Mutlak*: Dilarang membungkus kontrol ke dalam kartu dinamis berskala Y. Seluruh kontrol (`addToggle`, `addSlider`, `addMultiSelectDropdown`, `addButton`) **wajib diletakkan langsung sebagai child dari `page` (`ScrollingFrame`)**. Pemisah judul seksi wajib menggunakan `addSectionHeader(page, title, accent)` berukuran tinggi pixel tetap (`UDim2.new(1, 0, 0, 28)`).
+     - **Faktor A2 (Default CanvasSize 200%)**: Default `ScrollingFrame` Roblox memiliki `CanvasSize = UDim2.new(0, 0, 2, 0)`. Jika `AutomaticCanvasSize` dinyalakan tanpa menetapkan `CanvasSize = UDim2.new(0, 0, 0, 0)`, offset canvas membengkak 200% dan melempar tombol tab keluar batas layar.
+       * *Solusi Mutlak*: Wajib selalu menetapkan `frame.CanvasSize = UDim2.new(0, 0, 0, 0)` pada setiap ScrollingFrame (baik TabBar maupun Page).
+     - **Faktor A3 (Aktivasi Tab Awal Silent Freeze)**: Tab dibuat dengan default `Visible = false`. Jika pemanggilan aktivasi tab berada di bawah baris kode yang mengalami silent fail / pcall freeze, seluruh tab selamanya tetap `Visible = false`.
+       * *Solusi Mutlak*: Tab pertama wajib diaktifkan secara deklaratif seketika selesai dibuat:
+         `tabButtons[firstTab].BackgroundColor3 = THEME.Title; tabButtons[firstTab].TextColor3 = THEME.Bg; tabPages[firstTab].Visible = true`
+     - **Faktor A4 (TabBar Geometry & Font Clipping)**: Lebar tombol tab < 110px menyebabkan teks tab dan emoji terpotong di HP. Tombol tab wajib berukuran minimal 115-125px dengan UIPadding dan font GothamBold.
+     - **Faktor A5 (Absennya Viewport Scaler)**: Frame PC 660x440 meluap keluar layar HP resolusi rendah jika ScreenGui tidak dibekali `guiScale` dinamis (0.55 – 1.0).
+     - **Faktor A6 (Hierarki Parenting Kontainer)**: Kontainer konten (`contentContainer`) wajib diparentkan tepat di `mainFrame` dengan batas ukuran dan ZIndex yang tidak tumpang-tindih.
+  2. **Kategori B ("Skrng Malah Ga Muncul UI Nya" / UI Crash On Startup)**:
+     - **Faktor B1 (Nil Identifier Reference Crash - Case Sensitivity Typo)**: Deklarasi di atas `local Camera = Workspace.CurrentCamera` (huruf kapital), tetapi di bawah dipanggil `camera` (huruf kecil):
+       `track(camera:GetPropertyChangedSignal("ViewportSize"):Connect(updateGuiScale))`
+       Luau melempar fatal exception: `attempt to index nil with 'GetPropertyChangedSignal'`. Karena terjadi pada inisialisasi awal sebelum `mainFrame` dibuat, skrip mati seketika saat pertama dieksekusi!
+       * *Solusi Mutlak*: Deklarasikan ganda `local Camera = Workspace.CurrentCamera or Workspace:FindFirstChildOfClass("Camera")` dan `local camera = Camera`. Bungkus seluruh listener kamera dalam `pcall` dan tambahkan listener `Workspace:GetPropertyChangedSignal("CurrentCamera")`.
+     - **Faktor B2 (Permission Security Error CoreGui di Mobile)**: Mengakses `CoreGui` telanjang tanpa pcall pada beberapa mobile executor melempar error security identity permission.
+       * *Solusi Mutlak*: Gunakan resolusi 3-lapis dengan try-catch: `gethui()` -> `CoreGui` -> `LocalPlayer.PlayerGui`. Sediakan fallback saat parenting `screenGui.Parent`.
+     - **Faktor B3 (Bencana Salah Parenting UIScale)**: Memasang `MainScale` ke `screenGui` alih-alih `mainFrame`. Saat minimize `Scale = 0`, seluruh ScreenGui termasuk tombol bulatan `MinCircle` 80x80 ikut lenyap ke 0 pixel.
+       * *Solusi Mutlak*: `MainScale` WAJIB HANYA DI-PARENT KE `mainFrame` (`Instance.new("UIScale", mainFrame)`), DILARANG KERAS di-parent ke `screenGui`!
+     - **Faktor B4 (Multi-Instance Cleanup Collision)**: Guard pembersihan instance lama wajib dieksekusi secara sinkron di paling awal skrip (baris 9-12) sebelum instance baru dibuat (`_G.BH_<GAME>_CLEANUP`).
+     - **Faktor B5 (ResetOnSpawn Core Deletion)**: Wajib selalu menetapkan `screenGui.ResetOnSpawn = false` agar antarmuka tidak otomatis dihancurkan oleh core Roblox saat karakter pemain respawn.
 
 ### 5.6 Aturan 10: Standarisasi Baku Arsitektur GUI (100% Wajib 1:1 My Flower Shop Tanpa Kompromi)
 * **Hukum Mutlak Founder**: Seluruh script Brother Hub (baik 34 game saat ini maupun game baru di masa depan) **WAJIB 100% MENGADOPSI ARSITEKTUR MY FLOWER SHOP**.
