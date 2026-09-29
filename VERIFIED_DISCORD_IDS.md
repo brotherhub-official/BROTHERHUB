@@ -60,3 +60,65 @@
 - **#roles**: `1547960169206644838` (Channel Name: `🎭・roles`)
 - **#announcements**: `1547966799948025956` (Channel Name: `📌・staff-announcements`)
 - **#game-features**: `1548053432089190442` (Channel Name: `📖・game-features`)
+
+## 4. STANDAR BAKU TEMPLATE PENGUMUMAN & CHANGELOGS (100% RICH DISCORD EMBED)
+
+> ⚠️ **HUKUM MUTLAK**: DILARANG MEM-POSTING PLAINTEXT DENGAN GARIS DASH/PEMISAH (`---`). SELURUH PENGUMUMAN WAJIB MENGGUNAKAN RICH DISCORD EMBED BERIKUT:
+
+### A. Template Announcements (`#📢・announcements` - `1547960148599775262`)
+```json
+{
+  "content": "<@&ROLE_GAME_ID> <@&1548208954163724299>",
+  "embeds": [
+    {
+      "title": "👑 BROTHER HUB — <NAMA GAME> <JENIS UPDATE> UPDATE",
+      "description": "🇮🇩 **PEMBARUAN RESMI <NAMA GAME>**\n<1 Paragraf Pengantar Bahasa Indonesia>\n\n🇬🇧 **OFFICIAL <NAMA GAME> UPDATE**\n<1 Paragraf Pengantar English>\n\n👉 **AMBIL DAN SALIN SCRIPT RESMI HANYA DI CHANNEL:** <#1547960154228793424>",
+      "color": 15844367,
+      "fields": [
+        {
+          "name": "🇮🇩 Fitur & Perbaikan Utama",
+          "value": "• **Judul Fitur 1**: Deskripsi lengkap.\n• **Judul Fitur 2**: Deskripsi lengkap.",
+          "inline": false
+        },
+        {
+          "name": "🇬🇧 Key Features & Fixes",
+          "value": "• **Feature Title 1**: Full English description.\n• **Feature Title 2**: Full English description.",
+          "inline": false
+        }
+      ],
+      "footer": {
+        "text": "Brother Hub Official • Always Superior & Autonomous"
+      }
+    }
+  ]
+}
+```
+
+### B. Template Changelogs (`#📝・changelogs` - `1547960156417949726`)
+```json
+{
+  "content": "<@&ROLE_GAME_ID> <@&1548208954163724299>",
+  "embeds": [
+    {
+      "title": "📝 CHANGELOGS: <NAMA GAME> (v<VERSI>)",
+      "description": "🇮🇩 **CATATAN PEMBARUAN VERSI <VERSI>**\n<Pengantar teknis Bahasa Indonesia>\n\n🇬🇧 **VERSION <VERSI> UPDATE NOTES**\n<Pengantar teknis English>\n\n👉 **AMBIL DAN SALIN SCRIPT RESMI HANYA DI CHANNEL:** <#1547960154228793424>",
+      "color": 3447003,
+      "fields": [
+        {
+          "name": "🇮🇩 Detail Pembaruan",
+          "value": "1. **[Fix / Improvement / New]**: Rincian teknis.\n2. **[Security]**: Status build Brother Guard.",
+          "inline": false
+        },
+        {
+          "name": "🇬🇧 Update Details",
+          "value": "1. **[Fix / Improvement / New]**: Technical details.\n2. **[Security]**: Brother Guard build status.",
+          "inline": false
+        }
+      ],
+      "footer": {
+        "text": "Brother Hub Official • <Nama Game> v<Versi>"
+      }
+    }
+  ]
+}
+```
