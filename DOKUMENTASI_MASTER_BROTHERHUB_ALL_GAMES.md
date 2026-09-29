@@ -302,6 +302,27 @@ Daftar lengkap 67 peti dari `ReplicatedStorage.ProductCatalogConfig` & `EventPro
   4. *Pre-Flight Cash-Safe Engine*: Membaca saldo Cash pemain via `leaderstats.Cash`, atribut `Cash`, dan HUD, mem-parse teks denominasi biaya (`parseCurrency`), serta memvalidasi `if playerCash < cost then abort` sebelum setiap panggilan remote `RequestUpgrade:FireServer(model)`. Mencegah saldo minus, kegagalan eksekusi, atau error spam.
   5. *Dual Execution Mode*: Tombol eksekusi manual seketika (`▲ Jalankan Upgrade Sekarang`) dan toggle latar belakang (`Auto Upgrade Level (Background Loop)`).
 
+### 3.7 Pembaruan Unbox ASMR v2.7 (Rekayasa Ulang Placement Engine, Anti-Relog Bug Resolution, Smart Conveyor Surveillance & 1-Click Auto-Place)
+* **Latar Belakang & Masalah Pemain**:
+  * Pemain yang membeli peti dari conveyor (misal `Soap Crunch Balls Crate` / Exotic) tidak bisa memasangnya di base ("kaya nge bug gitu") dan terpaksa harus relog tanpa script baru bisa memasang peti.
+  * Peti target di conveyor sempat kelewat dan masuk ke bak recovery berbayar 30 Robux akibat jeda spawn yang terlalu cepat.
+* **Solusi Arsitektur Brother Hub v2.7**:
+  1. *Sterilisasi Total Remote & Tool Guard*:
+     - Menghapus remote `RequestPlaceCrate(nil)` dan `RequestPickupCrate(nil)` yang sebelumnya mengirim argumen kosong dan memicu sinyal `PlacementResult: false` dari server yang mengunci mode penempatan client ke status invalid.
+     - Melindungi tool peti secara mutlak dalam loop `autoUnboxOpen` sehingga `tool:Activate()` tidak pernah membajak tool peti yang sedang dipegang pemain.
+     - Mengubah pemblokir Robux menjadi 100% *event-driven* (`MarketplaceService`), menghapus polling `RunService.Heartbeat`, dan membatasi pencarian hanya pada `PurchasePrompt` dan `PurchasePromptApp` (steril dari `RobloxGui`).
+  2. *Validated Placement Engine*:
+     - `findHeldCrateTool()`: Mendeteksi peti di tangan atau Backpack.
+     - `findOpenPlacementSpot()`: Menghitung koordinat penempatan kosong di atas ubin `Placement.Unlocked` (`Placeable == true`) dan memverifikasi jarak aman minimal 4.2 studs dari seluruh model peti yang sudah terpasang (`PlacedCrates`).
+     - `placeHeldCrate()`: Meng-equip tool dan menembakkan `RequestPlaceCrate:FireServer(spotCFrame)` secara presisi.
+  3. *Fitur Baru Tab Unbox*:
+     - `⚡ Taruh Peti yang Dipegang ke Base Sekarang`: Tombol 1-klik untuk meletakkan peti yang dipegang langsung ke area kosong base.
+     - `Auto Taruh Peti Baru ke Base (Auto Place)`: Toggle otomatis yang langsung menempatkan peti yang baru saja dibeli dari conveyor ke base tanpa pemain perlu berjalan atau mengeklik manual.
+  4. *Smart Conveyor Surveillance & Anti-Skip*:
+     - Cooldown minimum 1.8 detik tiap spawn tombol agar conveyor selesai mengantarkan peti ke depan pemain.
+     - Active surveillance window (hingga 3.5s) memantau `State == "Ready"`.
+     - Instant Emergency Lock seketika peti cocok, mematikan toggle roller dan mencegah peti terdorong ke tempat recovery 30 Robux.
+
 ---
 
 
@@ -344,7 +365,6 @@ Tabel di bawah adalah **Sumber Kebenaran Tunggal (Single Source of Truth)** untu
 | 31 | **Mine Antarctica** | `MineAntarctica_Clean.lua` | `MineAntarctica_BROTHERHUB.lua` | ❄️ Mine Antarctica | `1552346215469813895` | ✅ AKTIF |
 | 32 | **Clone to Steal Eggs** | `CloneToStealEggs_Clean.lua` | `CloneToStealEggs_BROTHERHUB.lua` | 🥚 Clone to Steal Eggs | `1553381123118211122` | ✅ AKTIF |
 | 33 | **Super Treehouse Tycoon 2** | `SuperTreehouseTycoon2_Clean.lua` | `SuperTreehouseTycoon2_BROTHERHUB.lua` | 🌳 Super Treehouse Tycoon 2 | `1553381125244846180` | ✅ AKTIF |
-| 34 | **Steal Underwater Eggs** | `StealUnderwaterEggs_Clean.lua` | `StealUnderwaterEggs_BROTHERHUB.lua` | 🌊 Steal Underwater Eggs | `1553381127119573065` | ✅ AKTIF |
 
 ### 4.2 Role Notifikasi Master Server
 * **⚡ Script Update Ping**: `1548208954163724299`
