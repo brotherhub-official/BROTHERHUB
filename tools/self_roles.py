@@ -55,6 +55,16 @@ GAMES_CONFIG = [
     {"id_key": "mine_it", "name": "⛏️ Mine It", "color": 0xF39C12, "emoji": "⛏️", "desc": "Auto mine ores, multi-select, stance offset, shop & teleports"},
     {"id_key": "dungeons_tower", "name": "🏰 Dungeons Tower", "color": 0x9B59B6, "emoji": "🏰", "desc": "Auto solo party, kill aura, safe stance, drop vacuum & chests"},
     {"id_key": "pets_universe", "name": "🐾 Pets Universe", "color": 0x00FFC8, "emoji": "🐾", "desc": "Auto farm breakables, hatch eggs, machines, moon upgrades, chests & TP"},
+    {"id_key": "steal_anime_egg", "name": "🥚 Steal An Anime Egg", "color": 0xF39C12, "emoji": "🥚", "desc": "Auto Steal Egg, Instant Hatch, Upgrades & Safe Stance"},
+    {"id_key": "mrbeast_island", "name": "🏝️ Mrbeast Island Escape", "color": 0x3498DB, "emoji": "🏝️", "desc": "Auto Collect Currency, Escape Obby, Shop & Fly"},
+    {"id_key": "steal_rich", "name": "💰 Steal From The Rich", "color": 0xF1C40F, "emoji": "💰", "desc": "Auto Rob Mansions, Vault Bypass, Cash Teleport & Shop"},
+    {"id_key": "unbox_asmr", "name": "📦 Unbox ASMR", "color": 0x9B59B6, "emoji": "📦", "desc": "Auto Open Boxes, Bubble Wrap Pop, Fast Sell & Upgrade"},
+    {"id_key": "mine_antarctica", "name": "❄️ Mine Antarctica", "color": 0x00D2FF, "emoji": "❄️", "desc": "Auto Mine Ice & Ores, Deep Tunnels, Fast Sell & Pickaxe"},
+    {"id_key": "clone_steal_eggs", "name": "🥚 Clone to Steal Eggs", "color": 0xE67E22, "emoji": "🥚", "desc": "Auto Steal Egg by Area, Instant Prompt, Auto Hatch, Upgrades"},
+    {"id_key": "super_treehouse", "name": "🌳 Super Treehouse Tycoon 2", "color": 0x2ECC71, "emoji": "🌳", "desc": "Auto Collect Honey, Auto Tycoon Buttons, Bee Capture & Egg Hatch"},
+    {"id_key": "blue_lock_farm", "name": "⚽ Blue Lock Farm", "color": 0x0055FF, "emoji": "⚽", "desc": "Auto Roll Conveyor, Auto Buy Lockers, Place & Open Lockers, Tower Auto Battle"},
+    {"id_key": "pull_a_sword", "name": "🗡️ Pull A Sword", "color": 0xFF4500, "emoji": "🗡️", "desc": "Auto Train & Clicker, Auto Pull Swords, Equip Best, Rebirth, Egg Hatch"},
+    {"id_key": "race_horses", "name": "🏇 Race Horses", "color": 0xD4AF37, "emoji": "🏇", "desc": "Auto Race, Auto Training, Equip Best Horses, Stable Upgrade, Horse Eggs"},
 ]
 
 ALL_CONFIGS = ACTION_BUTTONS_CONFIG + GAMES_CONFIG
@@ -222,7 +232,7 @@ def create_roles_embed() -> discord.Embed:
             "• `🎁 Giveaway Ping` : Peringatan saat ada event giveaway berhadiah.\n"
             "• `🎰 Casino Player` : Notifikasi event jackpot & update kasino di `#🎰・casino`.\n"
             "• `💻 PC Player` | `📱 Mobile Player` : Tipe perangkat bermain Anda.\n\n"
-            "🎮 **26 SUPPORTED GAMES LIST (PILIH LEWAT DROPDOWN DI BAWAH)**\n"
+            "🎮 **36 OFFICIAL SUPPORTED GAMES LIST (PILIH LEWAT DROPDOWN DI BAWAH)**\n"
             "• `🌊 Deep Fishing` • `🌱 Steal A Seed` • `🎣 Fish On`\n"
             "• `🌸 My Flower Shop` • `⛏️ Dig Into Secrets` • `💎 Sell Ores`\n"
             "• `🎣 Fish an Anime` • `👹 The Mimic` • `🌾 Farm Industry`\n"
@@ -231,7 +241,10 @@ def create_roles_embed() -> discord.Embed:
             "• `💥 Defeat Anime RNG` • `🐉 Catch Dragons` • `🫧 Pop Bubbles`\n"
             "• `🎣 Heavyweight Fishing` • `⚔️ Shogun's Reign` • `🖱️ Clicker Simulator`\n"
             "• `💎 Loot Up` • `🃏 Pack A Brainrot Card` • `⛏️ Mine It`\n"
-            "• `🏰 Dungeons Tower` • `🐾 Pets Universe`\n\n"
+            "• `🏰 Dungeons Tower` • `🐾 Pets Universe` • `🥚 Steal An Anime Egg`\n"
+            "• `🏝️ Mrbeast Island Escape` • `💰 Steal From The Rich` • `📦 Unbox ASMR`\n"
+            "• `❄️ Mine Antarctica` • `🥚 Clone to Steal Eggs` • `🌳 Super Treehouse Tycoon 2`\n"
+            "• `⚽ Blue Lock Farm` • `🗡️ Pull A Sword` • `🏇 Race Horses`\n\n"
             "────────────────────────────────────────\n"
             "💡 **CARA PENGGUNAAN:**\n"
             "1. Klik tombol **Pings / Community / Device** di atas untuk toggle instan.\n"
