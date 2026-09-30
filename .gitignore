@@ -45,6 +45,9 @@ push_to_github.bat
 tools/
 .github/
 AGENTS.md
+GEMINI.md
+HANDOVER_PC_KANTOR.md
+SETUP_PC_KANTOR.bat
 .agents/
 .vscode/
 bin/
