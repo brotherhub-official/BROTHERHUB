@@ -254,8 +254,10 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Prompt 1: `🎮 Game Roblox Favoritmu? / What is your favorite Roblox game?`
   * Prompt 2: `💻📱 Perangkat Bermain? / What device do you play on?` (PC Player: `Bermain di Laptop / PC Computer`, Mobile Player: `Bermain di HP (Android / iOS)`)
   * Prompt 3: `🔔 Notifikasi apa yang diinginkan? / What notifications do you want?` (Announcement, Script Update, Giveaway)
-- **Live Discord Announcement**: `#📢・announcements` (`1554575152312754280`)
-- **Live Discord Changelog**: `#📝・changelogs` (`1554575164216185013`)
+- **Live Discord Announcement (Universal Bilingual Engine)**: `#📢・announcements` (`1554575152312754280`)
+- **Live Discord Changelog (v3.5)**: `#📝・changelogs` (`1554575164216185013`)
+- **Live Discord Announcement (Reporting & Suggestions Template)**: `#📢・announcements` (`1554750409787183125`)
 - **#🔐・founder-vault** (`1547986862470205521`): Tepat 37 pesan murni clean source code terbaru berfitur bilingual, 0 duplikat, akses terisolasi 100% khusus Founder.
+
 
 
