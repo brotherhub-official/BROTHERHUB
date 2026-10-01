@@ -276,6 +276,22 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Gaji Kerja Ekstra: `+50% Booster Bonus Wage`.
   * Status Badge Kasino: `[💎 Server Booster (2x Daily & +50% Wages)]` pada `!balance`.
 - **Voice Channels Audio Quality**: Seluruh 11 Voice Channel (`Lobby 1`, `Lobby 2`, `Mabar Gaming`, `Rapat Staff`, `Meeting Founder`, `Music Room 1-3`, `Staff Music Lounge`, `VIP Founder Music`, `Join to Create`) telah dinaikkan dari 64 kbps ke **128 kbps (Maksimal Level 1 Audio)**!
+- **Custom Emojis (9 Emojis Aktif & Terverifikasi)**:
+  * `<:bh_crown:1555176626143240262>` — Mahkota Emas Founder
+  * `<:bh_logo:1555176881769156678>` — Logo Resmi BH Neon Circle
+  * `<:bh_diamond:1555176884155977788>` — Berlian Biru Nitro / VIP
+  * `<:bh_booster:1555176886680813608>` — Gem Booster Ungu Glowing
+  * `<:bh_lightning:1555176889088344074>` — Petir Kuning Fast Execution
+  * `<:bh_coin:1555176891315650601>` — Koin Emas Kasino
+  * `<:bh_shield:1555176893391568919>` — Perisai Hijau Anti-Ban Protection
+  * `<:bh_fire:1555176895807627389>` — Api Hot Update & Trendy
+  * `<:bh_star:1555176898320015361>` — Bintang Emas Superioritas
+- **Custom Soundboard (5 Suara Aktif & Terverifikasi)**:
+  * `BH Level Up` (`1555176696020205588`) — Arpeggio Chime Kemenangan Naik Level
+  * `BH Coin` (`1555176901348298865`) — Denting Koin Emas Drop / Gaji
+  * `BH Jackpot` (`1555176904863256647`) — Melodi Cepat Kemenangan Kasino / Jackpot
+  * `BH Victory` (`1555176908130353263`) — Fanfare Kemenangan Boss / Quest Clear
+  * `BH Bass Boom` (`1555176914598101012`) — Sub-Bass 808 Drop Hype
 - **Yupra All-in-One Package**: `C:\Users\andra\Downloads\BrotherHub_Yupra_AllInOne.zip` (Tersedia untuk update bot kasino di Yupra).
 
 
