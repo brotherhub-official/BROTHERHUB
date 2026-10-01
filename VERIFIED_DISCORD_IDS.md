@@ -260,11 +260,11 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Prompt 1: `🎮 Game Roblox Favoritmu? / What is your favorite Roblox game?` (38 Options)
   * Prompt 2: `💻📱 Perangkat Bermain? / What device do you play on?` (PC Player: `Bermain di Laptop / PC Computer`, Mobile Player: `Bermain di HP (Android / iOS)`)
   * Prompt 3: `🔔 Notifikasi apa yang diinginkan? / What notifications do you want?` (Announcement, Script Update, Giveaway)
-- **Live Discord Announcement (Build An Ant Empire v1.3 Hotfix)**: `#📢・announcements` (`1555196642221752341`) [v1.2: `1555190999410806897`, v1.1: `1555187358469460059`, v1.0: `1555169028111343728`]
-- **Live Discord Changelog (Build An Ant Empire v1.3 Hotfix)**: `#📝・changelogs` (`1555196649985413183`) [v1.2: `1555191005932953663`, v1.1: `1555187360906485861`, v1.0: `1555169044905074774`]
+- **Live Discord Announcement (Build An Ant Empire v1.4 Hotfix)**: `#📢・announcements` (`1555200791340392563`) [v1.3: `1555196642221752341`, v1.2: `1555190999410806897`, v1.1: `1555187358469460059`, v1.0: `1555169028111343728`]
+- **Live Discord Changelog (Build An Ant Empire v1.4 Hotfix)**: `#📝・changelogs` (`1555200799968333947`) [v1.3: `1555196649985413183`, v1.2: `1555191005932953663`, v1.1: `1555187360906485861`, v1.0: `1555169044905074774`]
 - **Live Discord New Game Release**: `#🎮・new-games` (`1555169014303432756`)
 - **Live Discord Feature Guide**: `#📖・game-features` (`1555169021505175654`)
-- **#🔐・founder-vault** (`1547986862470205521`): Tepat 38 pesan murni clean source code terbaru berfitur bilingual, 0 duplikat, akses terisolasi 100% khusus Founder. (Clean Build An Ant Empire v1.3 Hotfix Msg ID: `1555196632348360826`).
+- **#🔐・founder-vault** (`1547986862470205521`): Tepat 38 pesan murni clean source code terbaru berfitur bilingual, 0 duplikat, akses terisolasi 100% khusus Founder. (Clean Build An Ant Empire v1.4 Hotfix Msg ID: `1555200784759525406`).
 
 ## 7. SERVER BOOST LEVEL 1 (TIER 1) STATUS & ASSETS
 - **Status Boost**: `Premium Tier: 1` | `Total Boost: 2 Boosts` (Diberikan oleh akun Founder Nitro `Wira98` / `1464503502268137516`).
