@@ -266,5 +266,17 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
 - **Live Discord Feature Guide**: `#📖・game-features` (`1555169021505175654`)
 - **#🔐・founder-vault** (`1547986862470205521`): Tepat 38 pesan murni clean source code terbaru berfitur bilingual, 0 duplikat, akses terisolasi 100% khusus Founder. (Clean Build An Ant Empire Msg ID: `1555169055072198656`).
 
+## 7. SERVER BOOST LEVEL 1 (TIER 1) STATUS & ASSETS
+- **Status Boost**: `Premium Tier: 1` | `Total Boost: 2 Boosts` (Diberikan oleh akun Founder Nitro `Wira98` / `1464503502268137516`).
+- **Animated Server Icon (GIF)**: Active (`Icon Hash: a_a1cca7a2df9c261f420f0c7795279caa`). Rotasi 360° RGB Neon 4-Keypoint matching My Flower Shop.
+- **Invite Splash (Background Layar Undangan)**: Active (`Splash Hash: 402bd2f94e3ac895e85bb67d8fc77ffe`). 1920x1080 obsidian theme dengan logo, neon ring, dan badges 38 games.
+- **Role `🟣 Server Booster`**: `1549301888749670431` (Warna ungu glowing, hoisted).
+- **Perks Kasino Booster**:
+  * Double Daily Rewards: `$500,000` (Regular: `$250,000`).
+  * Gaji Kerja Ekstra: `+50% Booster Bonus Wage`.
+  * Status Badge Kasino: `[💎 Server Booster (2x Daily & +50% Wages)]` pada `!balance`.
+- **Yupra All-in-One Package**: `C:\Users\andra\Downloads\BrotherHub_Yupra_AllInOne.zip` (Tersedia untuk update bot kasino di Yupra).
+
+
 
 
