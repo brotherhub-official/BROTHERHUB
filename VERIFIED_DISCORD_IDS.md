@@ -1,6 +1,6 @@
 # VERIFIED ROLES & CHANNELS MAPPING TABLE
 
-## 1. 38 SUPPORTED GAMES ROLES
+## 1. 39 SUPPORTED GAMES ROLES
 
 - **Deep Fishing**: `1551587483320459344` (Role Name: `🌊 Deep Fishing`)
 - **Pets Universe**: `1551531361582714892` (Role Name: `🐾 Pets Universe`)
@@ -40,6 +40,7 @@
 - **Race Horses**: `1554500930651693158` (Role Name: `🏇 Race Horses`)
 - **Sword Hunter**: `1554522896418869311` (Role Name: `⚔️ Sword Hunter`)
 - **Build An Ant Empire**: `1555168979956404325` (Role Name: `🐜 Build An Ant Empire`)
+- **Break and Steal an Egg**: `1555290294340157480` (Role Name: `🥚 Break and Steal an Egg`)
 
 ## 2. NOTIFICATION & SYSTEM ROLES
 
@@ -241,11 +242,11 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
 
 ### B. Audit & Sinkronisasi Lengkap Panel Discord Server (100% Bilingual ID & EN)
 - **#📱・supported-games** (`1547960163489546291` / Msg ID: `1547960239465177159`):
-  Menyajikan 38 katalog game aktif secara dwi-bahasa (ID & EN berdampingan).
+  Menyajikan 39 katalog game aktif secara dwi-bahasa (ID & EN berdampingan).
 - **#⚡・script-panel** (`1547960154228793424` / Msg ID: `1549384215873851423`):
-  Instruksi loadstring permanen universal, tombol Mobile/PC Copy, dan tautan tombol `📱 Daftar 38 Game` serta `🎭 Ambil Role Game` (Bilingual ID / EN).
+  Instruksi loadstring permanen universal, tombol Mobile/PC Copy, dan tautan tombol `📱 Daftar 39 Game` serta `🎭 Ambil Role Game` (Bilingual ID / EN).
 - **#🎭・roles** (`1547960169206644838` / Msg ID: `1551596940683247697`):
-  Daftar lengkap 38 role game (Menu 1: 18 game, Menu 2: 20 game) dan panduan mandiri pengambilan role onboarding (Bilingual ID / EN).
+  Daftar lengkap 39 role game (Menu 1: 18 game, Menu 2: 21 game) dan panduan mandiri pengambilan role onboarding (Bilingual ID / EN).
 - **#📩・open-ticket** (`1548183127699226735` / Msg ID: `1548262371087228930`):
   Penjelasan 4 kategori tiket (General Support, Middleman/Rekber, Founder Store & VIP, Bug Report) dalam Bahasa Indonesia dan English.
 - **#🔗・invite-link** (`1549011153223421972` / Msg ID: `1549011158248333353`):
@@ -257,14 +258,14 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
 - **#📜・ketentuan-dan-garansi** (`1548262161271361589` / Msg ID: `1548262164932861995`):
   SOP transaksi, metode pembayaran bank/QRIS/kartu, garansi, dan 4 langkah pemesanan dwi-bahasa.
 - **Server Onboarding Prompts**:
-  * Prompt 1: `🎮 Game Roblox Favoritmu? / What is your favorite Roblox game?` (38 Options)
+  * Prompt 1: `🎮 Game Roblox Favoritmu? / What is your favorite Roblox game?` (39 Options)
   * Prompt 2: `💻📱 Perangkat Bermain? / What device do you play on?` (PC Player: `Bermain di Laptop / PC Computer`, Mobile Player: `Bermain di HP (Android / iOS)`)
   * Prompt 3: `🔔 Notifikasi apa yang diinginkan? / What notifications do you want?` (Announcement, Script Update, Giveaway)
-- **Live Discord Announcement (Build An Ant Empire v1.4 Hotfix)**: `#📢・announcements` (`1555200791340392563`) [v1.3: `1555196642221752341`, v1.2: `1555190999410806897`, v1.1: `1555187358469460059`, v1.0: `1555169028111343728`]
-- **Live Discord Changelog (Build An Ant Empire v1.4 Hotfix)**: `#📝・changelogs` (`1555200799968333947`) [v1.3: `1555196649985413183`, v1.2: `1555191005932953663`, v1.1: `1555187360906485861`, v1.0: `1555169044905074774`]
-- **Live Discord New Game Release**: `#🎮・new-games` (`1555169014303432756`)
-- **Live Discord Feature Guide**: `#📖・game-features` (`1555169021505175654`)
-- **#🔐・founder-vault** (`1547986862470205521`): Tepat 38 pesan murni clean source code terbaru berfitur bilingual, 0 duplikat, akses terisolasi 100% khusus Founder. (Clean Build An Ant Empire v1.4 Hotfix Msg ID: `1555200784759525406`).
+- **Live Discord Announcement (Break and Steal an Egg Release)**: `#📢・announcements` (`1555290434077462589`) [Build An Ant Empire v1.4: `1555200791340392563`]
+- **Live Discord Changelog (Break and Steal an Egg v1.0)**: `#📝・changelogs` (`1555290437252681768`) [Build An Ant Empire v1.4: `1555200799968333947`]
+- **Live Discord New Game Release**: `#🎮・new-games` (`1555290429317054576`)
+- **Live Discord Feature Guide**: `#📖・game-features` (`1555290431271469099`)
+- **#🔐・founder-vault** (`1547986862470205521`): Tepat 39 pesan murni clean source code terbaru berfitur bilingual, 0 duplikat, akses terisolasi 100% khusus Founder. (Clean Break and Steal an Egg v1.0 Msg ID: `1555290424590073876`).
 
 ## 7. SERVER BOOST LEVEL 1 (TIER 1) STATUS & ASSETS
 - **Status Boost**: `Premium Tier: 1` | `Total Boost: 2 Boosts` (Diberikan oleh akun Founder Nitro `Wira98` / `1464503502268137516`).
