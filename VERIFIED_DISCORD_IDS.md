@@ -49,6 +49,11 @@
 - **Mobile Player**: `1548208969384988774` (Role Name: `📱 Mobile Player`)
 - **Casino Player**: `1550710101898166283` (Role Name: `🎰 Casino Player`)
 
+### 👑 FOUNDER ACCOUNTS (100% FULL EQUAL ACCESS)
+- **Founder Utama (Server Owner)**: `prawiraxliv` (User ID: `988433106283417641`)
+- **Founder Cadangan (Discord Nitro)**: `prawiraxliv98` (User ID: `1464503502268137516`)
+- **Role `👑 Founder`**: `1547959917460193322` (Status: `ADMINISTRATOR = True`, Full Bypass All Channels & Tickets)
+
 ## 3. CORE CHANNELS
 
 - **#rules**: `1547960146423058493` (Channel Name: `📜・rules`)
