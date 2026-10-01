@@ -275,6 +275,7 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Double Daily Rewards: `$500,000` (Regular: `$250,000`).
   * Gaji Kerja Ekstra: `+50% Booster Bonus Wage`.
   * Status Badge Kasino: `[💎 Server Booster (2x Daily & +50% Wages)]` pada `!balance`.
+- **Voice Channels Audio Quality**: Seluruh 11 Voice Channel (`Lobby 1`, `Lobby 2`, `Mabar Gaming`, `Rapat Staff`, `Meeting Founder`, `Music Room 1-3`, `Staff Music Lounge`, `VIP Founder Music`, `Join to Create`) telah dinaikkan dari 64 kbps ke **128 kbps (Maksimal Level 1 Audio)**!
 - **Yupra All-in-One Package**: `C:\Users\andra\Downloads\BrotherHub_Yupra_AllInOne.zip` (Tersedia untuk update bot kasino di Yupra).
 
 
