@@ -198,7 +198,7 @@ Suggested Feature Details (Please explain thoroughly and in full detail):
 *Announcement Message ID: `1554558559046471703`*
 Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100% Rich Discord Embed resmi (Dwi-bahasa 🇮🇩 ID & 🇬🇧 EN berdampingan).
 
-## 6. UNIVERSAL BILINGUAL ENGINE ARCHITECTURE (37 GAMES, LOADER & DISCORD)
+## 6. UNIVERSAL BILINGUAL ENGINE ARCHITECTURE (39 GAMES, LOADER & DISCORD)
 
 ### A. Mekanisme Deteksi Cerdas Wilayah & Bahasa (Smart Country/Locale Detection)
 1. **Universal Master Loader (`BrotherHub.lua` / `BrotherHub_Clean.lua`)**:
@@ -213,7 +213,7 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
      * `notify("❌ Download Error", L("Gagal mengunduh script dari GitHub!", "Failed to download script from GitHub!"), 8)`
      * `notify("⚠️ BROTHER HUB", L("Game ini belum didukung!\nPlaceId: ", "This game is not yet supported!\nPlaceId: ") .. tostring(placeId), 8)`
 
-2. **Seluruh 37 Script Game Resmi (`CleanHub/*_Clean.lua` & `*_BROTHERHUB.lua`)**:
+2. **Seluruh 39 Script Game Resmi (`CleanHub/*_Clean.lua` & `*_BROTHERHUB.lua`)**:
    - Menerima `_G.BROTHERHUB_LANG` dari loader (prioritas utama).
    - Memiliki fallback mandiri bila script dieksekusi terpisah tanpa loader:
      ```lua
@@ -261,11 +261,13 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Prompt 1: `🎮 Game Roblox Favoritmu? / What is your favorite Roblox game?` (39 Options)
   * Prompt 2: `💻📱 Perangkat Bermain? / What device do you play on?` (PC Player: `Bermain di Laptop / PC Computer`, Mobile Player: `Bermain di HP (Android / iOS)`)
   * Prompt 3: `🔔 Notifikasi apa yang diinginkan? / What notifications do you want?` (Announcement, Script Update, Giveaway)
-- **Live Discord Announcement (Break and Steal an Egg Release)**: `#📢・announcements` (`1555290434077462589`) [Build An Ant Empire v1.4: `1555200791340392563`]
-- **Live Discord Changelog (Break and Steal an Egg v1.0)**: `#📝・changelogs` (`1555290437252681768`) [Build An Ant Empire v1.4: `1555200799968333947`]
+- **Live Discord Announcement (Unbox ASMR & Build An Ant Empire)**:
+  * `#📢・announcements`: Unbox ASMR (`1555493541700968559`), Build An Ant Empire (`1555493556305530891`), Break and Steal an Egg (`1555290434077462589`).
+- **Live Discord Changelogs**:
+  * `#📝・changelogs`: Unbox ASMR v2.8 (`1555493548688932968`), Build An Ant Empire v1.5 (`1555493563037650945`), Break and Steal an Egg v1.0 (`1555290437252681768`).
 - **Live Discord New Game Release**: `#🎮・new-games` (`1555290429317054576`)
 - **Live Discord Feature Guide**: `#📖・game-features` (`1555290431271469099`)
-- **#🔐・founder-vault** (`1547986862470205521`): Tepat 39 pesan murni clean source code terbaru berfitur bilingual, 0 duplikat, akses terisolasi 100% khusus Founder. (Clean Break and Steal an Egg v1.0 Msg ID: `1555290424590073876`).
+- **#🔐・founder-vault** (`1547986862470205521`): Tepat 39 pesan murni clean source code terbaru berfitur bilingual, 0 duplikat, akses terisolasi 100% khusus Founder. (`UnboxASMR_Clean.lua` v2.9 Msg ID: `1555571568728342649`).
 
 ## 7. SERVER BOOST LEVEL 1 (TIER 1) STATUS & ASSETS
 - **Status Boost**: `Premium Tier: 1` | `Total Boost: 2 Boosts` (Diberikan oleh akun Founder Nitro `Wira98` / `1464503502268137516`).
