@@ -261,13 +261,13 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Prompt 1: `🎮 Game Roblox Favoritmu? / What is your favorite Roblox game?` (39 Options)
   * Prompt 2: `💻📱 Perangkat Bermain? / What device do you play on?` (PC Player: `Bermain di Laptop / PC Computer`, Mobile Player: `Bermain di HP (Android / iOS)`)
   * Prompt 3: `🔔 Notifikasi apa yang diinginkan? / What notifications do you want?` (Announcement, Script Update, Giveaway)
-- **Live Discord Announcement (Unbox ASMR & Build An Ant Empire)**:
-  * `#📢・announcements`: Unbox ASMR (`1555493541700968559`), Build An Ant Empire (`1555493556305530891`), Break and Steal an Egg (`1555290434077462589`).
+- **Live Discord Announcement (Build An Ant Empire, Unbox ASMR & Break and Steal an Egg)**:
+  * `#📢・announcements`: Build An Ant Empire v1.7 Hotfix (`1555815521579171870`), Build An Ant Empire v1.6 (`1555809053618344047`), Unbox ASMR (`1555493541700968559`), Break and Steal an Egg (`1555290434077462589`).
 - **Live Discord Changelogs**:
-  * `#📝・changelogs`: Unbox ASMR v2.8 (`1555493548688932968`), Build An Ant Empire v1.5 (`1555493563037650945`), Break and Steal an Egg v1.0 (`1555290437252681768`).
+  * `#📝・changelogs`: Build An Ant Empire v1.7 Hotfix (`1555815539765420077`), Build An Ant Empire v1.6 (`1555809060828356669`), Unbox ASMR v2.8 (`1555493548688932968`), Break and Steal an Egg v1.0 (`1555290437252681768`).
 - **Live Discord New Game Release**: `#🎮・new-games` (`1555290429317054576`)
 - **Live Discord Feature Guide**: `#📖・game-features` (`1555290431271469099`)
-- **#🔐・founder-vault** (`1547986862470205521`): Tepat 39 pesan murni clean source code terbaru berfitur bilingual, 0 duplikat, akses terisolasi 100% khusus Founder. (`UnboxASMR_Clean.lua` v2.9 Msg ID: `1555571568728342649`).
+- **#🔐・founder-vault** (`1547986862470205521`): Tepat 39 pesan murni clean source code terbaru berfitur bilingual, 0 duplikat, akses terisolasi 100% khusus Founder. (`BuildAnAntEmpire_Clean.lua` v1.7 Msg ID: `1555815198936408124`, `UnboxASMR_Clean.lua` v2.9 Msg ID: `1555571568728342649`).
 
 ## 7. SERVER BOOST LEVEL 1 (TIER 1) STATUS & ASSETS
 - **Status Boost**: `Premium Tier: 1` | `Total Boost: 2 Boosts` (Diberikan oleh akun Founder Nitro `Wira98` / `1464503502268137516`).
