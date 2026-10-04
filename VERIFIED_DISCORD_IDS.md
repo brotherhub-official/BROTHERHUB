@@ -199,7 +199,7 @@ Suggested Feature Details (Please explain thoroughly and in full detail):
 *Announcement Message ID: `1554558559046471703`*
 Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100% Rich Discord Embed resmi (Dwi-bahasa 🇮🇩 ID & 🇬🇧 EN berdampingan).
 
-## 6. UNIVERSAL BILINGUAL ENGINE ARCHITECTURE (39 GAMES, LOADER & DISCORD)
+## 6. UNIVERSAL BILINGUAL ENGINE ARCHITECTURE (40 GAMES, LOADER & DISCORD)
 
 ### A. Mekanisme Deteksi Cerdas Wilayah & Bahasa (Smart Country/Locale Detection)
 1. **Universal Master Loader (`BrotherHub.lua` / `BrotherHub_Clean.lua`)**:
@@ -214,7 +214,7 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
      * `notify("❌ Download Error", L("Gagal mengunduh script dari GitHub!", "Failed to download script from GitHub!"), 8)`
      * `notify("⚠️ BROTHER HUB", L("Game ini belum didukung!\nPlaceId: ", "This game is not yet supported!\nPlaceId: ") .. tostring(placeId), 8)`
 
-2. **Seluruh 39 Script Game Resmi (`CleanHub/*_Clean.lua` & `*_BROTHERHUB.lua`)**:
+2. **Seluruh 40 Script Game Resmi (`CleanHub/*_Clean.lua` & `*_BROTHERHUB.lua`)**:
    - Menerima `_G.BROTHERHUB_LANG` dari loader (prioritas utama).
    - Memiliki fallback mandiri bila script dieksekusi terpisah tanpa loader:
      ```lua
