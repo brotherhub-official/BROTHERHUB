@@ -1,6 +1,6 @@
 # VERIFIED ROLES & CHANNELS MAPPING TABLE
 
-## 1. 40 SUPPORTED GAMES ROLES
+## 1. 41 SUPPORTED GAMES ROLES
 
 - **Deep Fishing**: `1551587483320459344` (Role Name: `🌊 Deep Fishing`)
 - **Pets Universe**: `1551531361582714892` (Role Name: `🐾 Pets Universe`)
@@ -42,6 +42,7 @@
 - **Build An Ant Empire**: `1555168979956404325` (`🐜 Build An Ant Empire`)
 - **Break and Steal an Egg**: `1555290294340157480` (`🥚 Break and Steal an Egg`)
 - **Forest Market**: `1556158813252358256` (`🌲 Forest Market`)
+- **Backrooms Company**: `1556343468488396870` (`🏢 Backrooms Company`)
 
 ## 2. NOTIFICATION & SYSTEM ROLES
 
@@ -199,7 +200,7 @@ Suggested Feature Details (Please explain thoroughly and in full detail):
 *Announcement Message ID: `1554558559046471703`*
 Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100% Rich Discord Embed resmi (Dwi-bahasa 🇮🇩 ID & 🇬🇧 EN berdampingan).
 
-## 6. UNIVERSAL BILINGUAL ENGINE ARCHITECTURE (40 GAMES, LOADER & DISCORD)
+## 6. UNIVERSAL BILINGUAL ENGINE ARCHITECTURE (41 GAMES, LOADER & DISCORD)
 
 ### A. Mekanisme Deteksi Cerdas Wilayah & Bahasa (Smart Country/Locale Detection)
 1. **Universal Master Loader (`BrotherHub.lua` / `BrotherHub_Clean.lua`)**:
@@ -214,7 +215,7 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
      * `notify("❌ Download Error", L("Gagal mengunduh script dari GitHub!", "Failed to download script from GitHub!"), 8)`
      * `notify("⚠️ BROTHER HUB", L("Game ini belum didukung!\nPlaceId: ", "This game is not yet supported!\nPlaceId: ") .. tostring(placeId), 8)`
 
-2. **Seluruh 40 Script Game Resmi (`CleanHub/*_Clean.lua` & `*_BROTHERHUB.lua`)**:
+2. **Seluruh 41 Script Game Resmi (`CleanHub/*_Clean.lua` & `*_BROTHERHUB.lua`)**:
    - Menerima `_G.BROTHERHUB_LANG` dari loader (prioritas utama).
    - Memiliki fallback mandiri bila script dieksekusi terpisah tanpa loader:
      ```lua
@@ -243,11 +244,11 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
 
 ### B. Audit & Sinkronisasi Lengkap Panel Discord Server (100% Bilingual ID & EN)
 - **#📱・supported-games** (`1547960163489546291` / Msg ID: `1547960239465177159`):
-  Menyajikan 40 katalog game aktif secara dwi-bahasa (ID & EN berdampingan), mencakup `40. 🌲 Forest Market`.
+  Menyajikan 41 katalog game aktif secara dwi-bahasa (ID & EN berdampingan), mencakup `41. 🏢 Backrooms Company`.
 - **#⚡・script-panel** (`1547960154228793424` / Msg ID: `1549384215873851423`):
-  Instruksi loadstring permanen universal, tombol Mobile/PC Copy, dan tautan tombol `📱 Daftar 40 Game` serta `🎭 Ambil Role Game` (Bilingual ID / EN).
+  Instruksi loadstring permanen universal, tombol Mobile/PC Copy, dan tautan tombol `📱 Daftar 41 Game` serta `🎭 Ambil Role Game` (Bilingual ID / EN).
 - **#🎭・roles** (`1547960169206644838` / Msg ID: `1551596940683247697`):
-  Daftar lengkap 40 role game (Menu 1 & Menu 2) dan panduan mandiri pengambilan role onboarding (Bilingual ID / EN).
+  Daftar lengkap 41 role game (Menu 1 & Menu 2) dan panduan mandiri pengambilan role onboarding (Bilingual ID / EN).
 - **#📩・open-ticket** (`1548183127699226735` / Msg ID: `1548262371087228930`):
   Penjelasan 4 kategori tiket (General Support, Middleman/Rekber, Founder Store & VIP, Bug Report) dalam Bahasa Indonesia dan English.
 - **#🔗・invite-link** (`1549011153223421972` / Msg ID: `1549011158248333353`):
@@ -259,16 +260,16 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
 - **#📜・ketentuan-dan-garansi** (`1548262161271361589` / Msg ID: `1548262164932861995`):
   SOP transaksi, metode pembayaran bank/QRIS/kartu, garansi, dan 4 langkah pemesanan dwi-bahasa.
 - **Server Onboarding Prompts**:
-  * Prompt 1: `🎮 Game Roblox Favoritmu? / What is your favorite Roblox game?` (40 Options)
+  * Prompt 1: `🎮 Game Roblox Favoritmu? / What is your favorite Roblox game?` (41 Options)
   * Prompt 2: `💻📱 Perangkat Bermain? / What device do you play on?` (PC Player: `Bermain di Laptop / PC Computer`, Mobile Player: `Bermain di HP (Android / iOS)`)
   * Prompt 3: `🔔 Notifikasi apa yang diinginkan? / What notifications do you want?` (Announcement, Script Update, Giveaway)
 - **Live Discord Announcement**:
-  * `#📢・announcements`: Mrbeast Island Escape v2.5 (`1556218268799471657`), Blue Lock Farm v1.1.0 (`1556165184412848129`), Forest Market v1.0 (`1556159202500542476`), Build An Ant Empire v1.9 (`1556153760387178508`), Build An Ant Empire v1.8 (`1555831311350898692`), Build An Ant Empire v1.7 Hotfix (`1555815521579171870`).
+  * `#📢・announcements`: Backrooms Company v1.0 (`1556344531144802427`), Mrbeast Island Escape v2.5 (`1556218268799471657`), Blue Lock Farm v1.1.0 (`1556165184412848129`), Forest Market v1.0 (`1556159202500542476`), Build An Ant Empire v1.9 (`1556153760387178508`), Build An Ant Empire v1.8 (`1555831311350898692`), Build An Ant Empire v1.7 Hotfix (`1555815521579171870`).
 - **Live Discord Changelogs**:
-  * `#📝・changelogs`: Mrbeast Island Escape v2.5 (`1556218342640189472`), Blue Lock Farm v1.1.0 (`1556165186883158048`), Forest Market v1.0 (`1556159283668713625`), Build An Ant Empire v1.9 (`1556153768083595361`), Build An Ant Empire v1.8 (`1555831324198314155`), Build An Ant Empire v1.7 Hotfix (`1555815539765420077`).
-- **Live Discord New Game Release**: `#🎮・new-games` (`1556159196117074041`)
-- **Live Discord Feature Guide**: `#📖・game-features` (`1556159199887630337`)
-- **#🔐・founder-vault** (`1547986862470205521`): Tepat 40 pesan murni clean source code terbaru berfitur bilingual, 0 duplikat, akses terisolasi 100% khusus Founder (`MrbeastIslandEscape_Clean.lua` v2.5 Msg ID: `1556228544688951346`, `BlueLockFarm_Clean.lua` v1.1.0 Msg ID: `1556165045056962673`, `ForestMarket_Clean.lua` v1.0 Msg ID: `1556158902230458408`, `BuildAnAntEmpire_Clean.lua` v1.9 Msg ID: `1556153675745861642`).
+  * `#📝・changelogs`: Backrooms Company v1.0 (`1556344533707530261`), Mrbeast Island Escape v2.5 (`1556218342640189472`), Blue Lock Farm v1.1.0 (`1556165186883158048`), Forest Market v1.0 (`1556159283668713625`), Build An Ant Empire v1.9 (`1556153768083595361`), Build An Ant Empire v1.8 (`1555831324198314155`), Build An Ant Empire v1.7 Hotfix (`1555815539765420077`).
+- **Live Discord New Game Release**: `#🎮・new-games` (`1556344524354232461` Backrooms Company, `1556159196117074041` Forest Market)
+- **Live Discord Feature Guide**: `#📖・game-features` (`1556344527986499629` Backrooms Company, `1556159199887630337` Forest Market)
+- **#🔐・founder-vault** (`1547986862470205521`): Tepat 41 pesan murni clean source code terbaru berfitur bilingual, 0 duplikat, akses terisolasi 100% khusus Founder (`BackroomsCompany_Clean.lua` v1.0 New Game #41, `MrbeastIslandEscape_Clean.lua` v2.5 Msg ID: `1556228544688951346`, `BlueLockFarm_Clean.lua` v1.1.0 Msg ID: `1556165045056962673`, `ForestMarket_Clean.lua` v1.0 Msg ID: `1556158902230458408`, `BuildAnAntEmpire_Clean.lua` v1.9 Msg ID: `1556153675745861642`).
 
 ## 7. SERVER BOOST LEVEL 1 (TIER 1) STATUS & ASSETS
 - **Status Boost**: `Premium Tier: 1` | `Total Boost: 2 Boosts` (Diberikan oleh akun Founder Nitro `Wira98` / `1464503502268137516`).
