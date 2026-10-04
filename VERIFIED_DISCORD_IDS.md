@@ -1,6 +1,6 @@
 # VERIFIED ROLES & CHANNELS MAPPING TABLE
 
-## 1. 39 SUPPORTED GAMES ROLES
+## 1. 40 SUPPORTED GAMES ROLES
 
 - **Deep Fishing**: `1551587483320459344` (Role Name: `🌊 Deep Fishing`)
 - **Pets Universe**: `1551531361582714892` (Role Name: `🐾 Pets Universe`)
@@ -39,8 +39,9 @@
 - **Pull A Sword**: `1554481560252850317` (Role Name: `🗡️ Pull A Sword`)
 - **Race Horses**: `1554500930651693158` (Role Name: `🏇 Race Horses`)
 - **Sword Hunter**: `1554522896418869311` (Role Name: `⚔️ Sword Hunter`)
-- **Build An Ant Empire**: `1555168979956404325` (Role Name: `🐜 Build An Ant Empire`)
-- **Break and Steal an Egg**: `1555290294340157480` (Role Name: `🥚 Break and Steal an Egg`)
+- **Build An Ant Empire**: `1555168979956404325` (`🐜 Build An Ant Empire`)
+- **Break and Steal an Egg**: `1555290294340157480` (`🥚 Break and Steal an Egg`)
+- **Forest Market**: `1556158813252358256` (`🌲 Forest Market`)
 
 ## 2. NOTIFICATION & SYSTEM ROLES
 
@@ -242,11 +243,11 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
 
 ### B. Audit & Sinkronisasi Lengkap Panel Discord Server (100% Bilingual ID & EN)
 - **#📱・supported-games** (`1547960163489546291` / Msg ID: `1547960239465177159`):
-  Menyajikan 39 katalog game aktif secara dwi-bahasa (ID & EN berdampingan).
+  Menyajikan 40 katalog game aktif secara dwi-bahasa (ID & EN berdampingan), mencakup `40. 🌲 Forest Market`.
 - **#⚡・script-panel** (`1547960154228793424` / Msg ID: `1549384215873851423`):
-  Instruksi loadstring permanen universal, tombol Mobile/PC Copy, dan tautan tombol `📱 Daftar 39 Game` serta `🎭 Ambil Role Game` (Bilingual ID / EN).
+  Instruksi loadstring permanen universal, tombol Mobile/PC Copy, dan tautan tombol `📱 Daftar 40 Game` serta `🎭 Ambil Role Game` (Bilingual ID / EN).
 - **#🎭・roles** (`1547960169206644838` / Msg ID: `1551596940683247697`):
-  Daftar lengkap 39 role game (Menu 1: 18 game, Menu 2: 21 game) dan panduan mandiri pengambilan role onboarding (Bilingual ID / EN).
+  Daftar lengkap 40 role game (Menu 1 & Menu 2) dan panduan mandiri pengambilan role onboarding (Bilingual ID / EN).
 - **#📩・open-ticket** (`1548183127699226735` / Msg ID: `1548262371087228930`):
   Penjelasan 4 kategori tiket (General Support, Middleman/Rekber, Founder Store & VIP, Bug Report) dalam Bahasa Indonesia dan English.
 - **#🔗・invite-link** (`1549011153223421972` / Msg ID: `1549011158248333353`):
@@ -258,16 +259,16 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
 - **#📜・ketentuan-dan-garansi** (`1548262161271361589` / Msg ID: `1548262164932861995`):
   SOP transaksi, metode pembayaran bank/QRIS/kartu, garansi, dan 4 langkah pemesanan dwi-bahasa.
 - **Server Onboarding Prompts**:
-  * Prompt 1: `🎮 Game Roblox Favoritmu? / What is your favorite Roblox game?` (39 Options)
+  * Prompt 1: `🎮 Game Roblox Favoritmu? / What is your favorite Roblox game?` (40 Options)
   * Prompt 2: `💻📱 Perangkat Bermain? / What device do you play on?` (PC Player: `Bermain di Laptop / PC Computer`, Mobile Player: `Bermain di HP (Android / iOS)`)
   * Prompt 3: `🔔 Notifikasi apa yang diinginkan? / What notifications do you want?` (Announcement, Script Update, Giveaway)
-- **Live Discord Announcement (Build An Ant Empire, Unbox ASMR & Break and Steal an Egg)**:
-  * `#📢・announcements`: Build An Ant Empire v1.9 (`1556153760387178508`), Build An Ant Empire v1.8 (`1555831311350898692`), Build An Ant Empire v1.7 Hotfix (`1555815521579171870`), Build An Ant Empire v1.6 (`1555809053618344047`), Unbox ASMR (`1555493541700968559`), Break and Steal an Egg (`1555290434077462589`).
+- **Live Discord Announcement**:
+  * `#📢・announcements`: Forest Market v1.0 (`1556159202500542476`), Build An Ant Empire v1.9 (`1556153760387178508`), Build An Ant Empire v1.8 (`1555831311350898692`), Build An Ant Empire v1.7 Hotfix (`1555815521579171870`).
 - **Live Discord Changelogs**:
-  * `#📝・changelogs`: Build An Ant Empire v1.9 (`1556153768083595361`), Build An Ant Empire v1.8 (`1555831324198314155`), Build An Ant Empire v1.7 Hotfix (`1555815539765420077`), Build An Ant Empire v1.6 (`1555809060828356669`), Unbox ASMR v2.8 (`1555493548688932968`), Break and Steal an Egg v1.0 (`1555290437252681768`).
-- **Live Discord New Game Release**: `#🎮・new-games` (`1555290429317054576`)
-- **Live Discord Feature Guide**: `#📖・game-features` (`1555290431271469099`)
-- **#🔐・founder-vault** (`1547986862470205521`): Tepat 39 pesan murni clean source code terbaru berfitur bilingual, 0 duplikat, akses terisolasi 100% khusus Founder. (`BuildAnAntEmpire_Clean.lua` v1.9 Msg ID: `1556153675745861642`, `UnboxASMR_Clean.lua` v2.9 Msg ID: `1555571568728342649`).
+  * `#📝・changelogs`: Forest Market v1.0 (`1556159283668713625`), Build An Ant Empire v1.9 (`1556153768083595361`), Build An Ant Empire v1.8 (`1555831324198314155`), Build An Ant Empire v1.7 Hotfix (`1555815539765420077`).
+- **Live Discord New Game Release**: `#🎮・new-games` (`1556159196117074041`)
+- **Live Discord Feature Guide**: `#📖・game-features` (`1556159199887630337`)
+- **#🔐・founder-vault** (`1547986862470205521`): Tepat 40 pesan murni clean source code terbaru berfitur bilingual, 0 duplikat, akses terisolasi 100% khusus Founder (`ForestMarket_Clean.lua` v1.0 Msg ID: `1556158902230458408`, `BuildAnAntEmpire_Clean.lua` v1.9 Msg ID: `1556153675745861642`).
 
 ## 7. SERVER BOOST LEVEL 1 (TIER 1) STATUS & ASSETS
 - **Status Boost**: `Premium Tier: 1` | `Total Boost: 2 Boosts` (Diberikan oleh akun Founder Nitro `Wira98` / `1464503502268137516`).
