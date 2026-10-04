@@ -263,12 +263,12 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Prompt 2: `💻📱 Perangkat Bermain? / What device do you play on?` (PC Player: `Bermain di Laptop / PC Computer`, Mobile Player: `Bermain di HP (Android / iOS)`)
   * Prompt 3: `🔔 Notifikasi apa yang diinginkan? / What notifications do you want?` (Announcement, Script Update, Giveaway)
 - **Live Discord Announcement**:
-  * `#📢・announcements`: Forest Market v1.0 (`1556159202500542476`), Build An Ant Empire v1.9 (`1556153760387178508`), Build An Ant Empire v1.8 (`1555831311350898692`), Build An Ant Empire v1.7 Hotfix (`1555815521579171870`).
+  * `#📢・announcements`: Mrbeast Island Escape v2.5 (`1556218268799471657`), Blue Lock Farm v1.1.0 (`1556165184412848129`), Forest Market v1.0 (`1556159202500542476`), Build An Ant Empire v1.9 (`1556153760387178508`), Build An Ant Empire v1.8 (`1555831311350898692`), Build An Ant Empire v1.7 Hotfix (`1555815521579171870`).
 - **Live Discord Changelogs**:
-  * `#📝・changelogs`: Forest Market v1.0 (`1556159283668713625`), Build An Ant Empire v1.9 (`1556153768083595361`), Build An Ant Empire v1.8 (`1555831324198314155`), Build An Ant Empire v1.7 Hotfix (`1555815539765420077`).
+  * `#📝・changelogs`: Mrbeast Island Escape v2.5 (`1556218342640189472`), Blue Lock Farm v1.1.0 (`1556165186883158048`), Forest Market v1.0 (`1556159283668713625`), Build An Ant Empire v1.9 (`1556153768083595361`), Build An Ant Empire v1.8 (`1555831324198314155`), Build An Ant Empire v1.7 Hotfix (`1555815539765420077`).
 - **Live Discord New Game Release**: `#🎮・new-games` (`1556159196117074041`)
 - **Live Discord Feature Guide**: `#📖・game-features` (`1556159199887630337`)
-- **#🔐・founder-vault** (`1547986862470205521`): Tepat 40 pesan murni clean source code terbaru berfitur bilingual, 0 duplikat, akses terisolasi 100% khusus Founder (`ForestMarket_Clean.lua` v1.0 Msg ID: `1556158902230458408`, `BuildAnAntEmpire_Clean.lua` v1.9 Msg ID: `1556153675745861642`).
+- **#🔐・founder-vault** (`1547986862470205521`): Tepat 40 pesan murni clean source code terbaru berfitur bilingual, 0 duplikat, akses terisolasi 100% khusus Founder (`MrbeastIslandEscape_Clean.lua` v2.5 Msg ID: `1556218123961761865`, `BlueLockFarm_Clean.lua` v1.1.0 Msg ID: `1556165045056962673`, `ForestMarket_Clean.lua` v1.0 Msg ID: `1556158902230458408`, `BuildAnAntEmpire_Clean.lua` v1.9 Msg ID: `1556153675745861642`).
 
 ## 7. SERVER BOOST LEVEL 1 (TIER 1) STATUS & ASSETS
 - **Status Boost**: `Premium Tier: 1` | `Total Boost: 2 Boosts` (Diberikan oleh akun Founder Nitro `Wira98` / `1464503502268137516`).
