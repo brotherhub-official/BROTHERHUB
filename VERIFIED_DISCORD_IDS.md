@@ -269,7 +269,10 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * `#📝・changelogs`: Backrooms Company v2.1 Hotfix (`1556408957604466841`), Backrooms Company v2.0 (`1556348811927101541`), Backrooms Company v1.0 (`1556344533707530261`), Mrbeast Island Escape v2.5 (`1556218342640189472`), Blue Lock Farm v1.1.0 (`1556165186883158048`), Forest Market v1.0 (`1556159283668713625`), Build An Ant Empire v1.9 (`1556153768083595361`).
 - **Live Discord New Game Release**: `#🎮・new-games` (`1556344524354232461` Backrooms Company, `1556159196117074041` Forest Market)
 - **Live Discord Feature Guide**: `#📖・game-features` (`1556344527986499629` Backrooms Company, `1556159199887630337` Forest Market)
-- **#🔐・founder-vault** (`1547986862470205521`): Tepat 41 pesan murni clean source code terbaru berfitur bilingual, 0 duplikat, akses terisolasi 100% khusus Founder (`BackroomsCompany_Clean.lua` v2.1 Msg ID: `1556408775634722857`, `MrbeastIslandEscape_Clean.lua` v2.5 Msg ID: `1556228544688951346`, `BlueLockFarm_Clean.lua` v1.1.0 Msg ID: `1556165045056962673`, `ForestMarket_Clean.lua` v1.0 Msg ID: `1556158902230458408`, `BuildAnAntEmpire_Clean.lua` v1.9 Msg ID: `1556153675745861642`).
+- **Live Discord Announcement & Changelogs Terkini**:
+  * `#📢・announcements`: `1556411947086254111` (Unbox ASMR v3.0 Crate Expansion)
+  * `#📝・changelogs`: `1556411950009819268` (Unbox ASMR v3.0 Crate Expansion)
+- **#🔐・founder-vault** (`1547986862470205521`): Tepat 41 pesan murni clean source code terbaru berfitur bilingual, 0 duplikat, akses terisolasi 100% khusus Founder (`UnboxASMR_Clean.lua` v3.0 Msg ID: `1556411773064839259`, `BackroomsCompany_Clean.lua` v2.1 Msg ID: `1556408775634722857`, `MrbeastIslandEscape_Clean.lua` v2.5 Msg ID: `1556228544688951346`, `BlueLockFarm_Clean.lua` v1.1.0 Msg ID: `1556165045056962673`, `ForestMarket_Clean.lua` v1.0 Msg ID: `1556158902230458408`, `BuildAnAntEmpire_Clean.lua` v1.9 Msg ID: `1556153675745861642`).
 
 ## 7. SERVER BOOST LEVEL 1 (TIER 1) STATUS & ASSETS
 - **Status Boost**: `Premium Tier: 1` | `Total Boost: 2 Boosts` (Diberikan oleh akun Founder Nitro `Wira98` / `1464503502268137516`).
