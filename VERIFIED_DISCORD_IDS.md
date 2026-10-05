@@ -1,6 +1,6 @@
 # VERIFIED ROLES & CHANNELS MAPPING TABLE
 
-## 1. 42 SUPPORTED GAMES ROLES
+## 1. 43 SUPPORTED GAMES ROLES
 
 - **Deep Fishing**: `1551587483320459344` (Role Name: `🌊 Deep Fishing`)
 - **Pets Universe**: `1551531361582714892` (Role Name: `🐾 Pets Universe`)
@@ -44,9 +44,11 @@
 - **Forest Market**: `1556158813252358256` (`🌲 Forest Market`)
 - **Backrooms Company**: `1556343468488396870` (`🏢 Backrooms Company`)
 - **Dangerous Night**: `1556615713727184966` (`🌙 Dangerous Night`)
+- **HELLHOLE**: `1556741399024767148` (Role Name: `🧟 HELLHOLE`)
 
 ## 2. NOTIFICATION & SYSTEM ROLES
 
+- **Brother Member**: `1547960141263929366` (Role Name: `🎮 Brother Member`)
 - **Script Update Ping**: `1548208954163724299` (Role Name: `⚡ Script Update Ping`)
 - **Announcement Ping**: `1548208952267903016` (Role Name: `📢 Announcement Ping`)
 - **Giveaway Ping**: `1548208956243972228` (Role Name: `🎁 Giveaway Ping`)
@@ -261,19 +263,19 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
 - **#📜・ketentuan-dan-garansi** (`1548262161271361589` / Msg ID: `1548262164932861995`):
   SOP transaksi, metode pembayaran bank/QRIS/kartu, garansi, dan 4 langkah pemesanan dwi-bahasa.
 - **Server Onboarding Prompts**:
-  * Prompt 1: `🎮 Game Roblox Favoritmu? / What is your favorite Roblox game?` (42 Options)
+  * Prompt 1: `🎮 Game Roblox Favoritmu? / What is your favorite Roblox game?` (43 Options)
   * Prompt 2: `💻📱 Perangkat Bermain? / What device do you play on?` (PC Player: `Bermain di Laptop / PC Computer`, Mobile Player: `Bermain di HP (Android / iOS)`)
   * Prompt 3: `🔔 Notifikasi apa yang diinginkan? / What notifications do you want?` (Announcement, Script Update, Giveaway)
 - **Live Discord Announcement**:
-  * `#📢・announcements`: Dangerous Night v1.3 (`1556651561151762564`), Poly Loot v2.7 Bugfix (`1556651569490042944`), Dangerous Night v1.2.1 Hotfix (`1556639864718495867`), Dangerous Night v1.2 (`1556634081461272663`), Dangerous Night v1.1 (`1556621082784571404`), Dangerous Night v1.0 (`1556616198429614172`), Poly Loot v2.6 Overhaul (`1556547332311613492`), Backrooms Company v2.2 Hotfix (`1556500980542214286`), Unbox ASMR v3.0 (`1556411947086254111`), Backrooms Company v2.1 Hotfix (`1556408950000320594`), Backrooms Company v2.0 (`1556348759321870367`), Backrooms Company v1.0 (`1556344533707530261`), Mrbeast Island Escape v2.5 (`1556218268799471657`), Blue Lock Farm v1.1.0 (`1556165184412848129`), Forest Market v1.0 (`1556159202500542476`), Build An Ant Empire v1.9 (`1556153760387178508`).
+  * `#📢・announcements`: HELLHOLE v1.0 (`1556742106142220303`), Dangerous Night v1.3 (`1556651561151762564`), Poly Loot v2.7 Bugfix (`1556651569490042944`), Dangerous Night v1.2.1 Hotfix (`1556639864718495867`), Dangerous Night v1.2 (`1556634081461272663`), Dangerous Night v1.1 (`1556621082784571404`), Dangerous Night v1.0 (`1556616198429614172`), Poly Loot v2.6 Overhaul (`1556547332311613492`), Backrooms Company v2.2 Hotfix (`1556500980542214286`), Unbox ASMR v3.0 (`1556411947086254111`), Backrooms Company v2.1 Hotfix (`1556408950000320594`), Backrooms Company v2.0 (`1556348759321870367`), Backrooms Company v1.0 (`1556344533707530261`), Mrbeast Island Escape v2.5 (`1556218268799471657`), Blue Lock Farm v1.1.0 (`1556165184412848129`), Forest Market v1.0 (`1556159202500542476`), Build An Ant Empire v1.9 (`1556153760387178508`).
 - **Live Discord Changelogs**:
-  * `#📝・changelogs`: Dangerous Night v1.3 (`1556651564134047777`), Poly Loot v2.7 Bugfix (`1556651573529149498`), Dangerous Night v1.2.1 Hotfix (`1556639867557904435`), Dangerous Night v1.2 (`1556634084745158790`), Dangerous Night v1.1 (`1556621086379081863`), Dangerous Night v1.0 (`1556616201675866204`), Poly Loot v2.6 Overhaul (`1556547335448957061`), Backrooms Company v2.2 Hotfix (`1556500985827033131`), Unbox ASMR v3.0 (`1556411950009819268`), Backrooms Company v2.1 Hotfix (`1556408957604466841`), Backrooms Company v2.0 (`1556348811927101541`), Backrooms Company v1.0 (`1556344533707530261`), Mrbeast Island Escape v2.5 (`1556218342640189472`), Blue Lock Farm v1.1.0 (`1556165186883158048`), Forest Market v1.0 (`1556159283668713625`), Build An Ant Empire v1.9 (`1556153768083595361`).
+  * `#📝・changelogs`: HELLHOLE v1.0 (`1556742110315544697`), Dangerous Night v1.3 (`1556651564134047777`), Poly Loot v2.7 Bugfix (`1556651573529149498`), Dangerous Night v1.2.1 Hotfix (`1556639867557904435`), Dangerous Night v1.2 (`1556634084745158790`), Dangerous Night v1.1 (`1556621086379081863`), Dangerous Night v1.0 (`1556616201675866204`), Poly Loot v2.6 Overhaul (`1556547335448957061`), Backrooms Company v2.2 Hotfix (`1556500985827033131`), Unbox ASMR v3.0 (`1556411950009819268`), Backrooms Company v2.1 Hotfix (`1556408957604466841`), Backrooms Company v2.0 (`1556348811927101541`), Backrooms Company v1.0 (`1556344533707530261`), Mrbeast Island Escape v2.5 (`1556218342640189472`), Blue Lock Farm v1.1.0 (`1556165186883158048`), Forest Market v1.0 (`1556159283668713625`), Build An Ant Empire v1.9 (`1556153768083595361`).
 - **Live Discord New Game Release**: `#🎮・new-games` (`1556344524354232461` Backrooms Company, `1556159196117074041` Forest Market)
 - **Live Discord Feature Guide**: `#📖・game-features` (`1556344527986499629` Backrooms Company, `1556159199887630337` Forest Market)
 - **Live Discord Announcement & Changelogs Terkini**:
-  * `#📢・announcements`: `1556651561151762564` (Dangerous Night v1.3 Master Update), `1556651569490042944` (Poly Loot v2.7 Bugfix Update), `1556639864718495867` (Dangerous Night v1.2.1), `1556634081461272663` (Dangerous Night v1.2)
-  * `#📝・changelogs`: `1556651564134047777` (Dangerous Night v1.3 Master Update), `1556651573529149498` (Poly Loot v2.7 Bugfix Update), `1556639867557904435` (Dangerous Night v1.2.1), `1556634084745158790` (Dangerous Night v1.2)
-- **#🔐・founder-vault** (`1547986862470205521`): Tepat 42 pesan murni clean source code terbaru berfitur bilingual, 0 duplikat, akses terisolasi 100% khusus Founder (`DangerousNight_Clean.lua` v1.3 Msg ID: `1556655198686945313`, `PolyLoot_Clean.lua` v2.7 Msg ID: `1556651555539648614`, `BackroomsCompany_Clean.lua` v2.2 Msg ID: `1556500669777711104`, `UnboxASMR_Clean.lua` v3.0 Msg ID: `1556411773064839259`, `MrbeastIslandEscape_Clean.lua` v2.5 Msg ID: `1556228544688951346`, `BlueLockFarm_Clean.lua` v1.1.0 Msg ID: `1556165045056962673`, `ForestMarket_Clean.lua` v1.0 Msg ID: `1556158902230458408`, `BuildAnAntEmpire_Clean.lua` v1.9 Msg ID: `1556153675745861642`).
+  * `#📢・announcements`: `1556742106142220303` (HELLHOLE v1.0 Official Master Release), `1556651561151762564` (Dangerous Night v1.3 Master Update), `1556651569490042944` (Poly Loot v2.7 Bugfix Update), `1556639864718495867` (Dangerous Night v1.2.1)
+  * `#📝・changelogs`: `1556742110315544697` (HELLHOLE v1.0 Master Release), `1556651564134047777` (Dangerous Night v1.3 Master Update), `1556651573529149498` (Poly Loot v2.7 Bugfix Update), `1556639867557904435` (Dangerous Night v1.2.1)
+- **#🔐・founder-vault** (`1547986862470205521`): Tepat 43 pesan murni clean source code terbaru berfitur bilingual, 0 duplikat, akses terisolasi 100% khusus Founder (`Hellhole_Clean.lua` v1.1 Cursed Mode Suite Msg ID: `1556744373834743831`, `DangerousNight_Clean.lua` v1.3 Msg ID: `1556655198686945313`, `PolyLoot_Clean.lua` v2.7 Msg ID: `1556651555539648614`, `BackroomsCompany_Clean.lua` v2.2 Msg ID: `1556500669777711104`, `UnboxASMR_Clean.lua` v3.0 Msg ID: `1556411773064839259`, `MrbeastIslandEscape_Clean.lua` v2.5 Msg ID: `1556228544688951346`, `BlueLockFarm_Clean.lua` v1.1.0 Msg ID: `1556165045056962673`, `ForestMarket_Clean.lua` v1.0 Msg ID: `1556158902230458408`, `BuildAnAntEmpire_Clean.lua` v1.9 Msg ID: `1556153675745861642`).
 
 ## 7. SERVER BOOST LEVEL 1 (TIER 1) STATUS & ASSETS
 - **Status Boost**: `Premium Tier: 1` | `Total Boost: 2 Boosts` (Diberikan oleh akun Founder Nitro `Wira98` / `1464503502268137516`).
