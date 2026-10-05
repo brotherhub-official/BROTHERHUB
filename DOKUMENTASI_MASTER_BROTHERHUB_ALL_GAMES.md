@@ -1,4 +1,4 @@
-# 👑 BROTHER HUB — ENSIKLOPEDIA & DOKUMENTASI TEKNIS LENGKAP MASTER ECOSYSTEM (37 GAMES)
+# 👑 BROTHER HUB — ENSIKLOPEDIA & DOKUMENTASI TEKNIS LENGKAP MASTER ECOSYSTEM (43 GAMES)
 
 Dokumen ini adalah **catatan teknis master 100% lengkap dan menyeluruh** untuk seluruh ekosistem **Brother Hub**. Dokumen ini mencatat setiap data, hasil dump saveinstances, arsitektur skrip, mekanisme remote server, formula kecepatan, ID role Discord, peraturan Founder, hingga konfigurasi internal untuk semua game yang didukung.
 
@@ -8,9 +8,16 @@ Dokumen ini adalah **catatan teknis master 100% lengkap dan menyeluruh** untuk s
 1. [Bagian I: Deep Dive Teknis Drill to Earth's Core (New Dumps & In-Earth Save)](#bagian-i-deep-dive-teknis-drill-to-earths-core)
 2. [Bagian II: Deep Dive Teknis Mrbeast Island Escape (Workspace & Vacuum System)](#bagian-ii-deep-dive-teknis-mrbeast-island-escape)
 3. [Bagian III: Deep Dive Teknis Unbox ASMR (67 Crates, 12 Rarities & Rebirths)](#bagian-iii-deep-dive-teknis-unbox-asmr)
-4. [Bagian IV: Master Roster 35 Game Resmi Brother Hub (Role ID & Mekanisme)](#bagian-iv-master-roster-35-game-resmi-brother-hub)
+4. [Bagian IV: Master Roster 43 Game Resmi Brother Hub (Role ID & Mekanisme)](#bagian-iv-master-roster-43-game-resmi-brother-hub)
 5. [Bagian V: Hukum Mutlak & Standarisasi Desain Brother Hub (Rules 1 - 12E)](#bagian-v-hukum-mutlak--standarisasi-desain-brother-hub)
 6. [Bagian VI: Pipeline Kompilasi, Obfuskasi & Build System](#bagian-vi-pipeline-kompilasi-obfuskasi--build-system)
+7. [Bagian VII: Deep Dive Teknis Sword Hunter (Game #37)](#bagian-vii-deep-dive-teknis-sword-hunter-game-37)
+8. [Bagian VIII: Deep Dive Teknis Build An Ant Empire (Game #38)](#bagian-viii-deep-dive-teknis-build-an-ant-empire-game-38)
+9. [Bagian IX: Deep Dive Teknis Break and Steal an Egg (Game #39)](#bagian-ix-deep-dive-teknis-break-and-steal-an-egg-game-39)
+10. [Bagian X: Deep Dive Teknis Forest Market (Game #40)](#bagian-x-deep-dive-teknis-forest-market-game-40)
+11. [Bagian XI: Deep Dive Teknis Backrooms Company (Game #41)](#bagian-xi-deep-dive-teknis-backrooms-company-game-41)
+12. [Bagian XII: Deep Dive Teknis Dangerous Night [Furnish The Bunker] (Game #42)](#bagian-xii-deep-dive-teknis-dangerous-night-furnish-the-bunker-game-42)
+13. [Bagian XIII: Deep Dive Teknis HELLHOLE (Game #43 & Komparasi 3 Dumps)](#bagian-xiii-deep-dive-teknis-hellhole-game-43--komparasi-3-dumps)
 
 ---
 
@@ -362,11 +369,11 @@ Daftar lengkap 67 peti dari `ReplicatedStorage.ProductCatalogConfig` & `EventPro
 ---
 
 
-# BAGIAN IV: MASTER ROSTER 35 GAME RESMI BROTHER HUB
+# BAGIAN IV: MASTER ROSTER 43 GAME RESMI BROTHER HUB
 
-Tabel di bawah adalah **Sumber Kebenaran Tunggal (Single Source of Truth)** untuk 35 game resmi yang didukung penuh oleh Brother Hub:
+Tabel di bawah adalah **Sumber Kebenaran Tunggal (Single Source of Truth)** untuk 43 game resmi yang didukung penuh oleh Brother Hub:
 
-| No | Game Name | Script File (`CleanHub/`) | Build File (`/` & `ObfuscateHub/`) | Official Role Discord | Discord Role ID | Status |
+| No | Game Name | Script File (`CleanHub/`) | Build File (`ObfuscateHub/`) | Official Role Discord | Discord Role ID | Status |
 |---|---|---|---|---|---|---|
 | 1 | **Deep Fishing** | `DeepFishing_Clean.lua` | `DeepFishing_BROTHERHUB.lua` | 🌊 Deep Fishing | `1551587483320459344` | ✅ AKTIF |
 | 2 | **Pets Universe** | `PetsUniverse_Clean.lua` | `PetsUniverse_BROTHERHUB.lua` | 🐾 Pets Universe | `1551531361582714892` | ✅ AKTIF |
@@ -404,6 +411,13 @@ Tabel di bawah adalah **Sumber Kebenaran Tunggal (Single Source of Truth)** untu
 | 34 | **Blue Lock Farm** | `BlueLockFarm_Clean.lua` | `BlueLockFarm_BROTHERHUB.lua` | ⚽ Blue Lock Farm | `1554442318101225472` | ✅ AKTIF |
 | 35 | **[MIDAS] Pull A Sword** | `PullASword_Clean.lua` | `PullASword_BROTHERHUB.lua` | 🗡️ Pull A Sword | `1554481560252850317` | ✅ AKTIF |
 | 36 | **Race Horses** | `RaceHorses_Clean.lua` | `RaceHorses_BROTHERHUB.lua` | 🏇 Race Horses | `1554500930651693158` | ✅ AKTIF |
+| 37 | **Sword Hunter** | `SwordHunter_Clean.lua` | `SwordHunter_BROTHERHUB.lua` | ⚔️ Sword Hunter | `1554522896418869311` | ✅ AKTIF |
+| 38 | **Build An Ant Empire** | `BuildAnAntEmpire_Clean.lua` | `BuildAnAntEmpire_BROTHERHUB.lua` | 🐜 Build An Ant Empire | `1555168979956404325` | ✅ AKTIF |
+| 39 | **Break and Steal an Egg** | `BreakAndStealAnEgg_Clean.lua` | `BreakAndStealAnEgg_BROTHERHUB.lua` | 🥚 Break and Steal an Egg | `1555290294340157480` | ✅ AKTIF |
+| 40 | **Forest Market** | `ForestMarket_Clean.lua` | `ForestMarket_BROTHERHUB.lua` | 🌲 Forest Market | `1556158813252358256` | ✅ AKTIF |
+| 41 | **Backrooms Company** | `BackroomsCompany_Clean.lua` | `BackroomsCompany_BROTHERHUB.lua` | 🏢 Backrooms Company | `1556343468488396870` | ✅ AKTIF |
+| 42 | **Dangerous Night** | `DangerousNight_Clean.lua` | `DangerousNight_BROTHERHUB.lua` | 🌙 Dangerous Night | `1556615713727184966` | ✅ AKTIF |
+| 43 | **HELLHOLE** | `Hellhole_Clean.lua` | `Hellhole_BROTHERHUB.lua` | 🧟 HELLHOLE | `1556741399024767148` | ✅ AKTIF |
 
 ### 4.2 Role Notifikasi Master Server
 * **⚡ Script Update Ping**: `1548208954163724299`
@@ -426,8 +440,8 @@ Tabel di bawah adalah **Sumber Kebenaran Tunggal (Single Source of Truth)** untu
   ```
 
 ### 5.2 Aturan 5B: Game Terlarang Permanen (Steal An Egg, Steal A Tree & Steal Underwater Eggs)
-* Game `Steal An Egg` (lama) dan `Steal A Tree` telah **DIHAPUS TOTAL DAN DILARANG SELAMANYA**.
-* Total game resmi Brother Hub adalah **TEPAT 33 GAME** (Game #27 adalah Steal An Anime Egg, Game #32 adalah Clone to Steal Eggs, Game #33 adalah Super Treehouse Tycoon 2).
+* Game `Steal An Egg` (lama), `Steal A Tree`, dan `Steal Underwater Eggs` telah **DIHAPUS TOTAL DAN DILARANG SELAMANYA**.
+* Total game resmi Brother Hub adalah **TEPAT 43 GAME** (Termasuk Game #38 Build An Ant Empire, Game #39 Break and Steal an Egg, Game #40 Forest Market, Game #41 Backrooms Company, Game #42 Dangerous Night, dan Game #43 HELLHOLE).
 
 ### 5.3 Aturan 5C: 100% Obfuscated Builds di GitHub (Anti-Pencurian Kode)
 * Folder `CleanHub/`, `Clean/`, dan berkas `*_Clean.lua` **100% LOKAL EXCLUSIVE** di PC pengguna dan terdaftar di `.gitignore`.
@@ -1451,3 +1465,165 @@ Game tidak menggunakan RemoteEvent konvensional melainkan ByteNet Packet Objects
   * `ExchangeShop_Buy`: Beli item exchange shop `{ itemKey = key }`
 * **Free Gifts & Rewards**:
   * `AdminFreeGift_Claim`, `AdminAbuse_Claim`, `OnlineReward_Claim`, `SignBonus_Claim`, `OfflineReward_Claim`, `GroupReward_Claim`, `Discord_Claim`, `Raid_ClaimDailyEntryTokens`, `LeavePanel_ClaimFirst`, `DoSpin`, `RedeemCode`.
+
+---
+
+# BAGIAN VIII: DEEP DIVE TEKNIS BUILD AN ANT EMPIRE (GAME #38)
+
+### 8.1 Metadata & Place Information
+* **Game Title**: Build An Ant Empire
+* **Roblox URL**: `https://www.roblox.com/games/78490532994307/Build-An-Ant-Empire`
+* **Place ID**: `78490532994307`
+* **Source Code**: `CleanHub/BuildAnAntEmpire_Clean.lua` (v1.9 Master Upgrade)
+* **Build Enkripsi**: `ObfuscateHub/BuildAnAntEmpire_BROTHERHUB.lua` (Root 100% steril)
+* **Official Role Discord**: `1555168979956404325` (`🐜 Build An Ant Empire`)
+* **Standard Visual**: 100% 1:1 My Flower Shop Architecture with Corner Resize Grip `◢`, Floating 76x76 `MinCircle` (RGB Neon 360°), and Modal Close Confirmation.
+
+### 8.2 Arsitektur Remote & Fitur Utama
+* **Network Remotes**: `Knit.GetService("AntService")`, `DigService`, `QueenService`, `EggService`, `MergeService`, `DeliveryService`.
+* **Zero-Cutoff Parallel Auto Buy Engine**: Membeli pekerja semut secara instan tanpa terputus limit tier.
+* **Auto Merge Semut**: Menggabungkan semut tier rendah menjadi semut super tier tinggi secara otomatis di background.
+* **Queen Feeding & Evolution**: Auto feeding ratu semut untuk meningkatkan level koloni dan rate produksi makanan.
+* **Auto Dig & Food Vacuum**: Menggali sarang secara instan dan menyedot seluruh drop makanan langsung ke deposit ratu.
+
+---
+
+# BAGIAN IX: DEEP DIVE TEKNIS BREAK AND STEAL AN EGG (GAME #39)
+
+### 9.1 Metadata & Place Information
+* **Game Title**: Break and Steal an Egg
+* **Roblox URL**: `https://www.roblox.com/games/114326934417838/Break-and-Steal-an-Egg`
+* **Place ID**: `114326934417838`
+* **Source Code**: `CleanHub/BreakAndStealAnEgg_Clean.lua` (v1.0 Master Release)
+* **Build Enkripsi**: `ObfuscateHub/BreakAndStealAnEgg_BROTHERHUB.lua` (Root 100% steril)
+* **Official Role Discord**: `1555290294340157480` (`🥚 Break and Steal an Egg`)
+* **Standard Visual**: 100% 1:1 My Flower Shop Architecture with Corner Resize Grip `◢`, Floating 76x76 `MinCircle` (RGB Neon 360°), and Modal Close Confirmation.
+
+### 9.2 Arsitektur Remote & Fitur Utama
+* **Network Remotes**: `ReplicatedStorage.Events.BreakEgg`, `StealEgg`, `UpgradePickaxe`, `SellEggs`, `EggHatch`.
+* **Auto Break Nearest Egg**: Menghancurkan telur liar terdekat menggunakan pickaxe terbaik dengan kecepatan instan.
+* **Auto Steal Base Egg**: Mencuri telur dari markas pemain lain dengan proteksi anti-deteksi dan safe-return teleport.
+* **Auto Sell & Auto Tool Upgrade**: Menjual telur curian otomatis saat tas penuh dan meng-upgrade pickaxe ke level tertinggi.
+
+---
+
+# BAGIAN X: DEEP DIVE TEKNIS FOREST MARKET (GAME #40)
+
+### 10.1 Metadata & Place Information
+* **Game Title**: Forest Market (Pasar Hutan)
+* **Roblox URL**: `https://www.roblox.com/games/108679402300081/Forest-Market`
+* **Place ID**: `108679402300081`
+* **Source Code**: `CleanHub/ForestMarket_Clean.lua` (v1.0 Master Release)
+* **Build Enkripsi**: `ObfuscateHub/ForestMarket_BROTHERHUB.lua` (Root 100% steril)
+* **Official Role Discord**: `1556158813252358256` (`🌲 Forest Market`)
+* **Standard Visual**: 100% 1:1 My Flower Shop Architecture with Corner Resize Grip `◢`, Floating 76x76 `MinCircle` (RGB Neon 360°), and Modal Close Confirmation.
+
+### 10.2 Arsitektur Remote & Fitur Utama
+* **Network Remotes**: `ReplicatedStorage.Knit.Services.MarketService`, `HarvestService`, `CustomerService`, `DeliveryService`.
+* **Auto Restock Stalls**: Mengisi ulang rak dagangan pasar hutan otomatis tanpa perlu bolak-balik gudang.
+* **Auto Serve Customers & Instant Cashier**: Melayani pembeli seketika di kasir dengan 0 detik delay antrean.
+* **Auto Harvest & Farm Crops**: Memanen buah, sayur, dan hasil hutan secara otomatis untuk pasokan toko.
+
+---
+
+# BAGIAN XI: DEEP DIVE TEKNIS BACKROOMS COMPANY (GAME #41)
+
+### 11.1 Metadata & Place Information
+* **Game Title**: Backrooms Company
+* **Roblox URL**: `https://www.roblox.com/games/109423220190564/Backrooms-Company`
+* **Place ID**: `109423220190564`
+* **Source Code**: `CleanHub/BackroomsCompany_Clean.lua` (v2.2 Drop Zone Protection & Scrap Overhaul)
+* **Build Enkripsi**: `ObfuscateHub/BackroomsCompany_BROTHERHUB.lua` (Root 100% steril)
+* **Official Role Discord**: `1556343468488396870` (`🏢 Backrooms Company`)
+* **Standard Visual**: 100% 1:1 My Flower Shop Architecture with Corner Resize Grip `◢`, Floating 76x76 `MinCircle` (RGB Neon 360°), and Modal Close Confirmation.
+
+### 11.2 Arsitektur Remote & Fitur Utama
+* **Network Remotes**: `ReplicatedStorage.Remotes.LootScrap`, `DeliverScrap`, `RevivePlayer`, `ScannerRemote`, `DropZone`.
+* **Auto Scrap Vacuum Engine**: Menyedot rongsokan memo bernilai tinggi langsung ke inventory pemain.
+* **Drop Zone Safe Deposit & Floor Boundary Guard**: Karakter otomatis mengantarkan scrap ke zona lift tanpa resiko jatuh menembus void floor.
+* **Entity Radar & ESP Suite**: Mendeteksi monster Backrooms (Smiler, Hound, Skin-Stealer) dengan peringatan jarak aman.
+
+---
+
+# BAGIAN XII: DEEP DIVE TEKNIS DANGEROUS NIGHT [FURNISH THE BUNKER] (GAME #42)
+
+### 12.1 Metadata & Place Information
+* **Game Title**: Dangerous Night [Furnish The Bunker]
+* **Roblox URL**: `https://www.roblox.com/games/109686116036889/Dangerous-Night`
+* **Place ID**: `109686116036889`
+* **Source Code**: `CleanHub/DangerousNight_Clean.lua` (v1.3 Furniture Separation & Anti-Theft Bunker Filter)
+* **Build Enkripsi**: `ObfuscateHub/DangerousNight_BROTHERHUB.lua` (Root 100% steril)
+* **Official Role Discord**: `1556615713727184966` (`🌙 Dangerous Night`)
+* **Standard Visual**: 100% 1:1 My Flower Shop Architecture with Corner Resize Grip `◢`, Floating 76x76 `MinCircle` (RGB Neon 360°), and Modal Close Confirmation.
+
+### 12.2 Arsitektur Remote & Fitur Utama
+* **Network Remotes**: `TakeObjectEvent`, `DropItemEvent`, `AdjustHeldItem`, `BunkerUpgrade`, `BuyItemEvent`.
+* **100% Filter Anti-Bungker Pemain Lain (`isItemInOtherPlayerBunker`)**: Mencegah perabotan milik pemain lain terambil secara tidak sengaja via verifikasi `UserId_Wyposazenie`, `Workspace.Bunkers`, dan `PlayerBunkerGallery`.
+* **Pemisahan Kategori Furnitur Premium vs Umum**:
+  - Section 1: Furnitur Premium & Langka Malam (Koleksi Gaming, Koleksi Salon, Piala & Dekorasi Malam, Event Spesial).
+  - Section 2: Furnitur Umum / Standar Rumah Tangga (Kasur, Sofa, Meja, Kursi, Lemari, Lampu).
+  - Section 3: Pengaturan Furnitur di Tangan (Place Held Item, Rotate Held Item, Bring to Hand).
+* **Unlock 2 Secret Bunker Rooms**: Membuka kamar tersembunyi bungker untuk kapasitas perabotan ekstra.
+
+---
+
+# BAGIAN XIII: DEEP DIVE TEKNIS HELLHOLE (GAME #43 & KOMPARASI 3 DUMPS)
+
+### 13.1 Metadata & Place Information
+* **Game Title**: HELLHOLE
+* **Roblox URL**: `https://www.roblox.com/games/84568117169118/HELLHOLE`
+* **Place IDs**: `84568117169118` (Lobby) / `102210951574195` (Dungeon Floor)
+* **Source Code**: `CleanHub/Hellhole_Clean.lua` (v1.1 Cursed Mode Suite & Master Release - 2,248 baris)
+* **Build Enkripsi**: `ObfuscateHub/Hellhole_BROTHERHUB.lua` (Root 100% steril)
+* **Official Role Discord**: `1556741399024767148` (`🧟 HELLHOLE`)
+* **Vault Msg ID**: `1556744373834743831` (Clean Source v1.1)
+* **Discord Announcements**: `1556742106142220303` (Gold Embed `15844367`)
+* **Discord Changelogs**: `1556742110315544697` (Blue Embed `3447003`)
+* **Standard Visual**: 100% 1:1 My Flower Shop Architecture with Corner Resize Grip `◢`, Draggable Floating 76x76 `MinCircle` `👑 BH` (RGB Neon 360°), horizontal scrolling 10-tab bar zero-collision, tombol ASCII 'X' dan '-', modal konfirmasi keluar, dan 24/7 background Anti-AFK engine.
+
+### 13.2 Hasil Analisis Komparasi 3 Berkas Dump Saveinstances
+1. **Dump 1 (Leaderboard Mode - Folder `Ugc [102210951574195]`)**:
+   - Attribute `mode = "weekly"`.
+   - Menggunakan global dungeon seed seragam untuk semua pemain di seluruh dunia.
+   - Papan skor mingguan di-reset setiap 7 hari sekali.
+   - Salvage multiplier normal (x1.0).
+2. **Dump 2 (Cursed Mode - Folder `Ugc [102210951574195] (2)`)**:
+   - Attribute `mode = "cursed"` & `ReplicatedStorage:GetAttribute("CursedRun") == true`.
+   - Memberikan bonus **+25% Extra Salvage Multiplier (`SALVAGE_MULT = 1.25`)**.
+   - Merotasi 1 dari 8 kutukan (*Curses*) setiap hari jam 08:00 UTC (15:00 WIB):
+     * `shrieker` (**Shrieker Watch**): The Shrieker (model `Smiler`) muncul di setiap ruangan dan menjerit memanggil horde zombie masif.
+     * `corpses` (**Exploding Corpses**): Mayat musuh meledak memercikkan asam saat mati.
+     * `blackout` (**Blackout**): Gelap gulita tanpa cahaya penerangan map.
+     * `mimics` (**Mimic Market**): 50% peti harta karun adalah monster jebakan Mimic.
+     * `plague` (**Plague**): Musuh mati meninggalkan kolam asam beracun di lantai.
+     * `frenzy` (**Frenzy**): Kecepatan gerak musuh bertambah +50% dan ukuran horde berlipat ganda.
+     * `glass` (**Glass Cannon**): Damage tembakan pemain 2x lipat, namun damage masuk ke pemain juga 2x lipat.
+     * `rations` (**Iron Rations**): Dilarang heal di lantai dungeon, heal di stand toko berbiaya 2x lipat.
+3. **Dump 3 (Casual Mode - Folder `Ugc [102210951574195] (3)`)**:
+   - Attribute `mode = "run"`.
+   - Mode standar santai yang mendukung penyimpanan progres pemain (`RunSaved`, `RunResumed`).
+   - Tidak ada reset mingguan dan bebas dari kutukan harian.
+   - Salvage multiplier normal (x1.0).
+4. **Kesimpulan Teknis Komparasi**:
+   - Seluruh **218 RemoteEvent dan RemoteFunction 100% SAMA** di ketiga mode.
+   - Seluruh hierarki Workspace (`Workspace.Enemies`, `Workspace.TreasureChests`, `Workspace.SoulOrbs`, `Workspace.ShopStands`, `Workspace.UpgradeStands`, `Workspace.GeneratedFloor`) dan ReplicatedStorage identik.
+   - Script Master Brother Hub bekerja 100% universal dan otomatis mendeteksi mode yang sedang dimainkan pemain.
+
+### 13.3 Arsitektur 10 Tab Fitur Lengkap
+1. **Tab 1: 🌾 AUTO FARM**: Auto Kill Zombies, Auto Aim & Shoot Mobs, Auto Farm Safe Stance (melayang 18 studs di udara), Auto Objective & Next Room Navigator.
+2. **Tab 2: 🔫 OP GUNS & WEAPONS MOD**: Modifikasi in-memory client pada `ReplicatedStorage.Shared.WeaponConfigs` untuk seluruh 26 senjata (Infinite Ammo 999k tanpa reload, instant reload 0.01s, rapid fire 30+ auto, 0 recoil, 0 spread laser accuracy, 999 base damage, 100% crit strike x10, dan Admin Gun Spawner via `AdminAction:FireServer("setWeapon", weaponName)`).
+3. **Tab 3: 🎯 COMBAT & AIM SUITE**: Kill Aura dengan slider radius dinamis (20-250 studs), Silent Aim (tembakan auto-lock kepala terdekat), Camera Aimlock, dan filter target terdekat / boss.
+4. **Tab 4: 🔮 DEDICATED CURSED MODE SUITE (+25% SALVAGE)**:
+   - Live Status Card (Active Mode, Curse Name, +25% Salvage Multiplier).
+   - ⚡ Prioritas #1 Target Kill: The Shrieker (`Smiler`) seketika dilenyapkan sebelum sempat berteriak memanggil horde!
+   - 🛡️ Safe Stance Hover Anti-Explosion & Anti-Acid: Karakter melayang di ketinggian aman 15-25 studs membuat ledakan mayat dan asam berdamage 0.
+   - ☀️ Anti-Blackout Night Vision (Fullbright 24/7): Mengeliminasi kegelapan blackout.
+   - 👁️ Anti-Mimic Scanner: Membedakan peti asli vs peti jebakan Mimic di ESP.
+   - Tombol Aksi: `🔮 Periksa Info Kutukan Hari Ini`.
+5. **Tab 5: 🛒 TOKO & BELANJA 100% GRATIS (0 ROBUX)**: Pembelian stand item dan upgrade otomatis via in-game coins dengan multi-select filter (Speed, Health, Heal, Armor, Salvage, Reroll, Loaner Ammo, Decoy), 0 Robux guarantee.
+6. **Tab 6: 📦 AUTO CHESTS & DROPS**: Auto Open Treasure Chests & Bonus Chests, Auto Magnet Vacuum Soul Orbs, Fuel & Coins ke posisi pemain, Instant ProximityPrompt (0s hold).
+7. **Tab 7: 🏃 KARAKTER & SURVIVAL**: Godmode (Never Die / Health Lock / Anti-Death State hook), Hold `M` to show mouse cursor on PC (`MouseBehavior.Default`), Unlock 3rd person view, Infinite Zoom Out 3000+ studs (Anti-Reset Hook Unbox ASMR), WalkSpeed, JumpPower, Noclip, Fullbright.
+8. **Tab 8: 👁️ ESP SUITE SENSORIK**: ESP Zombie (Merah), Boss (Ungu), The Shrieker (Magenta Terang `[⚡ THE SHRIEKER - KILL FAST!]`), Chests (Cyan), Soul Drops (Kuning Emas).
+9. **Tab 9: 💾 AUTO-CONFIG PERSISTENCE**: `BrotherHub_Hellhole_Config.json` (Auto-save, auto-load, tombol simpan manual, muat ulang, reset pabrik).
+10. **Tab 10: 👑 KREDIT & DUKUNGAN RESMI**: Identitas Founder prawiraxliv, link Discord resmi, Saweria & SociaBuzz, 0 tombol copy loadstring, 0 link GitHub publik.
+
