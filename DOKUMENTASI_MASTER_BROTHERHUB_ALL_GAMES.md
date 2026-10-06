@@ -203,6 +203,19 @@ Daftar item yang didukung oleh sistem vakum:
      * 🔽 **`Bawah (Below)`**: Karakter memposisikan diri tepat di bawah kaki target.
    * Posisi distabilkan anti-jitter dengan `AssemblyLinearVelocity = Vector3.zero` dan `AssemblyAngularVelocity = Vector3.zero` hingga target mati.
 
+### 2.8 Overhaul Teknis v2.8 (Combat & Mob Burst Overhaul, Universal Weapon Support & R15 Spatial Targeting)
+1. **Akar Masalah Kegagalan Kill Aura & Burst 1x Click**:
+   * `isAnimalModel` sebelumnya mewajibkan `FindFirstChildOfClass("Humanoid")` dan `Health > 0`. Spider di game ini **sama sekali tidak memiliki Humanoid**, sedangkan Bear menggunakan Humanoid bernama custom `"CancelState"`. Kedua ras monster ini didiskualifikasi dari daftar target sehingga Kill Aura radius dan island-wide menghasilkan daftar kosong `{}`.
+   * `findBearMobs` dan `findPirateMobs` hanya memindai `Torso` atau `HumanoidRootPart`, melewatkan `UpperTorso` dan `LowerTorso` pada rig R15, sehingga fungsi mengembalikan pesan "belum respawn".
+   * Server Roblox memvalidasi jarak tempur melee ($\le 12-15$ studs). Remote `meleeHitRemote:FireServer` yang dipanggil di luar jangkauan ini ditolak server secara silent.
+   * `ensureTool("Weapon")` mendiskualifikasi pickaxe dan kapak saat bertarung, memblokir burst manual saat memegang pickaxe.
+2. **Arsitektur Solusi & Perbaikan v2.8**:
+   * **Universal Living Entity Detection**: Menghapus ketergantungan nama Humanoid standar dan memvalidasi model hidup berbasis bagian tubuh fisik.
+   * **Universal Part Resolver (`getTargetPart`)**: Mendukung penuh `UpperTorso`, `LowerTorso`, `Torso`, `HumanoidRootPart`, `MeshPart`, dan semua `BasePart`.
+   * **Micro-Positioning Stance**: Seluruh tombol 1x test/burst (`⚔️ Serang 1 Mob`, `⚔️ Sapu Bersih Monster`, `🐻 Bantai Semua Beruang`, `⚔️ Serang Awak Bajak Laut`, `⚔️ Uji Coba Manual Ultra Burst`) melakukan micro-approach $\le 10$ studs sebelum menyerang, menjamin 100% hit registrasi server.
+   * **Universal Weapon Burst**: Mendukung pickaxe, pedang, kapak, tombak, dan semua alat tangan yang dipegang karakter.
+   * **Pembaruan Vault & Discord Live**: Clean Source v2.8 diunggah ke `#🔐・founder-vault` (Msg ID: `1557034502990074018`), siaran live di `#📢・announcements` (Msg ID: `1557035250079629394`) dan `#📝・changelogs` (Msg ID: `1557035258917027940`) dengan role mention `<@&1552346208037642371>` (🏝️ Mrbeast Island Escape).
+
 ---
 
 # BAGIAN III: DEEP DIVE TEKNIS UNBOX ASMR
@@ -950,9 +963,22 @@ eonStroke(minCircle, 2)).
   - Pesan Changelog: Terkirim ke `#📜・changelogs` (Message ID: `1554071666030813230`).
   - 100% bebas dari loadstring mentah dan Catbox, mengarahkan member langsung ke `#⚡・script-panel` (`1547960154228793424`).
 
-
-
-
+### 7.13 Pembaruan Poly Loot v2.9: Master Dark Dungeon (Continuous 24/7 Loop) & 60+ Mob Roster
+1. **Latar Belakang & Request Member Discord**:
+   * **Member Arsss**: Menyoroti bahwa daftar monster di Combat tab terlalu sedikit dan terbatas.
+   * **Member Prone**: Mengusulkan fitur **Auto Dark Dungeon** yang dapat berjalan secara otomatis dan terus menerus ("bisa terus"), tanpa berpindah place ID (place ID tetap `124032631078772` dengan transisi black screen), sehingga pemain tidak perlu melakukan rejoin atau re-execute skrip.
+2. **Arsitektur Solusi & Implementasi Teknis v2.9**:
+   * **Ekspansi 60+ Mob Roster**: Menambahkan seluruh monster dunia, Dark Forest, dan Dark Dungeon dari dump `AnimalAnimations` (Shadow Dog, Jumping Spider, Hellhound, Cursed Owl, Voodoo Doll, dll) ke dalam dropdown filter combat.
+   * **Auto Dark Dungeon Suite (Continuous 24/7 Loop)**:
+     - Scanner `findDungeonGate()` memindai tag `DungeonGate`, model Workspace, dan part `Seal`.
+     - Handler `triggerGateEntry()` melangkah ke atas seal, memicu `fireproximityprompt` dan `firetouchinterest`, serta menembakkan remote `DungeonRequest:FireServer("join")`.
+     - Deteksi `isPlayerInDungeon()` secara cerdas memvalidasi status pemain di dalam dungeon.
+     - Di dalam dungeon, bot menghabisi seluruh gelombang musuh (waves) dan boss Voodoo Doll dengan safe stance, menyapu drop item berharga dengan Priority Drop Collector, dan saat ruangan bersih seketika melangkah ke pintu keluar/dinding putih (`Wayout`, `WhiteWall`, `Door`, `Portal`) untuk lanjut ke wave/ruangan berikutnya.
+     - Ketika dungeon selesai, bot otomatis mendeteksi bahwa karakter telah kembali ke luar dan seketika melangkah kembali ke gerbang Dark Dungeon secara berulang 24/7 ("bisa terus")!
+     - Tombol 1x Run: `⚡ Masuk & Bantai Dark Dungeon Sekarang (1x Run)`.
+3. **Pembaruan Vault & Discord Live**:
+   * Clean Source v2.9 diunggah ke `#🔐・founder-vault` (Msg ID: `1557037002447265823`).
+   * Siaran live di `#📢・announcements` (Msg ID: `1557035229456371802`) dan `#📝・changelogs` (Msg ID: `1557035239103143977`) dengan role mention `<@&1549290685645983764>` (⚔️ Poly Loot).
 
 ---
 
@@ -1622,8 +1648,21 @@ Game tidak menggunakan RemoteEvent konvensional melainkan ByteNet Packet Objects
    - Tombol Aksi: `🔮 Periksa Info Kutukan Hari Ini`.
 5. **Tab 5: 🛒 TOKO & BELANJA 100% GRATIS (0 ROBUX)**: Pembelian stand item dan upgrade otomatis via in-game coins dengan multi-select filter (Speed, Health, Heal, Armor, Salvage, Reroll, Loaner Ammo, Decoy), 0 Robux guarantee.
 6. **Tab 6: 📦 AUTO CHESTS & DROPS**: Auto Open Treasure Chests & Bonus Chests, Auto Magnet Vacuum Soul Orbs, Fuel & Coins ke posisi pemain, Instant ProximityPrompt (0s hold).
-7. **Tab 7: 🏃 KARAKTER & SURVIVAL**: Godmode (Never Die / Health Lock / Anti-Death State hook), Hold `M` to show mouse cursor on PC (`MouseBehavior.Default`), Unlock 3rd person view, Infinite Zoom Out 3000+ studs (Anti-Reset Hook Unbox ASMR), WalkSpeed, JumpPower, Noclip, Fullbright.
+7. **Tab 7: 🏃 KARAKTER & SURVIVAL**: FPS Boost Engine (Anti-Lag / Low Graphics optimization), Hold `M` to show mouse cursor on PC (`MouseBehavior.Default`), Unlock 3rd person view, Infinite Zoom Out 3000+ studs (Anti-Reset Hook Unbox ASMR), WalkSpeed, JumpPower, Noclip, Fullbright. *(Catatan: Fitur Godmode telah dihapus bersih secara permanen 100% per instruksi mutlak Founder)*.
 8. **Tab 8: 👁️ ESP SUITE SENSORIK**: ESP Zombie (Merah), Boss (Ungu), The Shrieker (Magenta Terang `[⚡ THE SHRIEKER - KILL FAST!]`), Chests (Cyan), Soul Drops (Kuning Emas).
 9. **Tab 9: 💾 AUTO-CONFIG PERSISTENCE**: `BrotherHub_Hellhole_Config.json` (Auto-save, auto-load, tombol simpan manual, muat ulang, reset pabrik).
 10. **Tab 10: 👑 KREDIT & DUKUNGAN RESMI**: Identitas Founder prawiraxliv, link Discord resmi, Saweria & SociaBuzz, 0 tombol copy loadstring, 0 link GitHub publik.
+
+### 13.4 Pembaruan v1.3: Perbaikan Payload Weapon Damage, Purge Total Godmode & FPS Boost Engine
+1. **Perbaikan Kill Aura Senjata (Fix Damage Bug)**:
+   - Server mewajibkan payload dictionary otentik `{ origin = origin, direction = direction, hitPos = hitPos, hitInstance = targetPart }` saat memanggil `Remotes.FireWeapon:FireServer(ActiveWeaponName, ...)`.
+   - Mengirim request tanpa payload menyebabkan tembakan senjata terdaftar 0 damage di server.
+   - Di v1.3, payload senjata telah diintegrasikan 100% sehingga Kill Aura dan Silent Aim instan melenyapkan zombie, boss, dan monster.
+2. **Pembersihan Total Godmode (100% Purged)**:
+   - Sesuai dengan instruksi mutlak Founder, seluruh kode, variabel, hook anti-damage, thread loop, dan toggle UI terkait Godmode telah **DIHAPUS BERSIH SECARA PERMANEN (100% PURGED)** dari skrip.
+3. **Fitur Baru FPS Boost Engine (Anti-Lag)**:
+   - Menambahkan toggle dan fungsi `applyFpsBoost(enable)` di Tab Player yang menonaktifkan shadows (`Lighting.GlobalShadows = false`), memaksa seluruh material part menjadi `SmoothPlastic`, serta menonaktifkan partikel emisi dan point lights untuk mengoptimalkan FPS dan menghilangkan lag.
+4. **Pembaruan Vault & Discord Live**:
+   - Clean Source v1.3 diunggah ke `#🔐・founder-vault` (Msg ID: `1557034522024087706`).
+   - Siaran live di `#📢・announcements` (Msg ID: `1557035020835622913`) dan `#📝・changelogs` (Msg ID: `1557035217938550895`) dengan role mention `<@&1556741399024767148>` (🧟 HELLHOLE).
 
