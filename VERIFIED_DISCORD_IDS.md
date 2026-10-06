@@ -267,12 +267,12 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Prompt 2: `💻📱 Perangkat Bermain? / What device do you play on?` (PC Player: `Bermain di Laptop / PC Computer`, Mobile Player: `Bermain di HP (Android / iOS)`)
   * Prompt 3: `🔔 Notifikasi apa yang diinginkan? / What notifications do you want?` (Announcement, Script Update, Giveaway)
 - **Live Discord Announcement**:
-  * `#📢・announcements`: HELLHOLE v1.2 Mobile Responsive (`1556759567407251587`), HELLHOLE v1.0 (`1556742106142220303`), Dangerous Night v1.3 (`1556651561151762564`), Poly Loot v2.7 Bugfix (`1556651569490042944`).
+  * `#📢・announcements`: Mrbeast Island Escape v2.7 Zero-Lag & Multi-Burst (`1556890901127897128`), HELLHOLE v1.2 Mobile Responsive (`1556759567407251587`), HELLHOLE v1.0 (`1556742106142220303`), Dangerous Night v1.3 (`1556651561151762564`), Poly Loot v2.7 Bugfix (`1556651569490042944`).
 - **Live Discord Changelogs**:
-  * `#📝・changelogs`: HELLHOLE v1.2 Mobile Responsive (`1556759569995141282`), HELLHOLE v1.0 (`1556742110315544697`), Dangerous Night v1.3 (`1556651564134047777`), Poly Loot v2.7 Bugfix (`1556651573529149498`).
+  * `#📝・changelogs`: Mrbeast Island Escape v2.7 (`1556891075400958024`), HELLHOLE v1.2 Mobile Responsive (`1556759569995141282`), HELLHOLE v1.0 (`1556742110315544697`), Dangerous Night v1.3 (`1556651564134047777`), Poly Loot v2.7 Bugfix (`1556651573529149498`).
 - **Live Discord New Game Release**: `#🎮・new-games` (`1556742102551892019` HELLHOLE, `1556344524354232461` Backrooms Company)
 - **Live Discord Feature Guide**: `#📖・game-features` (`1556742104523214899` HELLHOLE, `1556344527986499629` Backrooms Company)
-- **#🔐・founder-vault** (`1547986862470205521`): Tepat 43 pesan murni clean source code terbaru berfitur bilingual, 0 duplikat, akses terisolasi 100% khusus Founder (`Hellhole_Clean.lua` v1.2 Mobile Responsive Msg ID: `1556758816052486146`, `DangerousNight_Clean.lua` v1.3 Msg ID: `1556655198686945313`, `PolyLoot_Clean.lua` v2.7 Msg ID: `1556651555539648614`, `BackroomsCompany_Clean.lua` v2.2 Msg ID: `1556500669777711104`, `UnboxASMR_Clean.lua` v3.0 Msg ID: `1556882900320780315`, `MrbeastIslandEscape_Clean.lua` v2.5 Msg ID: `1556228544688951346`).
+- **#🔐・founder-vault** (`1547986862470205521`): Tepat 43 pesan murni clean source code terbaru berfitur bilingual, 0 duplikat, akses terisolasi 100% khusus Founder (`Hellhole_Clean.lua` v1.2 Mobile Responsive Msg ID: `1556758816052486146`, `DangerousNight_Clean.lua` v1.3 Msg ID: `1556655198686945313`, `PolyLoot_Clean.lua` v2.7 Msg ID: `1556651555539648614`, `BackroomsCompany_Clean.lua` v2.2 Msg ID: `1556500669777711104`, `UnboxASMR_Clean.lua` v3.0 Msg ID: `1556882900320780315`, `MrbeastIslandEscape_Clean.lua` v2.7 Zero-Lag & Multi-Burst Msg ID: `1556890165958410251`).
 
 ## 7. SERVER BOOST LEVEL 1 (TIER 1) STATUS & ASSETS
 - **Status Boost**: `Premium Tier: 1` | `Total Boost: 2 Boosts` (Diberikan oleh akun Founder Nitro `Wira98` / `1464503502268137516`).
