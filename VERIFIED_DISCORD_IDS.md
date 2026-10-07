@@ -1,6 +1,6 @@
 # VERIFIED ROLES & CHANNELS MAPPING TABLE
 
-## 1. 44 SUPPORTED GAMES ROLES
+## 1. 45 SUPPORTED GAMES ROLES
 
 - **Deep Fishing**: `1551587483320459344` (Role Name: `🌊 Deep Fishing`)
 - **Pets Universe**: `1551531361582714892` (Role Name: `🐾 Pets Universe`)
@@ -46,6 +46,7 @@
 - **Dangerous Night**: `1556615713727184966` (`🌙 Dangerous Night`)
 - **HELLHOLE**: `1556741399024767148` (Role Name: `🧟 HELLHOLE`)
 - **Beat the Anime Boss**: `1557113502802387034` (Role Name: `⚔️ Beat the Anime Boss`)
+- **Carry Heavy Eggs**: `1557394678641594419` (Role Name: `🥚 Carry Heavy Eggs`)
 
 ## 2. NOTIFICATION & SYSTEM ROLES
 
@@ -248,11 +249,11 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
 
 ### B. Audit & Sinkronisasi Lengkap Panel Discord Server (100% Bilingual ID & EN)
 - **#📱・supported-games** (`1547960163489546291` / Msg ID: `1547960239465177159`):
-  Menyajikan 44 katalog game aktif secara dwi-bahasa (ID & EN berdampingan), mencakup `44. ⚔️ Beat the Anime Boss`.
+  Menyajikan 45 katalog game aktif secara dwi-bahasa (ID & EN berdampingan), mencakup `45. 🥚 Carry Heavy Eggs`.
 - **#⚡・script-panel** (`1547960154228793424` / Msg ID: `1549384215873851423`):
-  Instruksi loadstring permanen universal, tombol Mobile/PC Copy, dan tautan tombol `📱 Daftar 44 Game` serta `🎭 Ambil Role Game` (Bilingual ID / EN).
+  Instruksi loadstring permanen universal, tombol Mobile/PC Copy, dan tautan tombol `📱 Daftar 45 Game` serta `🎭 Ambil Role Game` (Bilingual ID / EN).
 - **#🎭・roles** (`1547960169206644838` / Msg ID: `1551596940683247697`):
-  Daftar lengkap 44 role game (Menu 1: 22 game & Menu 2: 22 game) dan panduan mandiri pengambilan role onboarding (Bilingual ID / EN).
+  Daftar lengkap 45 role game (Menu 1: 22 game & Menu 2: 23 game) dan panduan mandiri pengambilan role onboarding (Bilingual ID / EN).
 - **#📩・open-ticket** (`1548183127699226735` / Msg ID: `1548262371087228930`):
   Penjelasan 4 kategori tiket (General Support, Middleman/Rekber, Founder Store & VIP, Bug Report) dalam Bahasa Indonesia dan English.
 - **#🔗・invite-link** (`1549011153223421972` / Msg ID: `1549011158248333353`):
@@ -264,16 +265,16 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
 - **#📜・ketentuan-dan-garansi** (`1548262161271361589` / Msg ID: `1548262164932861995`):
   SOP transaksi, metode pembayaran bank/QRIS/kartu, garansi, dan 4 langkah pemesanan dwi-bahasa.
 - **Server Onboarding Prompts**:
-  * Prompt 1: `🎮 Game Roblox Favoritmu? / What is your favorite Roblox game?` (44 Options)
+  * Prompt 1: `🎮 Game Roblox Favoritmu? / What is your favorite Roblox game?` (45 Options)
   * Prompt 2: `💻📱 Perangkat Bermain? / What device do you play on?` (PC Player: `Bermain di Laptop / PC Computer`, Mobile Player: `Bermain di HP (Android / iOS)`)
   * Prompt 3: `🔔 Notifikasi apa yang diinginkan? / What notifications do you want?` (Announcement, Script Update, Giveaway)
 - **Live Discord Announcement**:
-  * `#📢・announcements`: Poly Loot v3.0 Master Dungeon & Stance Overhaul (`1557373056442433537`), Mrbeast Island Escape v3.0 Zero-Lag Combat & Food Guard (`1557354875401019403`), Beat the Anime Boss v1.1 Raid Equip & Podium Overhaul (`1557201262234304564`), Mrbeast Island Escape v2.9 Combat & Mob Burst Overhaul (`1557129244327288834`), Beat the Anime Boss v1.0 Master Release (`1557114453563154443`), Poly Loot v2.8 Harvest & Priority Drop Overhaul (`1556928979225809037`), Mrbeast Island Escape v2.7 Zero-Lag & Multi-Burst (`1556890901127897128`), HELLHOLE v1.2 Mobile Responsive (`1556759567407251587`), HELLHOLE v1.0 (`1556742106142220303`), Dangerous Night v1.3 (`1556651561151762564`), Poly Loot v2.7 Bugfix (`1556651569490042944`).
+  * `#📢・announcements`: Carry Heavy Eggs v1.0 Master Release (`1557395830816637000`), Poly Loot v3.0 Master Dungeon & Stance Overhaul (`1557373056442433537`), Mrbeast Island Escape v3.0 Zero-Lag Combat & Food Guard (`1557354875401019403`), Beat the Anime Boss v1.1 Raid Equip & Podium Overhaul (`1557201262234304564`), Mrbeast Island Escape v2.9 Combat & Mob Burst Overhaul (`1557129244327288834`), Beat the Anime Boss v1.0 Master Release (`1557114453563154443`), Poly Loot v2.8 Harvest & Priority Drop Overhaul (`1556928979225809037`), Mrbeast Island Escape v2.7 Zero-Lag & Multi-Burst (`1556890901127897128`), HELLHOLE v1.2 Mobile Responsive (`1556759567407251587`), HELLHOLE v1.0 (`1556742106142220303`), Dangerous Night v1.3 (`1556651561151762564`), Poly Loot v2.7 Bugfix (`1556651569490042944`).
 - **Live Discord Changelogs**:
-  * `#📝・changelogs`: Poly Loot v3.0 (`1557373059298754672`), Mrbeast Island Escape v3.0 (`1557354896553021471`), Beat the Anime Boss v1.1 (`1557201267611275376`), Mrbeast Island Escape v2.9 (`1557129378469642251`), Beat the Anime Boss v1.0 (`1557114456784244812`), Poly Loot v2.8 (`1556928982782320675`), Mrbeast Island Escape v2.7 (`1556891075400958024`), HELLHOLE v1.2 Mobile Responsive (`1556759569995141282`), HELLHOLE v1.0 (`1556742110315544697`), Dangerous Night v1.3 (`1556651564134047777`), Poly Loot v2.7 Bugfix (`1556651573529149498`).
-- **Live Discord New Game Release**: `#🎮・new-games` (`1557114459611205663` Beat the Anime Boss, `1556742102551892019` HELLHOLE, `1556344524354232461` Backrooms Company)
-- **Live Discord Feature Guide**: `#📖・game-features` (`1557114462102618163` Beat the Anime Boss, `1556742104523214899` HELLHOLE, `1556344527986499629` Backrooms Company)
-- **#🔐・founder-vault** (`1547986862470205521`): Tepat 44 pesan murni clean source code terbaru berfitur bilingual, 0 duplikat, akses terisolasi 100% khusus Founder (`PolyLoot_Clean.lua` v3.0 Master Dark Dungeon Overhaul Msg ID: `1557373050918404137`, `MrbeastIslandEscape_Clean.lua` v3.0 Master Zero-Lag Combat & Food Guard Msg ID: `1557354487989932072`, `BeatTheAnimeBoss_Clean.lua` v1.1 Master Raid Equip Overhaul Msg ID: `1557200988845121597`, `Hellhole_Clean.lua` v1.3 Msg ID: `1557034522024087706`, `DangerousNight_Clean.lua` v1.3 Msg ID: `1556655198686945313`, `BackroomsCompany_Clean.lua` v2.2 Msg ID: `1556500669777711104`, `UnboxASMR_Clean.lua` v3.3 Msg ID: `1556882900320780315`).
+  * `#📝・changelogs`: Carry Heavy Eggs v1.0 (`1557395833618432001`), Poly Loot v3.0 (`1557373059298754672`), Mrbeast Island Escape v3.0 (`1557354896553021471`), Beat the Anime Boss v1.1 (`1557201267611275376`), Mrbeast Island Escape v2.9 (`1557129378469642251`), Beat the Anime Boss v1.0 (`1557114456784244812`), Poly Loot v2.8 (`1556928982782320675`), Mrbeast Island Escape v2.7 (`1556891075400958024`), HELLHOLE v1.2 Mobile Responsive (`1556759569995141282`), HELLHOLE v1.0 (`1556742110315544697`), Dangerous Night v1.3 (`1556651564134047777`), Poly Loot v2.7 Bugfix (`1556651573529149498`).
+- **Live Discord New Game Release**: `#🎮・new-games` (`1557395836156117023` Carry Heavy Eggs, `1557114459611205663` Beat the Anime Boss, `1556742102551892019` HELLHOLE, `1556344524354232461` Backrooms Company)
+- **Live Discord Feature Guide**: `#📖・game-features` (`1557395904074489856` Carry Heavy Eggs, `1557114462102618163` Beat the Anime Boss, `1556742104523214899` HELLHOLE, `1556344527986499629` Backrooms Company)
+- **#🔐・founder-vault** (`1547986862470205521`): Tepat 45 pesan murni clean source code terbaru berfitur bilingual, 0 duplikat, akses terisolasi 100% khusus Founder (`CarryHeavyEggs_Clean.lua` v1.0 Master Release Msg ID: `1557394865711484990`, `PolyLoot_Clean.lua` v3.0 Master Dark Dungeon Overhaul Msg ID: `1557373050918404137`, `MrbeastIslandEscape_Clean.lua` v3.0 Master Zero-Lag Combat & Food Guard Msg ID: `1557354487989932072`, `BeatTheAnimeBoss_Clean.lua` v1.1 Master Raid Equip Overhaul Msg ID: `1557200988845121597`, `Hellhole_Clean.lua` v1.3 Msg ID: `1557034522024087706`, `DangerousNight_Clean.lua` v1.3 Msg ID: `1556655198686945313`, `BackroomsCompany_Clean.lua` v2.2 Msg ID: `1556500669777711104`, `UnboxASMR_Clean.lua` v3.3 Msg ID: `1556882900320780315`).
 
 ## 7. SERVER BOOST LEVEL 1 (TIER 1) STATUS & ASSETS
 - **Status Boost**: `Premium Tier: 1` | `Total Boost: 2 Boosts` (Diberikan oleh akun Founder Nitro `Wira98` / `1464503502268137516`).
