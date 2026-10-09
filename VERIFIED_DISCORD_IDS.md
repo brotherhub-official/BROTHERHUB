@@ -1,6 +1,6 @@
 # VERIFIED ROLES & CHANNELS MAPPING TABLE
 
-## 1. 47 SUPPORTED GAMES ROLES
+## 1. 48 SUPPORTED GAMES ROLES
 
 - **Deep Fishing**: `1551587483320459344` (Role Name: `🌊 Deep Fishing`)
 - **Pets Universe**: `1551531361582714892` (Role Name: `🐾 Pets Universe`)
@@ -49,6 +49,7 @@
 - **Carry Heavy Eggs**: `1557394678641594419` (Role Name: `🥚 Carry Heavy Eggs`)
 - **Roll a Baddie**: `1558028200724926505` (Role Name: `🎲 Roll a Baddie`)
 - **Deadly Delivery**: `1558098024515903638` (Role Name: `📦 Deadly Delivery`)
+- **Steal a Dragon Egg**: `1558117499994767360` (Role Name: `🥚 Steal a Dragon Egg`)
 
 ## 2. NOTIFICATION & SYSTEM ROLES
 
@@ -207,7 +208,7 @@ Suggested Feature Details (Please explain thoroughly and in full detail):
 *Announcement Message ID: `1554558559046471703`*
 Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100% Rich Discord Embed resmi (Dwi-bahasa 🇮🇩 ID & 🇬🇧 EN berdampingan).
 
-## 6. UNIVERSAL BILINGUAL ENGINE ARCHITECTURE (41 GAMES, LOADER & DISCORD)
+## 6. UNIVERSAL BILINGUAL ENGINE ARCHITECTURE (48 GAMES, LOADER & DISCORD)
 
 ### A. Mekanisme Deteksi Cerdas Wilayah & Bahasa (Smart Country/Locale Detection)
 1. **Universal Master Loader (`BrotherHub.lua` / `BrotherHub_Clean.lua`)**:
@@ -222,7 +223,7 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
      * `notify("❌ Download Error", L("Gagal mengunduh script dari GitHub!", "Failed to download script from GitHub!"), 8)`
      * `notify("⚠️ BROTHER HUB", L("Game ini belum didukung!\nPlaceId: ", "This game is not yet supported!\nPlaceId: ") .. tostring(placeId), 8)`
 
-2. **Seluruh 41 Script Game Resmi (`CleanHub/*_Clean.lua` & `*_BROTHERHUB.lua`)**:
+2. **Seluruh 48 Script Game Resmi (`CleanHub/*_Clean.lua` & `*_BROTHERHUB.lua`)**:
    - Menerima `_G.BROTHERHUB_LANG` dari loader (prioritas utama).
    - Memiliki fallback mandiri bila script dieksekusi terpisah tanpa loader:
      ```lua
@@ -251,11 +252,11 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
 
 ### B. Audit & Sinkronisasi Lengkap Panel Discord Server (100% Bilingual ID & EN)
 - **#📱・supported-games** (`1547960163489546291` / Msg ID: `1547960239465177159`):
-  Menyajikan 47 katalog game aktif secara dwi-bahasa (ID & EN berdampingan), mencakup `46. 🎲 Roll a Baddie` dan `47. 📦 Deadly Delivery`.
+  Menyajikan 48 katalog game aktif secara dwi-bahasa (ID & EN berdampingan), mencakup `47. 📦 Deadly Delivery` dan `48. 🥚 Steal a Dragon Egg`.
 - **#⚡・script-panel** (`1547960154228793424` / Msg ID: `1549384215873851423`):
-  Instruksi loadstring permanen universal, tombol Mobile/PC Copy, dan tautan tombol `📱 Daftar 47 Game` serta `🎭 Ambil Role Game` (Bilingual ID / EN).
+  Instruksi loadstring permanen universal, tombol Mobile/PC Copy, dan tautan tombol `📱 Daftar 48 Game` serta `🎭 Ambil Role Game` (Bilingual ID / EN).
 - **#🎭・roles** (`1547960169206644838` / Msg ID: `1551596940683247697`):
-  Daftar lengkap 47 role game (Menu 1: 22 game & Menu 2: 25 game) dan panduan mandiri pengambilan role onboarding (Bilingual ID / EN).
+  Daftar lengkap 48 role game (Menu 1: 23 game & Menu 2: 25 game) dan panduan mandiri pengambilan role onboarding (Bilingual ID / EN).
 - **#📩・open-ticket** (`1548183127699226735` / Msg ID: `1548262371087228930`):
   Penjelasan 4 kategori tiket (General Support, Middleman/Rekber, Founder Store & VIP, Bug Report) dalam Bahasa Indonesia dan English.
 - **#🔗・invite-link** (`1549011153223421972` / Msg ID: `1549011158248333353`):
