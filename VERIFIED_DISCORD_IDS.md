@@ -1,6 +1,6 @@
 # VERIFIED ROLES & CHANNELS MAPPING TABLE
 
-## 1. 46 SUPPORTED GAMES ROLES
+## 1. 47 SUPPORTED GAMES ROLES
 
 - **Deep Fishing**: `1551587483320459344` (Role Name: `🌊 Deep Fishing`)
 - **Pets Universe**: `1551531361582714892` (Role Name: `🐾 Pets Universe`)
@@ -48,6 +48,7 @@
 - **Beat the Anime Boss**: `1557113502802387034` (Role Name: `⚔️ Beat the Anime Boss`)
 - **Carry Heavy Eggs**: `1557394678641594419` (Role Name: `🥚 Carry Heavy Eggs`)
 - **Roll a Baddie**: `1558028200724926505` (Role Name: `🎲 Roll a Baddie`)
+- **Deadly Delivery**: `1558098024515903638` (Role Name: `📦 Deadly Delivery`)
 
 ## 2. NOTIFICATION & SYSTEM ROLES
 
@@ -250,11 +251,11 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
 
 ### B. Audit & Sinkronisasi Lengkap Panel Discord Server (100% Bilingual ID & EN)
 - **#📱・supported-games** (`1547960163489546291` / Msg ID: `1547960239465177159`):
-  Menyajikan 46 katalog game aktif secara dwi-bahasa (ID & EN berdampingan), mencakup `46. 🎲 Roll a Baddie`.
+  Menyajikan 47 katalog game aktif secara dwi-bahasa (ID & EN berdampingan), mencakup `46. 🎲 Roll a Baddie` dan `47. 📦 Deadly Delivery`.
 - **#⚡・script-panel** (`1547960154228793424` / Msg ID: `1549384215873851423`):
-  Instruksi loadstring permanen universal, tombol Mobile/PC Copy, dan tautan tombol `📱 Daftar 46 Game` serta `🎭 Ambil Role Game` (Bilingual ID / EN).
+  Instruksi loadstring permanen universal, tombol Mobile/PC Copy, dan tautan tombol `📱 Daftar 47 Game` serta `🎭 Ambil Role Game` (Bilingual ID / EN).
 - **#🎭・roles** (`1547960169206644838` / Msg ID: `1551596940683247697`):
-  Daftar lengkap 46 role game (Menu 1: 22 game & Menu 2: 24 game) dan panduan mandiri pengambilan role onboarding (Bilingual ID / EN).
+  Daftar lengkap 47 role game (Menu 1: 22 game & Menu 2: 25 game) dan panduan mandiri pengambilan role onboarding (Bilingual ID / EN).
 - **#📩・open-ticket** (`1548183127699226735` / Msg ID: `1548262371087228930`):
   Penjelasan 4 kategori tiket (General Support, Middleman/Rekber, Founder Store & VIP, Bug Report) dalam Bahasa Indonesia dan English.
 - **#🔗・invite-link** (`1549011153223421972` / Msg ID: `1549011158248333353`):
@@ -266,7 +267,7 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
 - **#📜・ketentuan-dan-garansi** (`1548262161271361589` / Msg ID: `1548262164932861995`):
   SOP transaksi, metode pembayaran bank/QRIS/kartu, garansi, dan 4 langkah pemesanan dwi-bahasa.
 - **Server Onboarding Prompts**:
-  * Prompt 1: `🎮 Game Roblox Favoritmu? / What is your favorite Roblox game?` (46 Options)
+  * Prompt 1: `🎮 Game Roblox Favoritmu? / What is your favorite Roblox game?` (47 Options)
   * Prompt 2: `💻📱 Perangkat Bermain? / What device do you play on?` (PC Player: `Bermain di Laptop / PC Computer`, Mobile Player: `Bermain di HP (Android / iOS)`)
   * Prompt 3: `🔔 Notifikasi apa yang diinginkan? / What notifications do you want?` (Announcement, Script Update, Giveaway)
 - **Live Discord Announcement**:
@@ -275,7 +276,7 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * `#📝・changelogs`: Roll a Baddie v1.0 (`1558028982367166575`), Poly Loot v3.1 (`1557989559411937292`), Mrbeast Island Escape v3.2 (`1557901524598792326`), Carry Heavy Eggs v1.6 (`1557684250399219813`).
 - **Live Discord New Game Release**: `#🎮・new-games` (`1558028985143656560` Roll a Baddie, `1557395836156117023` Carry Heavy Eggs, `1557114459611205663` Beat the Anime Boss, `1556742102551892019` HELLHOLE).
 - **Live Discord Feature Guide**: `#📖・game-features` (`1558029188479459380` Roll a Baddie, `1557395904074489856` Carry Heavy Eggs, `1557114462102618163` Beat the Anime Boss, `1556742104523214899` HELLHOLE).
-- **#🔐・founder-vault** (`1547986862470205521`): Tepat 46 pesan murni clean source code terbaru berfitur bilingual, 0 duplikat, akses terisolasi 100% khusus Founder (`RollaBaddie_Clean.lua` v1.0 Master Release Msg ID: `1558028972107763864`, `PolyLoot_Clean.lua` v3.1 Safe Stance Proximity Msg ID: `1557989550540988467`, `MrbeastIslandEscape_Clean.lua` v3.2 Master Expansion Msg ID: `1557900616804606002`, `CarryHeavyEggs_Clean.lua` v1.6 Master Hotfix Msg ID: `1557684001139986443`).
+- **#🔐・founder-vault** (`1547986862470205521`): Tepat 47 pesan murni clean source code terbaru berfitur bilingual, 0 duplikat, akses terisolasi 100% khusus Founder (`RollaBaddie_Clean.lua` v1.0 Master Release Msg ID: `1558028972107763864`, `PolyLoot_Clean.lua` v3.1 Safe Stance Proximity Msg ID: `1557989550540988467`, `MrbeastIslandEscape_Clean.lua` v3.2 Master Expansion Msg ID: `1557900616804606002`, `CarryHeavyEggs_Clean.lua` v1.6 Master Hotfix Msg ID: `1557684001139986443`).
 
 ## 7. SERVER BOOST LEVEL 1 (TIER 1) STATUS & ASSETS
 - **Status Boost**: `Premium Tier: 1` | `Total Boost: 2 Boosts` (Diberikan oleh akun Founder Nitro `Wira98` / `1464503502268137516`).
