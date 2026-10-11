@@ -318,6 +318,19 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
 
 - **Yupra All-in-One Package**: `C:\Users\andra\Downloads\BrotherHub_Yupra_AllInOne.zip` (Tersedia untuk update bot kasino di Yupra).
 
+## 9. HUKUM MUTLAK 14: PERMISSION LOCKDOWN & ANTI-THREAD STERILIZATION
+- **Channel `#✅・verify`**: `1547967829993717760`
+  * Overwrites for `@everyone` (`1547929421284114453`):
+    - Allow: `66624` (`VIEW_CHANNEL=1024`, `READ_MESSAGE_HISTORY=65536`, `ADD_REACTIONS=64`)
+    - Deny: `633698802391040` (`SEND_MESSAGES`, `CREATE_PUBLIC_THREADS`, `CREATE_PRIVATE_THREADS`, `SEND_MESSAGES_IN_THREADS`, `EMBED_LINKS`, `ATTACH_FILES`, `USE_APPLICATION_COMMANDS`, `SEND_VOICE_MESSAGES`, `SEND_POLLS`, `SEND_TTS_MESSAGES`, `MENTION_EVERYONE`)
+  * Overwrites for `Brother Member` (`1547960141263929366`):
+    - Identical lockdown!
+  * Single Official Message: `1547967856837132400` (Prompt verifikasi Brother Hub Bot).
+  * Pesan Sistem Thread Type 18 & Thread unauthorized telah dihapus permanen via API Discord (Status 204).
+- **15 Read-Only Channels Locked with Anti-Thread Flag**:
+  * Rules (`1547960146423058493`), Announcements (`1547960148599775262`), Partners (`1547960150718156854`), Script Panel (`1547960154228793424`), Changelogs (`1547960156417949726`), New Games (`1547960158456643598`), Supported Games (`1547960163489546291`), Roles (`1547960169206644838`), Staff Announcements (`1547966799948025956`), Welcome (`1547967692894375981`), Server Boosts (`1547967695255769201`), Goodbye (`1547970761942106303`), Game Features (`1548053432089190442`), Founder Profile (`1548262122570649620`), Invite Link (`1549011153223421972`).
+- **Live Active Threads Count**: TEPAT 0 (100% Steril).
+
 
 
 
