@@ -308,6 +308,14 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * `BH Jackpot` (`1555176904863256647`) — Melodi Cepat Kemenangan Kasino / Jackpot
   * `BH Victory` (`1555176908130353263`) — Fanfare Kemenangan Boss / Quest Clear
   * `BH Bass Boom` (`1555176914598101012`) — Sub-Bass 808 Drop Hype
+
+## 8. VERIFIED ACTIVE MEMBER USER IDs (ANTI @UNKNOWN-USER MENTION)
+- **Prone**: `446749965570670603` (Username: `ramaprone` — Requester Poly Loot Halloween Dungeon & Ghost Net)
+- **nakaraaa123**: `1446049853384822835` (Username: `nakaraaa123_95622` — Reporter Deadly Delivery Bugs v1.1-v1.8)
+- **Lucifer**: `396632374538010625` (Username: `aslisurabaya` — Reporter Dungeon Lootr Bugs v2.5-v2.6)
+- **! BOS**: `913487850182439003` (Username: `phiraps` — Requester Steal a Dragon Egg Natural Walk v1.2)
+- **Founder**: `988433106283417641` (Username: `prawiraxliv` / Lead Developer) & `1464503502268137516` (Username: `Wira98` / Nitro Booster)
+
 - **Yupra All-in-One Package**: `C:\Users\andra\Downloads\BrotherHub_Yupra_AllInOne.zip` (Tersedia untuk update bot kasino di Yupra).
 
 
