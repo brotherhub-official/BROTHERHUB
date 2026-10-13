@@ -272,15 +272,15 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Prompt 2: `💻📱 Perangkat Bermain? / What device do you play on?` (PC Player: `Bermain di Laptop / PC Computer`, Mobile Player: `Bermain di HP (Android / iOS)`)
   * Prompt 3: `🔔 Notifikasi apa yang diinginkan? / What notifications do you want?` (Announcement, Script Update, Giveaway)
 - **Live Discord Announcement**:
-  * `#📢・announcements`: Deadly Delivery v2.7 True ServerPos Desync & POV Clean Overhaul (`1559537268316704769`), Deadly Delivery v2.6 Desync God Mode & Map-Wide Automation (`1559522715390705708`), Poly Loot v3.7 Halloween Dungeon & Universal Kill Aura (`1559279656778076211`), Dungeon Lootr v3.2 Hollow Realm & Combat Master Update (`1559269626037149878`), Deadly Delivery v2.5 Mobile Touch Control Update (`1559269619917787208`), Dungeon Lootr v3.1 Combat Suite & UI Hotfix (`1559257327675117642`), Deadly Delivery v2.4 Zero-Delay Interact & UI Hotfix (`1559257476421914728`), Dungeon Lootr v3.0 Sticky Behind Stance Lock (`1559141766400180306`), Deadly Delivery v2.3 Master Update True Permanent Infinite Stamina Engine (`1559130592443109431`), Dungeon Lootr v2.9 Major Rework Combat Safe Initialization (`1559120170759487540`), Poly Loot v3.6 (`1559069127392632935`), Dungeon Lootr v2.7 (`1559026009934659716`), Deadly Delivery v2.0 (`1558918794498277617`).
+  * `#📢・announcements`: Deadly Delivery v2.8 Master Desync & Free-Movement POV Overhaul (`1559592176797745154`), Deadly Delivery v2.7 True ServerPos Desync & POV Clean Overhaul (`1559537268316704769`), Deadly Delivery v2.6 Desync God Mode & Map-Wide Automation (`1559522715390705708`), Poly Loot v3.7 Halloween Dungeon & Universal Kill Aura (`1559279656778076211`), Dungeon Lootr v3.2 Hollow Realm & Combat Master Update (`1559269626037149878`), Deadly Delivery v2.5 Mobile Touch Control Update (`1559269619917787208`), Dungeon Lootr v3.1 Combat Suite & UI Hotfix (`1559257327675117642`), Deadly Delivery v2.4 Zero-Delay Interact & UI Hotfix (`1559257476421914728`), Dungeon Lootr v3.0 Sticky Behind Stance Lock (`1559141766400180306`), Deadly Delivery v2.3 Master Update True Permanent Infinite Stamina Engine (`1559130592443109431`), Dungeon Lootr v2.9 Major Rework Combat Safe Initialization (`1559120170759487540`), Poly Loot v3.6 (`1559069127392632935`), Dungeon Lootr v2.7 (`1559026009934659716`), Deadly Delivery v2.0 (`1558918794498277617`).
 - **Live Discord Bug Reports, Suggestions & Resolution Notices (Semua 100% Bilingual ID & EN Verified)**:
-  * `#🐛・bug-reports` & Tiket: Deadly Delivery v2.7 Reply nakaraaa123 [100% Bilingual ID & EN Verified] (`1559537389486211112`), Deadly Delivery v2.6 Reply nakaraaa123 [100% Bilingual ID & EN Verified] (`1559523301703811115`), Poly Loot v3.7 Reply Prone [100% Bilingual ID & EN Verified] (`1559279555775176824`), Dungeon Lootr v3.2 Reply Lucifer [100% Bilingual ID & EN Verified] (`1559269482709393493`), Deadly Delivery v2.5 Reply nakaraaa123 [100% Bilingual ID & EN Verified] (`1559269308796768276`), Poly Loot v3.6 Reply Prone (`1559069308829831249`), Dungeon Lootr v2.7 Reply Lucifer (`1559026028805103631`), Deadly Delivery v2.0 Reply nakaraaa123 (`1558918804824784939`), Deadly Delivery v1.9 Reply nakaraaa123 (`1558909812614627412`).
+  * `#🐛・bug-reports` & Tiket: Deadly Delivery v2.8 Reply nakaraaa123 [100% Bilingual ID & EN Verified] (`1559592406293151805`), Deadly Delivery v2.7 Reply nakaraaa123 [100% Bilingual ID & EN Verified] (`1559537389486211112`), Deadly Delivery v2.6 Reply nakaraaa123 [100% Bilingual ID & EN Verified] (`1559523301703811115`), Poly Loot v3.7 Reply Prone [100% Bilingual ID & EN Verified] (`1559279555775176824`), Dungeon Lootr v3.2 Reply Lucifer [100% Bilingual ID & EN Verified] (`1559269482709393493`), Deadly Delivery v2.5 Reply nakaraaa123 [100% Bilingual ID & EN Verified] (`1559269308796768276`), Poly Loot v3.6 Reply Prone (`1559069308829831249`), Dungeon Lootr v2.7 Reply Lucifer (`1559026028805103631`), Deadly Delivery v2.0 Reply nakaraaa123 (`1558918804824784939`), Deadly Delivery v1.9 Reply nakaraaa123 (`1558909812614627412`).
   * `#⭐・suggestions`: Poly Loot v3.5 Halloween Dungeon Suite Reply Prone [100% Bilingual ID & EN] (`1558890375421370439`), Dungeon Lootr v2.5 Reply Lucifer [100% Bilingual ID & EN Patched] (`1558831430610722869`), Poly Loot v3.4 Halloween Event Auto Catch Ghost Reply Prone (`1558629567260917872`), Steal a Dragon Egg v1.2 Natural Walk Reply ! BOS [100% Bilingual ID & EN Patched] (`1558468662623740088`), Steal a Dragon Egg Reply ! BOS (`1558122155672346706`).
 - **Live Discord Changelogs**:
-  * `#📝・changelogs`: Deadly Delivery v2.7 True ServerPos Desync & POV Clean Overhaul (`1559537278504800368`), Deadly Delivery v2.6 Desync God Mode & Map-Wide Automation (`1559522725872017511`), Poly Loot v3.7 Halloween Dungeon & Universal Kill Aura (`1559279660116738059`), Dungeon Lootr v3.2 Hollow Realm Modules & Individual Skills Overhaul (`1559269628637880361`), Deadly Delivery v2.5 Mobile Touchscreen Experience & Input Hotfix (`1559269622732300350`), Dungeon Lootr v3.1 Combat Stabilization & UI Overhaul (`1559257338878361722`), Deadly Delivery v2.4 Loot Interaction Optimization & Glyph Fix (`1559257485809025146`), Dungeon Lootr v3.0 Sticky Behind Stance Lock & Anti-Push Physics (`1559142010554679397`), Deadly Delivery v2.3 Hotfix True Permanent Infinite Stamina Engine (`1559130599334346905`), Dungeon Lootr v2.9 Combat Safe Initialization & 3-Card Master Suite (`1559120180443877377`), Poly Loot v3.6 (`1559069305931432028`), Dungeon Lootr v2.7 (`1559026019002748999`).
+  * `#📝・changelogs`: Deadly Delivery v2.8 Master Desync Free-Movement & POV Overhaul (`1559592298990280765`), Deadly Delivery v2.7 True ServerPos Desync & POV Clean Overhaul (`1559537278504800368`), Deadly Delivery v2.6 Desync God Mode & Map-Wide Automation (`1559522725872017511`), Poly Loot v3.7 Halloween Dungeon & Universal Kill Aura (`1559279660116738059`), Dungeon Lootr v3.2 Hollow Realm Modules & Individual Skills Overhaul (`1559269628637880361`), Deadly Delivery v2.5 Mobile Touchscreen Experience & Input Hotfix (`1559269622732300350`), Dungeon Lootr v3.1 Combat Stabilization & UI Overhaul (`1559257338878361722`), Deadly Delivery v2.4 Loot Interaction Optimization & Glyph Fix (`1559257485809025146`), Dungeon Lootr v3.0 Sticky Behind Stance Lock & Anti-Push Physics (`1559142010554679397`), Deadly Delivery v2.3 Hotfix True Permanent Infinite Stamina Engine (`1559130599334346905`), Dungeon Lootr v2.9 Combat Safe Initialization & 3-Card Master Suite (`1559120180443877377`), Poly Loot v3.6 (`1559069305931432028`), Dungeon Lootr v2.7 (`1559026019002748999`).
 - **Live Discord New Game Release**: `#🎮・new-games` (`1558104257134207058` Deadly Delivery, `1558028985143656560` Roll a Baddie, `1557395836156117023` Carry Heavy Eggs, `1557114459611205663` Beat the Anime Boss, `1556742102551892019` HELLHOLE).
 - **Live Discord Feature Guide**: `#📖・game-features` (`1558104260292382721` Deadly Delivery, `1558029188479459380` Roll a Baddie, `1557395904074489856` Carry Heavy Eggs, `1557114462102618163` Beat the Anime Boss, `1556742104523214899` HELLHOLE).
-- **#🔐・founder-vault` (`1547986862470205521`): Tepat 48 pesan murni clean source code terbaru berfitur bilingual, 0 duplikat, akses terisolasi 100% khusus Founder (`DeadlyDelivery_Clean.lua` v2.7 Msg ID: `1559537247097851958`, `PolyLoot_Clean.lua` v3.7 Msg ID: `1559279283162316874`, `DungeonLootr_Clean.lua` v3.2 Msg ID: `1559269136926900329`, `StealADragonEgg_Clean.lua` v1.2 Msg ID: `1558472450063339621`).
+- **#🔐・founder-vault` (`1547986862470205521`): Tepat 48 pesan murni clean source code terbaru berfitur bilingual, 0 duplikat, akses terisolasi 100% khusus Founder (`DeadlyDelivery_Clean.lua` v2.8 Msg ID: `1559591978193125468`, `DeadlyDelivery_Clean.lua` v2.7 Msg ID: `1559537247097851958`, `PolyLoot_Clean.lua` v3.7 Msg ID: `1559279283162316874`, `DungeonLootr_Clean.lua` v3.2 Msg ID: `1559269136926900329`, `StealADragonEgg_Clean.lua` v1.2 Msg ID: `1558472450063339621`).
 
 ## 7. SERVER BOOST LEVEL 1 (TIER 1) STATUS & ASSETS
 - **Status Boost**: `Premium Tier: 1` | `Total Boost: 2 Boosts` (Diberikan oleh akun Founder Nitro `Wira98` / `1464503502268137516`).
@@ -310,13 +310,19 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * `BH Bass Boom` (`1555176914598101012`) — Sub-Bass 808 Drop Hype
 
 ## 8. VERIFIED ACTIVE MEMBER USER IDs (ANTI @UNKNOWN-USER MENTION)
-- **Prone**: `446749965570670603` (Username: `ramaprone` — Requester Poly Loot Halloween Dungeon & Ghost Net)
-- **nakaraaa123**: `1446049853384822835` (Username: `nakaraaa123_95622` — Reporter Deadly Delivery Bugs v1.1-v1.8)
-- **Lucifer**: `396632374538010625` (Username: `aslisurabaya` — Reporter Dungeon Lootr Bugs v2.5-v2.6)
+- **makarxwq**: `1191155926271533229` (Username: `makarxwq` — Welcome Msg: `1559511671951589436`)
+- **aeeliuss**: `1379158312750420015` (Username: `aeeliuss` — Welcome Msg: `1559232881841410058`)
+- **THE GOAT**: `1554011176042631248` (Global Name: `THE GOAT` — Welcome Msg: `1558725670199103561`)
+- **Perceval**: `378234835933593601` (Username: `perceval1133` — Welcome Msg: `1558366050679267371`)
+- **3BOD**: `1501522662256672869` (Username: `3_b00d_94551` — Welcome Msg: `1558208277802651759`)
+- **CS_SLAYER12345**: `1546943657792241812` (Username: `cs_slayer12345` — Welcome Msg: `1558195473930522704`)
+- **nakaraaa123**: `1446049853384822835` (Username: `nakaraaa123_95622` — Reporter Deadly Delivery Bugs v1.1-v2.7 — Welcome Msg: `1558046188463194122`)
+- **Prone**: `446749965570670603` (Username: `ramaprone` — Requester Poly Loot Halloween Dungeon & Ghost Net — Welcome Msg: `1552686752731238533`)
+- **Lucifer**: `396632374538010625` (Username: `aslisurabaya` — Reporter Dungeon Lootr Bugs v2.5-v3.2)
 - **! BOS**: `913487850182439003` (Username: `phiraps` — Requester Steal a Dragon Egg Natural Walk v1.2)
 - **Founder**: `988433106283417641` (Username: `prawiraxliv` / Lead Developer) & `1464503502268137516` (Username: `Wira98` / Nitro Booster)
 
-- **Yupra All-in-One Package**: `C:\Users\andra\Downloads\BrotherHub_Yupra_AllInOne.zip` (Tersedia untuk update bot kasino di Yupra).
+- **Yupra All-in-One Package**: `C:\Users\andra\Downloads\BrotherHub_Yupra_AllInOne.zip` (Ukuran: 6.75 MB / 6,752,568 bytes, Updated 21:25 WIB, Siap Upload).
 
 ## 9. HUKUM MUTLAK 14: PERMISSION LOCKDOWN & ANTI-THREAD STERILIZATION
 - **Channel `#✅・verify`**: `1547967829993717760`
@@ -330,6 +336,17 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
 - **15 Read-Only Channels Locked with Anti-Thread Flag**:
   * Rules (`1547960146423058493`), Announcements (`1547960148599775262`), Partners (`1547960150718156854`), Script Panel (`1547960154228793424`), Changelogs (`1547960156417949726`), New Games (`1547960158456643598`), Supported Games (`1547960163489546291`), Roles (`1547960169206644838`), Staff Announcements (`1547966799948025956`), Welcome (`1547967692894375981`), Server Boosts (`1547967695255769201`), Goodbye (`1547970761942106303`), Game Features (`1548053432089190442`), Founder Profile (`1548262122570649620`), Invite Link (`1549011153223421972`).
 - **Live Active Threads Count**: TEPAT 0 (100% Steril).
+
+## 10. HUKUM MUTLAK 15: ARSITEKTUR HYBRID @ MENTION & STERILISASI TOTAL @UNKNOWN-USER (#WELCOME & YUPRA BOT)
+- **Channel `#👋・welcome` (`1547967692894375981`)**:
+  * **Member Aktif**: Wajib tag mention resmi `<@USER_ID>` (`member.mention`) ➔ Menampilkan pill mention biru interaktif `@Username` di seluruh perangkat PC & HP. Dilarang teks tebal tanpa `@`!
+  * **Member yang Sudah Keluar (Left Guild)**: Teks tebal murni `Welcome **Username**` (contoh: akun Aditya `971748253022437426` yang menghasilkan 404). Mencegah Discord merender `@unknown-user` akibat ketiadaan member cache.
+  * **Pesan Sambutan Awal Guild (#47)**: Teks murni `Welcome to **BROTHER HUB**! 🎉 Selamat datang di Brother Hub!` (Bebas dari bug mention Snowflake ID Guild).
+- **Bot Hosting Yupra (`BrotherHub_Yupra_AllInOne.zip`)**:
+  * Event `on_member_join` menggunakan `content=f"Welcome {member.mention}"`.
+  * Deduplikasi & Anti-Race: Memeriksa `(member.name in msg.content or member.mention in msg.content)`.
+  * Goodbye Event: `content=f"Goodbye {member.name}"`.
+
 
 
 
