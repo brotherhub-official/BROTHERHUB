@@ -319,7 +319,12 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
 - **CS_SLAYER12345**: `1546943657792241812` (Username: `cs_slayer12345` — Welcome Msg: `1558195473930522704`)
 - **nakaraaa123**: `1446049853384822835` (Username: `nakaraaa123_95622` — Reporter Deadly Delivery Bugs v1.1-v2.7 — Welcome Msg: `1558046188463194122`)
 - **Prone**: `446749965570670603` (Username: `ramaprone` — Requester Poly Loot Halloween Dungeon & Ghost Net — Welcome Msg: `1552686752731238533`)
-- **Lucifer**: `396632374538010625` (Username: `aslisurabaya` — Reporter Dungeon Lootr Bugs v2.5-v3.2)
+- **Lucifer**: `396632374538010625` (Username: `aslisurabaya` — Reporter Dungeon Lootr Bugs v2.5-v3.3 — Bug Reply Msg: `1560037966871658659`)
+- **Dungeon Lootr v3.3 Live IDs**:
+  * Announcements (`#📢・announcements`): `1560037969803481189`
+  * Changelogs (`#📝・changelogs`): `1560037972387303476`
+  * Bug Report Reply (`#🐛・bug-reports`): `1560037966871658659` (Reply ke `1560028567419494401`)
+  * Founder Vault (`#🔐・founder-vault`): `1560037736470028290` (`DungeonLootr_Clean.lua` v3.3)
 - **! BOS**: `913487850182439003` (Username: `phiraps` — Requester Steal a Dragon Egg Natural Walk v1.2)
 - **Founder**: `988433106283417641` (Username: `prawiraxliv` / Lead Developer) & `1464503502268137516` (Username: `Wira98` / Nitro Booster)
 
