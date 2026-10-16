@@ -343,15 +343,16 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Rules (`1547960146423058493`), Announcements (`1547960148599775262`), Partners (`1547960150718156854`), Script Panel (`1547960154228793424`), Changelogs (`1547960156417949726`), New Games (`1547960158456643598`), Supported Games (`1547960163489546291`), Roles (`1547960169206644838`), Staff Announcements (`1547966799948025956`), Welcome (`1547967692894375981`), Server Boosts (`1547967695255769201`), Goodbye (`1547970761942106303`), Game Features (`1548053432089190442`), Founder Profile (`1548262122570649620`), Invite Link (`1549011153223421972`).
 - **Live Active Threads Count**: TEPAT 0 (100% Steril).
 
-## 10. HUKUM MUTLAK 15: ARSITEKTUR HYBRID @ MENTION & STERILISASI TOTAL @UNKNOWN-USER (#WELCOME & YUPRA BOT)
+## 10. HUKUM MUTLAK 15: STERILISASI PERMANEN WELCOME 100% PURE BOLD TEXT — ZERO @UNKNOWN-USER (#WELCOME & YUPRA BOT)
 - **Channel `#👋・welcome` (`1547967692894375981`)**:
-  * **Member Aktif**: Wajib tag mention resmi `<@USER_ID>` (`member.mention`) ➔ Menampilkan pill mention biru interaktif `@Username` di seluruh perangkat PC & HP. Dilarang teks tebal tanpa `@`!
-  * **Member yang Sudah Keluar (Left Guild)**: Teks tebal murni `Welcome **Username**` (contoh: akun Aditya `971748253022437426` yang menghasilkan 404). Mencegah Discord merender `@unknown-user` akibat ketiadaan member cache.
-  * **Pesan Sambutan Awal Guild (#47)**: Teks murni `Welcome to **BROTHER HUB**! 🎉 Selamat datang di Brother Hub!` (Bebas dari bug mention Snowflake ID Guild).
+  * **HUKUM BAKU TANPA TERKECUALI**: Seluruh pesan sambutan WAJIB 100% menggunakan format teks tebal statis murni: `Welcome **{Username}**` (contoh: `Welcome **mr_ergamoss**`, `Welcome **unkownnn44**`).
+  * **DILARANG KERAS MENGGUNAKAN RAW MENTION `<@USER_ID>` ATAU `member.mention`**: Discord Client di PC dan HP menerapkan *lazy guild member chunking* yang tidak meng-cache member baru tanpa role/chat. Jika bot mengirim `<@ID>`, Discord Client 100% gagal me-resolve dan merendernya sebagai `@unknown-user`! Format teks tebal murni `Welcome **Username**` menjamin 100% nama selalu tampil bersih, jelas, dan steril di seluruh perangkat!
+  * **Pesan Sambutan Founder**: `Selamat datang **prawiraxliv** di **BROTHER HUB**! 🎉\nSilakan menuju ke <#1547967829993717760> untuk verifikasi 1-klik dan membuka seluruh akses script!`
 - **Bot Hosting Yupra (`BrotherHub_Yupra_AllInOne.zip`)**:
-  * Event `on_member_join` menggunakan `content=f"Welcome {member.mention}"`.
-  * Deduplikasi & Anti-Race: Memeriksa `(member.name in msg.content or member.mention in msg.content)`.
-  * Goodbye Event: `content=f"Goodbye {member.name}"`.
+  * Event `on_member_join` WAJIB menggunakan: `sent_msg = await ch.send(content=f"Welcome **{member.name}**", file=file)`.
+  * Deduplikasi & Anti-Race: Memeriksa `(member.name in msg.content)`.
+  * Goodbye Event: `content=f"Goodbye **{member.name}**"`.
+  * Dilarang keras membalikkan kode bot menjadi `member.mention`!
 
 
 
