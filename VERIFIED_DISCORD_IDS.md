@@ -320,6 +320,11 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
 - **nakaraaa123**: `1446049853384822835` (Username: `nakaraaa123_95622` — Reporter Deadly Delivery Bugs v1.1-v2.7 — Welcome Msg: `1558046188463194122`)
 - **Prone**: `446749965570670603` (Username: `ramaprone` — Requester Poly Loot Halloween Dungeon & Ghost Net — Welcome Msg: `1552686752731238533`)
 - **Lucifer**: `396632374538010625` (Username: `aslisurabaya` — Reporter Dungeon Lootr Bugs v2.5-v3.3 — Bug Reply Msg: `1560037966871658659`)
+- **Drill to Earth's Core v4.5 Live IDs**:
+  * Announcements (`#📢・announcements`): `1561661485430866000`
+  * Changelogs (`#📝・changelogs`): `1561661488203178055`
+  * Suggestion Reply (`#⭐・suggestions`): `1561661480615673940` (Reply ke `1561649654779744327`, tagging `<@425675264811597824>`)
+  * Founder Vault (`#🔐・founder-vault`): `1561661289086984232` (`DrillToEarth_Clean.lua` v4.5)
 - **Drill to Earth's Core v4.4 Live IDs**:
   * Announcements (`#📢・announcements`): `1561600987301679126`
   * Changelogs (`#📝・changelogs`): `1561600990912839801`
