@@ -321,7 +321,16 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
 - **nakaraaa123**: `1446049853384822835` (Username: `nakaraaa123_95622` — Reporter Deadly Delivery Bugs v1.1-v2.7 — Welcome Msg: `1558046188463194122`)
 - **Prone**: `446749965570670603` (Username: `ramaprone` — Requester Poly Loot Halloween Dungeon & Ghost Net — Welcome Msg: `1552686752731238533`)
 - **Lucifer**: `396632374538010625` (Username: `aslisurabaya` — Reporter Dungeon Lootr Bugs v2.5-v3.3 — Bug Reply Msg: `1560037966871658659`)
-- **ateoka / ! AtoKkk**: `1009424400447193111` (Username: `ateoka` — Reporter RoChess Autoplay Bot Match Hotfix v1.1)
+- **RoChess v1.2 (Grandmaster AI Bot Think & Anti-Oscillation Loop Hotfix) Live IDs**:
+  * Announcements (`#📢・announcements`): `1563646171048575130`
+  * Changelogs (`#📝・changelogs`): `1563646190464008308`
+  * Chat Indonesia Reply (`#💬・chat-indonesia`): `1563646199909589044` (Reply ke `1563639152191217816`, tagging `<@1009424400447193111>`)
+  * Founder Vault (`#🔐・founder-vault`): `1563645356988964995` (`RoChess_Clean.lua` v1.2)
+- **Drill to Earth's Core v4.7 (Mimic Chest Blacklist Protection & Explosive Trap Filter) Live IDs**:
+  * Announcements (`#📢・announcements`): `1563646142422454344`
+  * Changelogs (`#📝・changelogs`): `1563646151935402015`
+  * Suggestion Reply (`#⭐・suggestions`): `1563646161632624674` (Reply ke `1563637787327078400`, tagging `<@425675264811597824>`)
+  * Founder Vault (`#🔐・founder-vault`): `1563645374437003386` (`DrillToEarth_Clean.lua` v4.7)
 - **Poly Loot v3.9 (Beach Update & 105 Mobs) Live IDs**:
   * Announcements (`#📢・announcements`): `1563636380091945085`
   * Changelogs (`#📝・changelogs`): `1563636571180236851`
