@@ -321,13 +321,24 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
 - **nakaraaa123**: `1446049853384822835` (Username: `nakaraaa123_95622` — Reporter Deadly Delivery Bugs v1.1-v2.7 — Welcome Msg: `1558046188463194122`)
 - **Prone**: `446749965570670603` (Username: `ramaprone` — Requester Poly Loot Halloween Dungeon & Ghost Net — Welcome Msg: `1552686752731238533`)
 - **Lucifer**: `396632374538010625` (Username: `aslisurabaya` — Reporter Dungeon Lootr Bugs v2.5-v3.3 — Bug Reply Msg: `1560037966871658659`)
+- **ateoka / ! AtoKkk**: `1009424400447193111` (Username: `ateoka` — Reporter RoChess Autoplay Bot Match Hotfix v1.1)
+- **Poly Loot v3.9 (Beach Update & 105 Mobs) Live IDs**:
+  * Announcements (`#📢・announcements`): `1563636380091945085`
+  * Changelogs (`#📝・changelogs`): `1563636571180236851`
+  * Suggestion Reply (`#⭐・suggestions`): `1563637106910298269` (Reply ke `1563607846409478256`, tagging `<@446749965570670603>`)
+  * Founder Vault (`#🔐・founder-vault`): `1563636100613017733` (`PolyLoot_Clean.lua` v3.9)
+- **RoChess v1.1 (Autoplay Multi-Mode Hotfix) Live IDs**:
+  * Announcements (`#📢・announcements`): `1563636573663137812`
+  * Changelogs (`#📝・changelogs`): `1563636576154816612`
+  * Chat Indonesia Reply (`#💬・chat-indonesia`): `1563637110341247047` (Reply ke `1563629927381868575`, tagging `<@1009424400447193111>`)
+  * Founder Vault (`#🔐・founder-vault`): `1563636107336482878` (`RoChess_Clean.lua` v1.1)
 - **RoChess v1.0 (Game #49) Live IDs**:
   * Announcements (`#📢・announcements`): `1563606795702902818`
   * Changelogs (`#📝・changelogs`): `1563606799247081504`
   * New Games (`#🎮・new-games`): `1563606801939701832`
   * Game Features (`#📖・game-features`): `1563606804405952564`
   * Suggestion Reply (`#⭐・suggestions`): `1563606806612148329` (Reply ke `1563310911660367924`, tagging `<@396632374538010625>`)
-  * Founder Vault (`#🔐・founder-vault`): `1563606783598002296` (`RoChess_Clean.lua` v1.0)
+  * Founder Vault (`#🔐・founder-vault`): Diperbarui ke v1.1 (`1563636107336482878`)
 - **Drill to Earth's Core v4.6 Live IDs**:
   * Announcements (`#📢・announcements`): `1563606786500468757`
   * Changelogs (`#📝・changelogs`): `1563606789319032919`
