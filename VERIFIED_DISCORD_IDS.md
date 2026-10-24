@@ -1,6 +1,6 @@
 # VERIFIED ROLES & CHANNELS MAPPING TABLE
 
-## 1. 48 SUPPORTED GAMES ROLES
+## 1. 49 SUPPORTED GAMES ROLES
 
 - **Deep Fishing**: `1551587483320459344` (Role Name: `🌊 Deep Fishing`)
 - **Pets Universe**: `1551531361582714892` (Role Name: `🐾 Pets Universe`)
@@ -50,6 +50,7 @@
 - **Roll a Baddie**: `1558028200724926505` (Role Name: `🎲 Roll a Baddie`)
 - **Deadly Delivery**: `1558098024515903638` (Role Name: `📦 Deadly Delivery`)
 - **Steal a Dragon Egg**: `1558117499994767360` (Role Name: `🥚 Steal a Dragon Egg`)
+- **RoChess**: `1563606751092150354` (Role Name: `♟️ RoChess`)
 
 ## 2. NOTIFICATION & SYSTEM ROLES
 
@@ -320,6 +321,18 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
 - **nakaraaa123**: `1446049853384822835` (Username: `nakaraaa123_95622` — Reporter Deadly Delivery Bugs v1.1-v2.7 — Welcome Msg: `1558046188463194122`)
 - **Prone**: `446749965570670603` (Username: `ramaprone` — Requester Poly Loot Halloween Dungeon & Ghost Net — Welcome Msg: `1552686752731238533`)
 - **Lucifer**: `396632374538010625` (Username: `aslisurabaya` — Reporter Dungeon Lootr Bugs v2.5-v3.3 — Bug Reply Msg: `1560037966871658659`)
+- **RoChess v1.0 (Game #49) Live IDs**:
+  * Announcements (`#📢・announcements`): `1563606795702902818`
+  * Changelogs (`#📝・changelogs`): `1563606799247081504`
+  * New Games (`#🎮・new-games`): `1563606801939701832`
+  * Game Features (`#📖・game-features`): `1563606804405952564`
+  * Suggestion Reply (`#⭐・suggestions`): `1563606806612148329` (Reply ke `1563310911660367924`, tagging `<@396632374538010625>`)
+  * Founder Vault (`#🔐・founder-vault`): `1563606783598002296` (`RoChess_Clean.lua` v1.0)
+- **Drill to Earth's Core v4.6 Live IDs**:
+  * Announcements (`#📢・announcements`): `1563606786500468757`
+  * Changelogs (`#📝・changelogs`): `1563606789319032919`
+  * Suggestion Reply (`#⭐・suggestions`): `1563606793014485144` (Reply ke `1563487753004523520`, tagging `<@425675264811597824>`)
+  * Founder Vault (`#🔐・founder-vault`): `1563606779974385895` (`DrillToEarth_Clean.lua` v4.6)
 - **Drill to Earth's Core v4.5 Live IDs**:
   * Announcements (`#📢・announcements`): `1561661485430866000`
   * Changelogs (`#📝・changelogs`): `1561661488203178055`
