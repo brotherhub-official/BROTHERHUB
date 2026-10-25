@@ -388,6 +388,28 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Changelogs (`#📝・changelogs`): `1561293268883607585`
   * Bug Report Reply (`#🐛・bug-reports`): `1561293263149735977` (Reply ke `1561285111532748932`, tagging `<@425675264811597824>`)
   * Founder Vault (`#🔐・founder-vault`): `1561293255344128000` (`DrillToEarth_Clean.lua` v4.3)
+- **Beat the Boss & Steal v1.3 Live IDs (Unified Auto Boss & Egg, Hit 1x Safe Stance, MrBeast Rapid Attack & Pumpkin Event Hunt)**:
+  * Announcements (`#📢・announcements`): `1563974683274252399` (Gold Embed `15844367`), tag `<@&1563939923604668416>` `<@&1548208954163724299>`
+  * Changelogs (`#📝・changelogs`): `1563974686298349570` (Blue Embed `3447003`), tag `<@&1563939923604668416>` `<@&1548208954163724299>`
+  * Founder Vault (`#🔐・founder-vault`): `1563974675292225607` (`BeatTheBoss_Clean.lua` v1.3, total vault 50 clean files)
+- **Beat the Boss & Steal v1.2 Live IDs (Event Bosses Suite - absolute request)**:
+  * Announcements (`#📢・announcements`): `1563967903429034138` (Gold Embed `15844367`), tag `<@&1563939923604668416>` `<@&1548208954163724299>`
+  * Changelogs (`#📝・changelogs`): `1563967907245985856` (Blue Embed `3447003`), tag `<@&1563939923604668416>` `<@&1548208954163724299>`
+  * Suggestion Reply (`#⭐・suggestions`): `1563967898991722546` (Reply ke `1563960784885911632`, tagging `<@880351239655800872>`)
+  * Founder Vault (`#🔐・founder-vault`): `1563967692803801098` (`BeatTheBoss_Clean.lua` v1.2)
+- **Beat the Boss & Steal v1.1 Live IDs (Smart Sequence & 100% Anti-Mati God-Stance)**:
+  * Announcements (`#📢・announcements`): `1563953999206547457` (Gold Embed `15844367`), tag `<@&1563939923604668416>` `<@&1548208954163724299>`
+  * Changelogs (`#📝・changelogs`): `1563954002046099489` (Blue Embed `3447003`), tag `<@&1563939923604668416>` `<@&1548208954163724299>`
+- **Beat the Boss & Steal v1.0 Live IDs (Official Game #50 Release)**:
+  * Announcements (`#📢・announcements`): `1563939928373756005` (Gold Embed `15844367`), tag `<@&1563939923604668416>` `<@&1548208954163724299>`
+  * Changelogs (`#📝・changelogs`): `1563939931817279588` (Blue Embed `3447003`), tag `<@&1563939923604668416>` `<@&1548208954163724299>`
+  * New Games (`#🎮・new-games`): `1563939933994123304` (Gold Embed `15844367`), tag `<@&1563939923604668416>` `<@&1548208954163724299>`
+  * Suggestion Reply (`#⭐・suggestions`): `1563939925760548974` (tagging `<@880351239655800872>`)
+- **Poly Loot v4.1 Live IDs (Terrain Flank Navigation & Anti-Stuck Timeout)**:
+  * Announcements (`#📢・announcements`): `1563943971355361403` (Gold Embed `15844367`), tag `<@&1549290685645983764>` `<@&1548208954163724299>`
+  * Changelogs (`#📝・changelogs`): `1563940810980982924` (Blue Embed `3447003`), tag `<@&1549290685645983764>` `<@&1548208954163724299>`
+  * Bug Report Reply (`#🐛・bug-reports`): `1563940807663292456` (Reply ke `1563920138980294726`, tagging `<@446749965570670603>`)
+  * Founder Vault (`#🔐・founder-vault`): `1563940381622669382` (`PolyLoot_Clean.lua` v4.1)
 - **Drill to Earth's Core v4.9 Live IDs (Performance Optimization, Direct Numeric Input, Distance Filter, Anti-Framedrop, Behind-Cull & Universal Config Suite)**:
   * Announcements (`#📢・announcements`): `1563837656939372657` (Gold Embed `15844367`), tag `<@&1549290696320491561>` `<@&1548208954163724299>`
   * Changelogs (`#📝・changelogs`): `1563837552526499862` (Blue Embed `3447003`), tag `<@&1549290696320491561>` `<@&1548208954163724299>`
