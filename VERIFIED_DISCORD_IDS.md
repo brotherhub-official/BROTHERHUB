@@ -322,6 +322,11 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
 - **nakaraaa123**: `1446049853384822835` (Username: `nakaraaa123_95622` — Reporter Deadly Delivery Bugs v1.1-v2.7 — Welcome Msg: `1558046188463194122`)
 - **Prone**: `446749965570670603` (Username: `ramaprone` — Requester Poly Loot Halloween Dungeon & Ghost Net — Welcome Msg: `1552686752731238533`)
 - **Lucifer**: `396632374538010625` (Username: `aslisurabaya` — Reporter Dungeon Lootr Bugs v2.5-v3.3 — Bug Reply Msg: `1560037966871658659`)
+- **Poly Loot v4.1 (Behind Teleport Zero-Miss & Cadence Hit Register — Laporan Resmi Prone) Live IDs**:
+  * Announcements (`#📢・announcements`): `1564028947551748158` (Gold Embed `15844367`, tag `<@&1549290685645983764> <@&1548208954163724299>`)
+  * Changelogs (`#📝・changelogs`): `1564028953922899989` (Blue Embed `3447003`, tag `<@&1549290685645983764> <@&1548208954163724299>`)
+  * Bug Report Reply (`#🐛・bug-reports`): `1564028944523722875` (Reply ke Prone `<@446749965570670603>`)
+  * Founder Vault (`#🔐・founder-vault`): `1564028481380163724` (`PolyLoot_Clean.lua` v4.1)
 - **Poly Loot v4.0 (Quad-Layer Anti-Rubberband Tween & Auto Farm Isolation Hotfix — Laporan Resmi Prone) Live IDs**:
   * Announcements (`#📢・announcements`): `1563901640220606465`
   * Changelogs (`#📝・changelogs`): `1563901646491230279`
