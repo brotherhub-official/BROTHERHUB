@@ -321,6 +321,9 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
 - **nakaraaa123**: `1446049853384822835` (Username: `nakaraaa123_95622` — Reporter Deadly Delivery Bugs v1.1-v2.7 — Welcome Msg: `1558046188463194122`)
 - **Prone**: `446749965570670603` (Username: `ramaprone` — Requester Poly Loot Halloween Dungeon & Ghost Net — Welcome Msg: `1552686752731238533`)
 - **Lucifer**: `396632374538010625` (Username: `aslisurabaya` — Reporter Dungeon Lootr Bugs v2.5-v3.3 — Bug Reply Msg: `1560037966871658659`)
+- **RoChess v1.4 (Critical Hotfix 5-Tier Live Session Resolver, Fail-Safe Bridge & Physical Move Execution) Live IDs**:
+  * Changelogs (`#📝・changelogs`): `1563850308751331380`
+  * Founder Vault (`#🔐・founder-vault`): `1563850160566571089` (`RoChess_Clean.lua` v1.4)
 - **RoChess v1.3 (Emergency Hotfix Blank UI & Native BoardView Auto-Play Engine) Live IDs**:
   * Announcements (`#📢・announcements`): `1563844629542207509`
   * Changelogs (`#📝・changelogs`): `1563844632872222822`
