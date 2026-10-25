@@ -321,6 +321,14 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
 - **nakaraaa123**: `1446049853384822835` (Username: `nakaraaa123_95622` — Reporter Deadly Delivery Bugs v1.1-v2.7 — Welcome Msg: `1558046188463194122`)
 - **Prone**: `446749965570670603` (Username: `ramaprone` — Requester Poly Loot Halloween Dungeon & Ghost Net — Welcome Msg: `1552686752731238533`)
 - **Lucifer**: `396632374538010625` (Username: `aslisurabaya` — Reporter Dungeon Lootr Bugs v2.5-v3.3 — Bug Reply Msg: `1560037966871658659`)
+- **Poly Loot v4.0 (Quad-Layer Anti-Rubberband Tween & Auto Farm Isolation Hotfix — Laporan Resmi Prone) Live IDs**:
+  * Announcements (`#📢・announcements`): `1563901640220606465`
+  * Changelogs (`#📝・changelogs`): `1563901646491230279`
+  * Bug Report Reply (`#🐛・bug-reports`): `1563901637276467214` (Reply ke Prone `<@446749965570670603>`)
+  * Founder Vault (`#🔐・founder-vault`): `1563901334854303855` (`PolyLoot_Clean.lua` v4.0)
+- **RoChess v1.9 (Universal Hybrid Drag & Click Engine, Emergency Blitz Mode & Deterministic Scoring) Live IDs**:
+  * Changelogs (`#📝・changelogs`): `1563890850797199371`
+  * Founder Vault (`#🔐・founder-vault`): `1563890589022425209` (`RoChess_Clean.lua` v1.9)
 - **RoChess v1.4 (Critical Hotfix 5-Tier Live Session Resolver, Fail-Safe Bridge & Physical Move Execution) Live IDs**:
   * Changelogs (`#📝・changelogs`): `1563850308751331380`
   * Founder Vault (`#🔐・founder-vault`): `1563850160566571089` (`RoChess_Clean.lua` v1.4)
