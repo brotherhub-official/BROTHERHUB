@@ -392,6 +392,13 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Announcements (`#📢・announcements`): `1563974683274252399` (Gold Embed `15844367`), tag `<@&1563939923604668416>` `<@&1548208954163724299>`
   * Changelogs (`#📝・changelogs`): `1563974686298349570` (Blue Embed `3447003`), tag `<@&1563939923604668416>` `<@&1548208954163724299>`
   * Founder Vault (`#🔐・founder-vault`): `1563974675292225607` (`BeatTheBoss_Clean.lua` v1.3, total vault 50 clean files)
+- **Beat the Boss & Steal v1.4 Live IDs (Unified Combat & Labu Sweep Hotfix)**:
+  * Announcements (`#📢・announcements`): `1563979850862043271` (Gold Embed `15844367`), tag `<@&1563939923604668416>` `<@&1548208954163724299>`
+  * Changelogs (`#📝・changelogs`): `1563979853852704830` (Blue Embed `3447003`), tag `<@&1563939923604668416>` `<@&1548208954163724299>`
+  * Founder Vault (`#🔐・founder-vault`): `1563979429749989413` (`BeatTheBoss_Clean.lua` v1.4)
+- **Beat the Boss & Steal v1.3 Live IDs (Master Combat & Event Overhaul)**:
+  * Announcements (`#📢・announcements`): `1563974683274252399` (Gold Embed `15844367`), tag `<@&1563939923604668416>` `<@&1548208954163724299>`
+  * Changelogs (`#📝・changelogs`): `1563974686298349570` (Blue Embed `3447003`), tag `<@&1563939923604668416>` `<@&1548208954163724299>`
 - **Beat the Boss & Steal v1.2 Live IDs (Event Bosses Suite - absolute request)**:
   * Announcements (`#📢・announcements`): `1563967903429034138` (Gold Embed `15844367`), tag `<@&1563939923604668416>` `<@&1548208954163724299>`
   * Changelogs (`#📝・changelogs`): `1563967907245985856` (Blue Embed `3447003`), tag `<@&1563939923604668416>` `<@&1548208954163724299>`
