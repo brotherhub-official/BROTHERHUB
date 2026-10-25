@@ -325,7 +325,11 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Announcements (`#📢・announcements`): `1563646171048575130`
   * Changelogs (`#📝・changelogs`): `1563646190464008308`
   * Chat Indonesia Reply (`#💬・chat-indonesia`): `1563646199909589044` (Reply ke `1563639152191217816`, tagging `<@1009424400447193111>`)
-  * Founder Vault (`#🔐・founder-vault`): `1563645356988964995` (`RoChess_Clean.lua` v1.2)
+- **Drill to Earth's Core v4.8 (Hotfix Blank UI & Mobile Lighting Initialization) Live IDs**:
+  * Announcements (`#📢・announcements`): `1563813325509234689`
+  * Changelogs (`#📝・changelogs`): `1563813328931913792`
+  * Bug Report Reply (`#🐛・bug-reports`): `1563813332123779127` (Reply ke `1563806600538361998`, tagging `<@425675264811597824>`)
+  * Founder Vault (`#🔐・founder-vault`): `1563812976903852129` (`DrillToEarth_Clean.lua` v4.8)
 - **Drill to Earth's Core v4.7 (Mimic Chest Blacklist Protection & Explosive Trap Filter) Live IDs**:
   * Announcements (`#📢・announcements`): `1563646142422454344`
   * Changelogs (`#📝・changelogs`): `1563646151935402015`
