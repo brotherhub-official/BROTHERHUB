@@ -395,7 +395,7 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
 - **Beat the Boss & Steal v1.5 Live IDs (Streamlined Combat, 100x Super Burst, 12 Real Zones & Zero-Jitter Hotfix)**:
   * Announcements (`#📢・announcements`): `1563989327334080653` (Gold Embed `15844367`), tag `<@&1563939923604668416> <@&1548208954163724299>`
   * Changelogs (`#📝・changelogs`): `1563989330173632635` (Blue Embed `3447003`), tag `<@&1563939923604668416> <@&1548208954163724299>`
-  * Founder Vault (`#🔐・founder-vault`): `1563988940434972772` (`BeatTheBoss_Clean.lua` v1.5 Hotfix)
+  * Founder Vault (`#🔐・founder-vault`): `1563990920209367220` (`BeatTheBoss_Clean.lua` v1.5 Hotfix)
 - **Beat the Boss & Steal v1.4 Live IDs (Unified Combat & Labu Sweep Hotfix)**:
   * Announcements (`#📢・announcements`): `1563979850862043271` (Gold Embed `15844367`), tag `<@&1563939923604668416>` `<@&1548208954163724299>`
   * Changelogs (`#📝・changelogs`): `1563979853852704830` (Blue Embed `3447003`), tag `<@&1563939923604668416>` `<@&1548208954163724299>`
