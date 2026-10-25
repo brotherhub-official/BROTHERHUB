@@ -515,3 +515,20 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
 
 
 
+
+## 11. HUKUM MUTLAK 16: ZERO MISSING GLYPHS / DILARANG KERAS MENGGUNAKAN SIMBOL UNICODE NON-STANDAR (KOTAK ▯ PADA TEKS UI & TOMBOL) DI SELURUH GAME
+- **STATUS RESMI PERMANEN**: Font bawaan engine Roblox (`Gotham`, `GothamBold`, `Montserrat`, `FredokaOne`, dll) **TIDAK MEMILIKI GLYPH UNTUK SIMBOL UNICODE ARROWS** (seperti `➔`, `➜`, `→`, `🡒`, `➤`, `➡`, maupun variasi eksotis lainnya). Simbol tersebut otomatis dirender oleh Roblox sebagai karakter outline kotak kosong (`▯`)!
+- **HUKUM BAKU TANPA TERKECUALI**:
+  1. Seluruh teks antarmuka, judul toggle, nama section, tombol, notifikasi, maupun dialog keluar `CloseModal` di 50 game resmi Brother Hub **WAJIB 100% MENGGUNAKAN KARAKTER ASCII STANDAR MURNI**:
+     * Gunakan `->` (ASCII panah: tanda minus + tanda lebih besar).
+     * Atau gunakan `|` (ASCII pipe bar).
+     * Atau gunakan `/` (ASCII forward slash).
+     * Atau gunakan emoji resmi Roblox yang terbukti aman dan memiliki bitmap valid (seperti `👑`, `⚡`, `🎯`, `🛡️`, dll).
+  2. **DILARANG KERAS MENYISIPKAN SIMBOL UNICODE NON-STANDAR**: Dilarang menggunakan `➔`, `➜`, `✕`, `✖`, `✓` (jika tidak teruji), atau simbol dekorasi non-ASCII lainnya.
+  3. **ZERO TOLERANCE**: Tidak boleh ada lagi keluhan kotak kosong `▯` pada perangkat HP Android, iPhone, Tablet, maupun PC selamanya!
+
+- **Beat the Boss & Steal v2.0 Live IDs (Safe Stance Fix, 1x Hit Trigger Retreat, Eliminasi Teks Telur & Zero Missing Glyphs)**:
+  * Announcements (`#📢・announcements` `1547960148599775262`): Msg ID `1564036090782814209` (Gold Embed `15844367`, tagged `<@&1563939923604668416> <@&1548208954163724299>`)
+  * Changelogs (`#📝・changelogs` `1547960156417949726`): Msg ID `1564036106234892434` (Blue Embed `3447003`, tagged `<@&1563939923604668416> <@&1548208954163724299>`)
+  * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1564035810519425024` (`BeatTheBoss_Clean.lua` v2.0)
+  * Target Role (`🥊 Beat the Boss & Steal`): `1563939923604668416`
