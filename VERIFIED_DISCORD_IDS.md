@@ -372,6 +372,23 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Changelogs (`#📝・changelogs`): `1561293268883607585`
   * Bug Report Reply (`#🐛・bug-reports`): `1561293263149735977` (Reply ke `1561285111532748932`, tagging `<@425675264811597824>`)
   * Founder Vault (`#🔐・founder-vault`): `1561293255344128000` (`DrillToEarth_Clean.lua` v4.3)
+- **Drill to Earth's Core v4.9 Live IDs (Performance Optimization, Direct Numeric Input, Distance Filter, Anti-Framedrop, Behind-Cull & Universal Config Suite)**:
+  * Announcements (`#📢・announcements`): `1563837656939372657` (Gold Embed `15844367`), tag `<@&1549290696320491561>` `<@&1548208954163724299>`
+  * Changelogs (`#📝・changelogs`): `1563837552526499862` (Blue Embed `3447003`), tag `<@&1549290696320491561>` `<@&1548208954163724299>`
+  * Bug Report Reply (`#🐛・bug-reports`): `1563837555928076343` (Reply ke `1563834525383917660`, tagging `<@425675264811597824>`)
+  * Founder Vault (`#🔐・founder-vault`): `1563837156064108695` (`DrillToEarth_Clean.lua` v4.9)
+- **Drill to Earth's Core v4.8 Live IDs (Hotfix Tuntas Menu Blank & Lighting Suite)**:
+  * Announcements (`#📢・announcements`): `1563813325509234689`
+  * Changelogs (`#📝・changelogs`): `1563813328931913792`
+  * Bug Report Reply (`#🐛・bug-reports`): `1563813332123779127` (Reply ke `1563806283528769578`, tagging `<@425675264811597824>`)
+- **Drill to Earth's Core v4.7 Live IDs (Mimic Blacklist & Danger ESP)**:
+  * Announcements (`#📢・announcements`): `1563638421870608405`
+  * Changelogs (`#📝・changelogs`): `1563638424756289566`
+  * Suggestion Reply (`#⭐・suggestions`): `1563638428459995166` (Reply ke `1563637787327078400`, tagging `<@425675264811597824>`)
+- **Drill to Earth's Core v4.6 Live IDs (Soul Prison Dungeon Lvl 5 Suite)**:
+  * Announcements (`#📢・announcements`): `1563606786500468757`
+  * Changelogs (`#📝・changelogs`): `1563606789319032919`
+  * Suggestion Reply (`#⭐・suggestions`): `1563606793014485144` (tagging `<@425675264811597824>`)
 - **Drill to Earth's Core v4.2 Live IDs**:
   * Announcements (`#📢・announcements`): `1561270740832092201`
   * Changelogs (`#📝・changelogs`): `1561270743331766304`
