@@ -557,4 +557,15 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Changelogs (`#📝・changelogs` `1547960156417949726`): Msg ID `1564331687758794753` (Blue Embed `3447003`, tagged `<@&1563939923604668416> <@&1548208954163724299>`)
   * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1564331241837436990` (`BeatTheBoss_Clean.lua` v2.7, Total 50 Pesan Steril Terverifikasi)
   * Target Role (`🥊 Beat the Boss & Steal`): `1563939923604668416`
+- **Drill to Earth's Core v5.0 Live IDs (Continuous Dynamic FPS Boost 10km/15km+, Zero-Recoil Massless Auto Loot, Uninvited Tool Auto-Equip Protection, Auto Larry Medals Turn-in, Auto Scrap Launcher Recycling, Auto Bounty Wagon & Bounty ESP Filter, Smart Dungeon Braking Suite)**:
+  * Announcements (`#📢・announcements` `1547960148599775262`): Msg ID `1564343395076411413` (Gold Embed `15844367`, tagged `<@&1549290696320491561> <@&1548208954163724299>`)
+  * Changelogs (`#📝・changelogs` `1547960156417949726`): Msg ID `1564343582515663053` (Blue Embed `3447003`, tagged `<@&1549290696320491561> <@&1548208954163724299>`)
+  * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1564343023347704018` (`DrillToEarth_Clean.lua` v5.0, Total 50 Pesan Steril Terverifikasi)
+  * Target Role (`🌍 Drill to Earth's Core`): `1549290696320491561`
+- **Beat the Boss & Steal v2.8 Live IDs (True 1x Point-Blank Hit & Instant Sky Retreat, Unequip Weapons on Boss Death, Zero-Stall Fast Egg Steal & Instant Base Pen Delivery)**:
+  * Announcements (`#📢・announcements` `1547960148599775262`): Msg ID `1564343603000643625` (Gold Embed `15844367`, tagged `<@&1563939923604668416> <@&1548208954163724299>`)
+  * Changelogs (`#📝・changelogs` `1547960156417949726`): Msg ID `1564343612328648968` (Blue Embed `3447003`, tagged `<@&1563939923604668416> <@&1548208954163724299>`)
+  * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1564343039722524722` (`BeatTheBoss_Clean.lua` v2.8, Total 50 Pesan Steril Terverifikasi)
+  * Target Role (`🥊 Beat the Boss & Steal`): `1563939923604668416`
+
 
