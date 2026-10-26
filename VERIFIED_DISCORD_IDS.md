@@ -560,6 +560,8 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
 - **Drill to Earth's Core v5.0 Live IDs (Continuous Dynamic FPS Boost 10km/15km+, Zero-Recoil Massless Auto Loot, Uninvited Tool Auto-Equip Protection, Auto Larry Medals Turn-in, Auto Scrap Launcher Recycling, Auto Bounty Wagon & Bounty ESP Filter, Smart Dungeon Braking Suite)**:
   * Announcements (`#📢・announcements` `1547960148599775262`): Msg ID `1564343395076411413` (Gold Embed `15844367`, tagged `<@&1549290696320491561> <@&1548208954163724299>`)
   * Changelogs (`#📝・changelogs` `1547960156417949726`): Msg ID `1564343582515663053` (Blue Embed `3447003`, tagged `<@&1549290696320491561> <@&1548208954163724299>`)
+  * Bug Reply (`#🐛・bug-reports` `1547960201511047219`): Msg ID `1564345730393579571` (Reply ke `<@425675264811597824>` Msg ID `1564301979897831446`)
+  * Suggestions Reply (`#⭐・suggestions` `1547960198776225833`): Msg ID `1564345733153558549` (Reply ke `<@425675264811597824>` Msg ID `1564302873079054418`)
   * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1564343023347704018` (`DrillToEarth_Clean.lua` v5.0, Total 50 Pesan Steril Terverifikasi)
   * Target Role (`🌍 Drill to Earth's Core`): `1549290696320491561`
 - **Beat the Boss & Steal v2.8 Live IDs (True 1x Point-Blank Hit & Instant Sky Retreat, Unequip Weapons on Boss Death, Zero-Stall Fast Egg Steal & Instant Base Pen Delivery)**:
