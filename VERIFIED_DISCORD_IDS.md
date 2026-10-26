@@ -547,4 +547,9 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Changelogs (`#📝・changelogs` `1547960156417949726`): Msg ID `1564074528810860720` (Blue Embed `3447003`, tagged `<@&1563939923604668416> <@&1548208954163724299>`)
   * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1564074346656309369` (`BeatTheBoss_Clean.lua` v2.2, Total 50 Pesan Steril Terverifikasi)
   * Target Role (`🥊 Beat the Boss & Steal`): `1563939923604668416`
+- **Beat the Boss & Steal v2.3 Live IDs (Lock-Ground Egg Steal, Zero-Hover Egg Pickup & Locomotion Fix)**:
+  * Announcements (`#📢・announcements` `1547960148599775262`): Msg ID `1564082418435100716` (Gold Embed `15844367`, tagged `<@&1563939923604668416> <@&1548208954163724299>`)
+  * Changelogs (`#📝・changelogs` `1547960156417949726`): Msg ID `1564082423170469991` (Blue Embed `3447003`, tagged `<@&1563939923604668416> <@&1548208954163724299>`)
+  * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1564082410952466512` (`BeatTheBoss_Clean.lua` v2.3, Total 50 Pesan Steril Terverifikasi)
+  * Target Role (`🥊 Beat the Boss & Steal`): `1563939923604668416`
 
