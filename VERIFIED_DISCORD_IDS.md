@@ -282,7 +282,7 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * `#📝・changelogs`: Drill to Earth's Core v4.3 Wall Check & Ammo Saver (`1561293268883607585`), Drill to Earth's Core v3.9 Gun Combat & Auto Aim (`1561085682603261964`), Drill to Earth's Core v3.8 Auto Heal & Compact QuickBar (`1561038854302212209`), Drill to Earth's Core v3.7 Global 10-Biome Multi-Radar & Ground Loot Price Separation (`1560674737443704925`), Drill to Earth's Core v3.5 Floating Mobile QuickBar & Biome Restock Radar (`1560028239894675597`), Deadly Delivery v2.8 Master Desync Free-Movement & POV Overhaul (`1559592298990280765`), Deadly Delivery v2.7 True ServerPos Desync & POV Clean Overhaul (`1559537278504800368`), Deadly Delivery v2.6 Desync God Mode & Map-Wide Automation (`1559522725872017511`), Poly Loot v3.7 Halloween Dungeon & Universal Kill Aura (`1559279660116738059`), Dungeon Lootr v3.2 Hollow Realm Modules & Individual Skills Overhaul (`1559269628637880361`), Deadly Delivery v2.5 Mobile Touchscreen Experience & Input Hotfix (`1559269622732300350`), Dungeon Lootr v3.1 Combat Stabilization & UI Overhaul (`1559257338878361722`), Deadly Delivery v2.4 Loot Interaction Optimization & Glyph Fix (`1559257485809025146`), Dungeon Lootr v3.0 Sticky Behind Stance Lock & Anti-Push Physics (`1559142010554679397`), Deadly Delivery v2.3 Hotfix True Permanent Infinite Stamina Engine (`1559130599334346905`), Dungeon Lootr v2.9 Combat Safe Initialization & 3-Card Master Suite (`1559120180443877377`), Poly Loot v3.6 (`1559069305931432028`), Dungeon Lootr v2.7 (`1559026019002748999`).
 - **Live Discord New Game Release**: `#🎮・new-games` (`1558104257134207058` Deadly Delivery, `1558028985143656560` Roll a Baddie, `1557395836156117023` Carry Heavy Eggs, `1557114459611205663` Beat the Anime Boss, `1556742102551892019` HELLHOLE).
 - **Live Discord Feature Guide**: `#📖・game-features` (`1558104260292382721` Deadly Delivery, `1558029188479459380` Roll a Baddie, `1557395904074489856` Carry Heavy Eggs, `1557114462102618163` Beat the Anime Boss, `1556742104523214899` HELLHOLE).
-- **#🔐・founder-vault` (`1547986862470205521`): Tepat 48 pesan murni clean source code terbaru berfitur bilingual, 0 duplikat, akses terisolasi 100% khusus Founder (`DrillToEarth_Clean.lua` v4.0 Msg ID: `1561237991375249418`, `DrillToEarth_Clean.lua` v3.9 Msg ID: `1561085660704546846`, `DeadlyDelivery_Clean.lua` v2.8 Msg ID: `1559591978193125468`, `DeadlyDelivery_Clean.lua` v2.7 Msg ID: `1559537247097851958`, `PolyLoot_Clean.lua` v3.7 Msg ID: `1559279283162316874`, `DungeonLootr_Clean.lua` v3.2 Msg ID: `1559269136926900329`, `StealADragonEgg_Clean.lua` v1.2 Msg ID: `1558472450063339621`).
+- **#🔐・founder-vault** (`1547986862470205521`): Tepat 50 pesan murni clean source code terbaru berfitur bilingual, 0 duplikat, akses terisolasi 100% khusus Founder (`BeatTheBoss_Clean.lua` v2.1 Msg ID: `1564069972928364545`, `PolyLoot_Clean.lua` v4.2 Msg ID: `1564064394801979595`, `DrillToEarth_Clean.lua` v4.9 Msg ID: `1563645374437003386`, `RoChess_Clean.lua` v1.9 Msg ID: `1563890589022425209`).
 
 ## 7. SERVER BOOST LEVEL 1 (TIER 1) STATUS & ASSETS
 - **Status Boost**: `Premium Tier: 1` | `Total Boost: 2 Boosts` (Diberikan oleh akun Founder Nitro `Wira98` / `1464503502268137516`).
@@ -322,6 +322,11 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
 - **nakaraaa123**: `1446049853384822835` (Username: `nakaraaa123_95622` — Reporter Deadly Delivery Bugs v1.1-v2.7 — Welcome Msg: `1558046188463194122`)
 - **Prone**: `446749965570670603` (Username: `ramaprone` — Requester Poly Loot Halloween Dungeon & Ghost Net — Welcome Msg: `1552686752731238533`)
 - **Lucifer**: `396632374538010625` (Username: `aslisurabaya` — Reporter Dungeon Lootr Bugs v2.5-v3.3 — Bug Reply Msg: `1560037966871658659`)
+- **Poly Loot v4.2 (Smooth Tween Stability, Anti-Fling to Spawn & Behind Stance Elevation Fix — Laporan Video & Evaluasi Prone) Live IDs**:
+  * Announcements (`#📢・announcements`): `1564064404742344806` (Gold Embed `15844367`, tag `<@&1549290685645983764> <@&1548208954163724299>`)
+  * Changelogs (`#📝・changelogs`): `1564064411352572005` (Blue Embed `3447003`, tag `<@&1549290685645983764> <@&1548208954163724299>`)
+  * Bug Report Reply (`#🐛・bug-reports`): `1564064401575649392` (Reply ke Prone `<@446749965570670603>`)
+  * Founder Vault (`#🔐・founder-vault`): `1564064394801979595` (`PolyLoot_Clean.lua` v4.2)
 - **Poly Loot v4.1 (Behind Teleport Zero-Miss & Cadence Hit Register — Laporan Resmi Prone) Live IDs**:
   * Announcements (`#📢・announcements`): `1564028947551748158` (Gold Embed `15844367`, tag `<@&1549290685645983764> <@&1548208954163724299>`)
   * Changelogs (`#📝・changelogs`): `1564028953922899989` (Blue Embed `3447003`, tag `<@&1549290685645983764> <@&1548208954163724299>`)
@@ -531,4 +536,9 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Announcements (`#📢・announcements` `1547960148599775262`): Msg ID `1564036090782814209` (Gold Embed `15844367`, tagged `<@&1563939923604668416> <@&1548208954163724299>`)
   * Changelogs (`#📝・changelogs` `1547960156417949726`): Msg ID `1564036106234892434` (Blue Embed `3447003`, tagged `<@&1563939923604668416> <@&1548208954163724299>`)
   * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1564035810519425024` (`BeatTheBoss_Clean.lua` v2.0)
+  * Target Role (`🥊 Beat the Boss & Steal`): `1563939923604668416`
+- **Beat the Boss & Steal v2.1 Live IDs (Autonomous Global Event Egg Radar, Instant Horseman Egg Steal & Anti-Growing Spam Engine)**:
+  * Announcements (`#📢・announcements` `1547960148599775262`): Msg ID `1564070160975925523` (Gold Embed `15844367`, tagged `<@&1563939923604668416> <@&1548208954163724299>`)
+  * Changelogs (`#📝・changelogs` `1547960156417949726`): Msg ID `1564070164046151803` (Blue Embed `3447003`, tagged `<@&1563939923604668416> <@&1548208954163724299>`)
+  * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1564069972928364545` (`BeatTheBoss_Clean.lua` v2.1)
   * Target Role (`🥊 Beat the Boss & Steal`): `1563939923604668416`
