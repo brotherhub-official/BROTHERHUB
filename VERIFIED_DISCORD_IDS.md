@@ -614,3 +614,14 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
 
 
 
+- **Drill to Earth's Core v5.4 Live IDs (Card Priority 22-Cards Suite, Automated Upgrade Card Pick & Purchase Engine, Strict Robux Protection, Knit Client Integration, Interactive Ranking Reorder & JSON Config Persistence)**:
+  * Announcements (#📢・announcements 1547960148599775262): Msg ID 1564551769667674124 (Gold Embed 15844367, tagged <@&1549290696320491561> <@&1548208954163724299>)
+  * Changelogs (#📝・changelogs 1547960156417949726): Msg ID 1564551774470279261 (Blue Embed 3447003, tagged <@&1549290696320491561> <@&1548208954163724299>)
+  * Bug Reply (#🐛・bug-reports 1547960201511047219): Msg ID 1564551777410359307 (Direct Reply ke Arsss <@425675264811597824> Msg ID 1564535653226778634)
+  * Founder Vault (#🔐・founder-vault 1547986862470205521): Msg ID 1564551296126558281 (DrillToEarth_Clean.lua v5.4, Total 50 Pesan Steril Terverifikasi 1:1)
+  * Target Role (🌍 Drill to Earth's Core): 1549290696320491561
+- **Beat the Boss & Steal v3.8 Live IDs (Ultra Deep Potato Mode FPS Boost, Dynamic Descendant Cleaner, Zero-Fling & Anti-Bounce Safe Stand Offset + Kinematic Velocity Lock, Zero Penetration Physics Impulse, Smart Efficient Auto-Hatch)**:
+  * Announcements (#📢・announcements 1547960148599775262): Msg ID 1564556192930598984 (Gold Embed 15844367, tagged <@&1563939923604668416> <@&1548208954163724299>)
+  * Changelogs (#📝・changelogs 1547960156417949726): Msg ID 1564556195937787986 (Blue Embed 3447003, tagged <@&1563939923604668416> <@&1548208954163724299>)
+  * Founder Vault (#🔐・founder-vault 1547986862470205521): Msg ID 1564555964013871114 (BeatTheBoss_Clean.lua v3.8, Total 50 Pesan Steril Terverifikasi 1:1)
+  * Target Role (🥊 Beat the Boss & Steal): 1563939923604668416
