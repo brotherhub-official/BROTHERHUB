@@ -641,4 +641,29 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Bug Reply (`#🐛・bug-reports` `1547960201511047219`): Msg ID `1564571026510188555` (Direct Reply ke Arsss `<@425675264811597824>` Msg ID `1564562890382508114`)
   * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1564570783764848670` (`DrillToEarth_Clean.lua` v5.5, Total 50 Pesan Steril Terverifikasi 1:1)
   * Target Role (`🌍 Drill to Earth's Core`): `1549290696320491561`
+- **Drill to Earth's Core v5.6 Live IDs (Interactive Quick 22-Card Selector openQuickCardPicker, Numbered Ordering 1. Drill Power 2. Drill Defense, Multi-Item Card Blacklist System, Max Stat Cap 9999% & Level Cap 1000, Save Money Suite with MinMoneyCap Safety Shield 0 - 500,000)**:
+  * Announcements (`#📢・announcements` `1547960148599775262`): Msg ID `1564608508127875126` (Gold Embed `15844367`, tagged `<@&1549290696320491561> <@&1548208954163724299>`)
+  * Changelogs (`#📝・changelogs` `1547960156417949726`): Msg ID `1564608512221388913` (Blue Embed `3447003`, tagged `<@&1549290696320491561> <@&1548208954163724299>`)
+  * Bug Reply (`#🐛・bug-reports` `1547960201511047219`): Msg ID `1564608515215990907` (Direct Reply ke Arsss `<@425675264811597824>`)
+  * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1564608309812535308` (`DrillToEarth_Clean.lua` v5.6, Total 50 Pesan Steril Terverifikasi 1:1)
+  * Target Role (`🌍 Drill to Earth's Core`): `1549290696320491561`
 
+- **Beat the Boss & Steal v4.1 Live IDs (Sequential Boss-First Loop, Guaranteed Knock Down Prevention by Striking Awake Boss Before Grabbing Egg, Strict 1-Egg Cycle Kill Boss -> Grab Egg -> Base Return -> Deposit Egg, Zero-Lag 2.0s DOM Throttle Engine & 6-Swing Clamp)**:
+  * Announcements (`#📢・announcements` `1547960148599775262`): Msg ID `1564611140066218068` (Gold Embed `15844367`, tagged `<@&1563939923604668416> <@&1548208954163724299>`)
+  * Changelogs (`#📝・changelogs` `1547960156417949726`): Msg ID `1564611294428925994` (Blue Embed `3447003`, tagged `<@&1563939923604668416> <@&1548208954163724299>`)
+  * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1564610374622253200` (`BeatTheBoss_Clean.lua` v4.1, Total 50 Pesan Steril Terverifikasi 1:1)
+  * Target Role (`🥊 Beat the Boss & Steal`): `1563939923604668416`
+
+- **Restorasi Akbar Sistem Donasi Saweria & SociaBuzz Live IDs (50 Game In-Game Credit Sync, Discord Channels #donate & #donate-link, Bot Yupra Deployment Container 6.44 MB)**:
+  * Announcements (`#📢・announcements` `1547960148599775262`): Msg ID `1564613908650786828` (Gold Embed `15844367`, tagged `<@&1548208954163724299>`)
+  * Donate Link Channel (`#💳・donate-link` `1549182222676787260`): Msg ID `1549190928999121009` (Updated Button & Embed URL ke https://saweria.co/BrotherHubOfficial)
+  * Donate Channel (`#💖・donate` `1547960178471735320`): Msg ID `1549164959643205653` (Updated Description ke tautan resmi Saweria & SociaBuzz)
+  * Git Commit: `4291b64` (50 script game CleanHub & ObfuscateHub tersinkronisasi)
+
+- **Drill to Earth's Core v5.7 Live IDs (Permanent Config Persistence Suite: Automatic Custom Priority Roster & Blacklist Visual Auto-Restore on Load, Persistent GUI Display Scale 55% - 180%, Dedicated Mobile Toggle Scaler 50% - 180%, flagKey Slider Binding & Dynamic Target Scale Restore)**:
+  * Announcements (`#📢・announcements` `1547960148599775262`): Msg ID `1564691139645145201` (Gold Embed `15844367`, tagged `<@&1549290696320491561> <@&1548208954163724299>`)
+  * Changelogs (`#📝・changelogs` `1547960156417949726`): Msg ID `1564691147023065100` (Blue Embed `3447003`, tagged `<@&1549290696320491561> <@&1548208954163724299>`)
+  * Bug Reply (`#🐛・bug-reports` `1547960201511047219`): Msg ID `1564691153876557906` (Direct Reply ke Arsss `<@425675264811597824>` Msg ID `1564669229045780590`)
+  * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1564690802905583658` (`DrillToEarth_Clean.lua` v5.7, Total 50 Pesan Steril Terverifikasi 1:1)
+  * Target Role (`🌍 Drill to Earth's Core`): `1549290696320491561`
+  * Git Commit: `faed3be`
