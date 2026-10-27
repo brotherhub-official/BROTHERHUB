@@ -605,6 +605,12 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Changelogs (`#📝・changelogs` `1547960156417949726`): Msg ID `1564509937407623259` (Blue Embed `3447003`, tagged `<@&1563939923604668416> <@&1548208954163724299>`)
   * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1564509678317080576` (`BeatTheBoss_Clean.lua` v3.6, Total 50 Pesan Steril Terverifikasi 1:1)
   * Target Role (`🥊 Beat the Boss & Steal`): `1563939923604668416`
+- **Beat the Boss & Steal v3.7 Live IDs (Anti-Pumpkin Shop ProximityPrompt Collision & Zero GUI Spam, Strict Grab/Steal Action Filters, Complete Pen & Shop Exclusion, Auto-Close Shop Panels & Preserved Dropped Event Egg Snatcher)**:
+  * Announcements (`#📢・announcements` `1547960148599775262`): Msg ID `1564533229728305173` (Gold Embed `15844367`, tagged `<@&1563939923604668416> <@&1548208954163724299>`)
+  * Changelogs (`#📝・changelogs` `1547960156417949726`): Msg ID `1564533232400343102` (Blue Embed `3447003`, tagged `<@&1563939923604668416> <@&1548208954163724299>`)
+  * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1564533052162703410` (`BeatTheBoss_Clean.lua` v3.7, Total 50 Pesan Steril Terverifikasi 1:1)
+  * Target Role (`🥊 Beat the Boss & Steal`): `1563939923604668416`
+
 
 
 
