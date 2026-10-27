@@ -585,4 +585,16 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Changelogs (`#📝・changelogs` `1547960156417949726`): Msg ID `1564423988317397103` (Blue Embed `3447003`, tagged `<@&1563939923604668416> <@&1548208954163724299>`)
   * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1564423592173764718` (`BeatTheBoss_Clean.lua` v3.0, Total 50 Pesan Steril Terverifikasi)
   * Target Role (`🥊 Beat the Boss & Steal`): `1563939923604668416`
+- **Drill to Earth's Core v5.2 Live IDs (Auto Loot Bounty Enemies Directly into ItemBag / Sack, Dedicated Toggle in PageLoot, Bypass IgnoreMonsterDrops Filter)**:
+  * Announcements (`#📢・announcements` `1547960148599775262`): Msg ID `1564427539508895766` (Gold Embed `15844367`, tagged `<@&1549290696320491561> <@&1548208954163724299>`)
+  * Changelogs (`#📝・changelogs` `1547960156417949726`): Msg ID `1564427542201368718` (Blue Embed `3447003`, tagged `<@&1549290696320491561> <@&1548208954163724299>`)
+  * Suggestions Reply (`#⭐・suggestions` `1547960198776225833`): Msg ID `1564427545213145139` (Direct Reply ke Arsss `<@425675264811597824>` Msg ID `1564369382497456199`)
+  * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1564426581227733014` (`DrillToEarth_Clean.lua` v5.2, Total 50 Pesan Steril Terverifikasi)
+  * Target Role (`🌍 Drill to Earth's Core`): `1549290696320491561`
+- **Beat the Boss & Steal v3.1 Live IDs (Auto Urut dari Terkuat Zona 14 ke 1 / Strongest Zone First, Anti-Skip Egg Exhaustion Engine, 15s Cooldown Synchronization, 100% Comprehensive Egg Sweeper)**:
+  * Announcements (`#📢・announcements` `1547960148599775262`): Msg ID `1564428738299699333` (Gold Embed `15844367`, tagged `<@&1563939923604668416> <@&1548208954163724299>`)
+  * Changelogs (`#📝・changelogs` `1547960156417949726`): Msg ID `1564428746214350960` (Blue Embed `3447003`, tagged `<@&1563939923604668416> <@&1548208954163724299>`)
+  * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1564428570359636120` (`BeatTheBoss_Clean.lua` v3.1, Total 50 Pesan Steril Terverifikasi)
+  * Target Role (`🥊 Beat the Boss & Steal`): `1563939923604668416`
+
 
