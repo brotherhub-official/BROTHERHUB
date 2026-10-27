@@ -635,3 +635,10 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Changelogs (`#📝・changelogs` `1547960156417949726`): Msg ID `1564565791729516545` (Blue Embed `3447003`, tagged `<@&1563939923604668416> <@&1548208954163724299>`)
   * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1564565625710313532` (`BeatTheBoss_Clean.lua` v4.0, Total 50 Pesan Steril Terverifikasi 1:1)
   * Target Role (`🥊 Beat the Boss & Steal`): `1563939923604668416`
+- **Drill to Earth's Core v5.5 Live IDs (Interactive 22-Card Priority Reorder Engine with Per-Row Direct Action Buttons [🔝][⬆️][⬇️][❌], Top Add & Load All Card Controls, Card Blacklist & Rejection Suite, Max Upgrade Stat Cap Enforcement up to 500% & Level 50 Cap, Smart Reroll on Blacklist/Max)**:
+  * Announcements (`#📢・announcements` `1547960148599775262`): Msg ID `1564571011729326111` (Gold Embed `15844367`, tagged `<@&1549290696320491561> <@&1548208954163724299>`)
+  * Changelogs (`#📝・changelogs` `1547960156417949726`): Msg ID `1564571019400974508` (Blue Embed `3447003`, tagged `<@&1549290696320491561> <@&1548208954163724299>`)
+  * Bug Reply (`#🐛・bug-reports` `1547960201511047219`): Msg ID `1564571026510188555` (Direct Reply ke Arsss `<@425675264811597824>` Msg ID `1564562890382508114`)
+  * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1564570783764848670` (`DrillToEarth_Clean.lua` v5.5, Total 50 Pesan Steril Terverifikasi 1:1)
+  * Target Role (`🌍 Drill to Earth's Core`): `1549290696320491561`
+
