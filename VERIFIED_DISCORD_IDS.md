@@ -648,6 +648,12 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1564608309812535308` (`DrillToEarth_Clean.lua` v5.6, Total 50 Pesan Steril Terverifikasi 1:1)
   * Target Role (`🌍 Drill to Earth's Core`): `1549290696320491561`
 
+- **Beat the Boss & Steal v4.2 Live IDs (24/7 Zero-Freeze & Smooth AFK Engine, Auto Claim Play Time Reward / Egg Time Skip Suite, Auto Claim Daily Streak Reward, Weak Tables Zero-Leak & Remote Throttle)**:
+  * Announcements (`#📢・announcements` `1547960148599775262`): Msg ID `1564733055447470323`
+  * Changelogs (`#📝・changelogs` `1547960156417949726`): Msg ID `1564733062955409589`
+  * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1564732847259128049` (`BeatTheBoss_Clean.lua` v4.2, Total 50 Pesan Steril Terverifikasi 1:1)
+  * Target Role (`🥊 Beat the Boss & Steal`): `1563939923604668416`
+  * Script Update Ping: `1548208954163724299`
 - **Beat the Boss & Steal v4.1 Live IDs (Sequential Boss-First Loop, Guaranteed Knock Down Prevention by Striking Awake Boss Before Grabbing Egg, Strict 1-Egg Cycle Kill Boss -> Grab Egg -> Base Return -> Deposit Egg, Zero-Lag 2.0s DOM Throttle Engine & 6-Swing Clamp)**:
   * Announcements (`#📢・announcements` `1547960148599775262`): Msg ID `1564611140066218068` (Gold Embed `15844367`, tagged `<@&1563939923604668416> <@&1548208954163724299>`)
   * Changelogs (`#📝・changelogs` `1547960156417949726`): Msg ID `1564611294428925994` (Blue Embed `3447003`, tagged `<@&1563939923604668416> <@&1548208954163724299>`)
