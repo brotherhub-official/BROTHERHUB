@@ -690,4 +690,21 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Target Role (`🌍 Drill to Earth's Core`): `1549290696320491561`
   * Git Commit: `12ff668`
 
+- **Drill to Earth's Core v5.9 Live IDs (Dungeon Auto Open All Chests Suite Fix: Strict Anti-Exit Door & Portal Blacklist, Smart Active LockGui Verification, Map-Wide Zero Approach Radius Fix)**:
+  * Announcements (`#📢・announcements` `1547960148599775262`): Msg ID `1564871993868681227` (Gold Embed `15844367`, tagged `<@&1549290696320491561> <@&1548208954163724299>`)
+  * Changelogs (`#📝・changelogs` `1547960156417949726`): Msg ID `1564872005654945863` (Blue Embed `3447003`, tagged `<@&1549290696320491561> <@&1548208954163724299>`)
+  * Bug Reply (`#🐛・bug-reports` `1547960201511047219`): Msg ID `1564872315823726633` (Direct Reply ke Arsss `<@425675264811597824>` Msg ID `1564857830375297147`)
+  * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1564871724099698698` (`DrillToEarth_Clean.lua` v5.9, Total 50 Pesan Steril Terverifikasi 1:1)
+  * Target Role (`🌍 Drill to Earth's Core`): `1549290696320491561`
+  * Git Commit: `39bb069`
+
+- **Beat the Boss & Steal v4.4 Live IDs (Anti-Stuck Egg Grab Watchdog & Clean Single-Pulse 0s Prompt, Pen Full Incubation Guard [Zero Freeze at Nest], Throttled 0.08s SendPets Network Dispatch, 24/7 Periodic Engine Garbage Collector & Debris Flusher)**:
+  * Announcements (`#📢・announcements` `1547960148599775262`): Msg ID `1564872326758146079` (Gold Embed `15844367`, tagged `<@&1563939923604668416> <@&1548208954163724299>`)
+  * Changelogs (`#📝・changelogs` `1547960156417949726`): Msg ID `1564872337709465613` (Blue Embed `3447003`, tagged `<@&1563939923604668416> <@&1548208954163724299>`)
+  * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1564871734107185164` (`BeatTheBoss_Clean.lua` v4.4, Total 50 Pesan Steril Terverifikasi 1:1)
+  * Target Role (`🥊 Beat the Boss & Steal`): `1563939923604668416`
+  * Script Update Ping: `1548208954163724299`
+  * Git Commit: `39bb069`
+
+
 
