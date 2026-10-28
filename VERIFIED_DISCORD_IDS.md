@@ -708,3 +708,12 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
 
 
 
+
+- **Drill to Earth's Core v6.0 Live IDs (Modular GUI Register Limit Fix & Full Universal Parent Fallback, Zero-Delay Instant Menu Boot, Clean ASCII Section Typography Fix [Zero Missing Glyphs ▯])**:
+  * Announcements (`#📢・announcements` `1547960148599775262`): Msg ID `1564950832045236285` (Gold Embed `15844367`, tagged `<@&1549290696320491561> <@&1548208954163724299>`)
+  * Changelogs (`#📝・changelogs` `1547960156417949726`): Msg ID `1564950849292345449` (Blue Embed `3447003`, tagged `<@&1549290696320491561> <@&1548208954163724299>`)
+  * Bug Reply (`#🐛・bug-reports` `1547960201511047219`): Msg ID `1564950858570006632` (Direct Reply ke Arsss `<@425675264811597824>`)
+  * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1564950597470261309` (`DrillToEarth_Clean.lua` v6.0, Total 50 Pesan Steril Terverifikasi 1:1)
+  * Target Role (`🌍 Drill to Earth's Core`): `1549290696320491561`
+  * Script Update Ping: `1548208954163724299`
+  * Git Commit: `6ac12cf`
