@@ -744,3 +744,11 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Target Role (`🌍 Drill to Earth's Core`): `1549290696320491561`
   * Script Update Ping: `1548208954163724299`
   * Git Commit: `0cbc8a2`
+
+- **Beat the Boss & Steal v4.5 Live IDs (7GB AFK RAM Leak Elimination, Multi-Container Client FX Debris Purger Suite & Zero Nil Error Fix)**:
+  * Announcements (`#📢・announcements` `1547960148599775262`): Msg ID `1565091257834012793` (Gold Embed `15844367`, tagged `<@&1563939923604668416> <@&1548208954163724299>`)
+  * Changelogs (`#📝・changelogs` `1547960156417949726`): Msg ID `1565091265895469128` (Blue Embed `3447003`, tagged `<@&1563939923604668416> <@&1548208954163724299>`)
+  * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1565091103408132157` (`BeatTheBoss_Clean.lua` v4.5, Total 50 Pesan Steril Terverifikasi 1:1)
+  * Target Role (`🥊 Beat the Boss & Steal`): `1563939923604668416`
+  * Script Update Ping: `1548208954163724299`
+  * Git Commit: `322adf1`
