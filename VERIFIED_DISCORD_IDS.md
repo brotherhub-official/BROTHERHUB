@@ -717,3 +717,12 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Target Role (`🌍 Drill to Earth's Core`): `1549290696320491561`
   * Script Update Ping: `1548208954163724299`
   * Git Commit: `6ac12cf`
+
+- **Drill to Earth's Core v6.1 Live IDs (Dropdown Scope Fix, All 12 Menu Tabs 100% Fully Populated, Zero GUI Loading Error Elimination)**:
+  * Announcements (`#📢・announcements` `1547960148599775262`): Msg ID `1564970416307708025` (Gold Embed `15844367`, tagged `<@&1549290696320491561> <@&1548208954163724299>`)
+  * Changelogs (`#📝・changelogs` `1547960156417949726`): Msg ID `1564970423483891913` (Blue Embed `3447003`, tagged `<@&1549290696320491561> <@&1548208954163724299>`)
+  * Bug Reply (`#🐛・bug-reports` `1547960201511047219`): Msg ID `1564970430144577690` (Direct Reply ke Arsss `<@425675264811597824>`)
+  * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1564970186925281383` (`DrillToEarth_Clean.lua` v6.1, Total 50 Pesan Steril Terverifikasi 1:1)
+  * Target Role (`🌍 Drill to Earth's Core`): `1549290696320491561`
+  * Script Update Ping: `1548208954163724299`
+  * Git Commit: `7b0ef90`
