@@ -673,3 +673,21 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1564690802905583658` (`DrillToEarth_Clean.lua` v5.7, Total 50 Pesan Steril Terverifikasi 1:1)
   * Target Role (`🌍 Drill to Earth's Core`): `1549290696320491561`
   * Git Commit: `faed3be`
+
+- **Beat the Boss & Steal v4.3 Live IDs (24/7 Ultra Zero-Lag Architecture, Dedicated Ultra AFK GPU & CPU Saver Engine / Render Pause, Direct Non-Recursive Prompt Verification, Elimination of Full-Map Traversal, Smart 0.4s Zone Egg Cache & Hatch Loop Deduplication)**:
+  * Announcements (`#📢・announcements` `1547960148599775262`): Msg ID `1564842533769715803`
+  * Changelogs (`#📝・changelogs` `1547960156417949726`): Msg ID `1564842547342344215`
+  * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1564842342169710592` (`BeatTheBoss_Clean.lua` v4.3, Total 50 Pesan Steril Terverifikasi 1:1)
+  * Target Role (`🥊 Beat the Boss & Steal`): `1563939923604668416`
+  * Script Update Ping: `1548208954163724299`
+  * Git Commit: `e0aba5f`
+
+- **Drill to Earth's Core v5.8 Live IDs (Dungeon Auto Open All Chests Suite: Map-Wide Zero Approach Radius & Smart Locked Chest Auto-Unlock Detection)**:
+  * Announcements (`#📢・announcements` `1547960148599775262`): Msg ID `1564852389935054920` (Gold Embed `15844367`, tagged `<@&1549290696320491561> <@&1548208954163724299>`)
+  * Changelogs (`#📝・changelogs` `1547960156417949726`): Msg ID `1564852397078224927` (Blue Embed `3447003`, tagged `<@&1549290696320491561> <@&1548208954163724299>`)
+  * Suggestions Reply (`#⭐・suggestions` `1547960198776225833`): Msg ID `1564852405378490460` (Direct Reply ke Arsss `<@425675264811597824>` & tagged `<@&1549290696320491561>`)
+  * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1564852057951830078` (`DrillToEarth_Clean.lua` v5.8, Total 50 Pesan Steril Terverifikasi 1:1)
+  * Target Role (`🌍 Drill to Earth's Core`): `1549290696320491561`
+  * Git Commit: `12ff668`
+
+
