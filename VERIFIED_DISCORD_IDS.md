@@ -776,3 +776,11 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Target Role (`🥊 Beat the Boss & Steal`): `1563939923604668416`
   * Script Update Ping: `1548208954163724299`
   * Git Commit: `399b2bb` (Hands-Free Boss Defeat Gift Collector & PenPets/Pens Asset Culling Suite)
+
+- **Beat the Boss & Steal v4.9 Live IDs (Zero-Leak Performance Engine, 4.4GB Memory Fix, Anti-Freeze, Hands-Free Boss Collector & Anti-Knockdown)**:
+  * Announcements (`#announcements` `1547960148599775262`): Msg ID `1565343030662275143` (Gold Embed `15844367`, tag `<@&1563939923604668416> <@&1548208954163724299>`)
+  * Changelogs (`#changelogs` `1547960156417949726`): Msg ID `1565343040024088688` (Blue Embed `3447003`, tag `<@&1563939923604668416> <@&1548208954163724299>`)
+  * Founder Vault (`#founder-vault` `1547986862470205521`): Msg ID `1565342197900124281` (Clean un-obfuscated script `BeatTheBoss_Clean.lua` v4.9 Zero-Leak Engine & Hands-Free Boss Collector)
+  * Target Role (`🥊 Beat the Boss & Steal`): `1563939923604668416`
+  * Script Update Ping: `1548208954163724299`
+  * Total Clean Messages in Vault: `50` (1:1 Steril Terverifikasi)
