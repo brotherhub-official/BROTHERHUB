@@ -760,3 +760,11 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Target Role (`🥊 Beat the Boss & Steal`): `1563939923604668416`
   * Script Update Ping: `1548208954163724299`
   * Git Commit: `b0779ba`
+
+- **Beat the Boss & Steal v4.7 Live IDs (Zero-Lag Instant Hatch, No Hatch Animation Suite & 1-Click Batch Open All Ready Eggs)**:
+  * Announcements (`#📢・announcements` `1547960148599775262`): Msg ID `1565267237890166876` (Gold Embed `15844367`, tagged `<@&1563939923604668416> <@&1548208954163724299>`)
+  * Changelogs (`#📝・changelogs` `1547960156417949726`): Msg ID `1565267246631092368` (Blue Embed `3447003`, tagged `<@&1563939923604668416> <@&1548208954163724299>`)
+  * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1565267071992864778` (`BeatTheBoss_Clean.lua` v4.7, Total 50 Pesan Steril Terverifikasi 1:1)
+  * Target Role (`🥊 Beat the Boss & Steal`): `1563939923604668416`
+  * Script Update Ping: `1548208954163724299`
+  * Git Commit: `318d953`
