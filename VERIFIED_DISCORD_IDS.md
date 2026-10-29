@@ -784,3 +784,13 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Target Role (`🥊 Beat the Boss & Steal`): `1563939923604668416`
   * Script Update Ping: `1548208954163724299`
   * Total Clean Messages in Vault: `50` (1:1 Steril Terverifikasi)
+
+- **Drill to Earth's Core v6.4 Live IDs (Remote Card Shop & Auto Buy Anywhere Suite, Dual-Version TP to Drill Front & Back Deck on Mobile QuickBar)**:
+  * Announcements (`#announcements` `1547960148599775262`): Msg ID `1565429215958929535` (Gold Embed `15844367`, tagged `<@&1549290696320491561> <@&1548208954163724299>`)
+  * Changelogs (`#changelogs` `1547960156417949726`): Msg ID `1565429224016322561` (Blue Embed `3447003`, tagged `<@&1549290696320491561> <@&1548208954163724299>`)
+  * Suggestions Reply (`#suggestions` `1547960198776225833`): Msg ID `1565429231578783798` (Direct Reply ke Arsss `<@425675264811597824>`)
+  * Founder Vault (`#founder-vault` `1547986862470205521`): Msg ID `1565428818901205053` (`DrillToEarth_Clean.lua` v6.4, Total 50 Pesan Steril Terverifikasi 1:1)
+  * Target Role (`⛏️ Drill to Earth's Core`): `1549290696320491561`
+  * Script Update Ping: `1548208954163724299`
+  * Total Clean Messages in Vault: `50` (1:1 Steril Terverifikasi)
+
