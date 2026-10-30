@@ -879,3 +879,9 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Founder Vault Message ID: `1565760172968644819`
   * Announcements Msg ID: `1565760406621003889`
   * Changelogs Msg ID: `1565760410399936543`
+- **Beat the Boss & Steal v6.1 Live IDs (Eliminate 'Get closer!' Popup Spam, Distance Guard Weapon Swing & Double-Layer Toast Purger)**:
+  * Target Role (`🥊 Beat the Boss & Steal`): `1563939923604668416`
+  * Script Update Ping Role: `1548208954163724299`
+  * Founder Vault Message ID: `1565777709307666483` (`BeatTheBoss_Clean.lua` v6.1, Total 50 Pesan Steril Terverifikasi 1:1)
+  * Announcements Msg ID: `1565778019627303044` (#📢・announcements, Gold Embed `15844367`)
+  * Changelogs Msg ID: `1565778024123732111` (#📝・changelogs, Blue Embed `3447003`)
