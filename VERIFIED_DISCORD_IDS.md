@@ -811,3 +811,11 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Script Update Ping: `1548208954163724299`
   * Git Commit: `14c8f85`
   * Total Clean Messages in Vault: `50` (1:1 Steril Terverifikasi)
+
+- **Beat the Boss & Steal v5.2 Live IDs (Universal Present Tap & Collect Zero Mouse Hijacking, Sequential Slot-by-Slot Pet Fuse Engine & Multi-Priority 1-Click Ready Egg Hatch Suite)**:
+  * Announcements (`#announcements` `1547960148599775262`): Msg ID `1565578523580825720` (Gold Embed `15844367`, tag `<@&1563939923604668416> <@&1548208954163724299>`)
+  * Changelogs (`#changelogs` `1547960156417949726`): Msg ID `1565578529184415785` (Blue Embed `3447003`, tag `<@&1563939923604668416> <@&1548208954163724299>`)
+  * Founder Vault (`#founder-vault` `1547986862470205521`): Msg ID `1565578387668598896` (Clean un-obfuscated script `BeatTheBoss_Clean.lua` v5.2)
+  * Target Role (`🥊 Beat the Boss & Steal`): `1563939923604668416`
+  * Script Update Ping: `1548208954163724299`
+  * Total Clean Messages in Vault: `50` (1:1 Steril Terverifikasi)
