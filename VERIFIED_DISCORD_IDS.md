@@ -835,3 +835,41 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Target Role (`🥊 Beat the Boss & Steal`): `1563939923604668416`
   * Script Update Ping: `1548208954163724299`
   * Total Clean Messages in Vault: `50` (1:1 Steril Terverifikasi)
+- **Drill to Earth's Core v6.5 Live IDs (Mobile Card Shop Auto-Trigger Hotfix, Zero Unwanted Popup on Startup & Centered QuickBar — Laporan Arsss #bug-reports)**:
+  * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1565739954041135245` (`DrillToEarth_Clean.lua` v6.5, Total 50 Pesan Steril Terverifikasi 1:1)
+  * Target Role (`🌍 Drill to Earth's Core`): `1549290696320491561`
+  * Script Update Ping: `1548208954163724299`
+  * Discord Bug Reply: Msg ID `1565740252356812876` (#🐛・bug-reports)
+  * Discord Announcements: Msg ID `1565740260066074725` (#📢・announcements, Gold Embed `15844367`)
+  * Discord Changelogs: Msg ID `1565740268660068363` (#📝・changelogs, Blue Embed `3447003`)
+- **Beat the Boss & Steal v5.5 Live IDs (Performance Overhaul, Global Input Listener Optimization, Real-Time PenPets/Plots Culling, 100% Zero-Popup Present Claim)**:
+  * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1565737353509736518` (Old superseded)
+  * Discord Announcements: Msg ID `1565737690089914369` (#📢・announcements)
+  * Discord Changelogs: Msg ID `1565737693009289429` (#📝・changelogs)
+- **Beat the Boss & Steal v5.6 Live IDs (Auto Prioritize Giant / Super Big Egg Detection, Zone Boss Kill & Return to Zone 14 Suite)**:
+  * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1565742886866133193` (`BeatTheBoss_Clean.lua` v5.6, Total 50 Pesan Steril Terverifikasi 1:1)
+  * Target Role (`👊 Beat the Boss & Steal`): `1563939923604668416`
+  * Script Update Ping: `1548208954163724299`
+  * Discord Announcements: Msg ID `1565743037823451177` (#📢・announcements, Gold Embed `15844367`)
+  * Discord Changelogs: Msg ID `1565743045280792609` (#📝・changelogs, Blue Embed `3447003`)
+
+- **Beat the Boss & Steal v5.7 Live IDs (100% Silent Present Auto-Claim & Permanent Elimination of Egg Hatch Animation Suite)**:
+  * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1565749220395196589` (`BeatTheBoss_Clean.lua` v5.7, Total 50 Pesan Steril Terverifikasi 1:1)
+  * Target Role (`👊 Beat the Boss & Steal`): `1563939923604668416`
+  * Script Update Ping: `1548208954163724299`
+  * Discord Announcements: Msg ID `1565749446585753621` (#📢・announcements, Gold Embed `15844367`)
+  * Discord Changelogs: Msg ID `1565749454534090913` (#📝・changelogs, Blue Embed `3447003`)
+
+- **Beat the Boss & Steal v5.8 Live IDs (100% Zero Camera Shake & Zero Blur Elimination Suite)**:
+  * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1565751759979159697` (`BeatTheBoss_Clean.lua` v5.8, Total 50 Pesan Steril Terverifikasi 1:1)
+  * Target Role (`👊 Beat the Boss & Steal`): `1563939923604668416`
+  * Script Update Ping: `1548208954163724299`
+  * Discord Announcements: Msg ID `1565751982218547292` (#📢・announcements, Gold Embed `15844367`)
+  * Discord Changelogs: Msg ID `1565751988623380604` (#📝・changelogs, Blue Embed `3447003`)
+
+- **Beat the Boss & Steal v5.9 Live IDs (Fix Base Teleport Lag & StealUntil False Positive Loop, Eliminate Red Vignette & RUN! Effect)**:
+  * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1565754699251064955` (`BeatTheBoss_Clean.lua` v5.9, Total 50 Pesan Steril Terverifikasi 1:1)
+  * Target Role (`👊 Beat the Boss & Steal`): `1563939923604668416`
+  * Script Update Ping: `1548208954163724299`
+  * Discord Announcements: Msg ID `1565754909775634523` (#📢・announcements, Gold Embed `15844367`)
+  * Discord Changelogs: Msg ID `1565754917421846549` (#📝・changelogs, Blue Embed `3447003`)
