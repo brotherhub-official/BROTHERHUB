@@ -827,3 +827,11 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Target Role (🥊 Beat the Boss & Steal): 1563939923604668416
   * Script Update Ping: 1548208954163724299
   * Total Clean Messages in Vault: 50 (1:1 Steril Terverifikasi)
+
+- **Beat the Boss & Steal v5.4 Live IDs (Self-Targeting Immunity Guard, Zero Auto-Disappear & Protected guiParent Engine)**:
+  * Announcements (`#announcements` `1547960148599775262`): Msg ID `1565589550737137725` (Gold Embed `15844367`, tag `<@&1563939923604668416> <@&1548208954163724299>`)
+  * Changelogs (`#changelogs` `1547960156417949726`): Msg ID `1565589554616995912` (Blue Embed `3447003`, tag `<@&1563939923604668416> <@&1548208954163724299>`)
+  * Founder Vault (`#founder-vault` `1547986862470205521`): Msg ID `1565589432260894950` (Clean un-obfuscated script `BeatTheBoss_Clean.lua` v5.4 Anti-Auto-Disappear & Immunity Guard)
+  * Target Role (`🥊 Beat the Boss & Steal`): `1563939923604668416`
+  * Script Update Ping: `1548208954163724299`
+  * Total Clean Messages in Vault: `50` (1:1 Steril Terverifikasi)
