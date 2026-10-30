@@ -873,3 +873,9 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Script Update Ping: `1548208954163724299`
   * Discord Announcements: Msg ID `1565754909775634523` (#📢・announcements, Gold Embed `15844367`)
   * Discord Changelogs: Msg ID `1565754917421846549` (#📝・changelogs, Blue Embed `3447003`)
+- **Beat the Boss & Steal v6.0 Live IDs (Permanent Elimination of 4GB RAM Leak & Context Errors, Permanent Elimination of HatchReveal and RunMode scripts at source)**:
+  * Target Role (`👊 Beat the Boss & Steal`): `1563939923604668416`
+  * Script Update Ping Role: `1548208954163724299`
+  * Founder Vault Message ID: `1565760172968644819`
+  * Announcements Msg ID: `1565760406621003889`
+  * Changelogs Msg ID: `1565760410399936543`
