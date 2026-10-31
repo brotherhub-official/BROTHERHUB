@@ -1,6 +1,6 @@
 # VERIFIED ROLES & CHANNELS MAPPING TABLE
 
-## 1. 50 SUPPORTED GAMES ROLES
+## 1. 51 SUPPORTED GAMES ROLES
 
 - **Deep Fishing**: `1551587483320459344` (Role Name: `🌊 Deep Fishing`)
 - **Pets Universe**: `1551531361582714892` (Role Name: `🐾 Pets Universe`)
@@ -52,6 +52,7 @@
 - **Steal a Dragon Egg**: `1558117499994767360` (Role Name: `🥚 Steal a Dragon Egg`)
 - **RoChess**: `1563606751092150354` (Role Name: `♟️ RoChess`)
 - **Beat the Boss & Steal**: `1563939923604668416` (Role Name: `🥊 Beat the Boss & Steal`)
+- **Hook And Rob**: `1566202284315254886` (Role Name: `🪝 Hook And Rob`)
 
 ## 2. NOTIFICATION & SYSTEM ROLES
 
@@ -891,3 +892,25 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Founder Vault Message ID: `1565791125535461638` (`BeatTheBoss_Clean.lua` v6.2, Total 50 Pesan Steril Terverifikasi 1:1)
   * Announcements Msg ID: `1565791264060739695` (#📢・announcements, Gold Embed `15844367`)
   * Changelogs Msg ID: `1565791267906912256` (#📝・changelogs, Blue Embed `3447003`)
+- **Drill to Earth's Core v6.6 Live IDs (Carry Capacity & Aura Collect/Sack Full Overhaul — Member Request Arsss)**:
+  * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1566198820390572184` (`DrillToEarth_Clean.lua` v6.6)
+  * Target Role (`🌍 Drill to Earth's Core`): `1549290696320491561`
+  * Script Update Ping Role: `1548208954163724299`
+  * Discord Announcements: Msg ID `1566198826195361894` (#📢・announcements, Gold Embed `15844367`)
+  * Discord Changelogs: Msg ID `1566198832851722323` (#📝・changelogs, Blue Embed `3447003`)
+  * Bug Reply: Msg ID `1566198836379263066` (#🐛・bug-reports, Reply to Arsss)
+
+- **Hook And Rob v1.0 Live IDs (Official Game #51 Universal Release & Always Perfect Cast Suite — Member Request absolute)**:
+  * Target Role (`🪝 Hook And Rob`): `1566202284315254886`
+  * Script Update Ping Role: `1548208954163724299`
+  * Founder Vault Message ID: `1566202290904498297` (`HookAndRob_Clean.lua` v1.0, Total 51 Pesan Steril Terverifikasi 1:1)
+  * Discord Announcements: Msg ID `1566202789305254099` (#📢・announcements, Gold Embed `15844367`)
+  * Discord Changelogs: Msg ID `1566202791964442697` (#📝・changelogs, Blue Embed `3447003`)
+  * Suggestions Reply: Msg ID `1566202795747451074` (#💡・suggestions, Reply to absolute / mbibssz `880351239655800872`)
+
+- **Beat the Boss & Steal v6.3 Live IDs (Celestial & Divine Halloweek Tier Priority & Smart Target Weighting)**:
+  * Target Role (`🥊 Beat the Boss & Steal`): `1563939923604668416`
+  * Script Update Ping Role: `1548208954163724299`
+  * Founder Vault Message ID: `1566204219827167384` (`BeatTheBoss_Clean.lua` v6.3, Total 51 Pesan Steril Terverifikasi 1:1)
+  * Discord Announcements: Msg ID `1566204303704719433` (#📢・announcements, Gold Embed `15844367`)
+  * Discord Changelogs: Msg ID `1566204306988867606` (#📝・changelogs, Blue Embed `3447003`)
