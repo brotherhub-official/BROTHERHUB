@@ -914,3 +914,11 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Founder Vault Message ID: `1566204219827167384` (`BeatTheBoss_Clean.lua` v6.3, Total 51 Pesan Steril Terverifikasi 1:1)
   * Discord Announcements: Msg ID `1566204303704719433` (#📢・announcements, Gold Embed `15844367`)
   * Discord Changelogs: Msg ID `1566204306988867606` (#📝・changelogs, Blue Embed `3447003`)
+
+- **Drill to Earth's Core v6.7 Live IDs (Zero Foot-Jamming Aura Collect & Quad-Layer Drop All Sack Restoration — Laporan Arsss #bug-reports)**:
+  * Founder Vault (#🔐・founder-vault 1547986862470205521): Msg ID 1566299143905869867 (DrillToEarth_Clean.lua v6.7, Total 51 Pesan Steril Terverifikasi 1:1)
+  * Target Role (👑 Drill to Earth's Core): 1549290696320491561
+  * Script Update Ping Role: 1548208954163724299
+  * Discord Announcements: Msg ID 1566299378480849028 (#📢・announcements, Gold Embed 15844367)
+  * Discord Changelogs: Msg ID 1566299390052671510 (#📝・changelogs, Blue Embed 3447003)
+  * Bug Reply: Msg ID 1566299371375427709 (#🐛・bug-reports, Reply to Arsss 425675264811597824 referencing Msg ID 1566292925766176810)
