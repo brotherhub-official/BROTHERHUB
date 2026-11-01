@@ -922,3 +922,11 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Discord Announcements: Msg ID 1566299378480849028 (#📢・announcements, Gold Embed 15844367)
   * Discord Changelogs: Msg ID 1566299390052671510 (#📝・changelogs, Blue Embed 3447003)
   * Bug Reply: Msg ID 1566299371375427709 (#🐛・bug-reports, Reply to Arsss 425675264811597824 referencing Msg ID 1566292925766176810)
+
+- **Drill to Earth's Core v6.8 Live IDs (Mythic Grade Anti-Drop Protection Suite & Driver Seat Precision Teleport — Saran Arsss #suggestions)**:
+  * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1566430216493207614` (`DrillToEarth_Clean.lua` v6.8, Total 51 Pesan Steril Terverifikasi 1:1)
+  * Target Role (`👑 Drill to Earth's Core`): `1549290696320491561`
+  * Script Update Ping Role: `1548208954163724299`
+  * Discord Announcements: Msg ID `1566430407753339081` (`#📢・announcements`, Gold Embed `15844367`)
+  * Discord Changelogs: Msg ID `1566430415219068942` (`#📝・changelogs`, Blue Embed `3447003`)
+  * Suggestions Reply: Msg ID `1566430400128090153` (`#⭐・suggestions`, Reply to Arsss `425675264811597824` referencing Msg ID `1566412584146702407`)
