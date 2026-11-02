@@ -930,3 +930,11 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Discord Announcements: Msg ID `1566430407753339081` (`#📢・announcements`, Gold Embed `15844367`)
   * Discord Changelogs: Msg ID `1566430415219068942` (`#📝・changelogs`, Blue Embed `3447003`)
   * Suggestions Reply: Msg ID `1566430400128090153` (`#⭐・suggestions`, Reply to Arsss `425675264811597824` referencing Msg ID `1566412584146702407`)
+
+- **Drill to Earth's Core v6.9 Live IDs (Multi-Tier Priority Card Whitelist & Multi-Slot Priority Selector Suite — Saran Arsss #suggestions)**:
+  * Founder Vault (`#🔐・founder-vault` `1547986862470205521`): Msg ID `1566694553308627034` (`DrillToEarth_Clean.lua` v6.9, Total 51 Pesan Steril Terverifikasi 1:1)
+  * Target Role (`🚜 Drill to Earth's Core`): `1549290696320491561`
+  * Script Update Ping Role: `1548208954163724299`
+  * Discord Announcements: Msg ID `1566694860910497803` (`#📢・announcements`, Gold Embed `15844367`)
+  * Discord Changelogs: Msg ID `1566694868493926572` (`#📝・changelogs`, Blue Embed `3447003`)
+  * Suggestions Reply: Msg ID `1566694854010994770` (`#⭐・suggestions`, Reply to Arsss `425675264811597824` referencing Msg ID `1566540810944512021`)
