@@ -145,6 +145,49 @@
 }
 ```
 
+### C. Template Balasan Laporan Bug (`#🐛・bug-reports` - `1547960201511047219`)
+> ⚠️ **HUKUM MUTLAK BALASAN BUG REPORT**:
+> 1. **DILARANG KERAS PLAINTEXT**: Balasan laporan bug WAJIB 100% menggunakan Rich Discord Embed dengan warna Emerald Green `3066993` (`#2ECC71`). Dilarang mengirim teks biasa tanpa embed!
+> 2. **Mention Member di Luar Embed**: Gunakan `content: "<@MEMBER_ID>"` agar member pelapor mendapat notifikasi langsung.
+> 3. **100% Bilingual**: Menampilkan salam terima kasih, status perbaikan Bahasa Indonesia & English secara berdampingan, dan link pointer channel `<#1547960154228793424>`.
+> 4. **Hukum 13 Zero Technical Leak**: Hanya jelaskan manfaat bagi pemain, dilarang membocorkan nama remote, method, atau hierarki part internal game!
+
+```json
+{
+  "content": "<@MEMBER_ID>",
+  "embeds": [
+    {
+      "title": "✅ LAPORAN SELESAI DITANGANI / BUG RESOLVED — <NAMA GAME> (v<VERSI>)",
+      "description": "Halo <@MEMBER_ID>, terima kasih banyak atas laporan rincinya mengenai <topik keluhan bug>!\n\n🇮🇩 **STATUS PERBAIKAN (BAHASA INDONESIA)**:\n• **Poin Resolusi 1**: Penjelasan perbaikan dan manfaat untuk pemain.\n• **Poin Resolusi 2**: Penjelasan kestabilan/fitur baru.\n\n🇬🇧 **RESOLUTION STATUS (ENGLISH)**:\n• **Resolution Point 1**: Explanation of fix and player benefit.\n• **Resolution Point 2**: Explanation of stability/enhancements.\n\n👉 **Silakan ambil dan jalankan script versi terbaru (v<VERSI>) di channel:** <#1547960154228793424>\n👉 **Please get and run the latest version (v<VERSI>) in channel:** <#1547960154228793424>",
+      "color": 3066993,
+      "footer": {
+        "text": "Brother Hub Official • Bug Resolution Notification"
+      }
+    }
+  ]
+}
+```
+
+### D. Template Balasan Saran / Request Fitur (`#⭐・suggestions` - `1547960198776225833`)
+> ⚠️ **HUKUM MUTLAK BALASAN SARAN FITUR**:
+> Sama seperti bug report, balasan ke saran member WAJIB 100% Rich Discord Embed (Emerald Green `3066993` atau Teal `1752220`), mention member di luar embed (`<@MEMBER_ID>`), dwibahasa ID & EN, dan zero technical leak!
+
+```json
+{
+  "content": "<@MEMBER_ID>",
+  "embeds": [
+    {
+      "title": "💡 SARAN RESMI DIIMPLEMENTASIKAN / SUGGESTION IMPLEMENTED — <NAMA GAME> (v<VERSI>)",
+      "description": "Halo <@MEMBER_ID>, terima kasih banyak atas saran dan ide fitur luar biasanya!\n\n🇮🇩 **STATUS IMPLEMENTASI (BAHASA INDONESIA)**:\n• **Fitur Baru**: Rincian fitur yang telah ditambahkan sesuai permintaan Anda.\n• **Kenyamanan**: Penjelasan cara menggunakannya di in-game menu.\n\n🇬🇧 **IMPLEMENTATION STATUS (ENGLISH)**:\n• **New Feature**: Details of the feature implemented per your suggestion.\n• **Convenience**: Guidance on how to activate it in the in-game menu.\n\n👉 **Silakan nikmati fitur baru ini pada versi terbaru (v<VERSI>) di channel:** <#1547960154228793424>\n👉 **Please enjoy this new feature in the latest version (v<VERSI>) in channel:** <#1547960154228793424>",
+      "color": 3066993,
+      "footer": {
+        "text": "Brother Hub Official • Suggestion Implementation Notification"
+      }
+    }
+  ]
+}
+```
+
 ## 5. STANDAR BAKU FORMAT LAPORAN BUG & PENGAJUAN FITUR BARU
 
 > ⚠️ **HUKUM MUTLAK**: Developer tidak memainkan seluruh game yang ada di Roblox. Setiap laporan bug dan saran fitur dari member **WAJIB 100% MENGIKUTI FORMAT BAKU LENGKAP**. Laporan tanpa format detail tidak akan diproses!
