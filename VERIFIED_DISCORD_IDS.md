@@ -19,7 +19,7 @@
 - **Poly Loot**: `1549290685645983764` (Role Name: `⚔️ Poly Loot`)
 - **Storage Hunters**: `1549290694143778886` (Role Name: `📦 Storage Hunters`)
 - **Defeat Anime RNG**: `1549290698464034816` (Role Name: `💥 Defeat Anime RNG`)
-- **Drill to Earth's Core**: `1549290696320491561` (Role Name: `🌍 Drill to Earth's Core`)
+- **Drill to Earth's Core**: `1549290696320491561` (Role Name: `🌍 Drill to Earth's Core`) [Live: v7.1]
 - **Idle Mafia Game**: `1549290691992223844` (Role Name: `🕵️ Idle Mafia`)
 - **Dungeon Lootr**: `1549290687382552669` (Role Name: `⚔️ Dungeon Lootr`)
 - **Dungeon Quest Reborn**: `1549290689639088150` (Role Name: `🏰 Dungeon Quest Reborn`)
@@ -938,3 +938,11 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Discord Announcements: Msg ID `1566694860910497803` (`#📢・announcements`, Gold Embed `15844367`)
   * Discord Changelogs: Msg ID `1566694868493926572` (`#📝・changelogs`, Blue Embed `3447003`)
   * Suggestions Reply: Msg ID `1566694854010994770` (`#⭐・suggestions`, Reply to Arsss `425675264811597824` referencing Msg ID `1566540810944512021`)
+
+### Sesi 181 Live Message IDs (04 November 2026):
+- **Drill to Earth's Core (v7.0)**:
+  * Vault Clean Message ID: `1567222602110337176` (Tepat 51 Pesan Steril Terverifikasi 1:1)
+  * Announcements Message ID: `1567222626537967727` (`#📢・announcements`, Gold Embed `15844367`, tag `<@&1549290696320491561> <@&1548208954163724299>`)
+  * Changelogs Message ID: `1567222810676568275` (`#📝・changelogs`, Blue Embed `3447003`, tag `<@&1549290696320491561> <@&1548208954163724299>`)
+  * Suggestions Reply Message ID: `1567223600791158814` (`#⭐・suggestions`, 100% Rich Discord Embed Green `3066993`, Reply to Arsss `425675264811597824` referencing Msg ID `1567172957816487946`)
+  * Git Commit: `f975802`
