@@ -989,3 +989,19 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Changelogs Message ID: `1567222810676568275` (`#📝・changelogs`, Blue Embed `3447003`, tag `<@&1549290696320491561> <@&1548208954163724299>`)
   * Suggestions Reply Message ID: `1567223600791158814` (`#⭐・suggestions`, 100% Rich Discord Embed Green `3066993`, Reply to Arsss `425675264811597824` referencing Msg ID `1567172957816487946`)
   * Git Commit: `f975802`
+
+### Sesi 182 Live Message IDs (04 November 2026):
+- **Drill to Earth's Core (v7.1)**:
+  * Vault Clean Message ID: `1567256169775497248` (Tepat 51 Pesan Steril Terverifikasi 1:1)
+  * Announcements Message ID: `1567256722752413707` (`#📢・announcements`, Gold Embed `15844367`, tag `<@&1549290696320491561> <@&1548208954163724299>`)
+  * Changelogs Message ID: `1567256734823878779` (`#📝・changelogs`, Blue Embed `3447003`, tag `<@&1549290696320491561> <@&1548208954163724299>`)
+  * Bug Reply Message ID: `1567256748014968875` (`#🐛・bug-reports`, 100% Rich Discord Embed Green `3066993`, Direct Reply ke Arsss `425675264811597824` referencing Msg ID `1567250063263273081`)
+  * Git Commit: `c5467b5`
+
+### Sesi 185 Live Message IDs (04 November 2026):
+- **Drill to Earth's Core (v7.2 - Dungeon ESP Clutter Overhaul, True Level Naming & Auto Brake / Auto Jump Restoration — Laporan Arsss #bug-reports)**:
+  * Vault Clean Message ID: `1567549813749186641` (Tepat 51 Pesan Steril Terverifikasi 1:1, menghapus old msg `1567256169775497248`)
+  * Announcements Message ID: `1567550311172808826` (`#📢・announcements`, Gold Embed `15844367`, tag `<@&1549290696320491561> <@&1548208954163724299>`)
+  * Changelogs Message ID: `1567550315559911606` (`#📝・changelogs`, Blue Embed `3447003`, tag `<@&1549290696320491561> <@&1548208954163724299>`)
+  * Bug Reply Message ID: `1567550320698196152` (`#🐛・bug-reports`, 100% Rich Discord Embed Green `3066993`, Direct Reply ke Arsss `425675264811597824` referencing Msg ID `1567523287645552680`)
+  * Git Commit: `a7fd258`
