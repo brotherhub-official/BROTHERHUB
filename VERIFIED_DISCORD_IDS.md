@@ -16,7 +16,7 @@
 - **Pop Bubbles**: `1550065206145581106` (Role Name: `🫧 Pop Bubbles`)
 - **Catch Dragons To Defend**: `1550061654383792250` (Role Name: `🐉 Catch Dragons To Defend`)
 - **Farm Industry**: `1549290683628527618` (Role Name: `🌾 Farm Industry`)
-- **Poly Loot**: `1549290685645983764` (Role Name: `⚔️ Poly Loot`)
+- **Poly Loot**: `1549290685645983764` (Role Name: `⚔️ Poly Loot`) [Live: v4.3]
 - **Storage Hunters**: `1549290694143778886` (Role Name: `📦 Storage Hunters`)
 - **Defeat Anime RNG**: `1549290698464034816` (Role Name: `💥 Defeat Anime RNG`)
 - **Drill to Earth's Core**: `1549290696320491561` (Role Name: `🌍 Drill to Earth's Core`) [Live: v7.1]
