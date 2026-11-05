@@ -145,8 +145,13 @@
 }
 ```
 
-### C. Template Balasan Laporan Bug (`#🐛・bug-reports` - `1547960201511047219`)
-> ⚠️ **HUKUM MUTLAK BALASAN BUG REPORT**:
+### C. Prosedur Mutlak Balasan Laporan Bug (`#🐛・bug-reports` - `1547960201511047219`)
+> ⚠️ **HUKUM MUTLAK 2 JAWABAN SEKALIGUS (DIPISAH 2 PESAN BERUNTUN)**:
+> Setiap kali memberikan konfirmasi penyelesaian bug, AI/Bot **WAJIB MENGIRIMKAN DUA (2) PESAN SEKALIGUS SECARA BERUNTUN**:
+> 1. **Pesan 1 (Direct Reply)**: 100% Rich Discord Embed Emerald Green `3066993`, mention member di luar embed (`content: "<@MEMBER_ID>"`), bilingual ID & EN, bebas kebocoran teknis (Hukum 13).
+> 2. **Pesan 2 (Standalone Template di Bawahnya)**: Pesan teks terpisah tepat di bawahnya berisi Format Resmi Pelaporan Bug agar selalu berada di paling bawah channel dan mudah disalin oleh member lain!
+
+#### PESAN 1: Template Embed Balasan Resolusi
 > 1. **DILARANG KERAS PLAINTEXT**: Balasan laporan bug WAJIB 100% menggunakan Rich Discord Embed dengan warna Emerald Green `3066993` (`#2ECC71`). Dilarang mengirim teks biasa tanpa embed!
 > 2. **Mention Member di Luar Embed**: Gunakan `content: "<@MEMBER_ID>"` agar member pelapor mendapat notifikasi langsung.
 > 3. **100% Bilingual**: Menampilkan salam terima kasih, status perbaikan Bahasa Indonesia & English secara berdampingan, dan link pointer channel `<#1547960154228793424>`.
@@ -168,9 +173,50 @@
 }
 ```
 
-### D. Template Balasan Saran / Request Fitur (`#⭐・suggestions` - `1547960198776225833`)
-> ⚠️ **HUKUM MUTLAK BALASAN SARAN FITUR**:
-> Sama seperti bug report, balasan ke saran member WAJIB 100% Rich Discord Embed (Emerald Green `3066993` atau Teal `1752220`), mention member di luar embed (`<@MEMBER_ID>`), dwibahasa ID & EN, dan zero technical leak!
+#### PESAN 2: Teks Baku Format Resmi Pelaporan Bug (Wajib Dipaste Tepat di Bawah Pesan 1)
+```text
+🐛 FORMAT RESMI PELAPORAN BUG — BROTHER HUB
+
+🇮🇩 PANDUAN WAJIB LAPORAN BUG
+Halo Brother! Agar laporan bug script Anda bisa langsung diinvestigasi dan diperbaiki secara cepat, seluruh member WAJIB menyalin dan mengisi format baku di bawah ini secara lengkap & mendalam.
+⚠️ Developer tidak memainkan seluruh game yang di-request, sehingga detail kronologi bug sangat krusial!
+
+🇬🇧 OFFICIAL BUG REPORTING GUIDELINES
+Hello Brother! To ensure your bug report is investigated and fixed immediately, all members are REQUIRED to copy and fill out the official template below with maximum detail.
+⚠️ The developer does not actively play every requested game, so detailed descriptions are essential!
+
+
+📋 SALIN FORMAT DI BAWAH INI (🇮🇩 BAHASA INDONESIA)
+Nama Game:
+Link Map:
+Update tanggal terakhir tanggal berapa:
+Keluhan Bug jelaskan secara terperinci dan detail banget:
+1. Bug A (misal: pas ngambil item karakter malah geter / macet)
+2. Bug B (misal: cuma teleport doang tapi remote server gak jalan)
+3. Bug C (misal: fitur toggle nyala tapi gak ada efek apa-apa)
+4. Bug D (misal: terjadi error / terputus dari server)
+5. dll (tuliskan sejelas mungkin bagaimana bug terjadi)
+
+
+📋 COPY TEMPLATE BELOW (🇬🇧 ENGLISH)
+Game Name:
+Map Link:
+Last Game Update Date:
+Bug Details (Please explain thoroughly and in full detail):
+1. Bug A (e.g., character shakes/freezes when collecting items)
+2. Bug B (e.g., character only teleports but server remote doesn't trigger)
+3. Bug C (e.g., toggle is turned ON but has no effect in-game)
+4. Bug D (e.g., error occurs / disconnected from the server)
+5. etc. (explain clearly what happens and how to reproduce it)
+```
+
+### D. Prosedur Mutlak Balasan Saran / Request Fitur (`#⭐・suggestions` - `1547960198776225833`)
+> ⚠️ **HUKUM MUTLAK 2 JAWABAN SEKALIGUS (DIPISAH 2 PESAN BERUNTUN)**:
+> Setiap kali merespon implementasi saran / fitur baru, AI/Bot **WAJIB MENGIRIMKAN DUA (2) PESAN SEKALIGUS SECARA BERUNTUN**:
+> 1. **Pesan 1 (Direct Reply)**: 100% Rich Discord Embed Emerald Green `3066993`, mention member di luar embed (`content: "<@MEMBER_ID>"`), bilingual ID & EN, bebas kebocoran teknis (Hukum 13).
+> 2. **Pesan 2 (Standalone Template di Bawahnya)**: Pesan teks terpisah tepat di bawahnya berisi Format Resmi Saran Fitur agar selalu berada di posisi paling bawah channel dan mudah disalin oleh member lain!
+
+#### PESAN 1: Template Embed Balasan Saran
 
 ```json
 {
@@ -186,6 +232,35 @@
     }
   ]
 }
+```
+
+#### PESAN 2: Teks Baku Format Resmi Pengajuan Saran (Wajib Dipaste Tepat di Bawah Pesan 1)
+```text
+Feature requests & game suggestions / Saran fitur baru atau game baru untuk script
+
+📋 SALIN FORMAT DI BAWAH INI (🇮🇩 BAHASA INDONESIA)
+Nama Game:
+Link Map:
+Update tanggal terakhir tanggal berapa:
+Saran / Fitur yang Diinginkan jelaskan secara terperinci dan detail banget:
+1. Fitur A (misal: buatkan auto sell otomatis saat tas/inventori penuh)
+2. Fitur B (misal: tambahkan slider kecepatan gerak dan opsi teleport halus)
+3. Fitur C (misal: sediakan dropdown filter pemilihan item langka saja)
+4. Fitur D (misal: auto claim reward harian dan battle pass)
+5. dll (jelaskan fungsi fitur dan alur kerjanya sejelas mungkin)
+
+
+
+📋 COPY TEMPLATE BELOW (🇬🇧 ENGLISH)
+Game Name:
+Map Link:
+Last Game Update Date:
+Suggested Feature Details (Please explain thoroughly and in full detail):
+1. Feature A (e.g., auto sell / harvest when bag/inventory is full)
+2. Feature B (e.g., add movement speed slider & smooth teleport options)
+3. Feature C (e.g., dropdown filter to select rare items only)
+4. Feature D (e.g., auto claim daily rewards & battle pass)
+5. etc. (explain the feature functionality and workflow as clearly as possible)
 ```
 
 ## 5. STANDAR BAKU FORMAT LAPORAN BUG & PENGAJUAN FITUR BARU
