@@ -518,6 +518,39 @@
     - SurfaceGui WAJIB dilengkapi `UIPadding` (Top/Bottom = 10px, Left/Right = 14px).
     - Teks diletakkan tepat di tengah balok arch frame atas dengan rasio proporsional, font bold monospaced/clean, dan 100% huruf terbaca utuh dari sudut manapun!
 
+---
+
+### 47. 🧭 HUKUM 47: SISTEM PENUNJUK ARAH ANTAR-STAGE & OBJEKTIF DINAMIS (STAGE TRANSITION GUIDANCE & IN-GAME BREADCRUMBS)
+- **Larangan Keras**:
+  * **DILARANG MEMBIARKAN PEMAIN BINGUNG TANPA PETUNJUK**: Dilarang membangun peta ekspansif ribuan studs tanpa menyediakan petunjuk arah fisik di dalam dunia 3D dan objektif di antarmuka kamera VHS ("antar stage itu kemana aja, ada petunjuk di setiap antar stage untuk ke next stage").
+- **Standar Baku Alur Rute & Petunjuk Antar-Stage**:
+  1. **Stage 1 (Level 0: The Maze) ➔ The Bathrooms**:
+     - *Lokasi Transisi*: Pintu bukaan dinding Selatan di koordinat `X = 500, Z = 600`.
+     - *Petunjuk Fisik*: Papan neon hitam-kuning besar `DoorSign` (`RESTROOMS [ THE BATHROOMS ] >> PROSOTAN TABUNG KUNING >>`) dan panah karpet di persimpangan utama.
+     - *Objektif VHS*: `[ OBJEKTIF: Telusuri labirin mono-yellow ke arah Selatan menuju Restrooms ]`
+  2. **The Bathrooms ➔ Stage 2 (Level 9: The Dark Suburbs)**:
+     - *Lokasi Transisi*: Mulut perosotan tabung kuning di koordinat `X = 500, Z = 720`.
+     - *Petunjuk Fisik*: Papan neon menyala `SlideSign` (`GIANT YELLOW TUBE SLIDE >> LEVEL 9: THE DARK SUBURBS >>`) tepat di atas tangga kuning.
+     - *Objektif VHS*: `[ OBJEKTIF: Naiki tangga kuning dan meluncurlah ke Level 9: The Dark Suburbs ]`
+  3. **Stage 2 (Level 9: The Dark Suburbs) ➔ Stage 3 (Level 37: The Poolrooms)**:
+     - *Lokasi Transisi*: Rumah Suburban #1 di koordinat `X = 410, Z = 1312`. Masuk ke dalam rumah, cari pintu bertuliskan `BASEMENT ACCESS`, dan turuni tangga beton ke lantai bawah.
+     - *Petunjuk Fisik*: Plang kayu penunjuk arah di samping landing pavilion (`🏚️ RUMAH #1: AKSES BASEMENT LEVEL 37 >>`) dan lampu neon teras rumah yang berkedip.
+     - *Objektif VHS*: `[ OBJEKTIF: Susuri jalan berkabut ke Rumah #1, temukan tangga basement ke Level 37 ]`
+  4. **Stage 3 (Level 37: The Poolrooms) ➔ Stage 4 (Level 1: Parking Garage)**:
+     - *Lokasi Transisi*: Palka porselen kedap air di ujung Deep Diving Basin koordinat `X = 200, Z = 1600`.
+     - *Petunjuk Fisik*: Tulisan ubin keramik cyan di pilar lengkung (`>> DRAINAGE & MAINTENANCE ACCESS >> LEVEL 1 PARKING >>`) dengan lampu sirine amber industri.
+     - *Objektif VHS*: `[ OBJEKTIF: Arungi kolam renang menuju palka drainase industri di ujung kolam ]`
+  5. **Stage 4 (Level 1: Parking Garage) ➔ Stage 5 (Level 33: The Abandoned Mall)**:
+     - *Lokasi Transisi*: Pintu kaca otomatis dan eskalator di Tiang Area P36 koordinat `X = 1500, Z = 2000`.
+     - *Petunjuk Fisik*: Rambu penunjuk arah hijau jalan tol tergantung di plafon beton (`[ EXIT >> SECTION P36: MALL ENTRANCE ]`) dan marka panah kuning di lantai aspal.
+     - *Objektif VHS*: `[ OBJEKTIF: Ikuti nomor tiang menuju Tiang P36 untuk menemukan pintu Mall ]`
+  6. **Stage 5 (Level 33: The Abandoned Mall) ➔ Stage 6 (Level 18: The Playrooms)**:
+     - *Lokasi Transisi*: Koridor lengkung warna-warni di Sayap Barat Mall koordinat `X = 1100, Z = 2650`.
+     - *Petunjuk Fisik*: Spanduk retail gantung (`🎈 FUN ZONE & PLAYROOMS -- THIS WAY >>>`) berhias balon warna-warni dan ubin lantai ceria.
+     - *Objektif VHS*: `[ OBJEKTIF: Cari koridor festival balon di lantai dasar Mall menuju Playrooms ]`
+  7. **Stage 6 (Level 18: The Playrooms)**:
+     - *Klimaks & Hub Kembali*: Mandi bola raksasa, terowongan labirin bermain, dan bilik `ServiceElevator` untuk kembali ke stage manapun yang telah dibuka.
+
 ## 🗺️ MASTER SPATIAL ALLOCATION REGISTRY (PROYEK HOROR / BACKROOMS)
 
 | Zona / Stage | Bounding Box X | Bounding Box Y (Elevasi Aman) | Bounding Box Z | Deskripsi & Fungsi |
