@@ -551,6 +551,317 @@
   7. **Stage 6 (Level 18: The Playrooms)**:
      - *Klimaks & Hub Kembali*: Mandi bola raksasa, terowongan labirin bermain, dan bilik `ServiceElevator` untuk kembali ke stage manapun yang telah dibuka.
 
+---
+
+### 48. 🎪 HUKUM 48: ARSITEKTUR TEMA LEVEL 18 (THE PLAYROOMS / INDOOR PLAYGROUND) — WAJIB ELEMEN PLAYGROUND ASLI (ANTI-RUANGAN KOSONG)
+- **Larangan Keras**:
+  * **DILARANG PLAYROOMS HANYA BERUPA RUANGAN KOSONG TANPA MAINAN**: Dilarang membuat Level 18 hanya berupa lantai spons dengan kotak mandi bola kosong tanpa bola dan tabung polos ("blender playroom kan banyak tuh bisa balok atau ada ular tangga atau mainin prosotan , playground gitu, ini gak ada mirip2 dan rapihnya backroom nya").
+- **Standar Baku Elemen Wajib Level 18 (The Playrooms)**:
+  1. **Arena Mandi Bola Raksasa Nyata (Real Ball Pit)**:
+     - Dinding pembatas busa vinyl empuk (Biru/Merah).
+     - Kolam diisi ratusan bola plastik bundar warna-warni (Merah, Kuning, Biru, Hijau, Ungu) yang bisa diselami pemain.
+  2. **Prosotan Playground & Menara Luncur (Playground Slide Tower)**:
+     - Menara bermain bertingkat dengan tangga busa empuk dan perosotan meliuk (spiral / straight slide) yang dapat diluncuri avatar.
+  3. **Lantai Ular Tangga Raksasa (Giant Snakes & Ladders Board)**:
+     - Lantai tengah dihiasi pola kotak-kotak papan permainan ular tangga raksasa lengkap dengan nomor 1 s/d 100, ilustrasi ular kartun, tangga kayu, dan dadu raksasa.
+  4. **Balok Mainan Huruf Abjad Raksasa (Giant Alphabet Toy Blocks)**:
+     - Balok-balok mainan kubus kayu/busa raksasa (huruf `A`, `B`, `C`, `1`, `2`, `3`) dengan sudut melengkung bevel tersusun acak di sudut ruangan.
+  5. **Labirin Tabung Merangkak (Crawl Tube Jungle Gym)**:
+     - Tabung merangkak aneka warna (Kuning, Merah, Biru) dengan jendela kubah akrilik transparan (bubble dome windows) dan jembatan gantung mini.
+  6. **Ruang Pesta Ulang Tahun (Creepy Party Room)**:
+     - Meja pesta panjang bertaplak warna-warni, topi pesta runcing, piring kertas, kue ulang tahun, dan balon-balon melayang di langit-langit dengan iringan melodi kotak musik lambat.
+
+---
+
+### 49. 🛍️ HUKUM 49: ARSITEKTUR TEMA LEVEL 33 (THE ABANDONED MALL) — WAJIB ATRIUM 2 LANTAI, ESKALATOR, & DERETAN STOREFRONT
+- **Larangan Keras**:
+  * Dilarang membuat Mall hanya berupa 4 kotak ruko sepi di ruangan kosong seluas 800 studs.
+- **Standar Baku Elemen Wajib Level 33 (The Abandoned Mall)**:
+  1. **Atrium Terbuka 2 Lantai & Mezzanine**:
+     - Lantai 1 promenade ubin marmer mengkilap motif catur.
+     - Lantai 2 mezzanine keliling dengan pagar pembatas kaca (*glass balustrades*) dan railing kuningan (*brass handrails*).
+     - Plafon skylight kaca piramida raksasa dengan cahaya temaram liminal.
+  2. **Eskalator Ganda (Dual Escalator Banks)**:
+     - Struktur eskalator naik dan turun menghubungkan Lantai 1 ke Lantai 2 dengan anak tangga beralur dan panel kaca samping.
+  3. **Air Mancur Marmer Bertingkat (Central Tiered Fountain)**:
+     - Air mancur marmer bundar 3 tingkat di tengah atrium dengan air jernih memantulkan cahaya lampu mall.
+  4. **Deretan Toko Retail Ikonik 80s/90s (Themed Storefronts)**:
+     - `RETRO ARCADE 1984`: Deretan mesin arcade (*arcade cabinets*) dengan layar CRT menyala ungu/cyan.
+     - `VINTAGE RECORDS`: Rak kayu piringan hitam, kaset pita, dan poster musik retro.
+     - `FOOD COURT & CAFÉ`: Meja makan melamin, kursi bundar, plang neon `CINNABON` & `ORANGE JULIUS`.
+     - `LIMINAL FASHION`: Butik pakaian vintage dengan manekin statis dan etalase kaca.
+  5. **Street Furniture Mall**:
+     - Bangku taman besi tempa & kayu pernis, tempat sampah krom, dan pot tanaman palem dalam ruangan.
+
+---
+
+### 50. 👾 HUKUM 50: SISTEM ENTITAS PENGEJAR CERDAS & HOROR PELARIAN BACKROOMS (AI CHASING ENTITY & PURSUIT SUITE)
+- **Larangan Keras**:
+  * **DILARANG GAME HOROR TANPA ANCAMAN PENGEJAR**: Dilarang membangun Backrooms yang hanya berupa museum kosong tanpa ada bahaya entitas yang memburu pemain ("entitas di kejar oleh apa gitu seperti backroom atau ada mata setiap apa gitu kaya backroom beneran").
+- **Standar Baku Entitas Pemburu (The Bacteria / Smiler / Shadow Stalker)**:
+  1. **Visual Model 3D Horor Autentik**:
+     - Model 3D monster ramping bertentakel kawat hitam (*Bacteria / Wire Figure* seperti Kane Pixels) atau wajah senyum menyala di kegelapan (*Smiler*).
+     - Dikelilingi partikel kabut hitam (*Dark Miasma Particles*) dan distorsi statis.
+  2. **AI Navigasi & Kecepatan Berburu**:
+     - Mode Patroli: Menjelajah lorong secara acak dengan suara langkah berat bergaung.
+     - Mode Deteksi: Saat melihat pemain dalam jarak 60 studs atau mendengar suara langkah kaki cepat, entitas memekik keras (*Terrifying Screech*), mata/senyumnya menyala merah darah, dan mengejar pemain dengan kecepatan `WalkSpeed = 22`!
+  3. **Efek Horor Adrenalin pada Pemain**:
+     - Kamera bergetar (*Screen Shake*).
+     - Layar dipenuhi vignette merah berdenyut (*Heartbeat Red Pulse*) dan distorsi garis VHS tape glitch.
+     - Detak jantung pemain berdegup kencang hingga 180 BPM.
+     - Pemain harus menggunakan Sprint (`Shift` / tombol `LARI`) dan berbelok zig-zag di tikungan labirin untuk memutus garis pandang (*Break Line of Sight*)!
+  4. **Zona Aman & Despawn**:
+     - Entitas tidak dapat menembus zona aman berpintu (seperti palka porselen The Bathrooms atau pintu masuk Mall).
+
+---
+
+### 51. 🎬 HUKUM 51: VISUAL REALISTIK KUALITAS STEAM (ANTI-BALOK PRIMITIF ROBLOX — FULL MESHPARTS, PBR & KUSTOM VFX)
+- **Larangan Keras**:
+  * **DILARANG MENDOMINASI GAME DENGAN BALOK KOTAK POLOS ROBLOX**: Dilarang keras membuat lingkungan yang terasa membosankan karena hanya tersusun dari tumpukan part balok primitif ("realistik semuanya kaya gambar visual vfx, blender semua , jangan pake part terus bosen lihatnya, buat yang menarik dan rapih").
+- **Standar Baku Kualitas Grafis Realistis**:
+  1. **Aset Geometri 100% MeshPart PBR**:
+     - Setiap perabot, arcade machine, mobil di parkiran, tangga meliuk, tanaman mall, dan monster WAJIB berwujud **Single Realistic MeshPart** bertekstur PBR (Normal Map, Roughness Map, Metalness).
+  2. **Lighting Post-Processing Sinematik**:
+     - Lighting disetel ke teknologi **`Future`** (ShadowMap dinamis beresolusi tinggi).
+     - Dilengkapi efek post-processing lengkap:
+       * `Atmosphere` (Haze kabut realistis berdensitas 0.35).
+       * `Bloom` (Glow temaram lampu neon neon dan senter).
+       * `ColorCorrection` (Palet warna liminal film 90-an dengan saturasi -0.1 dan contrast 0.15).
+       * `DepthOfField` (Fokus kamera sinematik jarak jauh berkabut).
+  3. **VFX Partikel Volumetrik**:
+     - Partikel debu melayang (*floating dust motes*) di bawah sorotan lampu neon labirin.
+     - Kabut uap air tipis (*mist particles*) di atas permukaan kolam Poolrooms.
+     - Rintik kabut aspal basah di jalan raya The Dark Suburbs.
+
+---
+
+### 52. 🚲 HUKUM 52: STANDAR MUTLAK 100% 3D BLENDER MESHPARTS PADA SETIAP ISIAN, PROPS, KENDARAAN & PERABOT (ZERO BALOK PRIMITIF PADA ISIAN GAME)
+- **Larangan Keras**:
+  * **DILARANG KERAS MENGISI DUNIA DENGAN PART BALOK KOTAK PRIMITIF**: Dilarang membuat properti, perabot, dan kendaraan menggunakan tumpukan part balok polos Roblox ("FULL BLENDER LHO YA SETIAP ISIANNYA, PAKE BLENDER YANG RAPIH SEMUA RAPIHKAN DAN BERESKAN SEMUANYA").
+- **Standar Baku 100% 3D Blender MeshParts**:
+  1. **Kendaraan Autentik**:
+     - Mobil sedan retro terbengkalai (`Template_Car`, Asset `16961255595` MeshPart) wajib terparkir di garasi/driveway rumah.
+     - Sepeda ontel gunung 3D (`Template_Bicycle`, Asset `83212895970872` MeshPart) bersandar di pagar teras, dinding gang, atau tergeletak di rumput.
+     - Motor trail 3D (`Template_DirtBike`, Asset `126580225392305` MeshPart) terparkir di jalan buntu atau samping rumah.
+  2. **Perabot Interior Rumah 3D**:
+     - Sofa ruang tamu 3D (`Template_Sofa`, Asset `11520568472` MeshPart).
+     - TV tabung vintage CRT 3D (`Template_TV`, Asset `105807098570279` MeshPart) menyala statis temaram.
+     - Tempat tidur vintage 3D (`Template_Bed`, Asset `16847278288` MeshPart).
+  3. **Penyimpanan Master Template**:
+     - Seluruh template master wajib tersimpan rapi di `ReplicatedStorage.Backrooms3DAssets` dengan properti `Anchored = true`, material PBR mulus, dan koordinat grounding tepat di permukaan lantai (`targetBottomY = floorY`).
+
+---
+
+### 53. 🏛️ HUKUM 53: ARSITEKTUR KEDAP VOID & TRANSISI TANGGA BASEMENT (ZERO CASING MENEMBUS FASAD RUMAH & 100% UNDERGROUND)
+- **Larangan Keras**:
+  * **DILARANG CASING SELUBUNG MENEMBUS DINDING FASAD / ATAP RUMAH**: Dilarang keras membuat balok selubung vertikal (*vertical casing*) atau archway putih raksasa yang menembus keluar dinding depan/belakang rumah atau mencuat di atas tanah seperti kotak beton janggal yang menghalangi jalan masuk!
+- **Standar Baku Fasad & Tangga Basement**:
+  1. **Orientasi Hadap Rumah Wajib Benar**:
+     - Rumah di ujung jalan buntu (*Cul-de-sac*) WAJIB menghadap langsung ke arah jalan datang (menghadap Timur ke arah jalan cul-de-sac).
+     - Fasad depan wajib dilengkapi pintu masuk kayu yang mengundang, jendela kaca temaram, teras kayu dengan tiang penyangga kanopi, lampu lentera gantung, dan tangga turun menuju trotoar.
+  2. **Tangga Basement 100% di Bawah Lantai Rumah (Underground Only)**:
+     - Tangga menuju stage berikutnya (Level 37 Poolrooms) dimulai dari bukaan lantai alami di dalam ruangan belakang/cellar rumah (`Y <= 60.8`).
+     - Seluruh selubung dinding samping, pondasi beton miring, dan plafon miring tangga WAJIB berada sepenuhnya di bawah tanah (`Y <= 60.8`).
+     - Dilarang ada komponen selubung tangga yang menonjol keluar ke halaman depan, dinding samping, atau atap rumah!
+
+---
+
+### 54. 🛣️ HUKUM 54: TATA LETAK JALAN RAYA, PERSIMPANGAN KOTAK ASPAL MURNI & ELEVASI GARIS KUNING BAKU
+- **Larangan Keras**:
+  * **DILARANG TROTOAR ATAU GARIS MEMOTONG PERSIMPANGAN**: Dilarang membiarkan trotoar memotong melintang jalan raya menjadi kotak-kotak waffle, atau garis kuning putus-putus bersilangan membentuk tanda tambah "+" di tengah perempatan!
+  * **DILARANG TIANG LAMPU DI TENGAH JALAN**: Dilarang menempatkan tiang lampu jalan di tengah lajur aspal tempat pemain/kendaraan lewat!
+- **Standar Baku Geometri Jalan & Marka**:
+  1. **Persimpangan Kotak Aspal Polos Murni**:
+     - Setiap area perempatan/pertigaan (*intersection box*) WAJIB berupa part aspal polos murni tanpa trotoar atau garis marka di dalamnya. Trotoar dan garis marka harus berhenti rapi tepat di batas curb sebelum masuk ke kotak persimpangan.
+  2. **Elevasi Presisi Marka Kuning Putus-Putus**:
+     - Seluruh garis kuning putus-putus (*dashed yellow stripes*) WAJIB dinaikkan tepat pada elevasi `Y = Y_asphalt + 0.13` studs dengan material `Neon` agar selalu terlihat menyala terang, tidak pernah tenggelam (*submerged*) di bawah aspal, dan bebas *z-fighting*.
+  3. **Penempatan Tiang Lampu Ketat di Trotoar Luar**:
+     - Tiang lampu jalan (*StreetLamps*) WAJIB dipasang secara ketat pada trotoar luar (misal `X = 480.3` dan `X = 522.3` pada Main Blvd), dengan jarak minimal 6 studs di luar batas aspal berkendara.
+
+---
+
+### 55. 🧭 HUKUM 55: PRINSIP PENJELAJAHAN LABIRIN (PINTU KELUAR WAJIB DI SUDUT TERJAUH / ANTI-INSTANT NEXT STAGE)
+- **Larangan Keras**:
+  * **DILARANG MELETAKKAN PINTU KELUAR TEPAT DI DEPAN TANGGA TURUN**: Dilarang keras membuat pintu keluar/palka menuju stage berikutnya terlihat langsung begitu pemain baru saja menuruni tangga ("masa baru turun , langsung ketemu stage selanjutnya, tersesatkan dulu dong").
+- **Standar Baku Penempatan Pintu Keluar Labirin**:
+  1. **Jarak Diagonal Maksimal**:
+     - Pintu keluar stage WAJIB ditempatkan di sudut perimeter yang paling jauh dari titik kedatangan (minimal 800-1000 studs melintasi labirin).
+  2. **Wajib Menjelajahi Kompleks**:
+     - Pada Level 37 (The Poolrooms), pintu masuk dari Suburbs berada di sisi Timur (`X = 14`), sedangkan pintu keluar ke Level 1 (Parking Garage) WAJIB berada di sudut Barat terjauh (`X = -801, Z = 1350`).
+     - Pemain wajib melintasi aula porselen terendam air, pilar marmer, dan kolam renang sebelum menemukan lorong pemeliharaan menuju garasi.
+
+---
+
+### 56. ☁️ HUKUM 56: KEDAP TOTAL DARI KEBOCORAN LANGIT & KETEBALAN PLAFON (AIRTIGHT CEILING & ZERO SKY LEAK)
+- **Larangan Keras**:
+  * **DILARANG CELAH TERBUKA KE LANGIT ATAU RUMPUT MENEMBUS PLAFON**: Dilarang membiarkan langit biru siang hari terlihat dari dalam ruangan bawah tanah/tertutup, atau lempengan rumput hijau tanah atas menembus ke dalam plafon indoor.
+- **Standar Baku Plafon Indoor**:
+  1. **Plafon Menyeluruh 100% Menutup**:
+     - Seluruh stage indoor/underground (Poolrooms, Parking Garage, The Bathrooms, The Mall, Playrooms) WAJIB memiliki plafon utuh yang tersambung rapat (*flush*) hingga ke dinding perimeter tanpa ada celah 1 stud pun.
+  2. **Segmentasi Terrain & Subfloor**:
+     - Lempengan tanah/rumput di atas palka wajib dipotong/disegmentasi secara presisi sehingga tidak pernah mencuat ke dalam ruang udara interior di bawahnya.
+
+---
+
+### 57. 💡 HUKUM 57: PENCAHAYAAN LEMBUT REALISTIS PADA PROSOTAN (ANTI-GLARE NUCLEAR NEON)
+- **Larangan Keras**:
+  * **DILARANG MENJADIKAN PROSOTAN SILAU BLINDING NEON**: Dilarang menggunakan material Neon 100% kuning terang atau PointLight berintensitas tinggi di dalam lorong prosotan yang membuat layar putih menyilaukan ("terang amat disini").
+- **Standar Baku Prosotan Kuning (Yellow Slide Chute)**:
+  1. **Warna & Material Alami**:
+     - Gunakan material `SmoothPlastic` dengan warna kuning mustard redup alami (*matte playground yellow*, `Color3.fromRGB(215, 170, 35)`) dan `Reflectance = 0.02`.
+  2. **Pencahayaan Temaram & Kontras**:
+     - Nol neon menyilaukan, cahaya mengandalkan pendaran lembut pantulan lingkungan luar atau lampu neon berkabut temaram di mulut prosotan.
+
+---
+
+### 58. 🏘️ HUKUM 58: ARSITEKTUR GANG SEMPIT & LABIRIN SUBURBAN (NARROW ALLEYS MAZE SUITE)
+- **Standar Baku Level 9 The Dark Suburbs**:
+  1. **Labirin Gang Sempit (Narrow Alleys)**:
+     - Dilengkapi jaringan gang sempit (*Willow Way Alley* di `X=650`, *Cedar Passage* di `Z=1640`, dan *Shadow Alley* di `X=350`) selebar 8 studs dengan aspal/paving gelap.
+     - Diapit pagar kayu privasi setinggi 10 studs (`Material = WoodPlanks`) di kedua sisi.
+     - Memiliki belokan 90 derajat, tikungan buta (*blind corners*), dan jalan buntu (*dead ends*).
+  2. **Isian Penuh 3D Blender**:
+     - Sepeda ontel 3D Blender bersandar di pagar atau tergeletak di tanah.
+     - Motor trail 3D Blender di ceruk jalan buntu.
+     - Plang nama jalan metal reflektif ("MAIN BLVD", "NORTH AVE", "SOUTH AVE", "DEAD END").
+
+---
+
+### 59. 📱 HUKUM 59: INTEGRITAS TATA LETAK UI & ANTI-TUMPANG TINDIH TEKS (ZERO NOTIFICATION COLLISION)
+- **Larangan Keras**:
+  * **DILARANG TEKS LABEL GANDA SALING BERTABRAKAN**: Dilarang meletakkan beberapa TextLabel pada koordinat absolut yang sama di layar sehingga teks saling menimpa dan tidak terbaca ("notifikasi nabrak gini emang atau gimana?").
+- **Standar Baku UI Liminal VHS**:
+  1. **Kontainer Frame Tunggal Terpadu (`InfoFrame`)**:
+     - Semua informasi status permainan wajib ditampung di dalam satu frame tunggal di pojok kiri bawah (`Pos = {0, 24}, {1, -125}`, `Size = {0, 520}, {0, 95}`) dengan sudut melengkung 8px dan latar belakang semi-transparan `0.4`.
+  2. **Pemisahan Vertikal Jelas**:
+     - Teks Objektif di baris atas (`Y = 10`, `Size.Y = 48`), teks Kontrol di baris bawah (`Y = 62`, `Size.Y = 22`).
+     - Teks REC jam di pojok kiri atas terpisah secara mandiri.
+
+---
+
+### 60. 📐 HUKUM 60: PRESISI ELEVASI PIVOT MODEL 3D DENGAN GETBOUNDINGBOX (ANTI-KENDARAAN & PERABOT TENGGELAM / ZERO SUBMERGED PROPS)
+- **Larangan Keras**:
+  * **DILARANG MELETAKKAN MODEL 3D BERDASARKAN TITIK PUSAT BOUNDING BOX TANPA OFFSET**: Dilarang keras menempatkan Model kendaraan (`Template_Car`, `Template_Bicycle`, `Template_DirtBike`) atau perabot (`Template_Sofa`, `Template_TV`, `Template_Bed`) langsung pada koordinat `Y = floorY` tanpa menghitung batas bawah model ("tenggelem?", "ko tenggelem?").
+  * Menempatkan model dengan tinggi 5.2 studs pada `Y = 60.0` mengakibatkan setengah badan mobil (2.6 studs) terkubur di dalam beton lantai!
+- **Standar Baku Penempatan Model 3D**:
+  1. **Formula Wajib Bounding Box Alignment**:
+     Setiap kali menempatkan atau menggeser Model 3D ke permukaan lantai `floorTopY`, WAJIB menggunakan rumus matematika:
+     ```lua
+     local function alignModelToFloor(model, floorTopY)
+         local cf, sz = model:GetBoundingBox()
+         local bottomY = cf.Position.Y - (sz.Y * 0.5)
+         local diff = floorTopY - bottomY
+         model:PivotTo(cf + Vector3.new(0, diff, 0))
+         return diff
+     end
+     ```
+  2. **100% Menapak di Permukaan**:
+     - Ban mobil wajib menapak tepat di atas aspal/beton (`BottomY == floorTopY`).
+     - Roda sepeda wajib menapak tepat di atas papan teras (`BottomY == porchDeckTopY`).
+     - Kaki sofa dan meja kopi wajib menapak tepat di atas lantai interior.
+     - TV tabung wajib diletakkan di atas meja credenza/rak TV, dilarang diletakkan menancap di plin dinding (*baseboard*)!
+
+---
+
+### 61. 🛍️ HUKUM 61: STANDAR RETAIL STOREFRONT MALL LEVEL 33 (18-STUD DOUBLE-HEIGHT CEILINGS, REAL 3D SHOPS & ZERO GANTUNGAN BAJU DI KORIDOR)
+- **Larangan Keras**:
+  * **DILARANG MEMBUAT MALL SEPERTI PANTAI DENGAN POHON KELAPA & GANTUNGAN BAJU DI TENGAH JALAN**: Dilarang keras menebar gantungan baju lepas di tengah koridor jalan atau menanam pohon palem pantai liar yang membuat mall tampak seperti pantai ("kenapa mall malah kaya pantai / taman pantai, buat kaya mall, kaya ada toko toko ruko, toko baju, toko cciki, toko minuman, toko makanan, toko pizza, yanglengkap FULL BLENDER, bukan GANTUNGAN BAJU DI TEBAR").
+  * **DILARANG STOREFRONT TERTEKAN MEZZANINE**: Plafon ruko dilarang bertabrakan dengan lantai 2 mezzanine.
+- **Standar Baku Toko Retail Level 33 (The Abandoned Mall)**:
+  1. **Unit Ruko Lengkap (Complete Retail Units)**:
+     - Setiap ruko dibangun dengan tinggi 18 studs (`Y = 60.1 .. 78.0`), tepat berada di bawah lantai mezzanine (`Y = 80.0`).
+     - Toko dilengkapi fasad kaca etalase, pintu masuk ganda, plang nama neon di atas pintu (`Y = 75.5`), lantai ubin keramik, dan pencahayaan interior hangat.
+  2. **6 Toko Ruko Tematik Lengkap**:
+     - `Fashion Boutique`: Rak baju rapi, meja pajangan kain, dan meja kasir.
+     - `Snack Mart`: 3 lorong rak gondola minimarket berisi jajanan/ciki warna-warni.
+     - `Drinks & Boba Station`: Meja bar marmer, kursi bar tinggi, dan kulkas display minuman.
+     - `Pizza & Italian Diner`: Tungku pizza bata merah, etalase warmer, meja dan kursi booth makan.
+     - `80s Retro Arcade`: 6 mesin arcade neon menyala ungu/cyan.
+     - `Vintage Records & Music`: Rak display piringan hitam kayu dan meja resepsionis.
+
+---
+
+### 62. 🚗 HUKUM 62: ALOKASI KENDARAAN PADAT GARASI PARKIR LEVEL 1 (DENSE VEHICLE PARKING & 100% ZERO TENGGELAM)
+- **Larangan Keras**:
+  * **DILARANG PARKIRAN SEPI TANPA MOBIL**: Dilarang membuat garasi seluas 800 studs yang kosong melompong hanya dengan 2-3 mobil ("di parkiran juga kenapa dikit isinya, harusnya lengkap ADA MOBIL APAPUN LENGKAP DI PARKIRAN RAME").
+- **Standar Baku Parkiran Level 1 (Parking Garage)**:
+  1. **Populasi Kendaraan Padat**:
+     - Minimal 35-50 unit mobil sedan 3D Blender (`Template_Car`) dengan variasi warna realistis (Merah marun, Biru navy, Perak metallic, Hitam arang, Beige, Hijau lumut, Kuning mustard).
+     - Minimal 10-15 unit motor trail 3D Blender (`Template_DirtBike`) terparkir di sudut tiang dan dinding.
+  2. **Elevasi Ban Anti-Tenggelam**:
+     - Seluruh ban mobil wajib berada di atas elevasi lantai `Y = 60.00` menggunakan `alignModelToFloor(car, 60.0)`.
+
+---
+
+### 63. 🛡️ HUKUM 63: INTEGRITAS SEKAT PERIMETER ANTAR-STAGE & LIFT TRANSISI KEDAP SHORTCUT (ANTI-STAGE 2 KE STAGE 4 BYPASS)
+- **Larangan Keras**:
+  * **DILARANG LUBANG TEMBUS ANTAR-STAGE YANG TIDAK BERURUTAN**: Dilarang keras membiarkan dinding perbatasan Stage 2 (Suburbs) dan Stage 4 (Parking Garage) bolong sehingga pemain dari rumput Suburbs bisa langsung masuk ke Garasi Parkir dan memotong jalan melewati Stage 3 (Poolrooms) ("stage 2 bisa langsung ke stage 4, ko bisa gini sih,harusnya jangan bisa gini").
+  * **DILARANG TEROWONGAN BERTANGGA 3.4 STUD YANG MEMBUAT PEMAIN NABRAK**: Dilarang membuat lorong transisi dengan lantai patah-patah bertangga tinggi atau pipa melintang setinggi badan yang menghalangi jalan ("nabrak").
+- **Standar Baku Sekat & Transisi Antar-Stage**:
+  1. **Dinding Sekat Perimeter 100% Masif**:
+     - Dinding Barat Parking Garage (`X = 1098`) dan batas Timur Suburbs (`X = 1092`) WAJIB berupa dinding beton masif setinggi 36 studs tanpa lubang, tanpa pintu, dan dilengkapi lapisan perisai blackout hitam (*exterior blackout shield*).
+  2. **Transisi Level 37 Poolrooms ke Level 1 Parking Garage via Freight Elevator**:
+     - Transisi antar stage yang memiliki perbedaan tinggi vertikal dan horizontal jauh WAJIB menggunakan **Sistem Lift Barang Industri (Heavy Freight Elevator)**.
+     - Di Poolrooms: Bilik lift berlantai bordes besi, dinding baja corrugated, lampu sirine amber, dan tombol panggil lift.
+     - Di Parking Garage: Pintu lobi lift kedap udara dengan nomor lantai `LEVEL 1: PARKING GARAGE`.
+     - Pemain melangkah masuk ke dalam bilik lift, pintu tertutup, efek getar dan suara motor katrol hidrolik berbunyi, dan pemain muncul di lobi lift Garasi Parkir secara mulus tanpa halangan rintangan!
+
+---
+
+### 64. 🧸 HUKUM 64: KEMURNIAN TEMA TAMAN BERMAIN LEVEL 18 (ANTI-KASUR & ANTI-SEPEDA DI PLAYROOM / 100% PURE DAYCARE ASSETS)
+- **Larangan Keras**:
+  * **DILARANG MEMASUKKAN KASUR DEWASA, SEPEDA GUNUNG, ATAU MOTOR TRAIL KE DALAM PLAYROOM**: Dilarang keras menaruh tempat tidur dewasa (*Template_Bed*) atau sepeda/motor trail di dalam area taman bermain anak-anak ("kenapa ada kasur, sepeda di playroom?").
+- **Standar Baku Elemen Level 18 (The Playrooms)**:
+  1. **Peralatan Daycare & Mainan Autentik**:
+     - **Balok Huruf & Angka Raksasa (ABC / 123 Blocks)**: Balok kayu warna-warni bersudut lengkung bertumpuk piramida dan tersebar di lantai.
+     - **Matras Puzzle Busa Warna-Warni (EVA Interlocking Foam Playmats)**: Lantai dilapisi ubin busa warna pastel ceria.
+     - **Meja Belajar Balita & Kursi Mini (Toddler Activity Tables & Tiny Chairs)**: Meja bundar plastik dengan kursi-kursi mungil warna-warni.
+     - **Perosotan Plastik Playground (Indoor Toddler Slides)**: Menara luncur plastik ceria dengan tangga pengaman dan seluncuran merah.
+     - **Rak Lemari Mainan (Toy Cubby Shelves)**: Lemari rak kayu berisi kotak-kotak mainan berwarna cerah.
+     - **Arena Mandi Bola Raksasa (Rainbow Ball Pit)**: Kolam busa empuk berisi ribuan bola warna-warni.
+  2. **Nol Aset Dewasa**:
+     - 100% steril dari kasur tidur, sofa dewasa, sepeda ontel, dan motor trail.
+
+---
+
+### 65. 🌅 HUKUM 65: KLIMAKS KELUAR DUNIA NYATA & ARSIP FOUND-FOOTAGE (THE GRAND REALITY ESCAPE PRINCIPLE)
+- **Standar Baku Pelarian Akhir Backrooms**:
+  1. **Gerbang Ekstraksi Realitas (Reality Blast Door)**:
+     - Di sudut terjauh Level 18 Playrooms (`X = 200, Z = 2880`), berdiri gerbang pintu baja hidrolik berlabel `REALITY EXTRACTION PORTAL // RETURN TO REAL WORLD`.
+  2. **Padang Rumput Dunia Nyata (Real World Meadow)**:
+     - Melewati pintu gerbang, pemain melangkah keluar dari lorong Backrooms ke padang rumput hijau subur bermandikan sinar matahari keemasan (*Sunlit Green Meadow*).
+  3. **Trigger Pad Ekstraksi & Endcard VHS**:
+     - Menginjak `RealityEscapePad` memicu bunyi lonceng kemenangan (*Victory Chime*), efek layar memutih pelan (*Fade to White*), dan layar rekaman kaset video VHS menampilkan arsip rekaman found-footage bertuliskan:
+       `STATUS: ESCAPED // YOU SURVIVED THE BACKROOMS // TAPE ARCHIVED`.
+
+---
+
+### 66. 🌱 HUKUM 66: KONTINUITAS TANAH PONDASI TANPA CELAH (SEAMLESS FOUNDATION BASE SLABS & ZERO HOLES / ANTI-BOLONG)
+- **Larangan Keras**:
+  * **DILARANG CELAH KOSONG ANTARA PONDASI RUMAH DENGAN RUMPUT**: Dilarang membiarkan ada celah sempit memanjang antara dinding pondasi/teras/jalan masuk rumah dengan hamparan rumput luar yang memperlihatkan void hitam/langit di bawahnya ("ko bolong").
+- **Standar Baku Tanah Pondasi**:
+  1. **Lempeng Dasar Monolitik Bawah Rumah (Sub-Foundation Base Slab)**:
+     - Di bawah setiap rumah yang memiliki halaman dan tangga basement (seperti Rumah #13), WAJIB dipasang satu lempeng part rumput monolitik raksasa (`House13_SeamlessFoundationBase`, ukuran minimal `120 x 2 x 120 studs` pada elevasi `Y = 59.5`).
+     - Lempeng ini menjamin bahwa di manapun dinding, teras, trotoar, atau jalan masuk diletakkan, tanah di bawahnya selalu tertutup 100% rumput padat tanpa celah 1 milimeter pun!
+
+---
+
+### 67. 🪜 HUKUM 67: GEOMETRI HEADROOM TANGGA BASEMENT & ANTI-SLICING CEILING SLABS (MINIMAL 10 STUDS CLEARANCE & ZERO WEDGES IN DOORWAY)
+- **Larangan Keras**:
+  * **DILARANG BALOK PLAFON MIRING MEMOTONG KUSEN PINTU / KEPALA PEMAIN**: Dilarang memasang part plafon miring (*sloping ceiling*) dengan sudut tajam atau posisi rendah yang memotong kusen pintu masuk, menutup jalur pandang tangga, atau menyisakan ruang kepala (*headroom*) sempit (< 8 studs) yang membuat pemain membentur kepala saat menuruni tangga.
+  * **DILARANG PART PERISAI MELEBIHI LEBAR DINDING TANGGA**: Dilarang membuat part perisai blackout (*blackout shield*) yang lebih lebar dari dinding lorong sehingga ujungnya menusuk menembus dinding bata ke ruangan lain atau melayang di langit luar rumah.
+- **Standar Baku Arsitektur Tangga Basement**:
+  1. **Plafon Datar di Atas Pendaratan Atas (Landing Ceiling)**:
+     - Di atas bordes/anak tangga paling atas (Tread 1), plafon WAJIB berbentuk datar horizontal pada elevasi tinggi `Y >= 71.0` (headroom minimal 10.5 studs di atas anak tangga teratas dan berada tepat di atas balok lintel pintu).
+  2. **Plafon Miring Berjarak Kepala Longgar (High-Clearance Sloping Ceiling)**:
+     - Plafon miring wajib memiliki sudut landai (`<= 40 derajat`) yang sejajar dengan kemiringan tangga dan memberikan jarak bebas kepala (*headroom*) minimal **12 hingga 20 studs** pada setiap anak tangga dari atas hingga bawah (100% PASS raycast clearance).
+  3. **Lebar Pas Kedap Presisi (Flush Width Matching)**:
+     - Lebar plafon tangga (`Size.Z`) WAJIB diatur pas dan presisi di antara kedua dinding bata (misal `8.7 studs` di dalam lorong selebar `8.8 studs`), menjamin 0% part menusuk keluar dinding.
+  4. **Pencahayaan Vintage Sconce Ambien**:
+     - Di sepanjang lorong tangga dipasang lampu dinding vintage (*brass sconces*) dengan PointLight bernuansa amber hangat yang menerangi setiap pijakan anak tangga, mengundang pemain melangkah ke basement dengan aman dan atmosferik.
+
+---
+
 ## 🗺️ MASTER SPATIAL ALLOCATION REGISTRY (PROYEK HOROR / BACKROOMS)
 
 | Zona / Stage | Bounding Box X | Bounding Box Y (Elevasi Aman) | Bounding Box Z | Deskripsi & Fungsi |
@@ -558,8 +869,8 @@
 | **Stage 1 (Level 0: The Maze)** | `0 .. 600` | `200 .. 216` | `0 .. 600` | Labirin tak berujung 600x600, wallpaper mono-yellow, karpet basah, 64 array lampu neon, bukaan Selatan di `X=500, Z=600`. |
 | **The Bathrooms (Sub-Stage)** | `450 .. 550` | `200 .. 216` | `600 .. 720` | Kamar mandi marmer 100x120 studs, 6 wastafel porselen single MeshPart, 6 bilik toilet single MeshPart, cermin continuous, bukaan prosotan di `X=500, Z=720`. |
 | **The Yellow Slide (Chute)** | `485 .. 515` | `62 .. 214` | `718 .. 1100` | Prosotan tabung kuning tertutup 380 studs meluncur dari `Y=202` ke `Y=62`, through-wall collar kedap void, landing pavilion rumput Suburbs. |
-| **Stage 2 (Level 9: The Dark Suburbs)** | `-100 .. 1100` | `60 .. 100` | `900 .. 2100` | Jalan aspal 1,200x1,200 studs, trotoar beton, lampu jalan berkabut, 3 rumah suburban enterable, tangga basement Rumah 1 menuju Level 37. |
-| **Stage 3 (Level 37: The Poolrooms)** | `-300 .. 700` | `15 .. 50` | `800 .. 1800` | Kompleks kolam renang porselen 1,000x1,000 studs, AIR NYATA (Terrain Water), kolam olimpiade, palka menuju Level 1. |
-| **Stage 4 (Level 1: Parking Garage)** | `700 .. 1500` | `60 .. 85` | `1200 .. 2000` | Garasi parkir beton 800x800 studs, 36 kolom bernomor hazard yellow, palka ke mall. |
-| **Stage 5 (Level 33: The Abandoned Mall)** | `1100 .. 1900` | `60 .. 110` | `2000 .. 2800` | Mall megah 2 lantai 800x800 studs, atrium kaca, toko retro arcade & cafe, pintu Fun Zone. |
-| **Stage 6 (Level 18: The Playrooms)** | `-300 .. 300` | `60 .. 95` | `2100 .. 2700` | Taman bermain 600x600 studs, mandi bola raksasa 100x100 studs, tabung merangkak warna-warni. |
+| **Stage 2 (Level 9: The Dark Suburbs)** | `-100 .. 1100` | `60 .. 100` | `900 .. 2100` | Jalan aspal 1,200x1,200 studs, trotoar beton, lampu jalan berkabut, 23 rumah suburban enterable, labirin gang sempit berpintu pagar kayu, 3D Blender mobil, sepeda, motor trail, tangga basement Rumah 13 menuju Level 37. Dinding pemisah masif di X=1092 kedap Garasi. |
+| **Stage 3 (Level 37: The Poolrooms)** | `-805 .. 205` | `15 .. 50` | `1200 .. 2200` | Kompleks kolam renang porselen 1,000x1,000 studs, AIR NYATA (Terrain Water), pilar marmer tak berujung, plafon porselen putih kedap langit, lift barang industri di X=208 menuju Level 1. |
+| **Stage 4 (Level 1: Parking Garage)** | `1098 .. 1903` | `60 .. 85` | `1197 .. 2003` | Garasi parkir beton 800x800 studs, 60 unit 3D Blender mobil & motor trail dengan elevasi ban menapak sempurna (0 tenggelam), dinding Barat masif kedap Suburbs, lift barang dari Poolrooms. |
+| **Stage 5 (Level 33: The Abandoned Mall)** | `1097 .. 1903` | `60 .. 101` | `2097 .. 2903` | Mall megah 2 lantai 800x800 studs, atrium kaca, 6 unit ruko retail lengkap 18 studs (Fashion, Snack Mart, Boba, Pizza, Arcade, Vintage Records), eskalator ganda. |
+| **Stage 6 (Level 18: The Playrooms)** | `-303 .. 303` | `60 .. 92` | `2347 .. 2953` | Taman bermain 600x600 studs, 50 mainan daycare autentik (balok ABC/123, matras puzzle busa, meja balita, seluncuran playground, rak cubby), mandi bola raksasa, Gerbang Ekstraksi Keluar Dunia Nyata di X=200, Z=2880. |
