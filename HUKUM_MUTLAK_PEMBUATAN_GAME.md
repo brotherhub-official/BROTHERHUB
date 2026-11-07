@@ -1192,3 +1192,18 @@
   3. Tata letak elemen HUD ditempatkan dengan padding aman agar tidak bertabrakan dengan tombol joystick / lompat layar sentuh Roblox Mobile.
 
 ---
+
+### 88. 🖱️ HUKUM 88: PROTOKOL UNLOCK MOUSE DI FIRST-PERSON POV (MODAL TRICK & TOMBOL ALT STANDAR INDUSTRI)
+- **Pertanyaan & Analisis Kasus Founder**:
+  * *"bisa ga kasih tau untuk open mouse tekan apa gitu, tapi game lain yang pov camera gitu, biasanya klik apa, coba cek deh game roblox lain biasanya pencet apa untuk memunculkan mouse"*
+- **Riset Konvensi Game Populer Roblox (Doors, Deepwoken, Evade, Phantom Forces, Arsenal)**:
+  1. **Doors / Pressure / Apeirophobia (Sistem Otomatis `Modal = true`)**:
+     - Game horor modern seperti *Doors* tidak memaksa pemain menekan tombol keyboard untuk memunculkan mouse. Begitu ada menu / lift / puzzle yang muncul, tombol UI diaktifkan dengan properti **`Modal = true`**. Fitur resmi engine Roblox ini secara otomatis membebaskan kursor mouse dari kuncian kamera (`LockCenter`) sehingga panah mouse langsung muncul dan bebas diklik.
+  2. **Deepwoken / Evade / Combat Warriors (Standar Tombol `Left Alt`)**:
+     - Di game pertarungan dan survival first-person yang mengunci kamera, tombol keyboard resmi yang paling banyak digunakan di seluruh Roblox untuk membebaskan kursor mouse adalah tombol **`Left Alt` (Alt)**.
+  3. **Standar Brother Hub (Kombinasi Sempurna Tiga Jalur)**:
+     - **Jalur 1 (Otomatis)**: Tombol UI memiliki `Modal = true`, begitu masuk lift panah mouse langsung muncul bebas.
+     - **Jalur 2 (Tombol Alt)**: Pemain PC dapat menekan tombol **`Alt` (Left Alt)** kapan saja untuk toggle bebas/kunci mouse.
+     - **Jalur 3 (Shortcut Instan)**: Cukup tekan tombol keyboard **`X`** untuk Batal dan **`E`** untuk Mulai Host tanpa perlu menggerakkan mouse sama sekali!
+
+---
