@@ -1254,3 +1254,26 @@
      - Host dapat mengganti tingkat kesulitan kapan saja sebelum berangkat dengan mengklik tombol mode di HUD atau menekan tombol keyboard **`[M]`**!
 
 ---
+
+
+---
+
+### 99. 🛡️ HUKUM 99: LARANGAN MUTLAK ASSET GRATISAN / TOOLBOX ORANG LAIN & KEWAJIBAN 100% KARYA SENDIRI DENGAN BLENDER 5.2 REALISTIK NYATA (ZERO BACKDOOR & ZERO BOX MONSTERS)
+- **Instruksi Keras & Mutlak Founder**:
+  * *"BUAT DARI BLENDER 100% BUATAN KITA SENDIRI, BUKAN NYOLONG NGAMBIL DARI ASSET ORANG LAIN ATAU ASSET GRATISAN, WAJIB REALISTIK BENTUKNYA KARENA BUAT NYA DARI BLENDER"*
+  * *"saya bilang jangan kotak2 pake part komponen batu banget blender nya yang bagus realistik nyata"*
+  * *"lalu ketika main pastikan output nya bersih tidak ada gangguan atau izin apapun, semua harus murni bersih audio buat sendiri, monster buat sendiri dari blender, apapun semuanya murni buatan sendiri dan blender ya , INGAT BLENDER FULL REALISTIK NYATA BENTUKNYA DAN BERWARNA CATET KE CATATAN AGAR INGAT SEMUANYA"*
+- **Pilar Mutlak Integritas Keamanan & Pemodelan**:
+  1. **Larangan Keras Free Model / Toolbox Orang Lain (Zero Backdoor Policy)**:
+     - DILARANG KERAS mencari, meng-insert, atau menggunakan model gratisan dari Creator Store/Toolbox orang lain!
+     - Model gratisan membawa risiko fatal: skrip backdoor (`require()`, `InsertService`, `MarketplaceService` prompt pembeli paksa, lag virus, dan lisensi/hak cipta).
+     - Seluruh aset game Brother Studio Productions WAJIB 100% murni buatan sendiri!
+  2. **Larangan Keras Monster Balok Kotak-Kotak (Zero Box Models)**:
+     - DILARANG KERAS membuat monster dari balok kubus kaku standar (`Part` kubus seperti karakter Minecraft)!
+     - Monster horor Backrooms wajib berlekuk alami, bertubuh kurus panjang (*slender wireframe*), memiliki tulang belakang melengkung (*S-curve spine vertebrae*), sangkar rusuk meliuk, sendi siku & lutut bola organik, cakar sabit melengkung tajam (*scythe talons*), dan tanduk rusa runcing bercabang (*antlers*).
+  3. **Otoritas Pemodelan Blender 5.2.3 LTS**:
+     - Seluruh aset 3D resmi di-generate melalui executable resmi `C:\Program Files\Blender Foundation\Blender 5.2\blender.exe` via skrip python procedural bmesh:
+       * `CustomBlenderAssets/Bacteria_KanePixels_Organic.obj` (1.19 MB)
+       * `CustomBlenderAssets/Partygoer_Wendigo_Apex.obj` (425 KB)
+  4. **Output Console F9 100% Bersih & Steril**:
+     - Tidak boleh ada pesan error, warning merah, dialog izin HTTP, maupun prompt pembelian yang mengotori layar console saat permainan berjalan.
