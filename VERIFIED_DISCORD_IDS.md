@@ -19,7 +19,7 @@
 - **Poly Loot**: `1549290685645983764` (Role Name: `⚔️ Poly Loot`) [Live: v4.3]
 - **Storage Hunters**: `1549290694143778886` (Role Name: `📦 Storage Hunters`)
 - **Defeat Anime RNG**: `1549290698464034816` (Role Name: `💥 Defeat Anime RNG`)
-- **Drill to Earth's Core**: `1549290696320491561` (Role Name: `🌍 Drill to Earth's Core`) [Live: v7.1]
+- **Drill to Earth's Core**: `1549290696320491561` (Role Name: `🌍 Drill to Earth's Core`) [Live: v7.4]
 - **Idle Mafia Game**: `1549290691992223844` (Role Name: `🕵️ Idle Mafia`)
 - **Dungeon Lootr**: `1549290687382552669` (Role Name: `⚔️ Dungeon Lootr`)
 - **Dungeon Quest Reborn**: `1549290689639088150` (Role Name: `🏰 Dungeon Quest Reborn`)
@@ -1080,3 +1080,12 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Changelogs Message ID: `1567550315559911606` (`#📝・changelogs`, Blue Embed `3447003`, tag `<@&1549290696320491561> <@&1548208954163724299>`)
   * Bug Reply Message ID: `1567550320698196152` (`#🐛・bug-reports`, 100% Rich Discord Embed Green `3066993`, Direct Reply ke Arsss `425675264811597824` referencing Msg ID `1567523287645552680`)
   * Git Commit: `a7fd258`
+
+### Sesi 187 Live Message IDs (07 November 2026):
+- **Drill to Earth's Core (v7.4 - Strict Only Bounty Enemy Separation, Zero Non-Bounty Corpse Pickup & Precise Attribute Guard — Laporan Arsss #bug-reports)**:
+  * Vault Clean Message ID: `1568578492176797716` (Tepat 51 Pesan Steril Terverifikasi 1:1, menghapus old msg `1568569644317540402`)
+  * Announcements Message ID: `1568578897833103366` (`#📢・announcements`, Gold Embed `15844367`, tag `<@&1549290696320491561> <@&1548208954163724299>`)
+  * Changelogs Message ID: `1568578905877651578` (`#📝・changelogs`, Blue Embed `3447003`, tag `<@&1549290696320491561> <@&1548208954163724299>`)
+  * Bug Reply Message ID (Pesan 1): `1568578913142050891` (`#🐛・bug-reports`, 100% Rich Discord Embed Green `3066993`, Direct Reply ke Arsss `425675264811597824` referencing Msg ID `1568573648556789842`)
+  * Standalone Bug Guide Message ID (Pesan 2): `1568578920767299745` (`#🐛・bug-reports`, Teks baku format resmi pelaporan bug di posisi paling bawah channel sesuai Hukum 7)
+  * Git Commit: `b259e50`

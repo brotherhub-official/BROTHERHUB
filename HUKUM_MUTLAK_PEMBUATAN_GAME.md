@@ -862,6 +862,127 @@
 
 ---
 
+
+---
+
+### 68. 🪑 HUKUM 68: STANDAR BAKU 1 SINGLE MESHPART UNTUK SETIAP FURNITUR & PROPS (ANTI MULTI-SUBMESH & ANTI-KOMPONEN BALOK PRIMITIF)
+- **Instruksi Mutlak & Feedback Tegas Founder**:
+  * *"di mall stage ini banyak yang kosong toko nya kurang banyak, dari isi toko blendernya mana ko gak ada saya bilang pake blender full blender"*
+  * *"ko kosongan gini"*
+  * *"blender nya mana, ko pake komponen sih, bentuk realistik"*
+  * *"kenapa pake part lagi, saya bilang full blender"*
+  * *"blender itu bukan komponen part, isinya harusnya meshpart 1 isi nya bentuknya blender realistik"*
+  * *"COBA CEK SEMUA STAGE DEH, HARUS PAKE BLENDER YA, TOLONG BLOKIR KOMPONEN PART"*
+  * *"BUAT SENDIRI PAKE BLENDER, BUKAN NGAMBIL DARI ORANG LAIN, BLOKIR NGAMBIL DARI ORANG LAIN"*
+  * *"TOLONG ROMBAK SEMUA TOTAL SMEUA, YANG BANYAK MESHPART, USAHAAKN BLENDER SENDIRI CUSTOM SENDIRI 1 MESHPART, TIDAK BANYAK MESHPART YA"*
+  * *"kaya kasur gini bagus, 1 meshpart , tapi bentuk kasurnya bagus, bikin kaya gini, catet semuanya prompt apapun sebelumnya di catet"*
+- **Larangan Keras**:
+  * **DILARANG MERAKIT FURNITUR DARI PULUHAN PART BALOK**: Dilarang menyusun balok-balok primitif (seperti meja makan balok dengan kursi merah balok, meja anak dengan 10 part balok, atau arcade balok).
+  * **DILARANG MEMECAH PROP MENJADI BANYAK SUB-MESHPART**: Dilarang membuat satu benda (seperti TV atau meja) terpecah menjadi 9-15 sub-mesh kecil (`AV_front`, `AV_back`, `Screw`, `Logo`, `Buttons`, dll).
+- **Standar Baku (1 Single MeshPart Rule)**:
+  1. **Satu Model = Tepat 1 Single MeshPart Bertekstur**:
+     - Setiap item furnitur, prop, atau mesin (Tempat Tidur, Sofa, Meja Kopi, TV Tabung Vintage, Mesin Arcade, Meja Booth Diner, Rak Toko, Gramofon, Mainan Playroom) **WAJIB BERUPA 1 SINGLE MESHPART BERSIH** yang menyatu utuh dengan tekstur realistis atau `SurfaceAppearance`.
+     - Contoh Ideal Standar Founder:
+       * `Template_Bed` -> `Vintage Bed` (1 Single MeshPart dengan `SurfaceAppearance`, selimut floral, bantal, rangka kayu menyatu indah).
+       * `Template_Sofa` -> `Sofa` (1 Single MeshPart dengan `SurfaceAppearance` kulit/kain berkerut elegan).
+       * `Template_TV` -> `RetroTV_Stand` (1 Single MeshPart yang menyatukan TV tabung vintage di atas rak kayu).
+       * `Template_CoffeeTable` -> `Vintage Coffee Table` (1 Single MeshPart meja kopi kayu vintage).
+       * `RealArcadeMachineMesh` -> 1 Single MeshPart kabinet arcade 80s bertekstur.
+       * `RealisticChairsAndTable` -> 1 Single MeshPart meja makan restoran/diner dengan bangku.
+       * `VinylPlayerMeshPart` -> 1 Single MeshPart gramofon piringan hitam klasik.
+       * `SupermarketShelfMeshPart` -> 1 Single MeshPart rak gondola ritel mall.
+       * `DaycareActivityTable_MeshPart` -> 1 Single MeshPart meja aktivitas daycare.
+       * `DaycarePlaySlide_MeshPart` -> 1 Single MeshPart perosotan anak-anak.
+
+---
+
+### 69. 🏮 HUKUM 69: STANDAR PENEMPATAN LAMPU DINDING & LENTERA TERAS (FLUSH WALL MOUNTING & ZERO MELAYANG DI UDARA)
+- **Keluhan Lapangan Founder**:
+  * *"kenapa latern ini melayang?"* (Lentera teras rumah suburban melayang 7.2 studs di udara tanpa menyentuh dinding).
+- **Larangan Keras**:
+  * **DILARANG LENTERA/SCONCE MELAYANG DI UDARA**: Dilarang menempatkan lentera dinding atau lampu teras mengambang bebas di udara tanpa kontak fisik dengan dinding bangunan.
+- **Standar Baku Pemasangan Lampu Dinding**:
+  1. **Flush Wall Contact**:
+     - Sisi belakang lentera (`PorchLantern`) WAJIB menempel rata pada permukaan terluar dinding bata (`X = wallOuterX +- lantern.Size.X/2`).
+  2. **Breket Penyangga Besi (Mounting Bracket Sconce Arm)**:
+     - Setiap lentera wajib memiliki part breket besi penancap (`LanternBracket`, material `Metal`, warna hitam besi `(30, 30, 30)`) yang menghubungkan dasar lentera ke dalam dinding bata secara kokoh dan realistis.
+
+---
+
+### 70. 🌌 HUKUM 70: STANDAR PLAFON & BLACKOUT ENCLOSURE TERTUTUP TOTAL (ZERO LANGIT BIRU / ANTI-SKYBOX BLEED DI LEVEL HOROR)
+- **Keluhan Lapangan Founder**:
+  * Atap/langit-langit Mall dibuat kaca transparan (`Transparency = 0.5`) sehingga dari lantai 2 terlihat langit biru Roblox yang cerah, merusak total nuansa horor Backrooms.
+- **Larangan Keras**:
+  * **DILARANG LANGIT BIRU / OUTDOOR SKYBOX TERLIHAT DARI DALAM BACKROOMS**: Tidak boleh ada celah, atap transparan, atau lubang dinding di mall atau stage tertutup yang memperlihatkan langit luar.
+- **Standar Baku Plafon & Selubung Kedap**:
+  1. **Plafon Monolitik Padat (Opaque Solid Ceilings)**:
+     - Seluruh plafon mall (`MallSkylightRoof`) wajib 100% solid (`Transparency = 0`), material `Concrete` atau `Plaster`, warna industri.
+  2. **Perisai Blackout Luar (Blackout Outer Shield Enclosure)**:
+     - Di sekeliling luar mall (`X: 1090..1910, Z: 2090..2910, Y: 58..105`), dipasang 5 dinding perisai blackout hitam pekat (`Color3.fromRGB(5, 5, 5)`), menjamin dari sudut pandang mana pun pemain hanya melihat kegelapan liminal tanpa sedikitpun bocoran langit biru.
+
+---
+
+
+---
+
+### 71. 🚗 HUKUM 71: ELEVASI TINGGI BAN KENDARAAN (ZERO MOBIL TENGGELAM / ANTI SUNKEN VEHICLES)
+- **Keluhan Lapangan Founder**:
+  * *"ko ada mobil yang tenggelm di stage 2?"* (Foto mobil di halaman rumah suburban tertanam 2.4 studs di dalam tanah hingga rodanya tidak terlihat).
+- **Larangan Keras**:
+  * **DILARANG KENDARAAN TENGGELAM DI BAWAH PERMUKAAN TANAH**: Dilarang meletakkan mobil, motor, atau kendaraan dengan titik tengah Y yang terlalu rendah sehingga roda atau sasisnya terkubur di bawah tanah/rumput/aspal.
+- **Standar Baku Penempatan Kendaraan**:
+  1. **Elevasi Dasar Ban Menapak Presisi**:
+     - `bottomY = pos.Y - size.Y / 2` WAJIB disetel berada tepat di atas permukaan tanah/rumput (`groundY + 0.05 studs`).
+     - Pada elevasi rumput `Y = 60.3`, mobil berukuran tinggi `5.21 studs` WAJIB memiliki `Position.Y = 60.3 + 5.21 / 2 = 62.91` (dibulatkan `63.0`).
+
+---
+
+### 72. 🏍️ HUKUM 72: ZERO COLLISION PADA KENDARAAN & TIANG TERAS (ANTI-NABRAK PILAR / TIANG KUSEN)
+- **Keluhan Lapangan Founder**:
+  * *"nabrak"* (Foto motor ATV/Quad bike di teras Rumah #13 menembus langsung ke dalam tiang pilar teras `PorchPost_N`).
+- **Larangan Keras**:
+  * **DILARANG KENDARAAN MENABRAK / MENEMBUS PILAR ATAU DINDING**: Dilarang memarkir kendaraan berukuran besar (panjang 8-9 studs) di atas teras sempit yang memiliki pilar penyangga.
+- **Standar Baku Penempatan Kendaraan di Halaman**:
+  1. **Parkir Bersih di Jalan Masuk (Concrete Driveway)**:
+     - Kendaraan besar seperti ATV/Quad bike wajib diparkir di atas jalan masuk beton (`ConcreteDriveway`) di samping mobil lama dengan jarak bebas minimal 3-5 studs dari pilar atau tangga teras.
+
+---
+
+### 73. 💧 HUKUM 73: STERILISASI AIR TERRAIN DI AREA MALL / BANGUNAN KERING (ZERO AIR NYASAR DI LANTAI MALL)
+- **Keluhan Lapangan Founder**:
+  * *"ko tengah mall ada air?"* (Foto gundukan voxel air Terrain Water menyembul di tengah lantai Mall).
+- **Larangan Keras**:
+  * **DILARANG AIR TERRAIN DI LUAR POOLROOMS**: Air fisik (`Terrain.Water`) HANYA diizinkan ada di Level 37 (The Poolrooms). Dilarang keras ada sisa voxel air terrain di lantai mall, ruko, perumahan, maupun taman bermain.
+- **Standar Baku Sterilisasi Air**:
+  1. Jalankan `Terrain:ReplaceMaterial` untuk mengubah seluruh air di luar Poolrooms menjadi `Enum.Material.Air`.
+
+---
+
+### 74. 🏁 HUKUM 74: PENEMPATAN CHECKPOINT MUTLAK DI GERBANG MASUK STAGE (ZERO CHECKPOINT DI TENGAH RUANGAN / DI ATAS BANGKU)
+- **Keluhan Lapangan Founder**:
+  * *"CheckpointTrigger_Mall trigger ko di bangku sini, harusnya di setiap gerbang checkpoin tu"*
+- **Larangan Keras**:
+  * **DILARANG MENARUH CHECKPOINT DI TENGAH RUANGAN ATAU DI AREA DUDUK**: Dilarang meletakkan part checkpoint trigger di area sembarang seperti di atas bangku atau tengah lorong.
+- **Standar Baku Penempatan Checkpoint**:
+  1. **Tepat Melintasi Kusen Pintu Gerbang Masuk (Entrance Portal Gate Threshold)**:
+     - `CheckpointTrigger_Mall`: Wajib berada tepat di kusen pintu masuk gerbang mall dari lorong parkir (`Position = Vector3.new(1500, 67, 2098)`).
+     - `CheckpointTrigger_Playrooms`: Wajib berada tepat di kusen gerbang lorong masuk Playrooms (`Position = Vector3.new(300, 67, 2650)`).
+     - `CheckpointTrigger_Suburbs`: Berada di bibir pendaratan perosotan (`Z = 1100`).
+     - `CheckpointTrigger_Poolrooms`: Berada di vestibule pintu tangga basement (`X = 10, Z = 1640`).
+     - `CheckpointTrigger_Parking`: Berada di lobi pintu keluar lift barang (`X = 1110, Z = 1600`).
+
+---
+
+### 75. 🧸 HUKUM 75: KEMURNIAN TEMA PROPS (SUPERMARKET GONDOLA SHELF HANYA DI MALL, ZERO DI PLAYROOM)
+- **Keluhan Lapangan Founder**:
+  * *"ko ini ada di playroom stage?"* (Foto rak gondola supermarket minimarket diletakkan di dalam playroom anak).
+- **Larangan Keras**:
+  * **DILARANG MEMASUKKAN RAK RITEL MINIMARKET KE DALAM AREA DAYCARE**: Rak gondola toko (`SupermarketShelfMeshPart`) hanya boleh digunakan di Stage 5 (The Mall).
+- **Standar Baku Furnitur Playroom**:
+  1. Di Level 18 (The Playrooms), furnitur penyimpanan mainan WAJIB berupa **Peti Mainan Kayu Anak (`ToyChestMeshPart`)**, meja aktivitas balita (`PartyTableMeshPart`), dan perosotan anak (`PlayroomSlideMeshPart`).
+
+---
+
 ## 🗺️ MASTER SPATIAL ALLOCATION REGISTRY (PROYEK HOROR / BACKROOMS)
 
 | Zona / Stage | Bounding Box X | Bounding Box Y (Elevasi Aman) | Bounding Box Z | Deskripsi & Fungsi |
@@ -874,3 +995,200 @@
 | **Stage 4 (Level 1: Parking Garage)** | `1098 .. 1903` | `60 .. 85` | `1197 .. 2003` | Garasi parkir beton 800x800 studs, 60 unit 3D Blender mobil & motor trail dengan elevasi ban menapak sempurna (0 tenggelam), dinding Barat masif kedap Suburbs, lift barang dari Poolrooms. |
 | **Stage 5 (Level 33: The Abandoned Mall)** | `1097 .. 1903` | `60 .. 101` | `2097 .. 2903` | Mall megah 2 lantai 800x800 studs, atrium kaca, 6 unit ruko retail lengkap 18 studs (Fashion, Snack Mart, Boba, Pizza, Arcade, Vintage Records), eskalator ganda. |
 | **Stage 6 (Level 18: The Playrooms)** | `-303 .. 303` | `60 .. 92` | `2347 .. 2953` | Taman bermain 600x600 studs, 50 mainan daycare autentik (balok ABC/123, matras puzzle busa, meja balita, seluncuran playground, rak cubby), mandi bola raksasa, Gerbang Ekstraksi Keluar Dunia Nyata di X=200, Z=2880. |
+
+---
+
+### 76. 🔦 HUKUM 76: SENTER KAMERA-ALIGNED (ANTI-MENYOROT KAKI / LANTAI SAAT BERLARI)
+- **Keluhan Lapangan Founder**:
+  * * waktu pegang senter ketika lagi lari kenapa senternya malah nerangin lantai bukan pandangan depan ya jadi percuma pake senter /flashlight kalau sambil lari karena nerangin kaki*
+- **Penyebab Teknis**:
+  * Dalam animasi lari bawaan Roblox (Animate), tangan kanan mengayun ke belakang dan badan membungkuk ke depan 25°. Jika SpotLight hanya ditempelkan pada Handle fisik senter di tangan, sorotan lampu otomatis miring ke bawah dan menyorot kaki/lantai.
+- **Standar Baku Senter Horor Autentik (Camera-Aligned Projector)**:
+  1. **Sorotan Wajib Terkunci ke Pandangan Kamera (workspace.CurrentCamera)**:
+     * SpotLight dipasang pada invisible anchor (CameraFlashlightProjector) yang posisi dan orientasinya mengikuti CurrentCamera.CFrame * CFrame.new(0.4, -0.35, -0.5).
+     * Menjamin sorotan cahaya senter 100% selalu lurus menerangi arah pandangan crosshair pemain, baik saat jalan santai, lari kencang/sprint, jongkok, maupun melompat!
+     * Zero sorotan nyasar ke kaki atau tanah!
+
+---
+
+### 77. 🏛️ HUKUM 77: BASE LOBBY WAJIB 100% FULL 3D BLENDER MESH (DILARANG PART BALOK / KOMPONEN PRIMITIF)
+- **Instruksi Keras & Mutlak Founder**:
+  * *TAPI INGAT BASE LOBBY HARUS BLENDER DAN BAGUS LOBBY NYA MENARIK DAN BLENDER FULL DAN BERISI BLENDER BUKAN BLENDER ISINYA PART KOMPONEN TAPI FULL BLENDER YA BIAR BAGUS DAN MENARIK BUAT YANG SANGAT BAGUS*
+  * *apalah ini bukan blender isi nya lobby hadeh*
+- **Larangan Keras**:
+  * **DILARANG KERAS MEMBUAT LOBBY DARI PART KOTAK/BALOK BIASA**: Dilarang membuat dinding datar, bilik lift dari balok plastic, atau meja dari balok kotak primitif.
+- **Standar Baku Base Lobby Full Blender**:
+  1. Seluruh arsitektur lobby (dinding berpanel, pilar metal, pintu elevator, lift bay, sofa kulit, chandelier, rak buku/arsip, konsol kontrol) WAJIB menggunakan **Asset 3D Blender MeshPart** berkualitas tinggi dengan tekstur PBR/UV-mapped.
+  2. Suasana lobby harus mewah, estetik, dan berkarakter (standar Doors Hotel Elevator Lobby atau Sci-Fi Bunker Station).
+
+---
+
+### 78. 🌐 HUKUM 78: SISTEM MATCHMAKING RESERVED SERVER TERISOLASI (1 - 10 PEMAIN — DILARANG SERVER CAMPUR ADUK)
+- **Instruksi Keras & Mutlak Founder**:
+  * *setiap ada yang buat lobby dan masuk ke game nya akan buat server baru dan di lobby terdiri dari orang yang buat server itu gitu lho lobby nya bukan nyambung dan nyatu semua*
+- **Konsep Arsitektur Standar Industri (Doors / Escape the Backrooms)**:
+  * Di game horor ekspedisi, pemain yang memulai ekspedisi (baik Solo ber-1, Duo ber-2, Squad ber-4, hingga Raid ber-10) **DILARANG DICAMPURKAN DENGAN PEMAIN ASING LAIN DALAM SATU SERVER GAMEPLAY**.
+- **Standar Baku Eksekusi Teknis**:
+  1. **Lobby Tempat Berkumpul**: Pemain berkumpul di Main Lobby / Hub.
+  2. **Pemilihan Jumlah Pemain (1 s/d 10 Orang)**:
+     * Pemain memilih masuk ke lift tertentu atau membuat Room Partai dengan kuota 1 s/d 10 orang.
+  3. **Inisialisasi Server Baru via TeleportService**:
+     * Saat lift ditutup atau host menekan mulai:
+       `lua
+       local TeleportService = game:GetService(TeleportService)
+       local accessCode = TeleportService:ReserveServer(GAME_PLACE_ID)
+       TeleportService:TeleportToPrivateServer(GAME_PLACE_ID, accessCode, partyPlayers)
+       `
+     * Sistem secara otomatis membuat **SERVER BARU (Reserved Server)** di cloud Roblox.
+     * Hanya anggota kelompok tersebut yang masuk ke server baru tersebut.
+     * Tidak ada pemain asing yang nyasar atau mengganggu jalannya petualangan!
+
+---
+
+### 79. 📹 HUKUM 79: KAMERA FIRST-PERSON BODYCAM AUTENTIK (BODY & KAKI TERLIHAT JELAS SAAT MENUNDUK)
+- **Instruksi Founder**:
+  * *buat pov nya seperti main backroom*
+- **Standar Baku First-Person Bodycam Backrooms**:
+  1. StarterPlayer.CameraMode = Enum.CameraMode.LockFirstPerson.
+  2. **True First-Person Body Rendering**:
+     * Pada RenderStepped, seluruh bagian tubuh karakter (Torso, Tangan Kiri, Tangan Kanan, Kaki Kiri, Kaki Kanan) diatur LocalTransparencyModifier = 0.
+     * Saat pemain menunduk ke bawah, pemain dapat melihat tubuh dan kakinya sendiri melangkah secara realistis.
+     * Bagian Head dan aksesoris kepala tetap transparan agar tidak menghalangi pandangan mata.
+  3. **Procedural Step-Bobbing & Breathing**:
+     * Ayunan langkah kaki halus (gelombang sinus) yang menyesuaikan kecepatan gerak (frekuensi 10.5 saat jalan, 15 saat sprint).
+     * Miring kamera halus (*banking tilt*) saat berbelok atau strafe ke samping.
+     * Ayunan napas halus (*idle breathing*) saat karakter diam berdiri.
+
+---
+
+### 80. 🎵 HUKUM 80: PROTOKOL CUSTOM AUDIO & STERILISASI SOUND PRIVAT (ANTI ERROR IZIN AKSES ASSET)
+- **Instruksi & Pertanyaan Founder**:
+  * *setau saya bisa sound custom deh lu ga bisa apa custom audio ada deh nyambunginnya gimana dah di blender atau gimana?*
+- **Kaidah Teknis Audio vs Blender**:
+  1. **Blender HANYA untuk Model 3D**: File Blender (.blend, .fbx, .obj) HANYA memuat mesh geometri dan tekstur visual. Blender **TIDAK BISA** menyimpan, mengekspor, atau menyambungkan file audio ke dalam game Roblox.
+  2. **Prosedur Unggah Custom Audio Resmi Roblox**:
+     - Buka **Roblox Studio** -> Klik tab **Aset (Asset Manager)** di menu atas.
+     - Klik tombol **Impor (Bulk Import)** -> Pilih file .mp3 / .wav dari PC.
+     - File audio otomatis ter-upload ke inventory resmi akun sendiri (bxassetid://...) dan 100% berizin tanpa batasan privasi!
+  3. **Sterilisasi Audio Milik Kreator Lain**:
+     - Dilarang membiarkan file sound privat milik kreator lain (seperti LSPLASH 6385111188, 9145075626, 9449995657) yang memicu peringatan *Pengalaman virtual memerlukan akses ke aset* dan pesan error merah di console Studio.
+     - Seluruh audio privat asing wajib segera dihapus atau diganti dengan custom audio resmi/lokal.
+
+---
+
+---
+
+### 81. 🛡️ HUKUM 81: LARANGAN KERAS MEMASUKKAN MODEL PIHAK KETIGA / TOOLBOX (ANTI-BACKDOOR & ZERO FREE MODELS)
+- **Instruksi Keras & Mutlak Founder**:
+  * * saya pernah bilang blockir semua assets ngambil atau gratisan jangan ambil punya orang takutnya ada backdoor*
+- **Bahaya Fatal Model Gratisan / Pihak Ketiga**:
+  1. **Risiko Backdoor & Injeksi Virus**: Model gratisan di toolbox sering kali menyembunyikan skrip jahat (equire(id), loadstring(), getfenv(), atau skrip terselubung) yang dapat mencuri place, menghapus peta, atau mengambil hak admin.
+  2. **Error Privasi Aset & Sound**: Model pihak ketiga membawa aset sound privat (seperti sound milik LSPLASH) yang memicu pop-up perizinan dan error merah di console.
+- **Standar Mutlak Keamanan Brother Hub**:
+  1. **DILARANG KERAS MENGAMBIL / MEMASUKKAN FREE MODEL DARI TOOLBOX PIHAK KETIGA**: Seluruh model pihak ketiga yang sempat di-insert wajib dihapus bersih seketika.
+  2. **100% MURNI KODE SENDIRI & ASET TERVERIFIKASI**: Seluruh skrip, sistem matchmaking, lift, dan partisi dibangun 100% murni oleh tangan developer Brother Hub dari nol, hanya menggunakan aset lokal yang sudah terverifikasi bersih di ReplicatedStorage.Backrooms3DAssets.
+
+---
+
+---
+
+### 82. 🧊 HUKUM 82: KEBIJAKAN INTEGRITAS 100% BLENDER LOKAL CUSTOM & LARANGAN KERAS FREE ASSET PIHAK KETIGA (ZERO THIRD-PARTY / ZERO BACKDOOR)
+- **Instruksi Keras & Mutlak Founder**:
+  * * gak hanya lobby tapi semua apapun yang asset nya ngambil gratis atau dari orang lain jangan pernah di ambil sembarangan takutnya ada backdoor saya bilang buat di blender otomatis custom ada BLENDER KAN LHO DI PAKE YA dan catet semuanya agar kesalahan tidak di ulang lagi*
+- **Larangan Mutlak**:
+  1. **DILARANG KERAS MENGAMBIL ASET GRATISAN / TOOLBOX DARI ORANG LAIN**: Berlaku untuk SELURUH aset game (bukan hanya lobby). Dilarang memasukkan free models, toolbox meshes, atau aset curian dari kreator lain karena membawa risiko tinggi **backdoor, virus tersembunyi, skrip jahat, dan error izin privasi audio**.
+- **Standar Baku Eksekusi Blender Lokal**:
+  1. **Wajib Memanfaatkan Instalasi Resmi Blender 5.2**:
+     - Path executable: C:\Program Files\Blender Foundation\Blender 5.2\blender.exe.
+  2. **Pembuatan Model Otomatis via Blender Python (py)**:
+     - Seluruh aset 3D baru yang dibutuhkan (lift matchmaking, interior ruangan, konsol, dekorasi) WAJIB dibuat sendiri secara custom dan terprogram menggunakan script Python Blender (lender.exe -b -P script.py) lalu diekspor bersih ke .obj / .fbx.
+  3. **Keuntungan Mutlak**:
+     - 100% Orisinal & Eksklusif buatan tangan Brother Hub.
+     - 0% Risiko Backdoor (Zero skrip jahat pihak ketiga).
+     - 100% Sesuai hukum single MeshPart (Hukum 1 & 68).
+
+---
+
+
+### 83. 🚫 HUKUM 83: LARANGAN KERAS KAMERA BOBBING & SCREEN SHAKE (ANTI PUSING / ZERO MOTION SICKNESS POLICY)
+- **Instruksi Keras & Mutlak Founder**:
+  * *"matikan kamera boobing nya pusing, jangan ada kamera bobbing atau gemeter geter, di saat bermain di dalam game stage juga ya, di lobby dan saat bermaind i stage juga"*
+- **Penyebab Nausea / Pusing**:
+  * Efek kamera step-bobbing (gelombang sinus/cosinus saat berjalan/berlari), head sway, camera banking tilt saat strafe, breathing oscillation, dan getar kamera acak (screen shake) memicu motion sickness / pusing berat pada pemain.
+- **Standar Mutlak Kamera Brother Hub (Lobby & Seluruh Stage Game)**:
+  1. **100% Zero Camera Bobbing**: Dilarang memodifikasi CFrame kamera dengan offset langkah kaki saat berjalan maupun berlari.
+  2. **100% Zero Sway & Breathing Oscillation**: Kamera saat diam berdiri tidak boleh mengayun naik-turun.
+  3. **100% Zero Screen Shake / Trembling**: Tidak ada getaran atau gempa layar yang mengacaukan pandangan pemain, baik di lobby maupun saat dikejar monster/entitas di dalam stage.
+  4. **Tetap True First-Person Body Visibility**: Pemain tetap dapat melihat badan, tangan, dan kakinya sendiri saat menunduk ke bawah (`LocalTransparencyModifier = 0`), sementara kepala (`Head`) disembunyikan agar tidak tembus kamera.
+  5. **Kamera Halus & Rock-Solid**: Menghasilkan pengalaman bermain first-person yang nyaman, tajam, dan bebas pusing selama berjam-jam.
+
+---
+
+### 84. 🔦 HUKUM 84: ENGINE-LEVEL IKCONTROL FLASHLIGHT ARM-LOCK (ANTI-MENYOROT LANTAI SAAT BERLARI)
+- **Instruksi & Keluhan Founder**:
+  * *"tangannya ketika lari kenaap ya masih suka ke bawah gitu layaknya lari tanpa senter, tapi pegang senter gitu suka ke bawah tangannya gimana ya?"*
+- **Penyebab Utama**:
+  * Di animasi default Roblox, animasi `run` dan `walk` memiliki prioritas lebih tinggi daripada animasi `toolnone`, sehingga saat karakter berlari, keyframe lengan kanan mengayun ke bawah mendekati pinggul dan lantai. Modifikasi C0 atau Stepped ditimpa oleh evaluasi animator Roblox.
+- **Solusi Permanen Engine-Level**:
+  1. **Wajib Menggunakan `IKControl` (Roblox Built-in Inverse Kinematics)**:
+     - Menggunakan `IKControl` (`Type = Enum.IKControlType.Transform`) dengan `ChainRoot = RightUpperArm` dan `EndEffector = RightHand`.
+     - Target IK berupa part tak terlihat yang menempel pada `workspace.CurrentCamera` di depan dada kanan (`CFrame.new(0.42, -0.42, -1.75)`).
+     - Karena dievaluasi oleh engine Roblox pada tahap akhir setelah seluruh animasi run/walk dihitung, `IKControl` secara mutlak mengunci lengan kanan agar tetap terangkat tegak menembak ke depan.
+  2. **Lengan Mengikuti Pitch Kamera**:
+     - Saat pemain melihat ke atas, lengan terangkat halus ke atas.
+     - Saat pemain melihat ke bawah, lengan mengarah ke bawah.
+     - Saat berlari sprint kencang (WalkSpeed 24+), lengan kanan **TIDAK PERNAH MENGAYUN KE BAWAH / MENYOROT LANTAI**, melainkan tetap kokoh menatap lurus ke depan!
+  3. **100% Kompatibel di PC & Mobile**:
+     - Berjalan mulus tanpa lag di perangkat Android, iPhone, iPad, dan PC.
+
+---
+
+### 85. 🛗 HUKUM 85: ARSITEKTUR MATCHMAKING LOBBY DENGAN DISPLAY TRANSPARAN EYE-LEVEL, RETENSI ELEVATOR & BATAL KELUAR
+- **Instruksi Keras & Rinci Founder**:
+  * *"misal ada yang masuk ber 4, nah kalau sudah masuk akan mulai dalam hitungan mundur 20 detik, jika host nya klik play langsung juga bisa yang pertama kali masuk, jadi 20 detik itu nunggu player ada yangmasuk di dalam nya, jika tidak penuh tetap akan play berapapun yang sudah masuk, tapi kalau sudah full / max 4 maka tidak akan ada yang bisa masuk ke 4 itu lagi, dan ada informasi @username yang masuk ke 4 itu"*
+  * *"tulisan berangkat ada di sebuah part transparan dan di tengah agar semua bisa baca kalau ini masih 1/4 atau sudah 4/4 dan ada detik mundurnya juga, bukan di plang atas , soalnya gak kelihatan"*
+  * *"saat sudah masuk, gak bisa keluar dari part lobby yang sudah masuk, kecuali tekan button X / Exit untuk keluar dari lobby yang sudah di masukin waktu 20 detik mundur masih ada , jadi ada kesempata jika player ada yang ingin membatalkan bergabung"*
+- **6 Pilar Baku Sistem Elevator Matchmaking Brother Hub**:
+  1. **Display Holografik Transparan di Tengah / Eye-Level (`HoloDisplayPart`)**:
+     - Diletakkan di tengah elevator pada ketinggian mata (~Y=5.8), BUKAN di plang atas yang tersembunyi di langit-langit.
+     - Menggunakan part kaca transparan gelap dengan neon border dan SurfaceGui ganda (depan & belakang).
+     - Menampilkan teks besar dan kontras: Kapasitas (`[ 1/4 PEMAIN ]`), status Standby/Hitungan mundur (`MULAI: 20s`), dan daftar slot `@username` lengkap dengan mahkota `👑` untuk Host.
+  2. **Hitungan Mundur 20 Detik (Gathering Window)**:
+     - Begitu pemain pertama masuk, hitungan mundur 20 detik dimulai otomatis untuk memberi waktu pemain lain bergabung.
+  3. **Tombol Host [ ⚡ MULAI SEKARANG / START NOW ]**:
+     - Pemain pertama yang masuk otomatis menjadi **HOST**.
+     - Host memiliki tombol khusus di layar untuk langsung memulai game seketika tanpa perlu menunggu 20 detik habis.
+  4. **Fleksibilitas Jumlah Pemain**:
+     - Jika 20 detik habis dan elevator tidak penuh (misal hanya 1, 2, atau 3 pemain dalam lift kapasitas 4), sistem tetap memberangkatkan seluruh pemain yang ada di dalamnya ke Reserved Server terisolasi.
+  5. **Penguncian Gerbang Saat Penuh (Max Capacity Gate Lock)**:
+     - Begitu jumlah pemain mencapai kapasitas maksimal (misal 4/4), gerbang masuk otomatis mengunci fisik (`GateBarrier.CanCollide = true`, barrier merah).
+     - Tidak ada pemain tambahan yang bisa menerobos masuk.
+     - Hitungan mundur dipercepat menjadi 3 detik untuk segera berangkat!
+  6. **Retensi Pemain di Dalam Lift & Tombol [ ✕ BATAL / EXIT ]**:
+     - Pemain yang sudah masuk ditahan di dalam batas lift agar tidak terlempar atau jalan keluar tanpa sengaja.
+     - Pemain yang ingin membatalkan bergabung DAPAT menekan tombol `[ ✕ BATAL / EXIT ]` di layar sebelum 20 detik habis.
+     - Saat ditekan, pemain diteleportasi keluar ke lantai lobby, dikeluarkan dari daftar, dan status lift diperbarui secara mulus.
+
+---
+
+### 86. 🏛️ HUKUM 86: STERILISASI TOTAL LOBBY PLACE 1 (ZERO OBJEKTIF, ZERO MONSTER, ZERO MATA MATA)
+- **Instruksi & Keluhan Founder**:
+  * *"ko objektif nya masih ada di lobby, kan masih di lobby, objektif itu kalau sudah dalam stage atau game nya saat sudah ke teleport map yang beneran main game nya, bukan di lobby, dan kenapa muncul mata, kan ini lobby"*
+- **Aturan Mutlak Pemisahan Place**:
+  1. **Place 1 (Start Place) Adalah 100% PURE LOBBY**:
+     - Di Place 1 **DILARANG KERAS** memuat skrip monster (`BackroomsEntityAI`), skrip mata mengintai (`BackroomsWatchingEyes`), skrip checkpoint stage (`BackroomsCheckpointManager`), maupun GUI objektif permainan (`[ OBJEKTIF ] Jelajahi kegelapan...`).
+     - Place 1 harus berwujud fasilitas lobby yang bersih, megah, elegan, tenang, dan bebas dari error console.
+  2. **Seluruh Skrip Gameplay & Monster HANYA di Place 2**:
+     - Kotak objektif misi, visual FX mata mengintip, AI monster per stage, dan checkpoint hanya aktif setelah pemain diteleportasi masuk ke Place 2 (Gameplay Map / 7 Stages).
+
+---
+
+### 87. 📱 HUKUM 87: DUKUNGAN UNIVERSAL RESPONSIF MOBILE & PC (HUKUM 5I COMPLIANT)
+- **Instruksi Keras Founder**:
+  * *"inget aturan support hp dan support di pc, all resolusir layar support semua"*
+- **Standar Baku Responsif**:
+  1. Seluruh UI (Elevator HUD, Loading Screen, Watermark) wajib menggunakan `UIScale` otomatis yang terhubung ke `Camera.ViewportSize` (`math.min(v.X / 1280, v.Y / 720)` dengan batas aman `0.55` - `1.15`).
+  2. Ukuran tombol sentuh minimal 44x44px dengan teks terbaca jelas di layar HP kecil (360p, 480p, 720p) hingga resolusi PC (1080p, 1440p, 4K).
+  3. Tata letak elemen HUD ditempatkan dengan padding aman agar tidak bertabrakan dengan tombol joystick / lompat layar sentuh Roblox Mobile.
+
+---
