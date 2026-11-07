@@ -1207,3 +1207,50 @@
      - **Jalur 3 (Shortcut Instan)**: Cukup tekan tombol keyboard **`X`** untuk Batal dan **`E`** untuk Mulai Host tanpa perlu menggerakkan mouse sama sekali!
 
 ---
+
+### 89. 👑 HUKUM 89: SISTEM OVERHEAD BACKROOMS & PROGRESI TAMAT (DATASTORE PERSISTENCE & MULTI-TIER TITLES)
+- **Instruksi & Referensi Founder**:
+  * *"saya lagi buka ini, tolong ambil sistem overheadnya untuk di backroom, samakan saja, tapi sesuaikan aja penamaan sistem overhead nya, misal sudah bermain dan menamati berapa kali"*
+- **Pilar Baku Sistem Overhead Backrooms**:
+  1. **Tag Overhead Kustom di Atas Kepala Karakter (`BackroomsOverheadTag`)**:
+     - **Baris 1 (Icons)**: Ikon Mahkota Owner (`16010461836`) untuk Founder PRAWIRAXLIV, Bendera Negara Otomatis (`countryCodeToFlag`), dan Ikon Perangkat (PC/HP).
+     - **Baris 2 (Gelar Rank Title)**: Gelar pencapaian yang otomatis naik berdasarkan total Tamat:
+       * 0 Tamat: `🔦 New Wanderer`
+       * 1 Tamat: `🚪 Level 0 Survivor`
+       * 3 Tamat: `🏘️ Suburbs Escaper`
+       * 5 Tamat: `🏊 Poolrooms Pioneer`
+       * 10 Tamat: `🛗 Backrooms Veteran`
+       * 20 Tamat: `👑 Grand Reality Legend`
+       * 35 Tamat: `💀 Nightmare Conqueror`
+       * 50+ Tamat: `🔱 The Ultimate Escaper`
+     - **Baris 3 (Statistik Tamat)**: `Tamat: N Kali` (kuning emas menyala).
+     - **Baris 4 (@Username)**: Teks username dengan gradien Pelangi beranimasi untuk Owner (`PRAWIRAXLIV`) dan biru cyan untuk pemain biasa.
+  2. **DataStore Persistence Lintas Sesi**:
+     - Tersimpan aman di DataStore (`BackroomsPlayerData_v1`) dan terhubung otomatis ke papan `leaderstats.Tamat`.
+     - Setiap kali pemain berhasil meloloskan diri di Stage 7 (Grand Reality Escape Meadow), server otomatis mencatat `+1 Tamat` dan menyimpan data.
+
+---
+
+### 90. 💀 HUKUM 90: ARSITEKTUR TIGA TINGKAT KESULITAN (EASY, MEDIUM, NIGHTMARE) & ENTITAS NIGHTMARE STALKER BLENDER 5.2
+- **Instruksi Keras & Rinci Founder**:
+  * *"terus di stage saat bermain, ada mode nightmare nya, jadi musuh di stage lebih banyak, jadi di lobby ada pilihan ruangan Easy, ber1 sampai ber10, di ruangan Medium dari ber1 s.d 10, sampai mode nightmare, bedanya kalau nightmare di kasih kesulitan mati terus gitu misal di kejar monster apa, buat monster nya pake BLENDER YANG BAGUS BENTUKKAN DI MODE KERAS YANG SUSAH YA, PAHAM KAN?"*
+- **Tiga Tingkat Kesulitan di Lobby & Gameplay**:
+  1. **🟢 EASY MODE**:
+     - Ekspedisi standar.
+     - Kecepatan entitas normal (WalkSpeed 16, radius deteksi 50 studs).
+     - Lampu lorong relatif stabil dan checkpoint aktif penuh.
+  2. **🟡 MEDIUM MODE**:
+     - Ekspedisi mencekam.
+     - Kecepatan entitas meningkat 25% (WalkSpeed 20, radius deteksi 70 studs).
+     - Kedipan lampu lebih sering dan jarak kejar lebih jauh.
+  3. **🔴 NIGHTMARE MODE (Brutal Hardcore Survival)**:
+     - Kesulitan mematikan (*mati terus dikejar monster*):
+       * Mengaktifkan entitas bos predator **Nightmare Stalker** buatan **Blender 5.2.3 LTS** (`Nightmare_Wendigo_Stalker.obj`, 71 komponen anatomi organik menyatu dalam 1 single MeshPart, cakar sabit ganda, taring jarum, dan sepasang mata merah menyala `NightmareGlow`).
+       * Kecepatan lari predator WalkSpeed 26 (lebih cepat dari sprint pemain 24 WS!).
+       * Radius penglihatan & pendengaran 95 studs (mengejar tanpa henti melintasi stage).
+       * Sekali tertangkap langsung tewas seketika (Instant Lethal Kill)!
+       * Berhasil menamatkan Nightmare mode memberikan gelar bergengsi `[ 💀 Nightmare Conqueror ]`!
+  4. **Selektor Mode di Elevator**:
+     - Host dapat mengganti tingkat kesulitan kapan saja sebelum berangkat dengan mengklik tombol mode di HUD atau menekan tombol keyboard **`[M]`**!
+
+---
