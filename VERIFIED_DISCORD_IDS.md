@@ -1105,3 +1105,13 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Script Update Ping Role: `1548208954163724299`
   * Git Commit: `468733b`
 
+### Sesi 200 Live Message IDs (09 November 2026):
+- **Save the Krusty Krab (v3.0 - Master Autonomous Workstation, Assembling Table & Order Delivery Engine)**:
+  * Vault Clean Message ID: `1569076868039057601` (`SavetheKrustyKrab_Clean.lua` v3.0, Tepat 52 Pesan Steril Terverifikasi 1:1, menghapus old msg `1569066339878961205`)
+  * Announcements Message ID: `1569077663925145741` (`#📢・announcements`, Gold Embed `15844367`, tag `<@&1568928868146880652> <@&1548208954163724299>`)
+  * Changelogs Message ID: `1569077667209158828` (`#📝・changelogs`, Blue Embed `3447003`, tag `<@&1568928868146880652> <@&1548208954163724299>`)
+  * Target Role (`🍔 Save the Krusty Krab`): `1568928868146880652`
+  * Script Update Ping Role: `1548208954163724299`
+  * Git Commit: `f71efe7`
+
+
