@@ -1,6 +1,6 @@
 # VERIFIED ROLES & CHANNELS MAPPING TABLE
 
-## 1. 51 SUPPORTED GAMES ROLES
+## 1. 52 SUPPORTED GAMES ROLES
 
 - **Deep Fishing**: `1551587483320459344` (Role Name: `🌊 Deep Fishing`)
 - **Pets Universe**: `1551531361582714892` (Role Name: `🐾 Pets Universe`)
@@ -53,6 +53,7 @@
 - **RoChess**: `1563606751092150354` (Role Name: `♟️ RoChess`)
 - **Beat the Boss & Steal**: `1563939923604668416` (Role Name: `🥊 Beat the Boss & Steal`)
 - **Hook And Rob**: `1566202284315254886` (Role Name: `🪝 Hook And Rob`)
+- **Save the Krusty Krab**: `1568928868146880652` (Role Name: `🍔 Save the Krusty Krab`)
 
 ## 2. NOTIFICATION & SYSTEM ROLES
 
