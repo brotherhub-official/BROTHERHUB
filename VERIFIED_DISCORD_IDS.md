@@ -1095,3 +1095,13 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Bug Reply Message ID (Pesan 1): `1568578913142050891` (`#🐛・bug-reports`, 100% Rich Discord Embed Green `3066993`, Direct Reply ke Arsss `425675264811597824` referencing Msg ID `1568573648556789842`)
   * Standalone Bug Guide Message ID (Pesan 2): `1568578920767299745` (`#🐛・bug-reports`, Teks baku format resmi pelaporan bug di posisi paling bawah channel sesuai Hukum 7)
   * Git Commit: `b259e50`
+
+### Sesi 198 Live Message IDs (08 November 2026):
+- **Save the Krusty Krab (v2.4 - Native GameCycleStore Shift Phase Engine, Table & Dumpster Tutorial, and Full Restaurant Workflow)**:
+  * Vault Clean Message ID: `1568999065478242370` (`SavetheKrustyKrab_Clean.lua` v2.4, Tepat 52 Pesan Steril Terverifikasi 1:1, menghapus old msg `1568994769718476830`)
+  * Announcements Message ID: `1568999499282514011` (`#📢・announcements`, Gold Embed `15844367`, tag `<@&1568928868146880652> <@&1548208954163724299>`)
+  * Changelogs Message ID: `1568999504219340905` (`#📝・changelogs`, Blue Embed `3447003`, tag `<@&1568928868146880652> <@&1548208954163724299>`)
+  * Target Role (`🍔 Save the Krusty Krab`): `1568928868146880652`
+  * Script Update Ping Role: `1548208954163724299`
+  * Git Commit: `468733b`
+
