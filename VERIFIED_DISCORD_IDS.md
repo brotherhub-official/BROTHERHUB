@@ -16,7 +16,7 @@
 - **Pop Bubbles**: `1550065206145581106` (Role Name: `🫧 Pop Bubbles`)
 - **Catch Dragons To Defend**: `1550061654383792250` (Role Name: `🐉 Catch Dragons To Defend`)
 - **Farm Industry**: `1549290683628527618` (Role Name: `🌾 Farm Industry`)
-- **Poly Loot**: `1549290685645983764` (Role Name: `⚔️ Poly Loot`) [Live: v4.3]
+- **Poly Loot**: `1549290685645983764` (Role Name: `⚔️ Poly Loot`) [Live: v4.4]
 - **Storage Hunters**: `1549290694143778886` (Role Name: `📦 Storage Hunters`)
 - **Defeat Anime RNG**: `1549290698464034816` (Role Name: `💥 Defeat Anime RNG`)
 - **Drill to Earth's Core**: `1549290696320491561` (Role Name: `🌍 Drill to Earth's Core`) [Live: v7.4]
@@ -441,6 +441,11 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
 - **nakaraaa123**: `1446049853384822835` (Username: `nakaraaa123_95622` — Reporter Deadly Delivery Bugs v1.1-v2.7 — Welcome Msg: `1558046188463194122`)
 - **Prone**: `446749965570670603` (Username: `ramaprone` — Requester Poly Loot Halloween Dungeon & Ghost Net — Welcome Msg: `1552686752731238533`)
 - **Lucifer**: `396632374538010625` (Username: `aslisurabaya` — Reporter Dungeon Lootr Bugs v2.5-v3.3 — Bug Reply Msg: `1560037966871658659`)
+- **Poly Loot v4.4 (Volcano 5.0 Expansion: 4 Mobs, 2 Bosses, 4 Ores & Ledge Nav — Laporan Resmi Prone) Live IDs**:
+  * Announcements (`#📢・announcements`): `1568911160017952859` (Gold Embed `15844367`, tag `<@&1549290685645983764> <@&1548208954163724299>`)
+  * Changelogs (`#📝・changelogs`): `1568911267882860545` (Blue Embed `3447003`, tag `<@&1549290685645983764> <@&1548208954163724299>`)
+  * Bug Report Reply (`#🐛・bug-reports`): `1568911270655037504` (Reply ke Prone `<@446749965570670603>`)
+  * Founder Vault (`#🔐・founder-vault`): `1568910888759595108` (`PolyLoot_Clean.lua` v4.4)
 - **Poly Loot v4.2 (Smooth Tween Stability, Anti-Fling to Spawn & Behind Stance Elevation Fix — Laporan Video & Evaluasi Prone) Live IDs**:
   * Announcements (`#📢・announcements`): `1564064404742344806` (Gold Embed `15844367`, tag `<@&1549290685645983764> <@&1548208954163724299>`)
   * Changelogs (`#📝・changelogs`): `1564064411352572005` (Blue Embed `3447003`, tag `<@&1549290685645983764> <@&1548208954163724299>`)

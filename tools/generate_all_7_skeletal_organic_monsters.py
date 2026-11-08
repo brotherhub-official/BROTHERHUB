@@ -357,3 +357,4 @@ if __name__ == "__main__":
     build_partygoer()
     build_nightmare_wendigo()
     print(">>> ALL 7 SKELETAL ORGANIC BIPED/QUADRUPED FBX MODELS GENERATED!")
+
