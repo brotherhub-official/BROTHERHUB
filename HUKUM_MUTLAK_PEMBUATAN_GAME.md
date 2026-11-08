@@ -1277,3 +1277,24 @@
        * `CustomBlenderAssets/Partygoer_Wendigo_Apex.obj` (425 KB)
   4. **Output Console F9 100% Bersih & Steril**:
      - Tidak boleh ada pesan error, warning merah, dialog izin HTTP, maupun prompt pembelian yang mengotori layar console saat permainan berjalan.
+
+
+---
+
+### 100. 🚫 HUKUM 100: LARANGAN MUTLAK CSG UNION & RANGKAIAN KOMPONEN PRIMITIF PADA ENTITAS — WAJIB 100% BLENDER MESHPART ASLI REALISTIK & DUAL ROBLOX OWNERS
+- **Instruksi Keras & Mutlak Founder**:
+  * *"ko bentuknnya pada aneh semua, saya bilang bentuk realistik nyata monster beneran dan nyata, ini kenapa komponen semua hadeh, cek aturan jjangan pernah ada union catet ke catetan"*
+  * *"ENTITAS JANGAN PAKE KOMPONEN, FULL BLENDER BENTUKKANNYA HARUS REAL MONSTER REALISTIK DAN NYATA"*
+  * *"oh saya itu ownernya 2: Config.Owners = { 4747248249, -- Prawira (@PRAWIRAXLIV); 7511640197, -- Owner kedua (@impeldown80) }"*
+- **Pilar Mutlak Eksekusi**:
+  1. **Larangan Mutlak CSG Union / Solid Modeling**:
+     - DILARANG KERAS menggabungkan balok, tabung, atau bola primitif menggunakan CSG `UnionAsync` / `UnionOperation` untuk membuat monster!
+     - Rangkaian komponen primitif yang di-union tetap menghasilkan siluet kaku/aneh seperti pipa bersilangan atau stick-figure aneh dari sudut pandang atas/samping.
+  2. **Kewajiban 100% Blender Mesh Asli (MeshPart)**:
+     - Bentuk entitas wajib merupakan sculpted 3D mesh asli bertekstur hasil ekspor Blender (`.obj` / `.fbx`).
+     - Entitas harus berupa `MeshPart` / Model hasil import 3D Blender yang berpenampilan organik, nyata, mengerikan, dan memiliki material PBR serta warna nyata!
+  3. **Konfigurasi Resmi Dual Owners**:
+     - Game Brother Studio Productions memiliki TEPAT 2 ROBLOX OWNERS:
+       * **Owner 1**: `4747248249` — Prawira (`@PRAWIRAXLIV`) — `👑 FOUNDER & LEAD DEVELOPER`
+       * **Owner 2**: `7511640197` — Owner Kedua (`@impeldown80`) — `👑 CO-OWNER / CO-FOUNDER`
+     - Seluruh script overhead (`BackroomsOverheadConfig`), admin dashboard, FreeCam (`Shift + P`), dan panggung pahlawan (`TeamStage`) WAJIB memuat kedua UserId resmi ini!
