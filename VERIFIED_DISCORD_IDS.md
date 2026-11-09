@@ -1252,3 +1252,12 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
 - **Survive Your Ideas (v1.4 - Master Disaster Evacuation Suite, Hazard & Monster Auto-Dodge, 1-Click Mobile Floating QuickBar & Subplace Sync)**:
   * Vault Clean Message ID: `1569311040955617320` (`SurviveYourIdeas_Clean.lua` v1.4, Tepat 53 Pesan Steril Terverifikasi 1:1, menghapus old msg `1569271679446949989`)
   * Target Role (`💡 Survive Your Ideas`): `1569199870110203978`
+
+
+### Sesi 216 Live Message IDs (09 November 2026):
+- **Save the Krusty Krab (v4.4 - Dedicated Station Target Router, Direct Grill CFrame Surface Alignment & Anti-Fatigue Input Guard)**:
+  * Vault Clean Message ID: `1569316297639071896` (`SavetheKrustyKrab_Clean.lua` v4.4, Tepat 53 Pesan Steril Terverifikasi 1:1, menghapus old msg `1569311029974929470`)
+  * Target Role (`🍔 Save the Krusty Krab`): `1568928868146880652`
+  * Script Update Ping Role: `1548208954163724299`
+  * Announcements Message ID: `1569316429713637468` (`#📢・announcements`, Gold Embed `15844367`, Dwi-bahasa ID & EN, pointer script-panel)
+  * Changelogs Message ID: `1569316432573894697` (`#📝・changelogs`, Blue Embed `3447003`, Dwi-bahasa ID & EN, pointer script-panel)
