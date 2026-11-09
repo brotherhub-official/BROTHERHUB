@@ -1214,3 +1214,11 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Script Update Ping Role: `1548208954163724299`
   * Announcements Message ID: `1569279152991772745` (`#📢・announcements`, Gold Embed `15844367`, Dwi-bahasa ID & EN, pointer script-panel)
   * Changelogs Message ID: `1569279156951326805` (`#📝・changelogs`, Blue Embed `3447003`, Dwi-bahasa ID & EN, pointer script-panel)
+
+### Sesi 212 Live Message IDs (09 November 2026):
+- **Save the Krusty Krab (v4.0 - Smart Step Conductor & Objective Pipeline Suite, Zero 'No Orders' Spam Guard & Exact Register/Grill/Prep Routing)**:
+  * Vault Clean Message ID: `1569282922349985848` (`SavetheKrustyKrab_Clean.lua` v4.0, Tepat 53 Pesan Steril Terverifikasi 1:1, menghapus old msg `1569279146692050956`)
+  * Target Role (`🍔 Save the Krusty Krab`): `1568928868146880652`
+  * Script Update Ping Role: `1548208954163724299`
+  * Announcements Message ID: `1569282928280731732` (`#📢・announcements`, Gold Embed `15844367`, Dwi-bahasa ID & EN, pointer script-panel)
+  * Changelogs Message ID: `1569282933536202774` (`#📝・changelogs`, Blue Embed `3447003`, Dwi-bahasa ID & EN, pointer script-panel)
