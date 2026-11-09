@@ -1115,3 +1115,30 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Git Commit: `f71efe7`
 
 
+
+### Sesi 201 Live Message IDs (09 November 2026):
+- **Save the Krusty Krab (v3.1 - Zero Phantom Proximity Engine, Workspace Prompt Sanitizer, Physical Workstation Navigation & First Day Tutorial / Autonomous Order Solver)**:
+  * Vault Clean Message ID: 1569173497039552563 (SavetheKrustyKrab_Clean.lua v3.1, Tepat 52 Pesan Steril Terverifikasi 1:1, menghapus old msg 1569076868039057601)
+  * Announcements Message ID: 1569173778745790636 (#📢・announcements, Gold Embed 15844367, tag <@&1568928868146880652> <@&1548208954163724299>)
+  * Changelogs Message ID: 1569173783418245265 (#📝・changelogs, Blue Embed 3447003, tag <@&1568928868146880652> <@&1548208954163724299>)
+  * Target Role (🍔 Save the Krusty Krab): 1568928868146880652
+  * Script Update Ping Role: 1548208954163724299
+  * Git Commit: 67c794
+
+### Sesi 202 Live Message IDs (09 November 2026):
+- **Save the Krusty Krab (v3.2 - Reverse-Engineered STKK Dump 77709018585862, Permanent Cash Register Standby, Order-Demand Appliance Isolation & Full 18-Step NPE Tutorial Engine)**:
+  * Vault Clean Message ID: `1569187309704839340` (`SavetheKrustyKrab_Clean.lua` v3.2, Tepat 52 Pesan Steril Terverifikasi 1:1, menghapus old msg `1569173497039552563`)
+  * Announcements Message ID: `1569187527628161099` (`#📢・announcements`, Gold Embed `15844367`, Dwi-bahasa ID & EN, pointer script-panel)
+  * Changelogs Message ID: `1569187654548070543` (`#📝・changelogs`, Blue Embed `3447003`, Dwi-bahasa ID & EN)
+  * Target Role (`🍔 Save the Krusty Krab`): `1568928868146880652`
+  * Script Update Ping Role: `1548208954163724299`
+  * Git Commit: `5a7efa8`
+
+### Sesi 204 Live Message IDs (09 November 2026):
+- **Save the Krusty Krab (v3.3 - Multi-Movement Suite: Instant Teleport / Fast Walk + Noclip / Normal Walk, Run Speed Slider, Auto Noclip & Autonomous Grill 4-Layer Trigger Fallback)**:
+  * Vault Clean Message ID: 1569195194098651180 (SavetheKrustyKrab_Clean.lua v3.3, Tepat 52 Pesan Steril Terverifikasi 1:1, menghapus old msg 1569187309704839340)
+  * Announcements Message ID: 1569195383278538862 (#📢・announcements, Gold Embed 15844367, Dwi-bahasa ID & EN, pointer script-panel)
+  * Changelogs Message ID: 1569195390224302181 (#📝・changelogs, Blue Embed 3447003, Dwi-bahasa ID & EN)
+  * Target Role (🍔 Save the Krusty Krab): 1568928868146880652
+  * Script Update Ping Role: 1548208954163724299
+  * Git Commit: 52d4756
