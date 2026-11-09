@@ -1195,3 +1195,14 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Script Update Ping Role: 1548208954163724299
   * Announcements Message ID: 1569263967249891399 (#📢・announcements, Gold Embed 15844367, Dwi-bahasa ID & EN, pointer script-panel)
   * Changelogs Message ID: 1569263970706133022 (#📝・changelogs, Blue Embed 3447003, Dwi-bahasa ID & EN, pointer script-panel)
+
+### Sesi 210 Live Message IDs (09 November 2026):
+- **Save the Krusty Krab (v3.8 - Full UI Tabs Restoration, 1:1 My Flower Shop 360° RGB Rotating Neon Stroke & MinCircle, Anti-Fatigue Spam Debounce Engine, and Autonomous Front-Grill Cooking)**:
+  * Vault Clean Message ID: `1569271662161961000` (`SavetheKrustyKrab_Clean.lua` v3.8, Tepat 53 Pesan Steril Terverifikasi 1:1, menghapus old msg `1569263848203100170`)
+  * Target Role (`🍔 Save the Krusty Krab`): `1568928868146880652`
+  * Script Update Ping Role: `1548208954163724299`
+  * Announcements Message ID: `1569271875773792382` (`#📢・announcements`, Gold Embed `15844367`, Dwi-bahasa ID & EN, pointer script-panel)
+  * Changelogs Message ID: `1569271878588047403` (`#📝・changelogs`, Blue Embed `3447003`, Dwi-bahasa ID & EN, pointer script-panel)
+- **Survive Your Ideas (v1.3 - 1:1 My Flower Shop 360° RGB Rotating Neon Stroke & MinCircle, Multi-Place Subplace Optimization)**:
+  * Vault Clean Message ID: `1569271679446949989` (`SurviveYourIdeas_Clean.lua` v1.3, Tepat 53 Pesan Steril Terverifikasi 1:1, menghapus old msg `1569244850040082542`)
+  * Target Role (`💡 Survive Your Ideas`): `1569199870110203978`
