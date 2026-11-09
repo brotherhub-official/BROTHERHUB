@@ -1136,6 +1136,11 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Git Commit: `5a7efa8`
 
 ### Sesi 204 Live Message IDs (09 November 2026):
+- **Save the Krusty Krab (v3.4 - Anti-Fling Physics, Anti-Void Floor Protection & Active Objective Priority)**:
+  * Vault Clean Message ID: `1569208685492830281` (`SavetheKrustyKrab_Clean.lua` v3.4, Tepat 53 Pesan Steril Terverifikasi 1:1, menggantikan old msg `1569198866497147020`)
+  * Target Role (`🍔 Save the Krusty Krab`): `1568928868146880652`
+  * Announcements Message ID: `1569209419739172945`
+  * Changelogs Message ID: `1569209422138310783`
 - **Save the Krusty Krab (v3.3 - Multi-Movement Suite: Instant Teleport / Fast Walk + Noclip / Normal Walk, Run Speed Slider, Auto Noclip & Autonomous Grill 4-Layer Trigger Fallback)**:
   * Vault Clean Message ID: 1569195194098651180 (SavetheKrustyKrab_Clean.lua v3.3, Tepat 52 Pesan Steril Terverifikasi 1:1, menghapus old msg 1569187309704839340)
   * Announcements Message ID: 1569195383278538862 (#📢・announcements, Gold Embed 15844367, Dwi-bahasa ID & EN, pointer script-panel)
@@ -1152,3 +1157,12 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Changelogs Message ID: `1569201944172564541` (`#📝・changelogs`, Blue Embed `3447003`, Dwi-bahasa ID & EN)
   * Script Update Ping Role: `1548208954163724299`
   * Git Commit: `e7e43a7`
+
+### Sesi 206 Live Message IDs (09 November 2026):
+- **Save the Krusty Krab (v3.5 - 1:1 My Flower Shop 360° RGB Neon & MinCircle Styling, Internal `__comm__` Remote Discovery, Auto Minigame Timing Solver & Full Kitchen Pipeline Automation)**:
+  * Vault Clean Message ID: `1569218047930269716` (`SavetheKrustyKrab_Clean.lua` v3.5, Tepat 53 Pesan Steril Terverifikasi 1:1, menghapus old msg `1569208685492830281`)
+  * Target Role (`🍔 Save the Krusty Krab`): `1568928868146880652`
+  * Script Update Ping Role: `1548208954163724299`
+  * Announcements Message ID: `1569218289417326673` (`#📢・announcements`, Gold Embed `15844367`, Dwi-bahasa ID & EN, pointer script-panel)
+  * Changelogs Message ID: `1569218423894970399` (`#📝・changelogs`, Blue Embed `3447003`, Dwi-bahasa ID & EN, pointer script-panel)
+  * Git Commit: `6316ca0`
