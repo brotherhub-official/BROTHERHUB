@@ -1277,3 +1277,20 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Script Update Ping Role: `1548208954163724299`
   * Announcements Message ID: `1569343219228086428` (`#📢・announcements`, Gold Embed `15844367`, Dwi-bahasa ID & EN, pointer script-panel)
   * Changelogs Message ID: `1569343222746980473` (`#📝・changelogs`, Blue Embed `3447003`, Dwi-bahasa ID & EN, pointer script-panel)
+
+### Sesi 220 Live Message IDs (09 November 2026):
+- **Survive Your Ideas (v1.5 - Smart Hazard Physical Distance Verification, Anti-Spam High Ground Cooldown & Complete Bug Fix — Laporan Arsss #bug-reports)**:
+  * Vault Clean Message ID: `1569358456727801876` (`SurviveYourIdeas_Clean.lua` v1.5, Tepat 53 Pesan Steril Terverifikasi 1:1, menghapus old msg `1569311040955617320`)
+  * Target Role (`💡 Survive Your Ideas`): `1569199870110203978`
+  * Script Update Ping Role: `1548208954163724299`
+  * Bug Reply Message ID (Pesan 1): `1569368521190805504` (`#🐛・bug-reports`, Emerald Green Embed `3066993`, Direct Reply ke Arsss `425675264811597824` referencing Msg ID `1569336202622926999`)
+  * Bug Follow-up Guidelines (Pesan 2): `1569375378441638073` (`#🐛・bug-reports`, format baku pelaporan bug ID & EN agar tetap di paling bawah, 100% Plain Text tanpa codeblock, 1:1 `1569220310757023896`, menggantikan `1569368529013047448` yang dihapus)
+  * Announcements Message ID: `1569368537762373754` (`#📢・announcements`, Gold Embed `15844367`, Dwi-bahasa ID & EN, pointer script-panel)
+  * Changelogs Message ID: `1569368547375714355` (`#📝・changelogs`, Blue Embed `3447003`, Dwi-bahasa ID & EN, pointer script-panel)
+- **Save the Krusty Krab (v5.0 - Full Autonomous Restaurant Cycle: 3-Stage Sizzle Standby Cooking, Locked Cashier State, Precision Table Cash Pickup & Universal Trash Disposal)**:
+  * Vault Clean Message ID: `1569370320929034283` (`SavetheKrustyKrab_Clean.lua` v5.0, Tepat 53 Pesan Steril Terverifikasi 1:1, menghapus old msg `1569342822799249409`)
+  * Target Role (`🍔 Save the Krusty Krab`): `1568928868146880652`
+  * Script Update Ping Role: `1548208954163724299`
+  * Announcements Message ID: `1569370512780566641` (`#📢・announcements`, Gold Embed `15844367`, Dwi-bahasa ID & EN, pointer script-panel)
+  * Changelogs Message ID: `1569370521672355912` (`#📝・changelogs`, Blue Embed `3447003`, Dwi-bahasa ID & EN, pointer script-panel)
+  * Git Commit: `0981c0b`
