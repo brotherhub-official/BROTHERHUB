@@ -1240,3 +1240,15 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Script Update Ping Role: 1548208954163724299
   * Announcements Message ID: 1569302972263833683 (#📢・announcements, Gold Embed 15844367, Dwi-bahasa ID & EN, pointer script-panel)
   * Changelogs Message ID: 1569302975774728283 (#📝・changelogs, Blue Embed 3447003, Dwi-bahasa ID & EN, pointer script-panel)
+
+
+### Sesi 215 Live Message IDs (09 November 2026):
+- **Save the Krusty Krab (v4.3 - Multi-Channel Cashier Actuator, VIM KeyCode.E Native Simulation, Fuzzy Namespaced Remotes & Auto Kelp Shake Energy Refill)**:
+  * Vault Clean Message ID: `1569311029974929470` (`SavetheKrustyKrab_Clean.lua` v4.3, Tepat 53 Pesan Steril Terverifikasi 1:1, menghapus old msg `1569302965255278714`)
+  * Target Role (`🍔 Save the Krusty Krab`): `1568928868146880652`
+  * Script Update Ping Role: `1548208954163724299`
+  * Announcements Message ID: `1569311176788152412` (`#📢・announcements`, Gold Embed `15844367`, Dwi-bahasa ID & EN, pointer script-panel)
+  * Changelogs Message ID: `1569311179539480601` (`#📝・changelogs`, Blue Embed `3447003`, Dwi-bahasa ID & EN, pointer script-panel)
+- **Survive Your Ideas (v1.4 - Master Disaster Evacuation Suite, Hazard & Monster Auto-Dodge, 1-Click Mobile Floating QuickBar & Subplace Sync)**:
+  * Vault Clean Message ID: `1569311040955617320` (`SurviveYourIdeas_Clean.lua` v1.4, Tepat 53 Pesan Steril Terverifikasi 1:1, menghapus old msg `1569271679446949989`)
+  * Target Role (`💡 Survive Your Ideas`): `1569199870110203978`
