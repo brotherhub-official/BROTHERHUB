@@ -54,6 +54,7 @@
 - **Beat the Boss & Steal**: `1563939923604668416` (Role Name: `🥊 Beat the Boss & Steal`)
 - **Hook And Rob**: `1566202284315254886` (Role Name: `🪝 Hook And Rob`)
 - **Save the Krusty Krab**: `1568928868146880652` (Role Name: `🍔 Save the Krusty Krab`)
+- **Survive Your Ideas**: `1569199870110203978` (Role Name: `💡 Survive Your Ideas`)
 
 ## 2. NOTIFICATION & SYSTEM ROLES
 
@@ -1142,3 +1143,12 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Target Role (🍔 Save the Krusty Krab): 1568928868146880652
   * Script Update Ping Role: 1548208954163724299
   * Git Commit: 52d4756
+
+### Sesi 205 Live Message IDs (09 November 2026):
+- **Survive Your Ideas (v1.0 - Game #53 Official Launch: Master Survival, Auto Free Revive, Auto Writer Word Solver, Safe Zone Evacuate, Kill Aura & My Flower Shop GUI Style)**:
+  * Role ID (`💡 Survive Your Ideas`): `1569199870110203978`
+  * Vault Clean Message ID: `1569201725733085197` (`SurviveYourIdeas_Clean.lua` v1.0, Tepat 53 Pesan Steril Terverifikasi 1:1)
+  * Announcements Message ID: `1569201936778010670` (`#📢・announcements`, Gold Embed `15844367`, Dwi-bahasa ID & EN, pointer script-panel)
+  * Changelogs Message ID: `1569201944172564541` (`#📝・changelogs`, Blue Embed `3447003`, Dwi-bahasa ID & EN)
+  * Script Update Ping Role: `1548208954163724299`
+  * Git Commit: `e7e43a7`
