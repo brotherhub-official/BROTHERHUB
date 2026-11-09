@@ -1288,9 +1288,17 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Announcements Message ID: `1569368537762373754` (`#📢・announcements`, Gold Embed `15844367`, Dwi-bahasa ID & EN, pointer script-panel)
   * Changelogs Message ID: `1569368547375714355` (`#📝・changelogs`, Blue Embed `3447003`, Dwi-bahasa ID & EN, pointer script-panel)
 - **Save the Krusty Krab (v5.0 - Full Autonomous Restaurant Cycle: 3-Stage Sizzle Standby Cooking, Locked Cashier State, Precision Table Cash Pickup & Universal Trash Disposal)**:
-  * Vault Clean Message ID: `1569370320929034283` (`SavetheKrustyKrab_Clean.lua` v5.0, Tepat 53 Pesan Steril Terverifikasi 1:1, menghapus old msg `1569342822799249409`)
+  * Vault Clean Message ID: `1569370320929034283` (Old v5.0, digantikan v5.1)
   * Target Role (`🍔 Save the Krusty Krab`): `1568928868146880652`
   * Script Update Ping Role: `1548208954163724299`
   * Announcements Message ID: `1569370512780566641` (`#📢・announcements`, Gold Embed `15844367`, Dwi-bahasa ID & EN, pointer script-panel)
   * Changelogs Message ID: `1569370521672355912` (`#📝・changelogs`, Blue Embed `3447003`, Dwi-bahasa ID & EN, pointer script-panel)
   * Git Commit: `0981c0b`
+
+- **Save the Krusty Krab (v5.1 - Master Sequential Pipeline Conductor, Debounced Cashier, Continuous Meat Stock & Outdoor Dumpster Trash Loop)**:
+  * Vault Clean Message ID: `1569406328345198714` (`SavetheKrustyKrab_Clean.lua` v5.1, Tepat 53 Pesan Steril Terverifikasi 1:1, menghapus old msg `1569370320929034283`)
+  * Target Role (`🍔 Save the Krusty Krab`): `1568928868146880652`
+  * Script Update Ping Role: `1548208954163724299`
+  * Announcements Message ID: `1569406794420322418` (`#📢・announcements`, Gold Embed `15844367`, Dwi-bahasa ID & EN, pointer script-panel)
+  * Changelogs Message ID: `1569406803572170903` (`#📝・changelogs`, Blue Embed `3447003`, Dwi-bahasa ID & EN, pointer script-panel)
+  * Git Commit: `c0d3365`
