@@ -447,6 +447,7 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Announcements (`#📢・announcements`): `1568911160017952859` (Gold Embed `15844367`, tag `<@&1549290685645983764> <@&1548208954163724299>`)
   * Changelogs (`#📝・changelogs`): `1568911267882860545` (Blue Embed `3447003`, tag `<@&1549290685645983764> <@&1548208954163724299>`)
   * Bug Report Reply (`#🐛・bug-reports`): `1568911270655037504` (Reply ke Prone `<@446749965570670603>`)
+  * Standalone Bug Guide Message ID (Pesan 2): `1569220310757023896` (`#🐛・bug-reports`, Teks baku format resmi pelaporan bug di posisi paling bawah channel sesuai Hukum 7)
   * Founder Vault (`#🔐・founder-vault`): `1568910888759595108` (`PolyLoot_Clean.lua` v4.4)
 - **Poly Loot v4.2 (Smooth Tween Stability, Anti-Fling to Spawn & Behind Stance Elevation Fix — Laporan Video & Evaluasi Prone) Live IDs**:
   * Announcements (`#📢・announcements`): `1564064404742344806` (Gold Embed `15844367`, tag `<@&1549290685645983764> <@&1548208954163724299>`)
@@ -1166,3 +1167,5 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Announcements Message ID: `1569218289417326673` (`#📢・announcements`, Gold Embed `15844367`, Dwi-bahasa ID & EN, pointer script-panel)
   * Changelogs Message ID: `1569218423894970399` (`#📝・changelogs`, Blue Embed `3447003`, Dwi-bahasa ID & EN, pointer script-panel)
   * Git Commit: `6316ca0`
+- **Bug Reports Standalone Guide (Hukum 7 Restoration)**:
+  * Standalone Bug Guide Message ID (Pesan 2): `1569220310757023896` (`#🐛・bug-reports`, Teks baku format resmi pelaporan bug di posisi paling bawah channel sesuai Hukum 7)
