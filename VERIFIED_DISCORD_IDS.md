@@ -1169,3 +1169,12 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Git Commit: `6316ca0`
 - **Bug Reports Standalone Guide (Hukum 7 Restoration)**:
   * Standalone Bug Guide Message ID (Pesan 2): `1569220310757023896` (`#🐛・bug-reports`, Teks baku format resmi pelaporan bug di posisi paling bawah channel sesuai Hukum 7)
+- **Survive Your Ideas (v1.2 - Disaster-Aware Auto Evacuation Engine, Instant Nuke Bunker Teleport, High Ground Safety, Monster/Bomb/Meteor Auto-Dodge, Off Collapsing Island Tiles & 1-Click Mobile Floating QuickBar — Laporan & Evaluasi Arsss #suggestions)**:
+  * Role ID (`💡 Survive Your Ideas`): `1569199870110203978`
+  * Script Update Ping Role: `1548208954163724299`
+  * Vault Clean Message ID: `1569244850040082542` (`SurviveYourIdeas_Clean.lua` v1.2, Tepat 53 Pesan Steril Terverifikasi 1:1, menghapus old msg `1569208690224005160`)
+  * Announcements Message ID: `1569245168257990698` (`#📢・announcements`, Gold Embed `15844367`, Dwi-bahasa ID & EN, pointer script-panel)
+  * Changelogs Message ID: `1569245176835211326` (`#📝・changelogs`, Blue Embed `3447003`, Dwi-bahasa ID & EN, pointer script-panel)
+  * Suggestions Reply Message ID (Pesan 1): `1569245181230981180` (`#⭐・suggestions`, 100% Rich Discord Embed Green `3066993`, Direct Reply ke Arsss `425675264811597824` referencing Msg ID `1569237257448063069`)
+  * Standalone Suggestions Guide (Pesan 2): `1569245184284295230` (`#⭐・suggestions`, Teks baku format resmi pengajuan saran di posisi paling bawah channel sesuai Hukum 7)
+  * Git Commit: `0eeef6c`
