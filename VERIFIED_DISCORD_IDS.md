@@ -1206,3 +1206,11 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
 - **Survive Your Ideas (v1.3 - 1:1 My Flower Shop 360° RGB Rotating Neon Stroke & MinCircle, Multi-Place Subplace Optimization)**:
   * Vault Clean Message ID: `1569271679446949989` (`SurviveYourIdeas_Clean.lua` v1.3, Tepat 53 Pesan Steril Terverifikasi 1:1, menghapus old msg `1569244850040082542`)
   * Target Role (`💡 Survive Your Ideas`): `1569199870110203978`
+
+### Sesi 211 Live Message IDs (09 November 2026):
+- **Save the Krusty Krab (v3.9 - Autonomous Racik & Prep Table Pipeline Update, Full Navigation, Stash Clicker, Objective Sensor & Zero Grill Hang)**:
+  * Vault Clean Message ID: `1569279146692050956` (`SavetheKrustyKrab_Clean.lua` v3.9, Tepat 53 Pesan Steril Terverifikasi 1:1, menghapus old msg `1569271662161961000`)
+  * Target Role (`🍔 Save the Krusty Krab`): `1568928868146880652`
+  * Script Update Ping Role: `1548208954163724299`
+  * Announcements Message ID: `1569279152991772745` (`#📢・announcements`, Gold Embed `15844367`, Dwi-bahasa ID & EN, pointer script-panel)
+  * Changelogs Message ID: `1569279156951326805` (`#📝・changelogs`, Blue Embed `3447003`, Dwi-bahasa ID & EN, pointer script-panel)
