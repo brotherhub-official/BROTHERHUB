@@ -1178,3 +1178,12 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Suggestions Reply Message ID (Pesan 1): `1569245181230981180` (`#⭐・suggestions`, 100% Rich Discord Embed Green `3066993`, Direct Reply ke Arsss `425675264811597824` referencing Msg ID `1569237257448063069`)
   * Standalone Suggestions Guide (Pesan 2): `1569245184284295230` (`#⭐・suggestions`, Teks baku format resmi pengajuan saran di posisi paling bawah channel sesuai Hukum 7)
   * Git Commit: `0eeef6c`
+
+
+### Sesi 208 Live Message IDs (09 November 2026):
+- **Save the Krusty Krab (v3.6 - Autonomous Grill Front Spot Navigation, Standalone Kitchen Cooker, Zero Counter Hang & Fast Autonomous Kitchen Pipeline Engine)**:
+  * Vault Clean Message ID: 1569251745756876811 (SavetheKrustyKrab_Clean.lua v3.6, Tepat 53 Pesan Steril Terverifikasi 1:1, menghapus old msg 1569218047930269716)
+  * Target Role (🍔 Save the Krusty Krab): 1568928868146880652
+  * Script Update Ping Role: 1548208954163724299
+  * Announcements Message ID: 1569251950938300548 (#📢・announcements, Gold Embed 15844367, Dwi-bahasa ID & EN, pointer script-panel)
+  * Changelogs Message ID: 1569251953777582172 (#📝・changelogs, Blue Embed 3447003, Dwi-bahasa ID & EN, pointer script-panel)
