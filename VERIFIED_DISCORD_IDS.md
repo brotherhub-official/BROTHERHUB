@@ -1310,3 +1310,35 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Announcements Message ID: `1569413256789884961` (`#📢・announcements`, Gold Embed `15844367`, Dwi-bahasa ID & EN, pointer script-panel)
   * Changelogs Message ID: `1569413266906808514` (`#📝・changelogs`, Blue Embed `3447003`, Dwi-bahasa ID & EN, pointer script-panel)
   * Git Commit: `6485155`
+- **Save the Krusty Krab (v5.3 - Strict Trash Pre-Filter, Native ReachZone Alignment & Sequential Disposal)**:
+  * Vault Clean Message ID: `1569424349251768440` (`SavetheKrustyKrab_Clean.lua` v5.3, Tepat 53 Pesan Steril Terverifikasi 1:1, menghapus old msg `1569412907899424849`)
+  * Target Role (`🍔 Save the Krusty Krab`): `1568928868146880652`
+  * Script Update Ping Role: `1548208954163724299`
+  * Announcements Message ID: `1569424354310230108` (`#📢・announcements`, Gold Embed `15844367`, Dwi-bahasa ID & EN, pointer script-panel)
+  * Changelogs Message ID: `1569424363092971541` (`#📝・changelogs`, Blue Embed `3447003`, Dwi-bahasa ID & EN, pointer script-panel)
+  * Git Commit: `7f811ff`
+
+- **Save the Krusty Krab (v5.4 - Universal Camera Look-At, Proximity Line-of-Sight Bypass, Debounced Money Pickup & Floor Mess Conductor)**:
+  * Vault Clean Message ID: `1569556880416833616` (`SavetheKrustyKrab_Clean.lua` v5.4, Tepat 53 Pesan Steril Terverifikasi 1:1, menghapus old msg `1569424349251768440`)
+  * Target Role (`🍔 Save the Krusty Krab`): `1568928868146880652`
+  * Script Update Ping Role: `1548208954163724299`
+  * Announcements Message ID: `1569557212630753414` (`#📢・announcements`, Gold Embed `15844367`, Dwi-bahasa ID & EN, pointer script-panel)
+  * Changelogs Message ID: `1569557222504145058` (`#📝・changelogs`, Blue Embed `3447003`, Dwi-bahasa ID & EN, pointer script-panel)
+  * Git Commit: `abf3e5a`
+
+- **Save the Krusty Krab (v5.5 - Prioritized Floor Trash Pickup Engine & Tutorial Day 1 Objective Sensor Mapping)**:
+  * Vault Clean Message ID: `1569588781965901874` (`SavetheKrustyKrab_Clean.lua` v5.5, Tepat 53 Pesan Steril Terverifikasi 1:1, menghapus old msg `1569556880416833616`)
+  * Target Role (`🍔 Save the Krusty Krab`): `1568928868146880652`
+  * Script Update Ping Role: `1548208954163724299`
+  * Announcements Message ID: `1569589168378613801` (`#📢・announcements`, Gold Embed `15844367`, Dwi-bahasa ID & EN, pointer script-panel)
+  * Changelogs Message ID: `1569589178201669734` (`#📝・changelogs`, Blue Embed `3447003`, Dwi-bahasa ID & EN, pointer script-panel)
+  * Git Commit: `cc322ff`
+
+- **Survive Your Ideas (v1.6 - Multi-Layer Lightning Lock & Falling Meteor Auto Dodge, Silent Aim & Auto Aim Suite — Laporan & Request Arsss #suggestions)**:
+  * Vault Clean Message ID: `1569595156263346266` (`SurviveYourIdeas_Clean.lua` v1.6, Tepat 53 Pesan Steril Terverifikasi 1:1, menghapus old msg `1569358456727801876`)
+  * Target Role (`💡 Survive Your Ideas`): `1569199870110203978`
+  * Script Update Ping Role: `1548208954163724299`
+  * Announcements Message ID: `1569595751544258582` (`#📢・announcements`, Gold Embed `15844367`, Dwi-bahasa ID & EN, pointer script-panel)
+  * Changelogs Message ID: `1569595762629673003` (`#📝・changelogs`, Blue Embed `3447003`, Dwi-bahasa ID & EN, pointer script-panel)
+  * Reply Message ID: `1569595771433517298` (`#⭐・suggestions`, Balasan resmi ke Arsss msg `1569588673094098985`)
+  * Git Commit: `31abaf6`
