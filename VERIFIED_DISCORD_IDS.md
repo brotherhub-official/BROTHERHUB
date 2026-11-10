@@ -1,3 +1,10 @@
+- **Live Discord Announcement**:
+* `#📢・announcements`: Save the Krusty Krab v5.8 Universal Camera POV & Cashier Speedup (`1569723295060725973`), Survive Your Ideas v1.8 Precision Open Water Submergence (`1569727800544329842`)
+- **Live Discord Changelogs**:
+* `#📝・changelogs`: Save the Krusty Krab v5.8 (`1569727797520498869`), Survive Your Ideas v1.8 (`1569727803753103362`)
+- **Live Bug Reports Resolution**:
+* `#🐛・bug-reports`: Arsss Bug Reply Msg ID `1569727809604296786` (Survive Your Ideas v1.8 TP Dive Water resolution)
+
 # VERIFIED ROLES & CHANNELS MAPPING TABLE
 
 ## 1. 52 SUPPORTED GAMES ROLES
@@ -1351,3 +1358,32 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Announcements Message ID: `1569614778018562180` (`#📢・announcements`, Gold Embed `15844367`, Dwi-bahasa ID & EN, pointer script-panel)
   * Changelogs Message ID: `1569614937628610582` (`#📝・changelogs`, Blue Embed `3447003`, Dwi-bahasa ID & EN, pointer script-panel)
   * Git Commit: `674d05e`
+
+### 54. 🍔 Game #52: Save the Krusty Krab (v5.7 - Clean Prompt Direct Scanner, UUID Tool Classification Fix & Floor Trash Autonomous Pickup Suite)
+- **Place ID**: 77709018585862
+- **Target Role (🍔 Save the Krusty Krab)**: 1568928868146880652
+- **Target Role Ping**: <@&1568928868146880652> <@&1548208954163724299>
+- **Founder Vault**: Clean File SavetheKrustyKrab_Clean.lua Msg ID 1569696145624662141 (Tepat 53 Pesan Steril Terverifikasi 1:1, menghapus old msg 1569614480298610799)
+- **Announcements**: Msg ID 1569696522117976178 (#📢・announcements, Gold Embed 15844367, tagged <@&1568928868146880652> <@&1548208954163724299>)
+- **Changelogs**: Msg ID 1569696530162520156 (#📝・changelogs, Blue Embed 3447003, tagged <@&1568928868146880652> <@&1548208954163724299>)
+- **Fitur Utama v5.7**:
+  * Penghapusan blind fallback Rule 6 pada classifyTool yang sebelumnya mencap seluruh item UUID sebagai sampah saat tutorial FloorTrash.
+  * Direct ProximityPrompt Scanner untuk prompt ActionText = 'Clean' dan ObjectText = 'Trash' langsung di Workspace.
+  * Auto unequip peralatan sebelum membersihkan sampah lantai agar tangan kosong.
+  * Verified pickup check sebelum menuju tempat sampah untuk membuang.
+
+### 55. 💡 Game #53: Survive Your Ideas (v1.7 - TP Safehouse, Supernova Underwater Evasion, Safe Zone Center & Responsive 3-Button Mobile QuickBar)
+- **Place ID**: 109001332046330
+- **Target Role (💡 Survive Your Ideas)**: 1569199870110203978
+- **Target Role Ping**: <@&1569199870110203978> <@&1548208954163724299>
+- **Founder Vault**: Clean File SurviveYourIdeas_Clean.lua Msg ID 1569696137978585180 (Tepat 53 Pesan Steril Terverifikasi 1:1, menghapus old msg 1569595156263346266)
+- **Announcements**: Msg ID 1569696503973412968 (#📢・announcements, Gold Embed 15844367, tagged <@&1569199870110203978> <@&1548208954163724299>)
+- **Changelogs**: Msg ID 1569696515231064166 (#📝・changelogs, Blue Embed 3447003, tagged <@&1569199870110203978> <@&1548208954163724299>)
+- **Reply Suggestions Discord (Standar 2 Balasan Baku)**:
+  * Pesan 1 (Direct Reply Embed): Msg ID 1569696842063806587 (#⭐・suggestions, Balasan resmi resolusi fitur ke Arsss msg 1569618541995495504, tag <@425675264811597824>).
+  * Pesan 2 (Format Baku Follow-up): Msg ID 1569696848850194443 (#⭐・suggestions, Format baku pengajuan fitur ID & EN diposisikan paling bawah channel, menghapus template lama yang terdorong naik 1569617102933860363 & 1569210231731257355).
+- **Fitur Utama v1.7**:
+  * Upgrade tombol Safe Island ke Teleport Safehouse (	eleportToSafehouse()) saat shelter muncul.
+  * Auto selam ke bawah air saat bencana Supernova aktif (	eleportToWaterForSupernova()).
+  * Teleport masuk ke pusat zona aman saat bencana zona (	eleportToSafeZone()).
+  * Mobile Floating QuickBar 3-tombol (🛡️ SAFEHOUSE, 🎯 SAFE ZONE, 🌊 DIVE WATER).
