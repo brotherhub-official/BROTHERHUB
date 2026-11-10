@@ -1340,7 +1340,8 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Script Update Ping Role: `1548208954163724299`
   * Announcements Message ID: `1569595751544258582` (`#📢・announcements`, Gold Embed `15844367`, Dwi-bahasa ID & EN, pointer script-panel)
   * Changelogs Message ID: `1569595762629673003` (`#📝・changelogs`, Blue Embed `3447003`, Dwi-bahasa ID & EN, pointer script-panel)
-  * Reply Message ID: `1569595771433517298` (`#⭐・suggestions`, Balasan resmi ke Arsss msg `1569588673094098985`)
+  * Reply Message ID: `1569595771433517298` (`#⭐・suggestions`, Balasan resmi Pesan 1: Embed resolusi fitur ke Arsss msg `1569588673094098985`)
+  * Follow-up Template Message ID: `1569617102933860363` (`#⭐・suggestions`, Balasan resmi Pesan 2: Format baku pengajuan fitur ID & EN di posisi paling bawah channel, menggantikan `1569245184284295230`)
   * Git Commit: `31abaf6`
 
 - **Save the Krusty Krab (v5.6 - Autonomous Floor Trash Pickup Engine, Miscellaneous Container Scanner, PVInstance Tool Pivot & Instant Multi-Disposal Suite)**:
