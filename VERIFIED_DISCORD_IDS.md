@@ -1,9 +1,9 @@
 - **Live Discord Announcement**:
-* `#📢・announcements`: Survive Your Ideas v1.9 Underground Safe Platform & Freeze Engine (`1569931869812957226`), Save the Krusty Krab v5.9 Instant Cashier & Floor Trash Priority (`1569764655315030017`), Save the Krusty Krab v5.8 (`1569723295060725973`)
+* `#📢・announcements`: Survive Your Ideas v2.0 Underground 0-60s Slider & Stay Forever Mode (`1569936411963031703`), Survive Your Ideas v1.9 (`1569931869812957226`), Save the Krusty Krab v5.9 (`1569764655315030017`)
 - **Live Discord Changelogs**:
-* `#📝・changelogs`: Survive Your Ideas v1.9 (`1569931873801474079`), Save the Krusty Krab v5.9 (`1569764660603916300`), Save the Krusty Krab v5.8 (`1569727797520498869`)
+* `#📝・changelogs`: Survive Your Ideas v2.0 (`1569936415020683346`), Survive Your Ideas v1.9 (`1569931873801474079`), Save the Krusty Krab v5.9 (`1569764660603916300`)
 - **Live Bug Reports Resolution**:
-* `#🐛・bug-reports`: Arsss Bug Reply Msg ID `1569931876812980358` (Survive Your Ideas v1.9 Underground Safe Platform & Freeze resolution referencing Msg ID `1569909703763300576`), Standalone Format Guide Msg ID `1569931880281935883`
+* `#🐛・bug-reports`: Arsss Bug Reply Msg ID `1569936417813954621` (Survive Your Ideas v2.0 Underground 0-60s Slider, Freeze Removal & DryRoom resolution referencing Msg ID `1569934416992669767`), Standalone Format Guide Msg ID `1569936420435660921`
 
 # VERIFIED ROLES & CHANNELS MAPPING TABLE
 
@@ -1372,18 +1372,18 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Auto unequip peralatan sebelum membersihkan sampah lantai agar tangan kosong.
   * Verified pickup check sebelum menuju tempat sampah untuk membuang.
 
-### 55. 💡 Game #53: Survive Your Ideas (v1.9 - Underground Safe Platform Anti-Void & 15s Freeze Protection Suite)
+### 55. 💡 Game #53: Survive Your Ideas (v2.0 - Underground 0-60s Duration Slider, Stay Forever Mode & DryRoom Anti-Drown Protection Suite)
 - **Place ID**: 109001332046330
 - **Target Role (💡 Survive Your Ideas)**: 1569199870110203978
 - **Target Role Ping**: <@&1569199870110203978> <@&1548208954163724299>
-- **Founder Vault**: Clean File SurviveYourIdeas_Clean.lua Msg ID `1569931867329925191` (Tepat 53 Pesan Steril Terverifikasi 1:1, menghapus old msg `1569721703041601597`)
-- **Announcements**: Msg ID `1569931869812957226` (#📢・announcements, Gold Embed 15844367, tagged <@&1569199870110203978> <@&1548208954163724299>)
-- **Changelogs**: Msg ID `1569931873801474079` (#📝・changelogs, Blue Embed 3447003, tagged <@&1569199870110203978> <@&1548208954163724299>)
+- **Founder Vault**: Clean File SurviveYourIdeas_Clean.lua Msg ID `1569936409014308906` (Tepat 53 Pesan Steril Terverifikasi 1:1, menghapus old msg `1569931867329925191`)
+- **Announcements**: Msg ID `1569936411963031703` (#📢・announcements, Gold Embed 15844367, tagged <@&1569199870110203978> <@&1548208954163724299>)
+- **Changelogs**: Msg ID `1569936415020683346` (#📝・changelogs, Blue Embed 3447003, tagged <@&1569199870110203978> <@&1548208954163724299>)
 - **Reply Bug Reports Discord (Standar 2 Balasan Baku)**:
-  * Pesan 1 (Direct Reply Embed): Msg ID `1569931876812980358` (#🐛・bug-reports, Balasan resmi resolusi evakuasi bawah tanah ke Arsss msg `1569909703763300576`, tag <@425675264811597824>).
-  * Pesan 2 (Format Baku Follow-up): Msg ID `1569931880281935883` (#🐛・bug-reports, Format baku pelaporan bug ID & EN diposisikan paling bawah channel sesuai Hukum 7).
-- **Fitur Utama v1.9**:
-  * Teleportasi ke bawah tanah anti-void (kedalaman Y = -118, aman 380 stud di atas batas void mati -500).
-  * Pemunculan otomatis platform kokoh berpenghalang (`_BH_UndergroundSafePlatform`) di kedalaman Y = -122.
-  * Pembekuan fisik (Freeze HRP) selama 15 detik untuk 100% imun dari radiasi Supernova dan tarikan Blackhole (unfreeze toggleable).
-  * Mobile QuickBar tombol ketiga di-upgrade menjadi `🕳️ UNDERGROUND` untuk evakuasi instan.
+  * Pesan 1 (Direct Reply Embed): Msg ID `1569936417813954621` (#🐛・bug-reports, Balasan resmi resolusi slider durasi, freeze removal & DryRoom ke Arsss msg `1569934416992669767`, tag <@425675264811597824>).
+  * Pesan 2 (Format Baku Follow-up): Msg ID `1569936420435660921` (#🐛・bug-reports, Format baku pelaporan bug ID & EN diposisikan paling bawah channel sesuai Hukum 7).
+- **Fitur Utama v2.0**:
+  * Slider Durasi Bawah Tanah (0 - 60 Detik): Diatur ke 0s untuk menghilangkan freeze total (bebas bergerak instan), atau atur detik freeze sesuai keinginan.
+  * Opsi Tinggal Selamanya di Bawah Tanah (Stay Forever): Karakter bisa tinggal di bawah tanah tanpa batas waktu countdown.
+  * Proteksi DryRoom Anti-Drown: Menambahkan part `_BH_UndergroundDryZone` dengan tag `DryRoom` sehingga engine game tidak menguras nafas/oksigen.
+  * Auto Kembali ke Permukaan: Opsi otomatis kembali ke zona aman pulau setelah durasi timer selesai.
