@@ -1,9 +1,9 @@
 - **Live Discord Announcement**:
-* `#📢・announcements`: Save the Krusty Krab v5.8 Universal Camera POV & Cashier Speedup (`1569723295060725973`), Survive Your Ideas v1.8 Precision Open Water Submergence (`1569727800544329842`)
+* `#📢・announcements`: Survive Your Ideas v1.9 Underground Safe Platform & Freeze Engine (`1569931869812957226`), Save the Krusty Krab v5.9 Instant Cashier & Floor Trash Priority (`1569764655315030017`), Save the Krusty Krab v5.8 (`1569723295060725973`)
 - **Live Discord Changelogs**:
-* `#📝・changelogs`: Save the Krusty Krab v5.8 (`1569727797520498869`), Survive Your Ideas v1.8 (`1569727803753103362`)
+* `#📝・changelogs`: Survive Your Ideas v1.9 (`1569931873801474079`), Save the Krusty Krab v5.9 (`1569764660603916300`), Save the Krusty Krab v5.8 (`1569727797520498869`)
 - **Live Bug Reports Resolution**:
-* `#🐛・bug-reports`: Arsss Bug Reply Msg ID `1569727809604296786` (Survive Your Ideas v1.8 TP Dive Water resolution)
+* `#🐛・bug-reports`: Arsss Bug Reply Msg ID `1569931876812980358` (Survive Your Ideas v1.9 Underground Safe Platform & Freeze resolution referencing Msg ID `1569909703763300576`), Standalone Format Guide Msg ID `1569931880281935883`
 
 # VERIFIED ROLES & CHANNELS MAPPING TABLE
 
@@ -1372,18 +1372,18 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Auto unequip peralatan sebelum membersihkan sampah lantai agar tangan kosong.
   * Verified pickup check sebelum menuju tempat sampah untuk membuang.
 
-### 55. 💡 Game #53: Survive Your Ideas (v1.7 - TP Safehouse, Supernova Underwater Evasion, Safe Zone Center & Responsive 3-Button Mobile QuickBar)
+### 55. 💡 Game #53: Survive Your Ideas (v1.9 - Underground Safe Platform Anti-Void & 15s Freeze Protection Suite)
 - **Place ID**: 109001332046330
 - **Target Role (💡 Survive Your Ideas)**: 1569199870110203978
 - **Target Role Ping**: <@&1569199870110203978> <@&1548208954163724299>
-- **Founder Vault**: Clean File SurviveYourIdeas_Clean.lua Msg ID 1569696137978585180 (Tepat 53 Pesan Steril Terverifikasi 1:1, menghapus old msg 1569595156263346266)
-- **Announcements**: Msg ID 1569696503973412968 (#📢・announcements, Gold Embed 15844367, tagged <@&1569199870110203978> <@&1548208954163724299>)
-- **Changelogs**: Msg ID 1569696515231064166 (#📝・changelogs, Blue Embed 3447003, tagged <@&1569199870110203978> <@&1548208954163724299>)
-- **Reply Suggestions Discord (Standar 2 Balasan Baku)**:
-  * Pesan 1 (Direct Reply Embed): Msg ID 1569696842063806587 (#⭐・suggestions, Balasan resmi resolusi fitur ke Arsss msg 1569618541995495504, tag <@425675264811597824>).
-  * Pesan 2 (Format Baku Follow-up): Msg ID 1569696848850194443 (#⭐・suggestions, Format baku pengajuan fitur ID & EN diposisikan paling bawah channel, menghapus template lama yang terdorong naik 1569617102933860363 & 1569210231731257355).
-- **Fitur Utama v1.7**:
-  * Upgrade tombol Safe Island ke Teleport Safehouse (	eleportToSafehouse()) saat shelter muncul.
-  * Auto selam ke bawah air saat bencana Supernova aktif (	eleportToWaterForSupernova()).
-  * Teleport masuk ke pusat zona aman saat bencana zona (	eleportToSafeZone()).
-  * Mobile Floating QuickBar 3-tombol (🛡️ SAFEHOUSE, 🎯 SAFE ZONE, 🌊 DIVE WATER).
+- **Founder Vault**: Clean File SurviveYourIdeas_Clean.lua Msg ID `1569931867329925191` (Tepat 53 Pesan Steril Terverifikasi 1:1, menghapus old msg `1569721703041601597`)
+- **Announcements**: Msg ID `1569931869812957226` (#📢・announcements, Gold Embed 15844367, tagged <@&1569199870110203978> <@&1548208954163724299>)
+- **Changelogs**: Msg ID `1569931873801474079` (#📝・changelogs, Blue Embed 3447003, tagged <@&1569199870110203978> <@&1548208954163724299>)
+- **Reply Bug Reports Discord (Standar 2 Balasan Baku)**:
+  * Pesan 1 (Direct Reply Embed): Msg ID `1569931876812980358` (#🐛・bug-reports, Balasan resmi resolusi evakuasi bawah tanah ke Arsss msg `1569909703763300576`, tag <@425675264811597824>).
+  * Pesan 2 (Format Baku Follow-up): Msg ID `1569931880281935883` (#🐛・bug-reports, Format baku pelaporan bug ID & EN diposisikan paling bawah channel sesuai Hukum 7).
+- **Fitur Utama v1.9**:
+  * Teleportasi ke bawah tanah anti-void (kedalaman Y = -118, aman 380 stud di atas batas void mati -500).
+  * Pemunculan otomatis platform kokoh berpenghalang (`_BH_UndergroundSafePlatform`) di kedalaman Y = -122.
+  * Pembekuan fisik (Freeze HRP) selama 15 detik untuk 100% imun dari radiasi Supernova dan tarikan Blackhole (unfreeze toggleable).
+  * Mobile QuickBar tombol ketiga di-upgrade menjadi `🕳️ UNDERGROUND` untuk evakuasi instan.
