@@ -1387,3 +1387,40 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Opsi Tinggal Selamanya di Bawah Tanah (Stay Forever): Karakter bisa tinggal di bawah tanah tanpa batas waktu countdown.
   * Proteksi DryRoom Anti-Drown: Menambahkan part `_BH_UndergroundDryZone` dengan tag `DryRoom` sehingga engine game tidak menguras nafas/oksigen.
   * Auto Kembali ke Permukaan: Opsi otomatis kembali ke zona aman pulau setelah durasi timer selesai.
+
+### 56. 💡 Game #53: Survive Your Ideas (v2.1 - Anti-Hazard Touch, Walk On Water, Anti-Blackhole Repulsion, QuickBar Random TP, Realtime 0-Latency Meteor Dodge, Dizzy Camera Straightener & JumpPower Fix — Laporan & Request Arsss #suggestions)
+- **Place ID**: 109001332046330 / 77900175935766
+- **Target Role (💡 Survive Your Ideas)**: 1569199870110203978
+- **Target Role Ping**: <@&1569199870110203978> <@&1548208954163724299>
+- **Founder Vault**: Clean File `SurviveYourIdeas_Clean.lua` Msg ID `1570421895059218452` (Tepat 53 Pesan Steril Terverifikasi 1:1, menghapus old msg `1569936409014308906`)
+- **Announcements**: Msg ID `1570422891655209031` (#📢・announcements, Gold Embed 15844367, tagged <@&1569199870110203978> <@&1548208954163724299>)
+- **Changelogs**: Msg ID `1570422894620573739` (#📝・changelogs, Blue Embed 3447003, tagged <@&1569199870110203978> <@&1548208954163724299>)
+- **Reply Suggestions Discord (Standar 2 Balasan Baku - Hukum 7)**:
+  * Pesan 1 (Direct Reply): Msg ID `1570422906260029441` (#⭐・suggestions, Balasan resmi resolusi 7 poin ke Arsss msg `1570368419939750018`)
+  * Pesan 2 (Format Baku Follow-up): Msg ID `1570422908457721892` (#⭐・suggestions, Format baku pengajuan saran ID & EN di posisi paling bawah channel)
+- **Git Commit**: `8520161`
+- **Fitur Utama v2.1**:
+  * Anti-Hazard Touch: Menonaktifkan kerusakan akibat sentuhan pada Lava, Asam, Api, Laser, Duri, Radiasi, dan KillBrick (`CanTouch = false` & sterilize).
+  * Walk On Water & Tsunami Padat: Part air dan ombak tsunami menjadi padat (`CanCollide = true`, `CanTouch = false`) plus dynamic ForceField platform pad di bawah telapak kaki.
+  * Improved Anti-Blackhole: Memanfaatkan atribut resmi engine (`Protected`, `DevImmortal`, dan `ForceField`) sehingga skrip `PullFieldClient` menolak 100% gaya hisap radial.
+  * Random Player TP: Tombol cepat `🎲 TP RANDOM` di baris ke-3 Mobile Floating QuickBar serta menu otomatis dengan interval slider di UI Tab.
+  * 0-Latency Realtime Auto Dodge Petir & Meteor: Pemindai `DescendantAdded` mendeteksi kilat, strike beam, dan meteor jatuh (`Velocity.Y < -30`) seketika tanpa delay polling.
+  * Disable Screen Flip & Kamera Dizzy: Mematikan render step `DizzyCamera`, membersihkan status dizzy/blind, dan mengunci roll kamera agar selalu lurus.
+  * Fix JumpPower Bug: Menetapkan `UseJumpPower = true` dan sinkronisasi `JumpHeight` proporsional sehingga lompatan bertambah tinggi secara nyata di semua karakter.
+
+### 57. 👑 Game #15: Poly Loot (v4.5 - Volcano & Infernal Rift Combat Overhaul, Ignarok Mob List Integration, Dual-Frame Stepped+Heartbeat Smooth Tween Anti-Fling, Auto Walk Wall Barrier Logic, Safe Distance Seamless Integration — Laporan & Request Prone #bug-reports)
+- **Place ID**: 124032631078772
+- **Target Role (👑 Poly Loot)**: 1549290685645983764
+- **Target Role Ping**: <@&1549290685645983764> <@&1548208954163724299>
+- **Founder Vault**: Clean File `PolyLoot_Clean.lua` Msg ID `1570421903397617755` (Tepat 53 Pesan Steril Terverifikasi 1:1, menghapus old msg `1568910888759595108`)
+- **Announcements**: Msg ID `1570422898970067089` (#📢・announcements, Gold Embed 15844367, tagged <@&1549290685645983764> <@&1548208954163724299>)
+- **Changelogs**: Msg ID `1570422903038541925` (#📝・changelogs, Blue Embed 3447003, tagged <@&1549290685645983764> <@&1548208954163724299>)
+- **Reply Bug Reports Discord (Standar 2 Balasan Baku - Hukum 7)**:
+  * Pesan 1 (Direct Reply): Msg ID `1570422911796248608` (#🐛・bug-reports, Balasan resmi resolusi 4 poin bug ke Prone msg `1570241974433353858`)
+  * Pesan 2 (Format Baku Follow-up): Msg ID `1570422915206352907` (#🐛・bug-reports, Format baku pelaporan bug ID & EN di posisi paling bawah channel)
+- **Git Commit**: `8520161`
+- **Fitur Utama v4.5**:
+  * Ignarok Mob & Boss Integration: Menambahkan `Ignarok` secara eksplisit pada daftar target `MOB_LIST` dan sinkronisasi alias otomatis (`Ignarok <=> DemonLord`) agar bot memprioritaskan boss saat terjebak di rift.
+  * Smooth Tween Anti-Fling & Anti-Stuck (Area Volcano & Seluruh Map): Proteksi dual-frame noclip (Stepped + Heartbeat) serta peniadaan kecepatan linear/angular meniadakan benturan fisik pada bebatuan curam Volcano, dilengkapi watchdog anti-stuck 0.35s.
+  * Mode Auto Walk Terkalibrasi (Bebas Jebakan Tembok): Menjaga integritas kolisi fisik agar karakter tidak sembarangan menembus tembok satu arah dan terjebak di void, dilengkapi auto-hop melompati rintangan rendah.
+  * Sinkronisasi Safe Distance & Auto Farm: Fitur Safe Stance (`Above`, `Orbit`, `Behind`) kini berjalan simultan dengan `Auto Farm` pada mode gerak apa pun tanpa saling tumpang tindih.
