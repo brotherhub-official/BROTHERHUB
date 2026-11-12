@@ -1392,7 +1392,7 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
 - **Place ID**: 109001332046330 / 77900175935766
 - **Target Role (💡 Survive Your Ideas)**: 1569199870110203978
 - **Target Role Ping**: <@&1569199870110203978> <@&1548208954163724299>
-- **Founder Vault**: Clean File `SurviveYourIdeas_Clean.lua` Msg ID `1570421895059218452` (Tepat 53 Pesan Steril Terverifikasi 1:1, menghapus old msg `1569936409014308906`)
+- **Founder Vault**: Clean File `SurviveYourIdeas_Clean.lua` Msg ID `1570442574840340550` (Tepat 53 Pesan Steril Terverifikasi 1:1, menghapus old msg `1569936409014308906`)
 - **Announcements**: Msg ID `1570422891655209031` (#📢・announcements, Gold Embed 15844367, tagged <@&1569199870110203978> <@&1548208954163724299>)
 - **Changelogs**: Msg ID `1570422894620573739` (#📝・changelogs, Blue Embed 3447003, tagged <@&1569199870110203978> <@&1548208954163724299>)
 - **Reply Suggestions Discord (Standar 2 Balasan Baku - Hukum 7)**:
