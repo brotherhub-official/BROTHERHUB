@@ -1,9 +1,9 @@
 - **Live Discord Announcement**:
-* `#📢・announcements`: Survive Your Ideas v2.0 Underground 0-60s Slider & Stay Forever Mode (`1569936411963031703`), Survive Your Ideas v1.9 (`1569931869812957226`), Save the Krusty Krab v5.9 (`1569764655315030017`)
+* `#📢・announcements`: Survive Your Ideas v2.2 8 Tab & Complete Menu Hotfix (`1570453939265077430`), Survive Your Ideas v2.1 (`1570422891655209031`), Poly Loot v4.5 (`1570422898970067089`)
 - **Live Discord Changelogs**:
-* `#📝・changelogs`: Survive Your Ideas v2.0 (`1569936415020683346`), Survive Your Ideas v1.9 (`1569931873801474079`), Save the Krusty Krab v5.9 (`1569764660603916300`)
+* `#📝・changelogs`: Survive Your Ideas v2.2 8 Tab & Complete Menu Hotfix (`1570455039561175051`), Survive Your Ideas v2.1 (`1570422894620573739`), Poly Loot v4.5 (`1570422903038541925`)
 - **Live Bug Reports Resolution**:
-* `#🐛・bug-reports`: Arsss Bug Reply Msg ID `1569936417813954621` (Survive Your Ideas v2.0 Underground 0-60s Slider, Freeze Removal & DryRoom resolution referencing Msg ID `1569934416992669767`), Standalone Format Guide Msg ID `1569936420435660921`
+* `#🐛・bug-reports`: Arsss Bug Reply Msg ID `1570453924626825407` (Survive Your Ideas v2.2 8 Tab & Full Menu Restored referencing Msg ID `1570448920742592533`), Prone Bug Reply Msg ID `1570444308790902865` (Poly Loot v4.5 referencing Msg ID `1570241974433353858`), Standalone Format Guide Msg ID `1570453931744559107`
 
 # VERIFIED ROLES & CHANNELS MAPPING TABLE
 
@@ -1430,3 +1430,21 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Smooth Tween Anti-Fling & Anti-Stuck (Area Volcano & Seluruh Map): Proteksi dual-frame noclip (Stepped + Heartbeat) serta peniadaan kecepatan linear/angular meniadakan benturan fisik pada bebatuan curam Volcano, dilengkapi watchdog anti-stuck 0.35s.
   * Mode Auto Walk Terkalibrasi (Bebas Jebakan Tembok): Menjaga integritas kolisi fisik agar karakter tidak sembarangan menembus tembok satu arah dan terjebak di void, dilengkapi auto-hop melompati rintangan rendah.
   * Sinkronisasi Safe Distance & Auto Farm: Fitur Safe Stance (`Above`, `Orbit`, `Behind`) kini berjalan simultan dengan `Auto Farm` pada mode gerak apa pun tanpa saling tumpang tindih.
+
+### 58. 💡 Game #53: Survive Your Ideas (v2.2 - addButton Argument Mismatch Crash Fix, Restorasi Penuh 8 Tab & Seluruh Menu, Dynamic Mobile ScrollingFrame & Persistent High Ground Platform — Laporan Arsss #bug-reports)
+- **Place ID**: 109001332046330 / 77900175935766
+- **Target Role (💡 Survive Your Ideas)**: 1569199870110203978
+- **Target Role Ping**: <@&1569199870110203978> <@&1548208954163724299>
+- **Founder Vault**: Clean File `SurviveYourIdeas_Clean.lua` Msg ID `1570453369917800710` (Tepat 53 Pesan Steril Terverifikasi 1:1, menghapus old msg `1570442574840340550`)
+- **Announcements**: Msg ID `1570453939265077430` (#📢・announcements, Gold Embed 15844367, tagged <@&1569199870110203978> <@&1548208954163724299>)
+- **Changelogs**: Msg ID `1570455039561175051` (#📝・changelogs, Blue Embed 3447003, tagged <@&1569199870110203978> <@&1548208954163724299>)
+- **Reply Bug Reports Discord (Standar 2 Balasan Baku - Hukum 18 & Hukum 7)**:
+  * Pesan 1 (Direct Reply): Msg ID `1570453924626825407` (#🐛・bug-reports, Balasan resmi resolusi hotfix 8 tab & seluruh menu ke Arsss msg `1570448920742592533` dengan inline message_reference & Real User ID `<@425675264811597824>`)
+  * Pesan 2 (Format Baku Follow-up): Msg ID `1570453931744559107` (#🐛・bug-reports, Format baku pelaporan bug 100% clean plain text tanpa triple backticks di posisi paling bawah channel)
+- **Git Commit**: `5969fe2`
+- **Fitur Utama & Perbaikan v2.2**:
+  * Resolusi Fatal Crash Tombol UI (`addButton`): Mengatasi runtime crash Luau (`invalid argument #3 to 'Text' string expected, got function`) akibat passing callback langsung ke argumen #3 pada pemanggilan `addButton` di baris 2416. Fungsi builder kini dilengkapi dynamic parameter resolver.
+  * Restorasi Total 8 Tab & Seluruh Menu: Seluruh tab (`Info`, `Auto`, `Writer`, `Combat`, `Shop`, `Player`, `ESP`, `Settings`) kini 100% ter-render dan dapat diakses sempurna.
+  * Dynamic Mobile Responsive ScrollingFrame: Kalkulasi otomatis `AbsoluteContentSize` pada setiap `CanvasSize` dan TabBar menjamin seluruh kontrol toggle, slider, dan dropdown di menu bawah dapat di-scroll sangat mulus di semua ponsel (Android / iOS / Tablet).
+  * Persistent High Ground Safe Haven (Permintaan DM Arsss): Platform udara 28x2x28 studs persisten anti-despawn, **zero freeze** (bebas berjalan), dan dilengkapi slider ketinggian custom (50 - 300 studs).
+
