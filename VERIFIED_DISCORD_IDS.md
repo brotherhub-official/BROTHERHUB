@@ -155,6 +155,12 @@
 ```
 
 ### C. Prosedur Mutlak Balasan Laporan Bug (`#🐛・bug-reports` - `1547960201511047219`)
+
+> ⚠️ **HUKUM MUTLAK ANTI @UNKNOWN-USER & INLINE DIRECT REPLY (HUKUM 18)**:
+> 1. **DILARANG MENGGUNAKAN MESSAGE ID DI MENTION**: Jangan pernah memasukkan Message ID ke `<@ID>`. Gunakan REAL USER ID (`author['id']`) agar tidak muncul `@unknown-user`!
+> 2. **WAJIB INLINE MESSAGE REFERENCE**: Setiap balasan tiket wajib menyertakan `"message_reference": {"message_id": "<TARGET_MESSAGE_ID>"}` agar muncul garis balasan langsung di Discord!
+> 3. **ZERO CODEBLOCKS PADA PESAN 2**: Format panduan Pesan 2 wajib 100% Clean Plain Text tanpa kotak abu-abu (` ``` `).
+
 > ⚠️ **HUKUM MUTLAK 2 JAWABAN SEKALIGUS (DIPISAH 2 PESAN BERUNTUN)**:
 > Setiap kali memberikan konfirmasi penyelesaian bug, AI/Bot **WAJIB MENGIRIMKAN DUA (2) PESAN SEKALIGUS SECARA BERUNTUN**:
 > 1. **Pesan 1 (Direct Reply)**: 100% Rich Discord Embed Emerald Green `3066993`, mention member di luar embed (`content: "<@MEMBER_ID>"`), bilingual ID & EN, bebas kebocoran teknis (Hukum 13).
