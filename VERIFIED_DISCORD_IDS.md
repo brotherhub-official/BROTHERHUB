@@ -1,9 +1,9 @@
 - **Live Discord Announcement**:
-* `#📢・announcements`: Survive Your Ideas v2.2 8 Tab & Complete Menu Hotfix (`1570453939265077430`), Survive Your Ideas v2.1 (`1570422891655209031`), Poly Loot v4.5 (`1570422898970067089`)
+* `#📢・announcements`: Survive Your Ideas v2.3 Zero-Bounce Anti-Blackhole & Anti Screen Flip / Reversed Control (`1570668193616232449`), Survive Your Ideas v2.2 (`1570453939265077430`), Survive Your Ideas v2.1 (`1570422891655209031`)
 - **Live Discord Changelogs**:
-* `#📝・changelogs`: Survive Your Ideas v2.2 8 Tab & Complete Menu Hotfix (`1570455039561175051`), Survive Your Ideas v2.1 (`1570422894620573739`), Poly Loot v4.5 (`1570422903038541925`)
+* `#📝・changelogs`: Survive Your Ideas v2.3 Zero-Bounce Anti-Blackhole & Anti Screen Flip / Reversed Control (`1570668200994152510`), Survive Your Ideas v2.2 (`1570455039561175051`), Survive Your Ideas v2.1 (`1570422894620573739`)
 - **Live Bug Reports Resolution**:
-* `#🐛・bug-reports`: Arsss Bug Reply Msg ID `1570453924626825407` (Survive Your Ideas v2.2 8 Tab & Full Menu Restored referencing Msg ID `1570448920742592533`), Prone Bug Reply Msg ID `1570444308790902865` (Poly Loot v4.5 referencing Msg ID `1570241974433353858`), Standalone Format Guide Msg ID `1570453931744559107`
+* `#🐛・bug-reports`: Arsss Bug Reply Msg ID `1570668177678147635` (Survive Your Ideas v2.3 Zero-Bounce Anti-Blackhole & Anti Screen Flip + Reversed Control referencing Msg ID `1570498839117561948`), Arsss v2.2 Reply Msg ID `1570453924626825407`, Standalone Format Guide Msg ID `1570668187077451817`
 
 # VERIFIED ROLES & CHANNELS MAPPING TABLE
 
@@ -1447,4 +1447,21 @@ Mengumumkan panduan wajib laporan ke seluruh member Brother Hub menggunakan 100%
   * Restorasi Total 8 Tab & Seluruh Menu: Seluruh tab (`Info`, `Auto`, `Writer`, `Combat`, `Shop`, `Player`, `ESP`, `Settings`) kini 100% ter-render dan dapat diakses sempurna.
   * Dynamic Mobile Responsive ScrollingFrame: Kalkulasi otomatis `AbsoluteContentSize` pada setiap `CanvasSize` dan TabBar menjamin seluruh kontrol toggle, slider, dan dropdown di menu bawah dapat di-scroll sangat mulus di semua ponsel (Android / iOS / Tablet).
   * Persistent High Ground Safe Haven (Permintaan DM Arsss): Platform udara 28x2x28 studs persisten anti-despawn, **zero freeze** (bebas berjalan), dan dilengkapi slider ketinggian custom (50 - 300 studs).
+
+### 59. 💡 Game #53: Survive Your Ideas (v2.3 - Zero-Bounce Silent Anti-Blackhole, Clean OFF Toggle, Tornado vs Blackhole Separation & True Anti Screen Flip + Anti Reversed Control Tanpa Dizzy Camera — Laporan Arsss #bug-reports)
+- **Place ID**: 109001332046330 / 77900175935766
+- **Target Role (💡 Survive Your Ideas)**: 1569199870110203978
+- **Target Role Ping**: <@&1569199870110203978> <@&1548208954163724299>
+- **Founder Vault**: Clean File `SurviveYourIdeas_Clean.lua` Msg ID `1570668165376114730` (Tepat 53 Pesan Steril Terverifikasi 1:1, menghapus old msg `1570453369917800710`)
+- **Announcements**: Msg ID `1570668193616232449` (#📢・announcements, Gold Embed 15844367, tagged <@&1569199870110203978> <@&1548208954163724299>)
+- **Changelogs**: Msg ID `1570668200994152510` (#📝・changelogs, Blue Embed 3447003, tagged <@&1569199870110203978> <@&1548208954163724299>)
+- **Reply Bug Reports Discord (Standar 2 Balasan Baku - Hukum 18 & Hukum 7)**:
+  * Pesan 1 (Direct Reply): Msg ID `1570668177678147635` (#🐛・bug-reports, Balasan resmi resolusi Zero-Bounce Anti-Blackhole & Anti Screen Flip + Reversed Control ke Arsss msg `1570498839117561948` dengan inline message_reference & Real User ID `<@425675264811597824>`)
+  * Pesan 2 (Format Baku Follow-up): Msg ID `1570668187077451817` (#🐛・bug-reports, Format baku pelaporan bug 100% clean plain text tanpa triple backticks di posisi paling bawah channel)
+- **Git Commit**: `73e82bb`
+- **Fitur Utama & Perbaikan v2.3**:
+  * Zero-Bounce Silent Anti-Blackhole + Clean OFF Switch: Menghapus total gaya dorong keluar (`AssemblyLinearVelocity` & `CFrame` pushback) yang sebelumnya membuat karakter mental-mental keluar zona saat bencana Zona + Blackhole. Menggantinya dengan hook bersih pada `PullField.velocityFor` & `BlackHoleLook.zoneOf` agar saat ON karakter 100% diam tenang tanpa tersedot/terangkat, dan saat OFF seluruh shield (`_BH_BlackholeShield`, `Protected`, `DevImmortal`) dibersihkan seketika tanpa sisa.
+  * Pemisahan Tornado & Hazard Dodge dari Blackhole: `autoShelterTornado`, `autoDodgeMonster` Tier C, dan `WordAnnounced` kini mengecualikan objek Blackhole agar tidak lagi memicu teleport paksa keluar zona saat berada dekat Blackhole.
+  * Penghapusan Total Dizzy Camera & Restorasi Penuh Anti Screen Flip + Anti Reversed Control: Menghapus `disableDizzyCamera` beserta seluruh intervensi kamera/atribut dizzy (`DizzyCamera`, `Status_dizzy`, `Dizzy`, `Status_blind`). Kini fitur khusus menetralisir `UpsideClient` (`ScreenFlipApply`/`ScreenFlipUndo`, atribut `ScreenFlip`) serta `TrollClient`/`BodyWordsClient` (`TrollReverseControls` & tag `Trolled`).
+
 
